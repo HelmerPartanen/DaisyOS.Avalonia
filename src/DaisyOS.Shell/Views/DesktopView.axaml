@@ -1,7 +1,9 @@
 <UserControl
     x:Class="DaisyOS.Shell.Views.DesktopView"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls">
   <Grid
       x:Name="WallpaperRoot"
       Classes="Wallpaper"
@@ -13,5 +15,28 @@
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         IsHitTestVisible="False" />
+        
+    <ItemsControl ItemsSource="{Binding Items}"
+                  PointerPressed="ItemsControl_PointerPressed"
+                  PointerMoved="ItemsControl_PointerMoved"
+                  PointerReleased="ItemsControl_PointerReleased">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <Canvas />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="{x:Type vm:DesktopItemViewModel}">
+          <controls:DesktopItemView />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+      <ItemsControl.Styles>
+        <Style Selector="ItemsControl > ContentPresenter">
+          <Setter Property="Canvas.Left" Value="{Binding X}" />
+          <Setter Property="Canvas.Top" Value="{Binding Y}" />
+          <!-- Note: A transition could be added here to smoothly animate auto-arrange -->
+        </Style>
+      </ItemsControl.Styles>
+    </ItemsControl>
   </Grid>
 </UserControl>

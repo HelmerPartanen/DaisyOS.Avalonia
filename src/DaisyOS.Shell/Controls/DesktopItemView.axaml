@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DaisyOS.Shell.Controls.DesktopItemView"
+             Width="74" Height="88">
+  <!-- The width and height act as the logical footprint for rendering.
+       They are usually overridden or scaled by the grid placement math in code behind,
+       but this provides a sensible fallback at 96 DPI. -->
+  <UserControl.Styles>
+    <Style Selector="Border.DesktopItemIcon">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Border.DesktopItemIcon:pointerover">
+      <Setter Property="Background" Value="#33FFFFFF" />
+      <Setter Property="BorderBrush" Value="#4CFFFFFF" />
+    </Style>
+    <Style Selector="Border.DesktopItemIcon:pressed">
+      <Setter Property="Background" Value="#4CFFFFFF" />
+      <Setter Property="BorderBrush" Value="#66FFFFFF" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="Auto,*">
+    <!-- Icon centered near the top -->
+    <Border Grid.Row="0" Classes="DesktopItemIcon" Width="48" Height="48" Margin="0,4,0,0">
+      <Image Source="{Binding IconBitmap}" 
+             RenderOptions.BitmapInterpolationMode="HighQuality"
+             Width="32" Height="32" />
+    </Border>
+
+    <!-- Label below the icon, wraps lines, centered -->
+    <TextBlock Grid.Row="1"
+               Text="{Binding Label}"
+               Foreground="White"
+               TextAlignment="Center"
+               TextWrapping="Wrap"
+               TextTrimming="CharacterEllipsis"
+               MaxLines="2"
+               Margin="2,4,2,0"
+               FontSize="11" />
+  </Grid>
+</UserControl>
