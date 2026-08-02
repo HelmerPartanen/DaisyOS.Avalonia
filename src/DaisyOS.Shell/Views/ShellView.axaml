@@ -1,0 +1,10 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Views.ShellView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="clr-namespace:DaisyOS.Shell.Views">
+    <Grid>
+        <views:DesktopView x:Name="Desktop" />
+        <views:TaskbarView VerticalAlignment="Bottom" />
+    </Grid>
+</UserControl>

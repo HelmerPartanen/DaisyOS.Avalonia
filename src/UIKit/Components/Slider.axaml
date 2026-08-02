@@ -1,0 +1,11 @@
+<UserControl
+    x:Class="UIKit.Components.Slider"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls;assembly=DaisyOS.Shell"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <controls:VolumeSlider
+      Minimum="{Binding Minimum, RelativeSource={RelativeSource AncestorType=UserControl}}"
+      Maximum="{Binding Maximum, RelativeSource={RelativeSource AncestorType=UserControl}}"
+      Step="{Binding Step, RelativeSource={RelativeSource AncestorType=UserControl}}"
+      Value="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}" />
+</UserControl>

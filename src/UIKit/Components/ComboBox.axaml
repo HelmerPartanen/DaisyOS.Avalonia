@@ -1,0 +1,39 @@
+<UserControl
+    x:Class="UIKit.Components.ComboBox"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- DaisyOS-owned picker surface and popup. Native ComboBox templates vary
+       by platform, so this component owns both pieces for visual consistency. -->
+  <Border x:Name="FocusOutline" Classes="SearchBoxFocusOutline">
+    <Border x:Name="Field" Classes="SearchBoxField" Padding="0">
+      <Grid>
+      <Button
+          x:Name="PickerButton"
+          Classes="UIKitComboBoxButton"
+          Click="PickerButton_OnClick"
+          GotFocus="Picker_OnGotFocus"
+          LostFocus="Picker_OnLostFocus">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock VerticalAlignment="Center" Text="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+          <TextBlock Grid.Column="1" Classes="MaterialSymbol" FontSize="18" Text="expand_more" />
+        </Grid>
+      </Button>
+      <Popup
+          x:Name="OptionsPopup"
+          Placement="Bottom"
+          PlacementTarget="{Binding #Field}">
+        <Border
+            Classes="UIKitComboBoxPopup"
+            MinWidth="{Binding Bounds.Width, ElementName=Field}">
+          <ListBox
+              x:Name="OptionsList"
+              Classes="UIKitComboBoxList"
+              ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
+              SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
+              SelectionChanged="OptionsList_OnSelectionChanged" />
+        </Border>
+      </Popup>
+      </Grid>
+    </Border>
+  </Border>
+</UserControl>

@@ -1,0 +1,50 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Views.TaskbarView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <UserControl.Styles>
+    <Style Selector="Button.TaskbarApp">
+      <Setter Property="Width" Value="40"/>
+      <Setter Property="Height" Value="40"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="Padding" Value="8"/>
+    </Style>
+    <Style Selector="Button.TaskbarApp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#1A000000"/>
+    </Style>
+    <Style Selector="Button.TaskbarApp:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#33000000"/>
+    </Style>
+  </UserControl.Styles>
+
+  <Border Height="48" Background="#CCFFFFFF" BorderBrush="#33000000" BorderThickness="0,1,0,0">
+    <Grid>
+      <!-- Center: App Icons -->
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+        
+        <!-- Start Button Placeholder -->
+        <Button Classes="TaskbarApp">
+          <Grid Width="20" Height="20" ColumnDefinitions="*,*" RowDefinitions="*,*">
+            <Border Grid.Row="0" Grid.Column="0" Background="#00A4EF" Margin="0,0,1,1" CornerRadius="1" />
+            <Border Grid.Row="0" Grid.Column="1" Background="#00A4EF" Margin="1,0,0,1" CornerRadius="1" />
+            <Border Grid.Row="1" Grid.Column="0" Background="#00A4EF" Margin="0,1,1,0" CornerRadius="1" />
+            <Border Grid.Row="1" Grid.Column="1" Background="#00A4EF" Margin="1,1,0,0" CornerRadius="1" />
+          </Grid>
+        </Button>
+
+        <!-- Settings -->
+        <Button Classes="TaskbarApp">
+          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png" Width="24" Height="24" />
+        </Button>
+
+        <!-- Files -->
+        <Button Classes="TaskbarApp">
+          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png" Width="24" Height="24" />
+        </Button>
+
+      </StackPanel>
+    </Grid>
+  </Border>
+</UserControl>

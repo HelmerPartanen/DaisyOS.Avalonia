@@ -1,0 +1,12 @@
+# Smallest supported DaisyOS shell environment.
+base
+linux
+linux-firmware
+networkmanager
+pipewire
+pipewire-pulse
+wireplumber
+mesa
+libglvnd
+noto-fonts
+daisyos-shell
