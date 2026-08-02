@@ -62,9 +62,9 @@ public class DesktopGridMetrics
         ColumnCount = cols;
         RowCount = rows;
         
-        // Fine-tune CellWidth to distribute horizontal spacing evenly so right edge margin matches left edge margin
+        // Fine-tune CellWidth and CellHeight to distribute spacing evenly so bottom row ends exactly at taskbar top border
         CellWidth = availableWidth / cols;
-        CellHeight = cellHeight;
+        CellHeight = availableHeight / rows;
         
         GridOriginX = WorkArea.Left + edgeInsetX;
         GridOriginY = WorkArea.Top + edgeInsetY;
