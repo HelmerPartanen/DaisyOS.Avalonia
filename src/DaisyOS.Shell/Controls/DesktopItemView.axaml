@@ -6,20 +6,26 @@
        They are usually overridden or scaled by the grid placement math in code behind,
        but this provides a sensible fallback at 96 DPI. -->
   <UserControl.Styles>
-    <Style Selector="Grid#ContainerGrid:pointerover Image#AppIcon">
+    <Style Selector="Grid#ContainerGrid:pointerover Border#IconWrapper">
       <Setter Property="Opacity" Value="0.8" />
     </Style>
-    <Style Selector="Grid#ContainerGrid:pressed Image#AppIcon">
+    <Style Selector="Grid#ContainerGrid:pressed Border#IconWrapper">
       <Setter Property="Opacity" Value="0.6" />
     </Style>
   </UserControl.Styles>
 
   <Grid Name="ContainerGrid" Background="Transparent" RowDefinitions="Auto,*">
     <!-- Icon centered near the top -->
-    <Image Name="AppIcon" Grid.Row="0"
-           Source="{Binding IconBitmap}" 
-           RenderOptions.BitmapInterpolationMode="HighQuality"
-           Width="48" Height="48" Margin="0,4,0,0" />
+    <Border Name="IconWrapper" Grid.Row="0" Width="48" Height="48" Margin="0,4,0,0">
+      <Border.Transitions>
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+        </Transitions>
+      </Border.Transitions>
+      <Image Name="AppIcon" 
+             Source="{Binding IconBitmap}" 
+             RenderOptions.BitmapInterpolationMode="HighQuality" />
+    </Border>
 
     <!-- Label below the icon, wraps lines, centered -->
     <TextBlock Grid.Row="1"
