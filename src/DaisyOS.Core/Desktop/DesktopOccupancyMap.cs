@@ -49,51 +49,41 @@ public class DesktopOccupancyMap
         }
     }
 
-    /// <summary>
-    /// Finds the nearest unoccupied cell using a Manhattan distance search, preferring lower columns and rows.
-    /// </summary>
     private GridCell ResolveCollision(GridCell target)
     {
         if (!IsOccupied(target))
             return target;
 
-        GridCell? bestCell = null;
-        int bestDistance = int.MaxValue;
+        var queue = new Queue<GridCell>();
+        var visited = new HashSet<GridCell>();
 
-        // Perform a full scan to find the best available cell
-        // A more optimized BFS could be used, but grid sizes are small enough (e.g., 30x20)
-        for (int col = 0; col < _metrics.ColumnCount; col++)
+        queue.Enqueue(target);
+        visited.Add(target);
+
+        // Prioritize down and right to prefer filling naturally
+        int[] dx = { 0, 1, 0, -1 };
+        int[] dy = { 1, 0, -1, 0 };
+
+        while (queue.Count > 0)
         {
-            for (int row = 0; row < _metrics.RowCount; row++)
+            var cell = queue.Dequeue();
+
+            if (!IsOccupied(cell))
             {
-                var candidate = new GridCell(col, row);
-                if (IsOccupied(candidate)) continue;
+                return cell;
+            }
 
-                int distance = Math.Abs(col - target.Column) + Math.Abs(row - target.Row);
-
-                if (distance < bestDistance)
+            for (int i = 0; i < 4; i++)
+            {
+                var next = new GridCell(cell.Column + dx[i], cell.Row + dy[i]);
+                if (_metrics.IsValid(next) && visited.Add(next))
                 {
-                    bestDistance = distance;
-                    bestCell = candidate;
-                }
-                else if (distance == bestDistance)
-                {
-                    // Tie-breaker: normal desktop order (lower column first, then lower row)
-                    if (bestCell != null)
-                    {
-                        if (col < bestCell.Value.Column || (col == bestCell.Value.Column && row < bestCell.Value.Row))
-                        {
-                            bestCell = candidate;
-                        }
-                    }
+                    queue.Enqueue(next);
                 }
             }
         }
 
-        if (bestCell == null)
-            throw new InvalidOperationException("The desktop grid is entirely full.");
-
-        return bestCell.Value;
+        throw new InvalidOperationException("The desktop grid is entirely full.");
     }
 
     /// <summary>

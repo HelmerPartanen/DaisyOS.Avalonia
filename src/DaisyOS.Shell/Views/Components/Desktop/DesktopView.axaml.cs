@@ -88,6 +88,7 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             {
                 _isDragging = true;
                 _draggedItem.IsDragging = true;
+                _viewModel.BeginDrag(_draggedItem, _currentMetrics);
             }
             
             if (_isDragging)

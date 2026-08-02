@@ -141,6 +141,34 @@ public class DesktopViewModel : INotifyPropertyChanged
         }
     }
     
+    private DesktopItemViewModel?[]? _dragCache;
+    private DesktopGridMetrics? _dragMetrics;
+
+    public void BeginDrag(DesktopItemViewModel draggedItem, DesktopGridMetrics metrics)
+    {
+        _dragMetrics = metrics;
+        int maxSlots = metrics.ColumnCount * metrics.RowCount;
+        _dragCache = new DesktopItemViewModel?[maxSlots];
+        
+        foreach (var item in Items)
+        {
+            if (item != draggedItem)
+            {
+                int slot = metrics.GetSlotIndex(new GridCell(item.State.Column, item.State.Row));
+                if (slot >= 0 && slot < maxSlots)
+                {
+                    _dragCache[slot] = item;
+                }
+            }
+        }
+    }
+
+    public void EndDrag()
+    {
+        _dragCache = null;
+        _dragMetrics = null;
+    }
+
     private static void PreviewPlaceAt(DesktopItemViewModel item, int slot, DesktopGridMetrics metrics)
     {
         var cell = metrics.GetCellForSlot(slot);
@@ -151,58 +179,57 @@ public class DesktopViewModel : INotifyPropertyChanged
 
     public void PreviewReflow(DesktopItemViewModel draggedItem, int targetSlot, DesktopGridMetrics metrics)
     {
-        var baseSlots = new Dictionary<int, DesktopItemViewModel>();
-        var previewSlots = new Dictionary<DesktopItemViewModel, int>();
-
-        foreach (var item in Items)
+        if (_dragCache == null) return;
+        
+        int maxSlots = _dragCache.Length;
+        int currentSlot = Math.Max(0, Math.Min(targetSlot, maxSlots - 1));
+        
+        int chainEnd = currentSlot;
+        while (chainEnd < maxSlots && _dragCache[chainEnd] != null)
         {
-            if (item != draggedItem)
+            chainEnd++;
+        }
+        
+        for (int i = 0; i < maxSlots; i++)
+        {
+            var item = _dragCache[i];
+            if (item == null) continue;
+            
+            int newSlot = (i >= currentSlot && i < chainEnd) ? i + 1 : i;
+            if (newSlot < maxSlots)
             {
-                int slot = metrics.GetSlotIndex(new GridCell(item.State.Column, item.State.Row));
-                baseSlots[slot] = item;
-                previewSlots[item] = slot;
+                PreviewPlaceAt(item, newSlot, metrics);
             }
-        }
-
-        int currentSlot = Math.Max(0, targetSlot);
-        while (baseSlots.TryGetValue(currentSlot, out var occupant))
-        {
-            previewSlots[occupant] = currentSlot + 1;
-            currentSlot++;
-        }
-
-        foreach (var kvp in previewSlots)
-        {
-            PreviewPlaceAt(kvp.Key, kvp.Value, metrics);
         }
     }
 
     public void CommitItemMove(DesktopItemViewModel item, int targetSlot, DesktopGridMetrics metrics)
     {
-        var baseSlots = new Dictionary<int, DesktopItemViewModel>();
-        foreach (var other in Items)
+        if (_dragCache == null) return;
+        
+        int maxSlots = _dragCache.Length;
+        int currentSlot = Math.Max(0, Math.Min(targetSlot, maxSlots - 1));
+        
+        int chainEnd = currentSlot;
+        while (chainEnd < maxSlots && _dragCache[chainEnd] != null)
         {
-            if (other != item)
+            chainEnd++;
+        }
+        
+        for (int i = 0; i < maxSlots; i++)
+        {
+            var other = _dragCache[i];
+            if (other == null) continue;
+            
+            int newSlot = (i >= currentSlot && i < chainEnd) ? i + 1 : i;
+            if (newSlot < maxSlots)
             {
-                int slot = metrics.GetSlotIndex(new GridCell(other.State.Column, other.State.Row));
-                baseSlots[slot] = other;
+                PlaceAt(other, newSlot, metrics);
             }
         }
-
-        int currentSlot = Math.Max(0, targetSlot);
-        var shifts = new Dictionary<DesktopItemViewModel, int>();
-        while (baseSlots.TryGetValue(currentSlot, out var occupant))
-        {
-            shifts[occupant] = currentSlot + 1;
-            currentSlot++;
-        }
-
-        foreach (var kvp in shifts)
-        {
-            PlaceAt(kvp.Key, kvp.Value, metrics);
-        }
-
-        PlaceAt(item, Math.Max(0, targetSlot), metrics);
+        
+        PlaceAt(item, currentSlot, metrics);
+        EndDrag();
     }
 
     private static void PlaceAt(DesktopItemViewModel item, int slot, DesktopGridMetrics metrics)
