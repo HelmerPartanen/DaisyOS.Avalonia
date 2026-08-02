@@ -80,7 +80,7 @@ namespace DaisyOS.Shell.Views
             icon.PointerCaptureLost += Icon_PointerCaptureLost;
         }
 
-        private static Transitions CreatePositionTransitions() => new()
+        private static readonly Transitions SharedPositionTransitions = new()
         {
             new DoubleTransition { Property = Canvas.LeftProperty, Duration = TimeSpan.FromSeconds(0.20), Easing = new CubicEaseOut() }
         };
@@ -92,7 +92,7 @@ namespace DaisyOS.Shell.Views
                 var icon = _order[i];
                 icon.Transitions = null; // avoid animating in from 0 on first layout
                 Canvas.SetLeft(icon, SlotX(i));
-                icon.Transitions = CreatePositionTransitions();
+                icon.Transitions = SharedPositionTransitions;
             }
         }
 
@@ -115,7 +115,6 @@ namespace DaisyOS.Shell.Views
             _isDragging = false;
             _pointerStartX = e.GetPosition(_canvas).X;
             _dragStartLeft = Canvas.GetLeft(icon);
-            _orderAtDragStart = _order.Select(b => b.Tag as string ?? string.Empty).ToList();
 
             e.Pointer.Capture(icon);
         }
@@ -149,6 +148,7 @@ namespace DaisyOS.Shell.Views
         private void BeginDrag(Button icon)
         {
             _isDragging = true;
+            _orderAtDragStart = _order.Select(b => b.Tag as string ?? string.Empty).ToList();
             icon.Classes.Add("dragging");
             icon.ZIndex = 1000;
         }
@@ -188,9 +188,9 @@ namespace DaisyOS.Shell.Views
             }
         }
 
-        private void AnimateToSlot(Button icon, int index)
+        private static void AnimateToSlot(Button icon, int index)
         {
-            icon.Transitions ??= CreatePositionTransitions();
+            icon.Transitions = SharedPositionTransitions;
             Canvas.SetLeft(icon, SlotX(index));
         }
 
@@ -217,7 +217,7 @@ namespace DaisyOS.Shell.Views
             var index = _order.IndexOf(icon);
             if (index >= 0)
             {
-                icon.Transitions = CreatePositionTransitions();
+                icon.Transitions = SharedPositionTransitions;
                 Canvas.SetLeft(icon, SlotX(index));
             }
 

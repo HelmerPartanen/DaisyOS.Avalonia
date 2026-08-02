@@ -55,9 +55,6 @@
           </Grid>
         </Button>
 
-        <!-- Divider between the fixed launcher and the movable icons -->
-        <Border Width="1" Height="24" Background="{DynamicResource TaskbarBorderBrush}" Margin="2,0"/>
-
         <!-- Reorderable app icons. Add/remove Border children here; code-behind handles the rest. -->
         <Canvas x:Name="AppIconsCanvas" Height="40">
 
