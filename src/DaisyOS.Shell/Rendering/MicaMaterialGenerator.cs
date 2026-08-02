@@ -32,33 +32,33 @@ public struct MicaTheme
     public static MicaTheme DarkBase => new()
     {
         TintColor = new SKColor(30, 30, 34),
-        TintOpacity = 0.82f,
-        Saturation = 0.68f,
-        NoiseAmplitude = 0.0030f
+        TintOpacity = 0.85f,
+        Saturation = 0.60f,
+        NoiseAmplitude = 0.018f
     };
 
     public static MicaTheme LightBase => new()
     {
         TintColor = new SKColor(243, 243, 246),
-        TintOpacity = 0.84f,
-        Saturation = 0.76f,
-        NoiseAmplitude = 0.0020f
+        TintOpacity = 0.88f,
+        Saturation = 0.70f,
+        NoiseAmplitude = 0.015f
     };
 
     public static MicaTheme DarkAlt => new()
     {
         TintColor = new SKColor(34, 32, 40),
-        TintOpacity = 0.76f,
-        Saturation = 0.72f,
-        NoiseAmplitude = 0.0030f
+        TintOpacity = 0.80f,
+        Saturation = 0.65f,
+        NoiseAmplitude = 0.018f
     };
 
     public static MicaTheme LightAlt => new()
     {
         TintColor = new SKColor(237, 238, 244),
-        TintOpacity = 0.79f,
-        Saturation = 0.80f,
-        NoiseAmplitude = 0.0020f
+        TintOpacity = 0.82f,
+        Saturation = 0.75f,
+        NoiseAmplitude = 0.015f
     };
 }
 
@@ -91,8 +91,8 @@ public static class MicaMaterialGenerator
                 $"Failed to decode wallpaper bitmap from '{assetUri}'.");
         }
 
-        int processWidth = Math.Max(1, renderWidth / 3);
-        int processHeight = Math.Max(1, renderHeight / 3);
+        int processWidth = Math.Max(1, renderWidth / 8);
+        int processHeight = Math.Max(1, renderHeight / 8);
 
         using var processedImage = CreateProcessedWallpaper(
             originalBitmap,
@@ -181,12 +181,12 @@ public static class MicaMaterialGenerator
 
         using var saturationFilter = CreateSaturationFilter(theme.Saturation);
 
-        // This blur occurs on the reduced-resolution image.
-        // Sigma 15 at one-third resolution is equivalent to a much larger
-        // blur on the final output.
+        // This blur occurs on the significantly reduced-resolution image.
+        // Sigma 30 at 1/8th resolution is equivalent to a massive ~240px blur on the final output,
+        // which completely obliterates recognizable shapes as per the Mica spec.
         using var blurFilter = SKImageFilter.CreateBlur(
-            sigmaX: 15f,
-            sigmaY: 15f,
+            sigmaX: 30f,
+            sigmaY: 30f,
             tileMode: SKShaderTileMode.Clamp);
 
         using var processPaint = new SKPaint
@@ -324,40 +324,23 @@ public static class MicaMaterialGenerator
         var random = new Random(NoiseSeed);
         var pixels = new SKColor[noiseWidth * noiseHeight];
 
-        const int neutralGray = 128;
-
-        // Only a narrow range around neutral gray is generated.
-        // Full-range 0-255 noise looks like visible television static.
-        const int sourceDeviation = 15;
-
-        // SoftLight with middle gray is close to neutral, so the layer may
-        // use a slightly higher alpha while still remaining extremely subtle.
-        byte layerAlpha = FloatToByte(
-            Math.Clamp(amplitude * 16f, 0f, 0.08f));
+        // The maximum alpha for the noise pixels (0-255).
+        // A higher value means stronger dithering contrast.
+        float maxAlpha = Math.Clamp(amplitude * 255f * 2f, 0f, 60f);
 
         for (int i = 0; i < pixels.Length; i++)
         {
             // Difference of two uniform samples gives a triangular
-            // distribution. Most values remain close to neutral gray,
-            // with fewer bright or dark extremes.
+            // distribution. Most values remain close to 0.
             float triangularNoise =
                 (float)random.NextDouble() -
                 (float)random.NextDouble();
 
-            int grayValue = neutralGray +
-                (int)MathF.Round(
-                    triangularNoise * sourceDeviation);
+            bool isWhite = triangularNoise > 0;
+            byte alpha = (byte)Math.Clamp(Math.Abs(triangularNoise) * maxAlpha, 0f, 255f);
+            byte colorVal = isWhite ? (byte)255 : (byte)0;
 
-            byte gray = (byte)Math.Clamp(
-                grayValue,
-                0,
-                255);
-
-            pixels[i] = new SKColor(
-                gray,
-                gray,
-                gray,
-                layerAlpha);
+            pixels[i] = new SKColor(colorVal, colorVal, colorVal, alpha);
         }
 
         noiseBitmap.Pixels = pixels;
@@ -371,7 +354,7 @@ public static class MicaMaterialGenerator
         using var noisePaint = new SKPaint
         {
             Shader = noiseShader,
-            BlendMode = SKBlendMode.SoftLight,
+            BlendMode = SKBlendMode.SrcOver,
             IsAntialias = false,
             FilterQuality = SKFilterQuality.None
         };

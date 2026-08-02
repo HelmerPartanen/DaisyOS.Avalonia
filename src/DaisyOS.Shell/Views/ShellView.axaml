@@ -5,6 +5,16 @@
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
         <views:DesktopView x:Name="Desktop" />
-        <views:TaskbarView VerticalAlignment="Bottom" />
+        
+        <!-- Launcher (Overlays desktop, just above taskbar) -->
+        <views:LauncherView x:Name="Launcher" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Bottom" 
+                            Margin="0,0,0,56" 
+                            IsVisible="False"
+                            ZIndex="10"/>
+
+        <!-- Taskbar -->
+        <views:TaskbarView x:Name="Taskbar" VerticalAlignment="Bottom" ZIndex="20"/>
     </Grid>
 </UserControl>

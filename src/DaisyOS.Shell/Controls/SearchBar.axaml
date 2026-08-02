@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DaisyOS.Shell.Controls.SearchBar"
+             Height="40">
+  <Border Background="#1AFFFFFF"
+          BorderBrush="#33FFFFFF"
+          BorderThickness="1"
+          CornerRadius="8"
+          Padding="12,0">
+    <Grid ColumnDefinitions="Auto,*">
+      <!-- Search Icon Placeholder -->
+      <PathIcon Data="M 15.5 14 L 20 18.5 L 18.5 20 L 14 15.5 C 12.5 16.5 10.8 17 9 17 C 4.6 17 1 13.4 1 9 C 1 4.6 4.6 1 9 1 C 13.4 1 17 4.6 17 9 C 17 10.8 16.5 12.5 15.5 14 Z M 9 15 C 12.3 15 15 12.3 15 9 C 15 5.7 12.3 3 9 3 C 5.7 3 3 5.7 3 9 C 3 12.3 5.7 15 9 15 Z"
+                Width="16" Height="16"
+                Foreground="#B3FFFFFF"
+                VerticalAlignment="Center"/>
+      
+      <TextBox Grid.Column="1"
+               Margin="8,0,0,0"
+               Watermark="Search apps, files, and settings..."
+               Background="Transparent"
+               BorderThickness="0"
+               VerticalAlignment="Center"
+               Foreground="White"
+               CaretBrush="White">
+        <TextBox.Styles>
+          <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+          </Style>
+          <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+          </Style>
+        </TextBox.Styles>
+      </TextBox>
+    </Grid>
+  </Border>
+</UserControl>
