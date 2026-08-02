@@ -2,8 +2,6 @@
     x:Class="DaisyOS.Shell.Views.TaskbarView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  
-
 
   <UserControl.Styles>
     <Style Selector="Button.TaskbarApp">
@@ -11,8 +9,8 @@
       <Setter Property="Height" Value="40"/>
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="Padding" Value="8"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="0"/>
     </Style>
     <Style Selector="Button.TaskbarApp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
@@ -20,14 +18,30 @@
     <Style Selector="Button.TaskbarApp:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
+
+    <!-- Reorderable app icon. Positioned absolutely inside AppIconsCanvas via Canvas.Left,
+         which is animated in code-behind so items glide into their new slot. -->
+    <Style Selector="Border.TaskbarAppIcon">
+      <Setter Property="Width" Value="40"/>
+      <Setter Property="Height" Value="40"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+    </Style>
+    <Style Selector="Border.TaskbarAppIcon:pointerover">
+      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
+    </Style>
+    <Style Selector="Border.TaskbarAppIcon.dragging">
+      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
+    </Style>
   </UserControl.Styles>
 
   <Border Height="48" Background="{DynamicResource TaskbarBackgroundBrush}" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0">
     <Grid>
-      <!-- Center: App Icons -->
+      <!-- Center: Start button + App Icons -->
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
-        
-        <!-- Start Button Placeholder -->
+
+        <!-- Start Button - fixed anchor, lives outside the reorder canvas so it can never be pushed past -->
         <Button x:Name="StartButton" Classes="TaskbarApp">
           <Grid Width="20" Height="20" ColumnDefinitions="*,*" RowDefinitions="*,*">
             <Border Grid.Row="0" Grid.Column="0" Background="White" Margin="0,0,1,1" CornerRadius="1" />
@@ -37,15 +51,25 @@
           </Grid>
         </Button>
 
-        <!-- Settings -->
-        <Button Classes="TaskbarApp">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24" />
-        </Button>
+        <!-- Divider between the fixed launcher and the movable icons -->
+        <Border Width="1" Height="24" Background="{DynamicResource TaskbarBorderBrush}" Margin="2,0"/>
 
-        <!-- Files -->
-        <Button Classes="TaskbarApp">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24" />
-        </Button>
+        <!-- Reorderable app icons. Add/remove Border children here; code-behind handles the rest. -->
+        <Canvas x:Name="AppIconsCanvas" Height="40">
+
+          <Border Classes="TaskbarAppIcon" Tag="settings">
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="24" Height="24" IsHitTestVisible="False"/>
+          </Border>
+
+          <Border Classes="TaskbarAppIcon" Tag="files">
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="24" Height="24" IsHitTestVisible="False"/>
+          </Border>
+
+        </Canvas>
 
       </StackPanel>
     </Grid>
