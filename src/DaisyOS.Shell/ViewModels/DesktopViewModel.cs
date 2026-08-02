@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -49,6 +50,18 @@ public class DesktopItemViewModel : INotifyPropertyChanged
     {
         get => _y;
         set => SetField(ref _y, value);
+    }
+
+    /// <summary>
+    /// True only for the item currently being dragged by the pointer.
+    /// Used purely for view styling - it opts this item out of the Canvas.Left/Top
+    /// transition so it can track the pointer directly instead of easing toward it.
+    /// </summary>
+    private bool _isDragging;
+    public bool IsDragging
+    {
+        get => _isDragging;
+        set => SetField(ref _isDragging, value);
     }
 
     public DesktopItemViewModel(DesktopItemState state)
@@ -128,29 +141,79 @@ public class DesktopViewModel : INotifyPropertyChanged
         }
     }
     
-    public void CommitItemMove(DesktopItemViewModel item, GridCell nearestCell, DesktopGridMetrics metrics)
+    private static void PreviewPlaceAt(DesktopItemViewModel item, int slot, DesktopGridMetrics metrics)
     {
-        var map = new DesktopOccupancyMap(metrics);
-        
-        // Populate current occupancy for ALL items EXCEPT the one being dragged
+        var cell = metrics.GetCellForSlot(slot);
+        var origin = metrics.GetCellOrigin(cell);
+        item.X = origin.X;
+        item.Y = origin.Y;
+    }
+
+    public void PreviewReflow(DesktopItemViewModel draggedItem, int targetSlot, DesktopGridMetrics metrics)
+    {
+        var baseSlots = new Dictionary<int, DesktopItemViewModel>();
+        var previewSlots = new Dictionary<DesktopItemViewModel, int>();
+
+        foreach (var item in Items)
+        {
+            if (item != draggedItem)
+            {
+                int slot = metrics.GetSlotIndex(new GridCell(item.State.Column, item.State.Row));
+                baseSlots[slot] = item;
+                previewSlots[item] = slot;
+            }
+        }
+
+        int currentSlot = Math.Max(0, targetSlot);
+        while (baseSlots.TryGetValue(currentSlot, out var occupant))
+        {
+            previewSlots[occupant] = currentSlot + 1;
+            currentSlot++;
+        }
+
+        foreach (var kvp in previewSlots)
+        {
+            PreviewPlaceAt(kvp.Key, kvp.Value, metrics);
+        }
+    }
+
+    public void CommitItemMove(DesktopItemViewModel item, int targetSlot, DesktopGridMetrics metrics)
+    {
+        var baseSlots = new Dictionary<int, DesktopItemViewModel>();
         foreach (var other in Items)
         {
-            if (other == item) continue;
-            // Assuming all other items are in valid positions for now
-            map.PlaceItem(other.State.Id, new GridCell(other.State.Column, other.State.Row));
+            if (other != item)
+            {
+                int slot = metrics.GetSlotIndex(new GridCell(other.State.Column, other.State.Row));
+                baseSlots[slot] = other;
+            }
         }
-        
-        // Now resolve the dragged item's placement using the map
-        var resolvedCell = map.PlaceItem(item.State.Id, nearestCell);
-        
-        // Update state
-        item.State.Column = resolvedCell.Column;
-        item.State.Row = resolvedCell.Row;
-        
-        // Update pixel position
-        var cellOrigin = metrics.GetCellOrigin(resolvedCell);
-        item.X = cellOrigin.X;
-        item.Y = cellOrigin.Y;
+
+        int currentSlot = Math.Max(0, targetSlot);
+        var shifts = new Dictionary<DesktopItemViewModel, int>();
+        while (baseSlots.TryGetValue(currentSlot, out var occupant))
+        {
+            shifts[occupant] = currentSlot + 1;
+            currentSlot++;
+        }
+
+        foreach (var kvp in shifts)
+        {
+            PlaceAt(kvp.Key, kvp.Value, metrics);
+        }
+
+        PlaceAt(item, Math.Max(0, targetSlot), metrics);
+    }
+
+    private static void PlaceAt(DesktopItemViewModel item, int slot, DesktopGridMetrics metrics)
+    {
+        var cell = metrics.GetCellForSlot(slot);
+        item.State.Column = cell.Column;
+        item.State.Row = cell.Row;
+
+        var origin = metrics.GetCellOrigin(cell);
+        item.X = origin.X;
+        item.Y = origin.Y;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

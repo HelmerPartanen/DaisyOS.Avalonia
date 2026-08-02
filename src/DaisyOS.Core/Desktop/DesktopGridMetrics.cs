@@ -109,4 +109,24 @@ public class DesktopGridMetrics
         return cell.Column >= 0 && cell.Column < ColumnCount &&
                cell.Row >= 0 && cell.Row < RowCount;
     }
+
+    /// <summary>
+    /// Converts a cell to its index in the same column-major fill order AutoArrange uses
+    /// (top-to-bottom down a column, then wrapping to the next column). Clamped to the grid.
+    /// </summary>
+    public int GetSlotIndex(GridCell cell)
+    {
+        int col = Math.Clamp(cell.Column, 0, ColumnCount - 1);
+        int row = Math.Clamp(cell.Row, 0, RowCount - 1);
+        return col * RowCount + row;
+    }
+
+    /// <summary>
+    /// Inverse of <see cref="GetSlotIndex"/>: maps a fill-order slot back to its cell.
+    /// </summary>
+    public GridCell GetCellForSlot(int slot)
+    {
+        slot = Math.Clamp(slot, 0, ColumnCount * RowCount - 1);
+        return new GridCell(slot / RowCount, slot % RowCount);
+    }
 }

@@ -4,7 +4,7 @@ using DaisyOS.Core.Desktop;
 using DaisyOS.System.Display;
 using DaisyOS.Shell.ViewModels;
 
-namespace DaisyOS.Shell.Views
+namespace DaisyOS.Shell.Views.Components.Desktop
 {
     public partial class DesktopView : UserControl
     {
@@ -16,6 +16,10 @@ namespace DaisyOS.Shell.Views
         private Avalonia.Point _dragStartPointerPos;
         private Avalonia.Point _dragStartItemPos;
         private bool _isDragging;
+
+        // The fill-order slot last previewed under the pointer, so we only recompute the
+        // reflow when the pointer actually moves into a different slot.
+        private int? _lastHoverSlot;
 
         public DesktopView()
         {
@@ -65,6 +69,7 @@ namespace DaisyOS.Shell.Views
                 _dragStartPointerPos = e.GetPosition(this);
                 _dragStartItemPos = new Avalonia.Point(item.X, item.Y);
                 _isDragging = false;
+                _lastHoverSlot = null;
                 
                 e.Pointer.Capture((Avalonia.Input.InputElement)sender!);
                 e.Handled = true;
@@ -82,6 +87,7 @@ namespace DaisyOS.Shell.Views
             if (!_isDragging && (global::System.Math.Abs(dx) > 3 || global::System.Math.Abs(dy) > 3))
             {
                 _isDragging = true;
+                _draggedItem.IsDragging = true;
             }
             
             if (_isDragging)
@@ -89,6 +95,15 @@ namespace DaisyOS.Shell.Views
                 // Free-form movement during drag
                 _draggedItem.X = _dragStartItemPos.X + dx;
                 _draggedItem.Y = _dragStartItemPos.Y + dy;
+
+                var hoverCell = _currentMetrics.GetNearestCell(currentPointer.X, currentPointer.Y);
+                var hoverSlot = _currentMetrics.GetSlotIndex(hoverCell);
+
+                if (_lastHoverSlot != hoverSlot)
+                {
+                    _lastHoverSlot = hoverSlot;
+                    _viewModel.PreviewReflow(_draggedItem, hoverSlot, _currentMetrics);
+                }
             }
         }
 
@@ -98,15 +113,19 @@ namespace DaisyOS.Shell.Views
             
             if (_isDragging)
             {
-                // Snap to nearest grid cell based on pointer release position
+                // Resolve the drop slot from release position and commit - this reflows the
+                // other items around it (matching whatever was last previewed) and places the
+                // dragged item into the resulting gap.
                 var pointerPos = e.GetPosition(this);
-                var nearestCell = _currentMetrics.GetNearestCell(pointerPos.X, pointerPos.Y);
+                var releaseCell = _currentMetrics.GetNearestCell(pointerPos.X, pointerPos.Y);
+                var releaseSlot = _currentMetrics.GetSlotIndex(releaseCell);
                 
-                // Commit to view model
-                _viewModel.CommitItemMove(_draggedItem, nearestCell, _currentMetrics);
+                _viewModel.CommitItemMove(_draggedItem, releaseSlot, _currentMetrics);
             }
             
+            _draggedItem.IsDragging = false;
             _draggedItem = null;
+            _lastHoverSlot = null;
             _isDragging = false;
             e.Pointer.Capture(null);
         }

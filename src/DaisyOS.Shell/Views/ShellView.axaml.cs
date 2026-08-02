@@ -1,5 +1,6 @@
 using Avalonia.Controls;
-
+using DaisyOS.Shell.Views.Components.Taskbar;
+using DaisyOS.Shell.Views.Components.Desktop;
 namespace DaisyOS.Shell.Views
 {
     public partial class ShellView : UserControl

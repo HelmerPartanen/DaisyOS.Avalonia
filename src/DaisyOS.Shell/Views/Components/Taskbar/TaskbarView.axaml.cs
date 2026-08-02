@@ -8,7 +8,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Interactivity;
 
-namespace DaisyOS.Shell.Views
+namespace DaisyOS.Shell.Views.Components.Taskbar
 {
     public partial class TaskbarView : UserControl
     {

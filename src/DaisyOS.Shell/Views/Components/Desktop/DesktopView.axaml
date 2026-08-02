@@ -1,5 +1,5 @@
 <UserControl
-    x:Class="DaisyOS.Shell.Views.DesktopView"
+    x:Class="DaisyOS.Shell.Views.Components.Desktop.DesktopView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
@@ -34,7 +34,22 @@
         <Style Selector="ItemsControl > ContentPresenter">
           <Setter Property="Canvas.Left" Value="{Binding X}" />
           <Setter Property="Canvas.Top" Value="{Binding Y}" />
-          <!-- Note: A transition could be added here to smoothly animate auto-arrange -->
+          <!-- Tag the presenter with a "dragging" class while its item is the one under the pointer,
+               so it can opt out of the transition below and follow the cursor 1:1. -->
+          <Setter Property="Classes.dragging" Value="{Binding IsDragging}" />
+          <Setter Property="Transitions">
+            <Transitions>
+              <DoubleTransition Property="Canvas.Left" Duration="0:0:0.22" Easing="CubicEaseOut" />
+              <DoubleTransition Property="Canvas.Top" Duration="0:0:0.22" Easing="CubicEaseOut" />
+            </Transitions>
+          </Setter>
+        </Style>
+
+        <!-- The item actively being dragged should not animate - it must track the pointer directly.
+             Every other item (including one being displaced to make room) keeps the transition above,
+             which is what produces the "flip" glide. -->
+        <Style Selector="ItemsControl > ContentPresenter.dragging">
+          <Setter Property="Transitions" Value="{x:Null}" />
         </Style>
       </ItemsControl.Styles>
     </ItemsControl>
