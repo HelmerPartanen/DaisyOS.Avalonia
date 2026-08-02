@@ -2,6 +2,9 @@
     x:Class="DaisyOS.Shell.Views.TaskbarView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  
+
+
   <UserControl.Styles>
     <Style Selector="Button.TaskbarApp">
       <Setter Property="Width" Value="40"/>
@@ -12,14 +15,14 @@
       <Setter Property="Padding" Value="8"/>
     </Style>
     <Style Selector="Button.TaskbarApp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1A000000"/>
+      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
     </Style>
     <Style Selector="Button.TaskbarApp:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#33000000"/>
+      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
   </UserControl.Styles>
 
-  <Border Height="48" Background="#CCFFFFFF" BorderBrush="#33000000" BorderThickness="0,1,0,0">
+  <Border Height="48" Background="{DynamicResource TaskbarBackgroundBrush}" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0">
     <Grid>
       <!-- Center: App Icons -->
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
@@ -36,12 +39,12 @@
 
         <!-- Settings -->
         <Button Classes="TaskbarApp">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png" Width="24" Height="24" />
+          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24" />
         </Button>
 
         <!-- Files -->
         <Button Classes="TaskbarApp">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png" Width="24" Height="24" />
+          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24" />
         </Button>
 
       </StackPanel>

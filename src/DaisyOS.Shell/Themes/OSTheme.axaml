@@ -1,0 +1,17 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="TaskbarBackgroundBrush" Color="#CCFFFFFF"/>
+      <SolidColorBrush x:Key="TaskbarBorderBrush" Color="#33000000"/>
+      <SolidColorBrush x:Key="TaskbarHoverBrush" Color="#1A000000"/>
+      <SolidColorBrush x:Key="TaskbarPressedBrush" Color="#33000000"/>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="TaskbarBackgroundBrush" Color="#CC000000"/>
+      <SolidColorBrush x:Key="TaskbarBorderBrush" Color="#33FFFFFF"/>
+      <SolidColorBrush x:Key="TaskbarHoverBrush" Color="#1AFFFFFF"/>
+      <SolidColorBrush x:Key="TaskbarPressedBrush" Color="#33FFFFFF"/>
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>
