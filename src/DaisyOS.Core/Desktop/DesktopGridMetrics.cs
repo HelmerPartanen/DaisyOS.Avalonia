@@ -51,41 +51,32 @@ public class DesktopGridMetrics
         CellWidth = cellWidth;
         CellHeight = cellHeight;
         
-        // Calculate the available grid region
+        // Calculate available grid region
         double availableWidth = Math.Max(0, WorkArea.Width - edgeInsetX * 2);
         double availableHeight = Math.Max(0, WorkArea.Height - edgeInsetY * 2);
         
-        // Calculate column and row counts (minimum 1)
-        ColumnCount = Math.Max(1, (int)Math.Floor(availableWidth / CellWidth));
-        RowCount = Math.Max(1, (int)Math.Floor(availableHeight / CellHeight));
+        // Calculate optimal column and row count
+        int cols = Math.Max(1, (int)Math.Round(availableWidth / cellWidth));
+        int rows = Math.Max(1, (int)Math.Floor(availableHeight / cellHeight));
+        
+        ColumnCount = cols;
+        RowCount = rows;
+        
+        // Fine-tune CellWidth to distribute horizontal spacing evenly so right edge margin matches left edge margin
+        CellWidth = availableWidth / cols;
+        CellHeight = cellHeight;
         
         GridOriginX = WorkArea.Left + edgeInsetX;
         GridOriginY = WorkArea.Top + edgeInsetY;
-        
-        // Invariants checking
-        double occupiedWidth = ColumnCount * CellWidth;
-        double occupiedHeight = RowCount * CellHeight;
-        
-        double remainderX = availableWidth - occupiedWidth;
-        double remainderY = availableHeight - occupiedHeight;
-        
-        // In some extreme cases (work area smaller than 1 cell), the remainder could be negative
-        // because we enforced a minimum of 1 column/row. But logically, if the work area is valid,
-        // it holds 0 <= remainderX < cellWidth.
-        if (availableWidth >= CellWidth)
-        {
-            if (remainderX < 0 || remainderX >= CellWidth)
-                throw new InvalidOperationException($"Invariant failed: RemainderX {remainderX} is out of bounds [0, {CellWidth})");
-        }
     }
     
     /// <summary>
-    /// Snaps a screen coordinate to the nearest valid grid cell.
+    /// Snaps a screen coordinate (typically mouse pointer position) to the grid cell containing it.
     /// </summary>
     public GridCell GetNearestCell(double x, double y)
     {
-        int col = (int)Math.Round((x - GridOriginX - CellWidth / 2.0) / CellWidth);
-        int row = (int)Math.Round((y - GridOriginY - CellHeight / 2.0) / CellHeight);
+        int col = (int)Math.Floor((x - GridOriginX) / CellWidth);
+        int row = (int)Math.Floor((y - GridOriginY) / CellHeight);
         
         col = Math.Clamp(col, 0, ColumnCount - 1);
         row = Math.Clamp(row, 0, RowCount - 1);

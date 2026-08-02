@@ -39,19 +39,20 @@ namespace DaisyOS.Shell.Views
         {
             if (Bounds.Width <= 0 || Bounds.Height <= 0) return;
             
-            // Note: 56px bottom inset to account for the taskbar in the work area.
-            // In a real system, we'd query GetMonitorInfo for rcWork.
-            var workArea = new DaisyOS.Core.Desktop.Rect(0, 0, Bounds.Width, Bounds.Height - 56);
+            // Note: 48px bottom inset to account exactly for the taskbar height.
+            var workArea = new DaisyOS.Core.Desktop.Rect(0, 0, Bounds.Width, Bounds.Height - 48);
             
-            // Assume 96 DPI for this example Avalonia control view, 
-            // though we could extract it from visual root scaling.
+            // Assume 96 DPI for this example Avalonia control view.
             double dpi = 96.0;
             
             double cellW = _metricsProvider.GetCellWidth(dpi);
             double cellH = _metricsProvider.GetCellHeight(dpi);
             
-            // A 2-pixel edge inset so icons don't touch the exact left/top edge.
+            // Windows desktop grid places remaining space on the right/bottom.
+            // Start with a small inset on the top-left edge.
             _currentMetrics = new DesktopGridMetrics("primary", workArea, dpi, cellW, cellH, edgeInsetX: 2, edgeInsetY: 2);
+            
+            global::System.Console.WriteLine($"[DesktopGrid] Bounds={Bounds.Width}x{Bounds.Height}, WorkArea={workArea.Width}x{workArea.Height}, Cols={_currentMetrics.ColumnCount}, Rows={_currentMetrics.RowCount}");
             
             _viewModel.CalculateLayout(_currentMetrics);
         }
@@ -99,15 +100,16 @@ namespace DaisyOS.Shell.Views
             
             if (_isDragging)
             {
-                // Snap to nearest grid cell
-                // Convert center of dragged item to cell
-                double dragCenterX = _draggedItem.X + _currentMetrics.CellWidth / 2.0;
-                double dragCenterY = _draggedItem.Y + _currentMetrics.CellHeight / 2.0;
+                // Snap to nearest grid cell based on pointer release position
+                var pointerPos = e.GetPosition(this);
+                var nearestCell = _currentMetrics.GetNearestCell(pointerPos.X, pointerPos.Y);
                 
-                var nearestCell = _currentMetrics.GetNearestCell(dragCenterX, dragCenterY);
+                global::System.Console.WriteLine($"[DesktopGrid] DragRelease: Pointer=({pointerPos.X:F1}, {pointerPos.Y:F1}) -> Cell=({nearestCell.Column}, {nearestCell.Row})");
                 
                 // Commit to view model
                 _viewModel.CommitItemMove(_draggedItem, nearestCell, _currentMetrics);
+                
+                global::System.Console.WriteLine($"[DesktopGrid] Item Moved to X={_draggedItem.X}, Y={_draggedItem.Y}");
             }
             
             _draggedItem = null;
