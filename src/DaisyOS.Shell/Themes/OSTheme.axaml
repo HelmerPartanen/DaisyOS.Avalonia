@@ -1,17 +1,43 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
   <ResourceDictionary.ThemeDictionaries>
+
+    <!-- Light -->
     <ResourceDictionary x:Key="Light">
-      <StaticResource x:Key="TaskbarBackgroundBrush" ResourceKey="MicaLightBrush"/>
-      <SolidColorBrush x:Key="TaskbarBorderBrush" Color="#33000000"/>
-      <SolidColorBrush x:Key="TaskbarHoverBrush" Color="#1A000000"/>
-      <SolidColorBrush x:Key="TaskbarPressedBrush" Color="#33000000"/>
+
+      <!-- Taskbar itself is Mica, so the background is transparent -->
+      <SolidColorBrush x:Key="TaskbarBackgroundBrush"
+                       Color="#00FFFFFF"/>
+
+      <SolidColorBrush x:Key="TaskbarBorderBrush"
+                       Color="#26C7C7C7"/>
+
+      <SolidColorBrush x:Key="TaskbarHoverBrush"
+                       Color="#0FFFFFFF"/>
+
+      <SolidColorBrush x:Key="TaskbarPressedBrush"
+                       Color="#18FFFFFF"/>
+
     </ResourceDictionary>
+
+    <!-- Dark -->
     <ResourceDictionary x:Key="Dark">
-      <StaticResource x:Key="TaskbarBackgroundBrush" ResourceKey="MicaDarkBrush"/>
-      <SolidColorBrush x:Key="TaskbarBorderBrush" Color="#33FFFFFF"/>
-      <SolidColorBrush x:Key="TaskbarHoverBrush" Color="#1AFFFFFF"/>
-      <SolidColorBrush x:Key="TaskbarPressedBrush" Color="#33FFFFFF"/>
+
+      <SolidColorBrush x:Key="TaskbarBackgroundBrush"
+                       Color="#00000000"/>
+
+      <SolidColorBrush x:Key="TaskbarBorderBrush"
+                       Color="#2BFFFFFF"/>
+
+      <SolidColorBrush x:Key="TaskbarHoverBrush"
+                       Color="#14FFFFFF"/>
+                       
+      <SolidColorBrush x:Key="TaskbarPressedBrush"
+                       Color="#22FFFFFF"/>
+
     </ResourceDictionary>
+
   </ResourceDictionary.ThemeDictionaries>
+
 </ResourceDictionary>

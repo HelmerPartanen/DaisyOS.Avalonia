@@ -5,7 +5,7 @@
   <Grid
       x:Name="WallpaperRoot"
       Classes="Wallpaper"
-      Background="Transparent">
+      Background="Black">
     <Image
         x:Name="WallpaperImage"
         Source="avares://DaisyOS.Shell/Assets/Wallpapers/Windows.jpg"

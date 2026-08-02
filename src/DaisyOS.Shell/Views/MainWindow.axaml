@@ -5,7 +5,8 @@
     xmlns:views="clr-namespace:DaisyOS.Shell.Views"
     Title="DaisyOS Shell"
     WindowState="FullScreen"
-    WindowDecorations="None">
+    WindowDecorations="None"
+    Background="Black">
     <Grid>
         <views:ShellView />
     </Grid>
