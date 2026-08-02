@@ -11,6 +11,23 @@
           ClipToBounds="True"
           BoxShadow="0 8 32 0 #40000000">
     <Grid RowDefinitions="Auto,*">
+      <Grid.Styles>
+        <Style Selector="Button.LauncherApp">
+          <Setter Property="Background" Value="Transparent"/>
+          <Setter Property="BorderThickness" Value="0"/>
+          <Setter Property="CornerRadius" Value="8"/>
+          <Setter Property="Padding" Value="8"/>
+        </Style>
+        <Style Selector="Button.LauncherApp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+          <Setter Property="Background" Value="#1AFFFFFF"/>
+        </Style>
+        <Style Selector="Button.LauncherApp:pressed /template/ ContentPresenter#PART_ContentPresenter">
+          <Setter Property="Background" Value="#33FFFFFF"/>
+        </Style>
+        <!-- The default Fluent Theme Button template already includes a RenderTransform scale down on press (0.98), 
+             so this seamlessly gives us the "squish" click effect! -->
+      </Grid.Styles>
+      
       <!-- Search Bar Area -->
       <Border Grid.Row="0" Padding="24,24,24,12">
         <controls:SearchBar />
@@ -23,38 +40,50 @@
           
           <WrapPanel ItemWidth="84" ItemHeight="96" HorizontalAlignment="Center">
             <!-- App Item Placeholder 1 -->
-            <StackPanel Spacing="8" Margin="8">
-              <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8">
-                <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24"/>
-              </Border>
-              <TextBlock Text="Settings" Foreground="White" TextAlignment="Center" FontSize="12" />
-            </StackPanel>
+            <Button Classes="LauncherApp">
+              <StackPanel Spacing="8">
+                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8">
+                  <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24"/>
+                </Border>
+                <TextBlock Text="Settings" Foreground="White" TextAlignment="Center" FontSize="12" />
+              </StackPanel>
+            </Button>
 
             <!-- App Item Placeholder 2 -->
-            <StackPanel Spacing="8" Margin="8">
-              <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8">
-                <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24"/>
-              </Border>
-              <TextBlock Text="Files" Foreground="White" TextAlignment="Center" FontSize="12" />
-            </StackPanel>
+            <Button Classes="LauncherApp">
+              <StackPanel Spacing="8">
+                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8">
+                  <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24"/>
+                </Border>
+                <TextBlock Text="Files" Foreground="White" TextAlignment="Center" FontSize="12" />
+              </StackPanel>
+            </Button>
             
             <!-- Dummy Items -->
-            <StackPanel Spacing="8" Margin="8">
-              <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-              <TextBlock Text="Calculator" Foreground="White" TextAlignment="Center" FontSize="12" />
-            </StackPanel>
-            <StackPanel Spacing="8" Margin="8">
-              <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-              <TextBlock Text="Terminal" Foreground="White" TextAlignment="Center" FontSize="12" />
-            </StackPanel>
-            <StackPanel Spacing="8" Margin="8">
-              <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-              <TextBlock Text="Browser" Foreground="White" TextAlignment="Center" FontSize="12" />
-            </StackPanel>
-            <StackPanel Spacing="8" Margin="8">
-              <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-              <TextBlock Text="Photos" Foreground="White" TextAlignment="Center" FontSize="12" />
-            </StackPanel>
+            <Button Classes="LauncherApp">
+              <StackPanel Spacing="8">
+                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
+                <TextBlock Text="Calculator" Foreground="White" TextAlignment="Center" FontSize="12" />
+              </StackPanel>
+            </Button>
+            <Button Classes="LauncherApp">
+              <StackPanel Spacing="8">
+                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
+                <TextBlock Text="Terminal" Foreground="White" TextAlignment="Center" FontSize="12" />
+              </StackPanel>
+            </Button>
+            <Button Classes="LauncherApp">
+              <StackPanel Spacing="8">
+                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
+                <TextBlock Text="Browser" Foreground="White" TextAlignment="Center" FontSize="12" />
+              </StackPanel>
+            </Button>
+            <Button Classes="LauncherApp">
+              <StackPanel Spacing="8">
+                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
+                <TextBlock Text="Photos" Foreground="White" TextAlignment="Center" FontSize="12" />
+              </StackPanel>
+            </Button>
             
           </WrapPanel>
         </StackPanel>

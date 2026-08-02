@@ -6,6 +6,7 @@ using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Interactivity;
 
 namespace DaisyOS.Shell.Views
 {
@@ -25,10 +26,10 @@ namespace DaisyOS.Shell.Views
         private const double DragThreshold = 4; // px of movement before a press becomes a drag
 
         private Canvas? _canvas;
-        private readonly List<Border> _order = new();
+        private readonly List<Button> _order = new();
 
         // Active drag state
-        private Border? _dragItem;
+        private Button? _dragItem;
         private bool _pointerDown;
         private bool _isDragging;
         private double _pointerStartX;
@@ -57,7 +58,7 @@ namespace DaisyOS.Shell.Views
             if (_canvas is null) return;
 
             _order.Clear();
-            foreach (var child in _canvas.Children.OfType<Border>())
+            foreach (var child in _canvas.Children.OfType<Button>())
             {
                 _order.Add(child);
                 WireUpIcon(child);
@@ -67,23 +68,13 @@ namespace DaisyOS.Shell.Views
             UpdateCanvasWidth();
         }
 
-        private void WireUpIcon(Border icon)
+        private void WireUpIcon(Button icon)
         {
             icon.Cursor = new Cursor(StandardCursorType.Hand);
 
-            // A dedicated scale transform so the icon can "lift" while dragging, with its own
-            // springy transition independent of the position transition.
-            var scale = new ScaleTransform(1, 1)
-            {
-                Transitions = new Transitions
-                {
-                    new DoubleTransition { Property = ScaleTransform.ScaleXProperty, Duration = TimeSpan.FromSeconds(0.15), Easing = new BackEaseOut() },
-                    new DoubleTransition { Property = ScaleTransform.ScaleYProperty, Duration = TimeSpan.FromSeconds(0.15), Easing = new BackEaseOut() },
-                }
-            };
-            icon.RenderTransform = scale;
-
-            icon.PointerPressed += Icon_PointerPressed;
+            // Use tunnel strategy for pointer pressed so we can intercept drag
+            // before the Button's default handling swallows the event.
+            icon.AddHandler(InputElement.PointerPressedEvent, Icon_PointerPressed, RoutingStrategies.Tunnel);
             icon.PointerMoved += Icon_PointerMoved;
             icon.PointerReleased += Icon_PointerReleased;
             icon.PointerCaptureLost += Icon_PointerCaptureLost;
@@ -116,7 +107,7 @@ namespace DaisyOS.Shell.Views
 
         private void Icon_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (sender is not Border icon || _canvas is null) return;
+            if (sender is not Button icon || _canvas is null) return;
             if (!e.GetCurrentPoint(icon).Properties.IsLeftButtonPressed) return;
 
             _dragItem = icon;
@@ -132,7 +123,7 @@ namespace DaisyOS.Shell.Views
         private void Icon_PointerMoved(object? sender, PointerEventArgs e)
         {
             if (!_pointerDown || _dragItem is null || _canvas is null) return;
-            if (sender is not Border icon || icon != _dragItem) return;
+            if (sender is not Button icon || icon != _dragItem) return;
 
             var currentX = e.GetPosition(_canvas).X;
             var delta = currentX - _pointerStartX;
@@ -155,20 +146,14 @@ namespace DaisyOS.Shell.Views
             ReorderIfNeeded(icon, newLeft);
         }
 
-        private void BeginDrag(Border icon)
+        private void BeginDrag(Button icon)
         {
             _isDragging = true;
             icon.Classes.Add("dragging");
             icon.ZIndex = 1000;
-
-            if (icon.RenderTransform is ScaleTransform s)
-            {
-                s.ScaleX = 1.08;
-                s.ScaleY = 1.08;
-            }
         }
 
-        private void ReorderIfNeeded(Border dragged, double draggedLeft)
+        private void ReorderIfNeeded(Button dragged, double draggedLeft)
         {
             var draggedCenter = draggedLeft + ItemWidth / 2;
             var index = _order.IndexOf(dragged);
@@ -203,7 +188,7 @@ namespace DaisyOS.Shell.Views
             }
         }
 
-        private void AnimateToSlot(Border icon, int index)
+        private void AnimateToSlot(Button icon, int index)
         {
             icon.Transitions ??= CreatePositionTransitions();
             Canvas.SetLeft(icon, SlotX(index));
@@ -211,18 +196,18 @@ namespace DaisyOS.Shell.Views
 
         private void Icon_PointerReleased(object? sender, PointerReleasedEventArgs e)
         {
-            if (sender is not Border icon) return;
-            EndInteraction(icon, raiseClickIfTap: true);
+            if (sender is not Button icon) return;
+            EndInteraction(icon, raiseClickIfTap: true, e);
             e.Pointer.Capture(null);
         }
 
         private void Icon_PointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
         {
-            if (sender is not Border icon) return;
-            EndInteraction(icon, raiseClickIfTap: false);
+            if (sender is not Button icon) return;
+            EndInteraction(icon, raiseClickIfTap: false, e);
         }
 
-        private void EndInteraction(Border icon, bool raiseClickIfTap)
+        private void EndInteraction(Button icon, bool raiseClickIfTap, RoutedEventArgs e)
         {
             if (!_pointerDown) return;
 
@@ -238,14 +223,10 @@ namespace DaisyOS.Shell.Views
 
             icon.Classes.Remove("dragging");
             icon.ZIndex = 0;
-            if (icon.RenderTransform is ScaleTransform s)
-            {
-                s.ScaleX = 1.0;
-                s.ScaleY = 1.0;
-            }
 
             if (wasDragging)
             {
+                e.Handled = true; // Prevent button click after drag
                 var newOrder = _order.Select(b => b.Tag as string ?? string.Empty).ToList();
                 if (_orderAtDragStart != null && !newOrder.SequenceEqual(_orderAtDragStart))
                 {

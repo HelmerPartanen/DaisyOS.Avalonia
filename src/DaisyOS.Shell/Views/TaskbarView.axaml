@@ -21,17 +21,21 @@
 
     <!-- Reorderable app icon. Positioned absolutely inside AppIconsCanvas via Canvas.Left,
          which is animated in code-behind so items glide into their new slot. -->
-    <Style Selector="Border.TaskbarAppIcon">
+    <Style Selector="Button.TaskbarAppIcon">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Padding" Value="0"/>
     </Style>
-    <Style Selector="Border.TaskbarAppIcon:pointerover">
+    <Style Selector="Button.TaskbarAppIcon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
     </Style>
-    <Style Selector="Border.TaskbarAppIcon.dragging">
+    <Style Selector="Button.TaskbarAppIcon:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
+    </Style>
+    <Style Selector="Button.TaskbarAppIcon.dragging /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
   </UserControl.Styles>
@@ -57,17 +61,17 @@
         <!-- Reorderable app icons. Add/remove Border children here; code-behind handles the rest. -->
         <Canvas x:Name="AppIconsCanvas" Height="40">
 
-          <Border Classes="TaskbarAppIcon" Tag="settings">
+          <Button Classes="TaskbarAppIcon" Tag="settings">
             <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
                    RenderOptions.BitmapInterpolationMode="HighQuality"
                    Width="24" Height="24" IsHitTestVisible="False"/>
-          </Border>
+          </Button>
 
-          <Border Classes="TaskbarAppIcon" Tag="files">
+          <Button Classes="TaskbarAppIcon" Tag="files">
             <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
                    RenderOptions.BitmapInterpolationMode="HighQuality"
                    Width="24" Height="24" IsHitTestVisible="False"/>
-          </Border>
+          </Button>
 
         </Canvas>
 
