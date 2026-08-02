@@ -52,8 +52,6 @@ namespace DaisyOS.Shell.Views
             // Start with a small inset on the top-left edge.
             _currentMetrics = new DesktopGridMetrics("primary", workArea, dpi, cellW, cellH, edgeInsetX: 2, edgeInsetY: 2);
             
-            global::System.Console.WriteLine($"[DesktopGrid] Bounds={Bounds.Width}x{Bounds.Height}, WorkArea={workArea.Width}x{workArea.Height}, Cols={_currentMetrics.ColumnCount}, Rows={_currentMetrics.RowCount}");
-            
             _viewModel.CalculateLayout(_currentMetrics);
         }
         
@@ -104,12 +102,8 @@ namespace DaisyOS.Shell.Views
                 var pointerPos = e.GetPosition(this);
                 var nearestCell = _currentMetrics.GetNearestCell(pointerPos.X, pointerPos.Y);
                 
-                global::System.Console.WriteLine($"[DesktopGrid] DragRelease: Pointer=({pointerPos.X:F1}, {pointerPos.Y:F1}) -> Cell=({nearestCell.Column}, {nearestCell.Row})");
-                
                 // Commit to view model
                 _viewModel.CommitItemMove(_draggedItem, nearestCell, _currentMetrics);
-                
-                global::System.Console.WriteLine($"[DesktopGrid] Item Moved to X={_draggedItem.X}, Y={_draggedItem.Y}");
             }
             
             _draggedItem = null;

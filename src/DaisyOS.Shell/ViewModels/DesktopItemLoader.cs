@@ -3,10 +3,13 @@ using System.IO;
 using System.Linq;
 using Avalonia.Media.Imaging;
 
+using System.Collections.Concurrent;
+
 namespace DaisyOS.Shell.ViewModels;
 
 public static class DesktopItemLoader
 {
+    private static readonly ConcurrentDictionary<string, Avalonia.Media.IImage?> _imageCache = new();
     public static string ResolveIconPath(string iconName)
     {
         if (string.IsNullOrWhiteSpace(iconName)) return string.Empty;
@@ -53,25 +56,26 @@ public static class DesktopItemLoader
     public static Avalonia.Media.IImage? LoadBitmapSafe(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return null;
+        return _imageCache.GetOrAdd(path, LoadBitmapInternal);
+    }
+
+    private static Avalonia.Media.IImage? LoadBitmapInternal(string path)
+    {
         try
         {
             if (path.StartsWith("avares://"))
             {
                 var uri = new Uri(path);
-                try
+                if (path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
-                    {
-                        var svg = Avalonia.Svg.Skia.SvgSource.Load(path, null);
-                        return new Avalonia.Svg.Skia.SvgImage { Source = svg };
-                    }
-                    else
-                    {
-                        using var stream = Avalonia.Platform.AssetLoader.Open(uri);
-                        return new Bitmap(stream);
-                    }
+                    var svg = Avalonia.Svg.Skia.SvgSource.Load(path, null);
+                    return new Avalonia.Svg.Skia.SvgImage { Source = svg };
                 }
-                catch { }
+                else
+                {
+                    using var stream = Avalonia.Platform.AssetLoader.Open(uri);
+                    return new Bitmap(stream);
+                }
             }
             else if (File.Exists(path))
             {
@@ -88,7 +92,7 @@ public static class DesktopItemLoader
         }
         catch 
         { 
-            // Ignore format exceptions (like unsupported SVG loading without Svg.Skia)
+            // Ignore format exceptions
         }
         return null;
     }
@@ -100,9 +104,8 @@ public static class DesktopItemLoader
 
         try
         {
-            var lines = File.ReadAllLines(filePath);
             bool inDesktopEntry = false;
-            foreach (var line in lines)
+            foreach (var line in File.ReadLines(filePath))
             {
                 var trimmed = line.Trim();
                 if (trimmed == "[Desktop Entry]")
