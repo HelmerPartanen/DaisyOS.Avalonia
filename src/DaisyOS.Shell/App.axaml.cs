@@ -29,7 +29,7 @@ public partial class App : Application
                 double logicalWidth = screen != null ? screen.WorkingArea.Width / scaling : 1920;
                 double logicalHeight = screen != null ? screen.WorkingArea.Height / scaling : 1080;
 
-                var wallpaperPath = "avares://DaisyOS.Shell/Assets/Wallpapers/Windows.jpg";
+                var wallpaperPath = "avares://DaisyOS.Shell/Assets/Wallpapers/Dark.jpg";
                 
                 var darkBrush = DaisyOS.Shell.Rendering.MicaMaterialGenerator.GenerateMicaBrush(
                     wallpaperPath, 
