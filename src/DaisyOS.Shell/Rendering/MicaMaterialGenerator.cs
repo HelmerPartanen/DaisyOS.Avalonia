@@ -324,23 +324,39 @@ public static class MicaMaterialGenerator
         var random = new Random(NoiseSeed);
         var pixels = new SKColor[noiseWidth * noiseHeight];
 
-        // The maximum alpha for the noise pixels (0-255).
-        // A higher value means stronger dithering contrast.
-        float maxAlpha = Math.Clamp(amplitude * 255f * 2f, 0f, 60f);
+        const int neutralGray = 128;
+
+        // Increase source deviation for more noticeable grain contrast
+        const int sourceDeviation = 50;
+
+        // SoftLight with middle gray is close to neutral, so the layer may
+        // use a slightly higher alpha. We raise the clamp ceiling to allow stronger noise.
+        byte layerAlpha = FloatToByte(
+            Math.Clamp(amplitude * 16f, 0f, 0.40f));
 
         for (int i = 0; i < pixels.Length; i++)
         {
             // Difference of two uniform samples gives a triangular
-            // distribution. Most values remain close to 0.
+            // distribution. Most values remain close to neutral gray,
+            // with fewer bright or dark extremes.
             float triangularNoise =
                 (float)random.NextDouble() -
                 (float)random.NextDouble();
 
-            bool isWhite = triangularNoise > 0;
-            byte alpha = (byte)Math.Clamp(Math.Abs(triangularNoise) * maxAlpha, 0f, 255f);
-            byte colorVal = isWhite ? (byte)255 : (byte)0;
+            int grayValue = neutralGray +
+                (int)MathF.Round(
+                    triangularNoise * sourceDeviation);
 
-            pixels[i] = new SKColor(colorVal, colorVal, colorVal, alpha);
+            byte gray = (byte)Math.Clamp(
+                grayValue,
+                0,
+                255);
+
+            pixels[i] = new SKColor(
+                gray,
+                gray,
+                gray,
+                layerAlpha);
         }
 
         noiseBitmap.Pixels = pixels;
@@ -354,7 +370,7 @@ public static class MicaMaterialGenerator
         using var noisePaint = new SKPaint
         {
             Shader = noiseShader,
-            BlendMode = SKBlendMode.SrcOver,
+            BlendMode = SKBlendMode.Overlay,
             IsAntialias = false,
             FilterQuality = SKFilterQuality.None
         };
