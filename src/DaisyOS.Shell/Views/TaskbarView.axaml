@@ -30,10 +30,10 @@
         <!-- Start Button Placeholder -->
         <Button Classes="TaskbarApp">
           <Grid Width="20" Height="20" ColumnDefinitions="*,*" RowDefinitions="*,*">
-            <Border Grid.Row="0" Grid.Column="0" Background="#00A4EF" Margin="0,0,1,1" CornerRadius="1" />
-            <Border Grid.Row="0" Grid.Column="1" Background="#00A4EF" Margin="1,0,0,1" CornerRadius="1" />
-            <Border Grid.Row="1" Grid.Column="0" Background="#00A4EF" Margin="0,1,1,0" CornerRadius="1" />
-            <Border Grid.Row="1" Grid.Column="1" Background="#00A4EF" Margin="1,1,0,0" CornerRadius="1" />
+            <Border Grid.Row="0" Grid.Column="0" Background="White" Margin="0,0,1,1" CornerRadius="1" />
+            <Border Grid.Row="0" Grid.Column="1" Background="White" Margin="1,0,0,1" CornerRadius="1" />
+            <Border Grid.Row="1" Grid.Column="0" Background="White" Margin="0,1,1,0" CornerRadius="1" />
+            <Border Grid.Row="1" Grid.Column="1" Background="White" Margin="1,1,0,0" CornerRadius="1" />
           </Grid>
         </Button>
 
