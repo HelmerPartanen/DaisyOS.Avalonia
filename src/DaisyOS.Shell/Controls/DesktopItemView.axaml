@@ -7,7 +7,7 @@
        but this provides a sensible fallback at 96 DPI. -->
   <UserControl.Styles>
     <Style Selector="Grid#ContainerGrid:pointerover Border#IconWrapper">
-      <Setter Property="Opacity" Value="0.8" />
+      <Setter Property="Opacity" Value="0.6" />
     </Style>
     <Style Selector="Grid#ContainerGrid:pressed Border#IconWrapper">
       <Setter Property="Opacity" Value="0.6" />
@@ -19,7 +19,7 @@
     <Border Name="IconWrapper" Grid.Row="0" Width="48" Height="48" Margin="0,4,0,0">
       <Border.Transitions>
         <Transitions>
-          <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+          <DoubleTransition Property="Opacity" Duration="0:0:0.1" Easing="QuadraticEaseOut" />
         </Transitions>
       </Border.Transitions>
       <Image Name="AppIcon" 
