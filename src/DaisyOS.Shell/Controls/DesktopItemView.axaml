@@ -6,29 +6,20 @@
        They are usually overridden or scaled by the grid placement math in code behind,
        but this provides a sensible fallback at 96 DPI. -->
   <UserControl.Styles>
-    <Style Selector="Border.DesktopItemIcon">
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="BorderBrush" Value="Transparent" />
+    <Style Selector="Grid#ContainerGrid:pointerover Image#AppIcon">
+      <Setter Property="Opacity" Value="0.8" />
     </Style>
-    <Style Selector="Border.DesktopItemIcon:pointerover">
-      <Setter Property="Background" Value="#33FFFFFF" />
-      <Setter Property="BorderBrush" Value="#4CFFFFFF" />
-    </Style>
-    <Style Selector="Border.DesktopItemIcon:pressed">
-      <Setter Property="Background" Value="#4CFFFFFF" />
-      <Setter Property="BorderBrush" Value="#66FFFFFF" />
+    <Style Selector="Grid#ContainerGrid:pressed Image#AppIcon">
+      <Setter Property="Opacity" Value="0.6" />
     </Style>
   </UserControl.Styles>
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid Name="ContainerGrid" Background="Transparent" RowDefinitions="Auto,*">
     <!-- Icon centered near the top -->
-    <Border Grid.Row="0" Classes="DesktopItemIcon" Width="48" Height="48" Margin="0,4,0,0">
-      <Image Source="{Binding IconBitmap}" 
-             RenderOptions.BitmapInterpolationMode="HighQuality"
-             Width="32" Height="32" />
-    </Border>
+    <Image Name="AppIcon" Grid.Row="0"
+           Source="{Binding IconBitmap}" 
+           RenderOptions.BitmapInterpolationMode="HighQuality"
+           Width="48" Height="48" Margin="0,4,0,0" />
 
     <!-- Label below the icon, wraps lines, centered -->
     <TextBlock Grid.Row="1"

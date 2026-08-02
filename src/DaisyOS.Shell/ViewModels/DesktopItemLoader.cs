@@ -16,15 +16,21 @@ public static class DesktopItemLoader
         var searchPaths = new[]
         {
             "/usr/share/pixmaps/",
+            "/var/lib/flatpak/exports/share/icons/hicolor/128x128/apps/",
+            "/var/lib/flatpak/exports/share/icons/hicolor/64x64/apps/",
+            "/var/lib/flatpak/exports/share/icons/hicolor/48x48/apps/",
+            "/var/lib/flatpak/exports/share/icons/hicolor/256x256/apps/",
+            "/var/lib/flatpak/exports/share/icons/hicolor/scalable/apps/",
+            "/usr/share/icons/hicolor/128x128/apps/",
             "/usr/share/icons/hicolor/64x64/apps/",
             "/usr/share/icons/hicolor/48x48/apps/",
-            "/usr/share/icons/hicolor/128x128/apps/",
             "/usr/share/icons/hicolor/256x256/apps/",
             "/usr/share/icons/hicolor/scalable/apps/",
+            "/usr/share/icons/breeze/apps/128/",
             "/usr/share/icons/breeze/apps/64/",
             "/usr/share/icons/breeze/apps/48/",
-            "/usr/share/icons/breeze/apps/128/",
             "/usr/share/icons/breeze/apps/256/",
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/icons/hicolor/128x128/apps/",
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/icons/hicolor/64x64/apps/",
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/icons/hicolor/48x48/apps/"
         };
@@ -44,7 +50,7 @@ public static class DesktopItemLoader
         return string.Empty;
     }
 
-    public static Bitmap? LoadBitmapSafe(string path)
+    public static Avalonia.Media.IImage? LoadBitmapSafe(string path)
     {
         if (string.IsNullOrWhiteSpace(path)) return null;
         try
@@ -54,14 +60,30 @@ public static class DesktopItemLoader
                 var uri = new Uri(path);
                 try
                 {
-                    using var stream = Avalonia.Platform.AssetLoader.Open(uri);
-                    return new Bitmap(stream);
+                    if (path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var svg = Avalonia.Svg.Skia.SvgSource.Load(path, null);
+                        return new Avalonia.Svg.Skia.SvgImage { Source = svg };
+                    }
+                    else
+                    {
+                        using var stream = Avalonia.Platform.AssetLoader.Open(uri);
+                        return new Bitmap(stream);
+                    }
                 }
                 catch { }
             }
-            else if (File.Exists(path) && !path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+            else if (File.Exists(path))
             {
-                return new Bitmap(path);
+                if (path.EndsWith(".svg", StringComparison.OrdinalIgnoreCase))
+                {
+                    var svg = Avalonia.Svg.Skia.SvgSource.Load(path, null);
+                    return new Avalonia.Svg.Skia.SvgImage { Source = svg };
+                }
+                else
+                {
+                    return new Bitmap(path);
+                }
             }
         }
         catch 

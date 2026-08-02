@@ -30,8 +30,8 @@ public class DesktopItemViewModel : INotifyPropertyChanged
         }
     }
     
-    private Avalonia.Media.Imaging.Bitmap? _iconBitmap;
-    public Avalonia.Media.Imaging.Bitmap? IconBitmap
+    private Avalonia.Media.IImage? _iconBitmap;
+    public Avalonia.Media.IImage? IconBitmap
     {
         get => _iconBitmap;
         set => SetField(ref _iconBitmap, value);
