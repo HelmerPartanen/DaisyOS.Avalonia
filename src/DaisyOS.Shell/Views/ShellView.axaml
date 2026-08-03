@@ -9,11 +9,11 @@
     <Grid>
         <desktop:DesktopView x:Name="Desktop" />
         
-        <!-- Launcher (Overlays desktop, just above taskbar) -->
+        <!-- Launcher (Overlays desktop, floats cleanly 12px above taskbar) -->
         <launcher:LauncherView x:Name="Launcher" 
                                HorizontalAlignment="Center" 
                                VerticalAlignment="Bottom" 
-                               Margin="0,0,0,64" 
+                               Margin="0,0,0,76" 
                                IsVisible="False"
                                ZIndex="10"/>
 

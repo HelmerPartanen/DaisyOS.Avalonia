@@ -26,7 +26,6 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private const double DragThreshold = 4; // px of movement before a press becomes a drag
 
         private Canvas? _canvas;
-        private Border? _mainBorder;
         private readonly List<Button> _order = new();
         private int _testAppCounter = 1;
 
@@ -48,7 +47,6 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                 startBtn.Click += (s, e) => StartButtonClicked?.Invoke(this, e);
             }
 
-            _mainBorder = this.FindControl<Border>("MainBorder");
             _canvas = this.FindControl<Canvas>("AppIconsCanvas");
 
             if (_canvas != null)
@@ -111,16 +109,10 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private void UpdateCanvasWidth()
         {
             if (_canvas is null) return;
+            // Only the Canvas needs an explicit width (Canvas doesn't auto-size).
+            // The outer Border auto-sizes to its content via Padding - no manual math needed.
             var count = _order.Count;
-            var canvasWidth = count == 0 ? 0 : count * ItemWidth + (count - 1) * Spacing;
-            _canvas.Width = canvasWidth;
-
-            // Recalculate outer floating border width (StartButton 40 + StackPanel Spacing 4 + Canvas + Border Padding 12)
-            var totalBorderWidth = 56 + canvasWidth;
-            if (_mainBorder != null)
-            {
-                _mainBorder.Width = totalBorderWidth;
-            }
+            _canvas.Width = count == 0 ? 0 : count * ItemWidth + (count - 1) * Spacing;
         }
 
         public void AddTestApp()
