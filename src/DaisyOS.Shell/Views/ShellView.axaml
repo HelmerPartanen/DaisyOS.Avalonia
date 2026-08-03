@@ -9,11 +9,12 @@
     <Grid>
         <desktop:DesktopView x:Name="Desktop" />
         
-        <!-- Launcher (floats 8px above taskbar; visibility managed via opacity+hit-testing for pre-warm) -->
-        <launcher:LauncherView x:Name="Launcher" 
-                               HorizontalAlignment="Center" 
-                               VerticalAlignment="Bottom" 
-                               Margin="0,0,0,64" 
+        <!-- Launcher -->
+        <launcher:LauncherView x:Name="Launcher"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Bottom"
+                               Margin="0,0,0,64"
+                               IsVisible="False"
                                ZIndex="10"/>
 
         <!-- Taskbar -->

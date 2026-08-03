@@ -4,11 +4,8 @@
              xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
              x:Class="DaisyOS.Shell.Views.Components.Launcher.LauncherView"
              x:DataType="vm:LauncherViewModel"
-             Width="680" Height="600"
-             Opacity="0">
-  <UserControl.RenderTransform>
-    <TranslateTransform X="0" Y="0"/>
-  </UserControl.RenderTransform>
+             Width="680" Height="600">
+  
   
   <Border Background="{DynamicResource TaskbarBackgroundBrush}"
           BorderBrush="{DynamicResource TaskbarBorderBrush}"

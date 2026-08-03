@@ -16,13 +16,9 @@ namespace DaisyOS.Shell.Views
 
             if (taskbar != null && launcher != null)
             {
-                taskbar.StartButtonClicked += async (s, e) =>
+                taskbar.StartButtonClicked += (s, e) =>
                 {
-                    // Toggle: fire show or hide; LauncherView guards against double-fire
-                    if (launcher.IsOpen)
-                        await launcher.HideAsync();
-                    else
-                        await launcher.ShowAsync();
+                    launcher.IsVisible = !launcher.IsVisible;
                 };
             }
         }
