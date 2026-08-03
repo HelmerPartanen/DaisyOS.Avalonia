@@ -52,6 +52,9 @@
       <SolidColorBrush x:Key="TextTertiaryBrush"
                        Color="#991A1A1A"/>
 
+      <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
+                       Color="#F3F3F3"/>
+
     </ResourceDictionary>
 
     <!-- Dark -->
@@ -77,6 +80,9 @@
 
       <SolidColorBrush x:Key="TextTertiaryBrush"
                        Color="#99F5F5F5"/>
+
+      <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
+                       Color="#202020"/>
 
     </ResourceDictionary>
 

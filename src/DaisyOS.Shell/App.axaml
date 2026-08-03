@@ -31,5 +31,37 @@
       <Setter Property="FontWeight" Value="Regular" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
+
+    <!-- Global Glass Dropdown Menu Container Style -->
+    <Style Selector="MenuFlyoutPresenter">
+      <Setter Property="Background" Value="{DynamicResource DropdownMenuBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource DropdownMenuBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="6" />
+    </Style>
+
+    <Style Selector="ContextMenu">
+      <Setter Property="Background" Value="{DynamicResource DropdownMenuBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource DropdownMenuBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="6" />
+    </Style>
+
+    <!-- Global Glass Dropdown MenuItem Style -->
+    <Style Selector="MenuItem">
+      <Setter Property="FontFamily" Value="Inter" />
+      <Setter Property="FontWeight" Value="Regular" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="MenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource DropdownMenuItemHoverBrush}" />
+    </Style>
   </Application.Styles>
 </Application>

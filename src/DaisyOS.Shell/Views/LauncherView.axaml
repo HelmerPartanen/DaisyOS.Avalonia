@@ -1,93 +1,233 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+             xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
              x:Class="DaisyOS.Shell.Views.LauncherView"
-             Width="640" Height="720">
+             x:DataType="vm:LauncherViewModel"
+             Width="680" Height="760">
   
   <Border Background="{DynamicResource TaskbarBackgroundBrush}"
           BorderBrush="{DynamicResource TaskbarBorderBrush}"
           BorderThickness="1"
-          CornerRadius="12"
+          CornerRadius="18"
           ClipToBounds="True"
-          BoxShadow="0 8 32 0 #40000000">
-    <Grid RowDefinitions="Auto,*">
+          BoxShadow="0 16 48 0 #60000000">
+    <Grid RowDefinitions="Auto,*,Auto">
       <Grid.Styles>
+        <!-- Spacious Square Pinned App Item Style (6 Columns) -->
         <Style Selector="Button.LauncherApp">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="8"/>
-          <Setter Property="Padding" Value="8"/>
+          <Setter Property="CornerRadius" Value="12"/>
+          <Setter Property="Padding" Value="6"/>
+          <Setter Property="Width" Value="88"/>
+          <Setter Property="Height" Value="88"/>
+          <Setter Property="Margin" Value="4"/>
+          <Setter Property="HorizontalContentAlignment" Value="Center"/>
+          <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.LauncherApp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
           <Setter Property="Background" Value="#1AFFFFFF"/>
         </Style>
         <Style Selector="Button.LauncherApp:pressed /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="#33FFFFFF"/>
+          <Setter Property="Background" Value="#2DFFFFFF"/>
         </Style>
-        <!-- The default Fluent Theme Button template already includes a RenderTransform scale down on press (0.98), 
-             so this seamlessly gives us the "squish" click effect! -->
+
+        <!-- 2-Column Precise Bounded App Card Style (308px exact width fit) -->
+        <Style Selector="Button.RecItem">
+          <Setter Property="Background" Value="Transparent"/>
+          <Setter Property="BorderThickness" Value="0"/>
+          <Setter Property="CornerRadius" Value="8"/>
+          <Setter Property="Padding" Value="10,8"/>
+          <Setter Property="Width" Value="308"/>
+          <Setter Property="Margin" Value="0,2,8,2"/>
+          <Setter Property="HorizontalAlignment" Value="Left"/>
+          <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="Button.RecItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+          <Setter Property="Background" Value="#1AFFFFFF"/>
+        </Style>
+        <Style Selector="Button.RecItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+          <Setter Property="Background" Value="#2DFFFFFF"/>
+        </Style>
+
+        <!-- Subtle Header Links & Menu Placeholders -->
+        <Style Selector="Button.SubtleLink">
+          <Setter Property="Background" Value="Transparent"/>
+          <Setter Property="BorderThickness" Value="0"/>
+          <Setter Property="CornerRadius" Value="6"/>
+          <Setter Property="Padding" Value="6,4"/>
+          <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+        </Style>
+        <Style Selector="Button.SubtleLink:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+          <Setter Property="Background" Value="#14FFFFFF"/>
+        </Style>
       </Grid.Styles>
       
-      <!-- Search Bar Area -->
-      <Border Grid.Row="0" Padding="24,24,24,12">
+      <!-- Top Search Bar Area -->
+      <Border Grid.Row="0" Padding="24,24,24,16">
         <controls:SearchBar />
       </Border>
       
-      <!-- Pinned Apps / Content Area Placeholder -->
-      <ScrollViewer Grid.Row="1" Padding="24,12,24,24">
-        <StackPanel Spacing="24">
-          <TextBlock Text="Pinned" FontWeight="SemiBold" FontSize="16" />
+      <!-- Scrollable Main Content (Strict 632px Content Boundary) -->
+      <ScrollViewer Grid.Row="1" Padding="24,0,24,16" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Width="632" HorizontalAlignment="Center" Spacing="24">
           
-          <WrapPanel ItemWidth="84" ItemHeight="96" HorizontalAlignment="Center">
-            <!-- App Item Placeholder 1 -->
-            <Button Classes="LauncherApp">
-              <StackPanel Spacing="8">
-                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8">
-                  <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24"/>
-                </Border>
-                <TextBlock Text="Settings" TextAlignment="Center" FontSize="12" />
-              </StackPanel>
-            </Button>
+          <!-- Section 1: Pinned Apps (Spacious 6-Column Grid inside 632px) -->
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="*,Auto" Width="632">
+              <TextBlock Grid.Column="0" Text="Pinned" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+              <Button Grid.Column="1" Classes="SubtleLink">
+                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                  <TextBlock Text="Show all" FontSize="12"/>
+                  <PathIcon Data="M 4 6 L 8 10 L 12 6" Width="10" Height="10" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
+              </Button>
+            </Grid>
+            
+            <!-- 6 Column Grid of Spacious Pinned Items -->
+            <ItemsControl ItemsSource="{Binding PinnedApps}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <UniformGrid Columns="6" Width="632" HorizontalAlignment="Center"/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:LauncherItemViewModel">
+                  <Button Classes="LauncherApp" Click="OnAppItemClick" ToolTip.Tip="{Binding Name}">
+                    <StackPanel Spacing="6" HorizontalAlignment="Center" VerticalAlignment="Center">
+                      <!-- Real Icon or Fallback Letter Badge -->
+                      <Panel Width="36" Height="36">
+                        <Image Source="{Binding IconBitmap}" 
+                               IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
+                               RenderOptions.BitmapInterpolationMode="HighQuality" 
+                               Width="36" Height="36"/>
+                        <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
+                                Background="#33FFFFFF" CornerRadius="8" Width="36" Height="36">
+                          <TextBlock Text="{Binding Name[0]}" FontSize="16" FontWeight="Bold" 
+                                     Foreground="{DynamicResource TextPrimaryBrush}" 
+                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                      </Panel>
+                      <TextBlock Text="{Binding Name}" TextAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" MaxWidth="76"/>
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
 
-            <!-- App Item Placeholder 2 -->
-            <Button Classes="LauncherApp">
-              <StackPanel Spacing="8">
-                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8">
-                  <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24"/>
-                </Border>
-                <TextBlock Text="Files" TextAlignment="Center" FontSize="12" />
-              </StackPanel>
-            </Button>
-            
-            <!-- Dummy Items -->
-            <Button Classes="LauncherApp">
-              <StackPanel Spacing="8">
-                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-                <TextBlock Text="Calculator" TextAlignment="Center" FontSize="12" />
-              </StackPanel>
-            </Button>
-            <Button Classes="LauncherApp">
-              <StackPanel Spacing="8">
-                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-                <TextBlock Text="Terminal" TextAlignment="Center" FontSize="12" />
-              </StackPanel>
-            </Button>
-            <Button Classes="LauncherApp">
-              <StackPanel Spacing="8">
-                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-                <TextBlock Text="Browser" TextAlignment="Center" FontSize="12" />
-              </StackPanel>
-            </Button>
-            <Button Classes="LauncherApp">
-              <StackPanel Spacing="8">
-                <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-                <TextBlock Text="Photos" TextAlignment="Center" FontSize="12" />
-              </StackPanel>
-            </Button>
-            
-          </WrapPanel>
+          <!-- Section 2: All Applications (Strict 632px Boundary with Subtle View Menu Placeholder) -->
+          <StackPanel Spacing="16" Width="632">
+            <Grid ColumnDefinitions="*,Auto" Width="632">
+              <TextBlock Grid.Column="0" Text="All Apps" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+              
+              <!-- Native Subtle Menu Button Placeholder matching "Show all ˅" style -->
+              <Button Grid.Column="1" Classes="SubtleLink">
+                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding SelectedViewModeText}" FontSize="12"/>
+                  <PathIcon Data="M 4 6 L 8 10 L 12 6" Width="10" Height="10" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button.Flyout>
+                  <MenuFlyout Placement="BottomEdgeAlignedRight">
+                    <MenuItem Header="Alphabetical (A–Z)" Click="OnSetViewAlphabetical">
+                      <MenuItem.Icon>
+                        <PathIcon Data="M 6 12 L 10 16 L 18 8" Width="12" Height="12" Foreground="{DynamicResource TextPrimaryBrush}" IsVisible="{Binding IsAlphabeticalMode}"/>
+                      </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="By Category" Click="OnSetViewCategory">
+                      <MenuItem.Icon>
+                        <PathIcon Data="M 6 12 L 10 16 L 18 8" Width="12" Height="12" Foreground="{DynamicResource TextPrimaryBrush}" IsVisible="{Binding IsCategoryMode}"/>
+                      </MenuItem.Icon>
+                    </MenuItem>
+                  </MenuFlyout>
+                </Button.Flyout>
+              </Button>
+            </Grid>
+
+            <!-- Grouped Applications (Alphabetical or By Category) -->
+            <ItemsControl ItemsSource="{Binding ActiveGroups}" Width="632">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:AppGroupViewModel">
+                  <StackPanel Spacing="8" Margin="0,0,0,16" Width="632">
+                    <!-- Group Header with subtle line -->
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Margin="0,0,0,4" Width="632">
+                      <TextBlock Grid.Column="0" Text="{Binding Header}" 
+                                 FontWeight="Bold" FontSize="13" 
+                                 Foreground="{DynamicResource TextPrimaryBrush}" 
+                                 VerticalAlignment="Center"/>
+                      <Border Grid.Column="1" Height="1" 
+                              Background="{DynamicResource TaskbarBorderBrush}" 
+                              VerticalAlignment="Center" Opacity="0.5"/>
+                    </Grid>
+
+                    <!-- 2-Column Exact Fit Item Grid (308px per item, fits in 632px with 0px overflow) -->
+                    <ItemsControl ItemsSource="{Binding Items}" Width="632">
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                          <UniformGrid Columns="2" Width="632"/>
+                        </ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:LauncherItemViewModel">
+                          <Button Classes="RecItem" Click="OnAppItemClick" ToolTip.Tip="{Binding Description}">
+                            <Grid ColumnDefinitions="32,*" ColumnSpacing="12" Width="288" ClipToBounds="True">
+                              <!-- App Icon -->
+                              <Panel Grid.Column="0" Width="32" Height="32" VerticalAlignment="Center">
+                                <Image Source="{Binding IconBitmap}" 
+                                       IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                       RenderOptions.BitmapInterpolationMode="HighQuality" 
+                                       Width="32" Height="32"/>
+                                <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
+                                        Background="#2B0078D4" CornerRadius="6" Width="32" Height="32">
+                                  <TextBlock Text="{Binding Name[0]}" FontSize="14" FontWeight="Bold" 
+                                             Foreground="#0078D4" 
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                              </Panel>
+                              <!-- App Name & Description with strict 244px width clip -->
+                              <StackPanel Grid.Column="1" VerticalAlignment="Center" Width="244">
+                                <TextBlock Text="{Binding Name}" FontSize="12" FontWeight="Medium" TextTrimming="CharacterEllipsis" MaxWidth="244"/>
+                                <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" MaxWidth="244"/>
+                              </StackPanel>
+                            </Grid>
+                          </Button>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+          </StackPanel>
+
         </StackPanel>
       </ScrollViewer>
+
+      <!-- Footer Bar: Real Linux User Profile & Power Actions -->
+      <Border Grid.Row="2" Height="64" Padding="24,0" Background="#12FFFFFF" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,18,18">
+        <Grid ColumnDefinitions="*,Auto">
+          
+          <!-- Left: Active Linux User Profile -->
+          <Button Grid.Column="0" Classes="SubtleLink" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <Border Width="36" Height="36" CornerRadius="18" Background="#FF0078D4" ClipToBounds="True">
+                <!-- User Avatar Initials -->
+                <TextBlock Text="{Binding UserInitials}" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Border>
+              <TextBlock Text="{Binding Username}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </StackPanel>
+          </Button>
+
+          <!-- Right: Power Action Button -->
+          <Button Grid.Column="1" Classes="SubtleLink" CornerRadius="18" Padding="8" VerticalAlignment="Center" ToolTip.Tip="Power">
+            <PathIcon Data="M 12 3 L 12 11 M 6.3 5.3 A 9 9 0 1 0 17.7 5.3" Width="18" Height="18" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          </Button>
+
+        </Grid>
+      </Border>
+
     </Grid>
   </Border>
 </UserControl>

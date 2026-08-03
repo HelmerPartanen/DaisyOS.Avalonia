@@ -7,16 +7,16 @@
           BorderThickness="1"
           CornerRadius="20"
           Padding="12,0">
-    <Grid ColumnDefinitions="Auto,*">
-      <!-- Search Icon Placeholder -->
+    <Grid ColumnDefinitions="Auto,*,Auto">
+      <!-- Search Icon -->
       <PathIcon Data="M 15.5 14 L 20 18.5 L 18.5 20 L 14 15.5 C 12.5 16.5 10.8 17 9 17 C 4.6 17 1 13.4 1 9 C 1 4.6 4.6 1 9 1 C 13.4 1 17 4.6 17 9 C 17 10.8 16.5 12.5 15.5 14 Z M 9 15 C 12.3 15 15 12.3 15 9 C 15 5.7 12.3 3 9 3 C 5.7 3 3 5.7 3 9 C 3 12.3 5.7 15 9 15 Z"
                 Width="16" Height="16"
                 Foreground="{DynamicResource TextTertiaryBrush}"
                 VerticalAlignment="Center"/>
       
       <TextBox Grid.Column="1"
-               Margin="8,0,0,0"
-               PlaceholderText="Search apps, files, and settings..."
+               Margin="8,0,8,0"
+               PlaceholderText="Search for apps, settings, and documents"
                Background="Transparent"
                BorderThickness="0"
                VerticalAlignment="Center"
@@ -32,6 +32,24 @@
           </Style>
         </TextBox.Styles>
       </TextBox>
+
+      <!-- Mobile / Companion Shortcut Icon -->
+      <Border Grid.Column="2"
+              Width="18" Height="20"
+              BorderBrush="{DynamicResource TextTertiaryBrush}"
+              BorderThickness="1.5"
+              CornerRadius="3"
+              Margin="4,0,0,0"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center"
+              Opacity="0.8">
+        <Border Width="6" Height="2"
+                Background="{DynamicResource TextTertiaryBrush}"
+                Margin="0,2,0,0"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Center"
+                CornerRadius="1" />
+      </Border>
     </Grid>
   </Border>
 </UserControl>
