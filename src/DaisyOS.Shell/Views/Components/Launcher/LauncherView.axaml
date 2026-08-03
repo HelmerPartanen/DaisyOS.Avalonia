@@ -4,12 +4,12 @@
              xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
              x:Class="DaisyOS.Shell.Views.Components.Launcher.LauncherView"
              x:DataType="vm:LauncherViewModel"
-             Width="680" Height="760">
+             Width="680" Height="680">
   
   <Border Background="{DynamicResource TaskbarBackgroundBrush}"
           BorderBrush="{DynamicResource TaskbarBorderBrush}"
           BorderThickness="1"
-          CornerRadius="12"
+          CornerRadius="14"
           ClipToBounds="True"
           BoxShadow="0 16 48 0 #60000000">
     <Grid RowDefinitions="Auto,*,Auto">

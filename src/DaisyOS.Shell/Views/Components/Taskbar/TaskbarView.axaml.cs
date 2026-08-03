@@ -26,7 +26,9 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private const double DragThreshold = 4; // px of movement before a press becomes a drag
 
         private Canvas? _canvas;
+        private Border? _mainBorder;
         private readonly List<Button> _order = new();
+        private int _testAppCounter = 1;
 
         // Active drag state
         private Button? _dragItem;
@@ -46,7 +48,9 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                 startBtn.Click += (s, e) => StartButtonClicked?.Invoke(this, e);
             }
 
+            _mainBorder = this.FindControl<Border>("MainBorder");
             _canvas = this.FindControl<Canvas>("AppIconsCanvas");
+
             if (_canvas != null)
             {
                 Loaded += (_, _) => InitializeIcons();
@@ -80,9 +84,17 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             icon.PointerCaptureLost += Icon_PointerCaptureLost;
         }
 
+        private void UnwireIcon(Button icon)
+        {
+            icon.RemoveHandler(InputElement.PointerPressedEvent, Icon_PointerPressed);
+            icon.PointerMoved -= Icon_PointerMoved;
+            icon.PointerReleased -= Icon_PointerReleased;
+            icon.PointerCaptureLost -= Icon_PointerCaptureLost;
+        }
+
         private static readonly Transitions SharedPositionTransitions = new()
         {
-            new DoubleTransition { Property = Canvas.LeftProperty, Duration = TimeSpan.FromSeconds(0.20), Easing = new CubicEaseOut() }
+            new DoubleTransition { Property = Canvas.LeftProperty, Duration = TimeSpan.FromSeconds(0.25), Easing = new CubicEaseOut() }
         };
 
         private void LayoutAllInstant()
@@ -100,7 +112,101 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         {
             if (_canvas is null) return;
             var count = _order.Count;
-            _canvas.Width = count == 0 ? 0 : count * ItemWidth + (count - 1) * Spacing;
+            var canvasWidth = count == 0 ? 0 : count * ItemWidth + (count - 1) * Spacing;
+            _canvas.Width = canvasWidth;
+
+            // Recalculate outer floating border width (StartButton 40 + StackPanel Spacing 4 + Canvas + Border Padding 12)
+            var totalBorderWidth = 56 + canvasWidth;
+            if (_mainBorder != null)
+            {
+                _mainBorder.Width = totalBorderWidth;
+            }
+        }
+
+        public void AddTestApp()
+        {
+            if (_canvas is null) return;
+
+            var appId = $"test_app_{_testAppCounter}";
+            var appName = $"App {_testAppCounter}";
+            _testAppCounter++;
+
+            // Material symbol icon glyph names array for variety
+            string[] testGlyphs = { "rocket_launch", "terminal", "code", "sports_esports", "language", "folder", "palette", "schedule" };
+            var glyph = testGlyphs[(_testAppCounter - 2) % testGlyphs.Length];
+
+            var iconButton = new Button
+            {
+                Classes = { "TaskbarAppIcon" },
+                Tag = appId,
+                [ToolTip.TipProperty] = appName,
+                Content = new Panel
+                {
+                    Width = 32,
+                    Height = 32,
+                    Children =
+                    {
+                        new Border
+                        {
+                            Background = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF)),
+                            CornerRadius = new Avalonia.CornerRadius(6),
+                            Width = 32,
+                            Height = 32,
+                            Child = new TextBlock
+                            {
+                                Text = glyph,
+                                FontFamily = new FontFamily("avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"),
+                                FontSize = 18,
+                                Foreground = Brushes.White,
+                                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                            }
+                        }
+                    }
+                }
+            };
+
+            // Add context menu for individual removal
+            var menu = new ContextMenu();
+            var removeItem = new MenuItem { Header = $"Remove {appName}" };
+            removeItem.Click += (_, _) => RemoveSpecificApp(iconButton);
+            menu.Items.Add(removeItem);
+            iconButton.ContextMenu = menu;
+
+            _canvas.Children.Add(iconButton);
+            _order.Add(iconButton);
+            WireUpIcon(iconButton);
+
+            // Animate position smoothly
+            var newIndex = _order.Count - 1;
+            Canvas.SetLeft(iconButton, SlotX(newIndex));
+            iconButton.Transitions = SharedPositionTransitions;
+
+            UpdateCanvasWidth();
+        }
+
+        public void RemoveTestApp()
+        {
+            if (_order.Count == 0) return;
+            var lastIcon = _order.LastOrDefault(btn => (btn.Tag as string)?.StartsWith("test_app_") == true) ?? _order.Last();
+            RemoveSpecificApp(lastIcon);
+        }
+
+        public void RemoveSpecificApp(Button icon)
+        {
+            if (_canvas is null || !_order.Contains(icon)) return;
+
+            UnwireIcon(icon);
+            _order.Remove(icon);
+            _canvas.Children.Remove(icon);
+
+            // Smoothly shift remaining icons to their updated slots
+            for (int i = 0; i < _order.Count; i++)
+            {
+                AnimateToSlot(_order[i], i);
+            }
+
+            UpdateCanvasWidth();
         }
 
         private static double SlotX(int index) => index * (ItemWidth + Spacing);
@@ -133,8 +239,6 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                 BeginDrag(icon);
             }
 
-            // The launcher lives entirely outside this canvas, so clamping to [0, maxLeft]
-            // is all that's needed to guarantee icons can never reach or pass it.
             var maxLeft = SlotX(_order.Count - 1);
             var newLeft = Math.Clamp(_dragStartLeft + delta, 0, Math.Max(0, maxLeft));
 
@@ -158,10 +262,6 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             var draggedCenter = draggedLeft + ItemWidth / 2;
             var index = _order.IndexOf(dragged);
 
-            // Bubble left once the dragged item's center crosses the boundary of its own
-            // current slot (NOT the neighbor's center - the drag clamp can make a neighbor's
-            // full center unreachable, especially for the outermost slot, which silently
-            // prevented any swap from ever firing).
             while (index > 0)
             {
                 var leftBoundary = SlotX(index) - Spacing / 2;
@@ -174,7 +274,6 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                 AnimateToSlot(neighbor, index + 1);
             }
 
-            // Bubble right likewise.
             while (index < _order.Count - 1)
             {
                 var rightBoundary = SlotX(index) + ItemWidth + Spacing / 2;
@@ -213,7 +312,6 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
 
             var wasDragging = _isDragging;
 
-            // Snap into its final slot with the springy position transition restored.
             var index = _order.IndexOf(icon);
             if (index >= 0)
             {
@@ -226,7 +324,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
 
             if (wasDragging)
             {
-                e.Handled = true; // Prevent button click after drag
+                e.Handled = true;
                 var newOrder = _order.Select(b => b.Tag as string ?? string.Empty).ToList();
                 if (_orderAtDragStart != null && !newOrder.SequenceEqual(_orderAtDragStart))
                 {

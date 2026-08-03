@@ -1,7 +1,10 @@
 <UserControl
     x:Class="DaisyOS.Shell.Views.Components.Taskbar.TaskbarView"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Bottom"
+    Margin="0,0,0,8">
 
   <UserControl.Styles>
     <Style Selector="Button.TaskbarApp">
@@ -40,13 +43,27 @@
     </Style>
   </UserControl.Styles>
 
-  <Border Height="48" Background="{DynamicResource TaskbarBackgroundBrush}" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0">
-    <Grid>
-      <!-- Center: Start button + App Icons -->
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+  <!-- Floating Island Container with Animated Width Smooth Morphing -->
+  <Border x:Name="MainBorder"
+          Height="48" 
+          Padding="4"
+          Background="{DynamicResource TaskbarBackgroundBrush}" 
+          BorderBrush="{DynamicResource TaskbarBorderBrush}" 
+          BorderThickness="1"
+          CornerRadius="14"
+          ClipToBounds="True"
+          BoxShadow="0 8 32 0 #60000000">
+    <Border.Transitions>
+      <Transitions>
+        <DoubleTransition Property="Width" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+      </Transitions>
+    </Border.Transitions>
 
-        <!-- Start Button - fixed anchor, lives outside the reorder canvas so it can never be pushed past -->
-        <Button x:Name="StartButton" Classes="TaskbarApp">
+    <Grid>
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+
+        <!-- Start Button -->
+        <Button x:Name="StartButton" Classes="TaskbarApp" ToolTip.Tip="Start Menu">
           <Grid Width="20" Height="20" ColumnDefinitions="*,*" RowDefinitions="*,*">
             <Border Grid.Row="0" Grid.Column="0" Background="White" Margin="0,0,1,1" CornerRadius="1" />
             <Border Grid.Row="0" Grid.Column="1" Background="White" Margin="1,0,0,1" CornerRadius="1" />
@@ -55,21 +72,19 @@
           </Grid>
         </Button>
 
-        <!-- Reorderable app icons. Add/remove Border children here; code-behind handles the rest. -->
+        <!-- Reorderable App Icons Canvas -->
         <Canvas x:Name="AppIconsCanvas" Height="40">
-
-          <Button Classes="TaskbarAppIcon" Tag="settings">
+          <Button Classes="TaskbarAppIcon" Tag="settings" ToolTip.Tip="Settings">
             <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
                    RenderOptions.BitmapInterpolationMode="HighQuality"
                    Width="24" Height="24" IsHitTestVisible="False"/>
           </Button>
 
-          <Button Classes="TaskbarAppIcon" Tag="files">
+          <Button Classes="TaskbarAppIcon" Tag="files" ToolTip.Tip="Files">
             <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
                    RenderOptions.BitmapInterpolationMode="HighQuality"
                    Width="24" Height="24" IsHitTestVisible="False"/>
           </Button>
-
         </Canvas>
 
       </StackPanel>

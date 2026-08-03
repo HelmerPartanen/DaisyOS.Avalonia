@@ -19,8 +19,38 @@ public enum LauncherAllAppsViewMode
 
 public class LauncherViewModel : INotifyPropertyChanged
 {
+    private static readonly Dictionary<string, string> CategoryKeywordMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        { "DEVELOPMENT", "Development" },
+        { "PROGRAMMING", "Development" },
+        { "IDE", "Development" },
+        { "GRAPHICS", "Graphics & Design" },
+        { "PHOTOGRAPHY", "Graphics & Design" },
+        { "DESIGN", "Graphics & Design" },
+        { "OFFICE", "Office & Productivity" },
+        { "TEXTEDITOR", "Office & Productivity" },
+        { "DOCUMENT", "Office & Productivity" },
+        { "NETWORK", "Internet & Network" },
+        { "WEB", "Internet & Network" },
+        { "INTERNET", "Internet & Network" },
+        { "AUDIO", "Sound & Video" },
+        { "VIDEO", "Sound & Video" },
+        { "PLAYER", "Sound & Video" },
+        { "MEDIA", "Sound & Video" },
+        { "GAME", "Games" },
+        { "SYSTEM", "System Tools" },
+        { "TERMINAL", "System Tools" },
+        { "FILEMANAGER", "System Tools" },
+        { "CORE", "System Tools" },
+        { "UTILITY", "Utilities & Tools" },
+        { "SETTINGS", "Utilities & Tools" }
+    };
+
     private readonly LinuxAppLauncherService _launcherService;
     private LauncherAllAppsViewMode _selectedViewMode = LauncherAllAppsViewMode.Alphabetical;
+    
+    private List<AppGroupViewModel>? _alphabeticalGroupsCache;
+    private List<AppGroupViewModel>? _categoryGroupsCache;
 
     public string Username { get; }
     public string UserInitials { get; }
@@ -103,6 +133,19 @@ public class LauncherViewModel : INotifyPropertyChanged
             PinnedApps.Add(item);
         }
 
+        // Build group caches once upon loading
+        _alphabeticalGroupsCache = AllApps
+            .GroupBy(item => GetGroupLetter(item.Name))
+            .OrderBy(g => g.Key, StringComparer.Ordinal)
+            .Select(g => new AppGroupViewModel(g.Key, g))
+            .ToList();
+
+        _categoryGroupsCache = AllApps
+            .GroupBy(item => ResolveCategoryName(item.App.Categories))
+            .OrderBy(g => GetCategoryOrder(g.Key))
+            .Select(g => new AppGroupViewModel(g.Key, g.OrderBy(i => i.Name, StringComparer.CurrentCultureIgnoreCase)))
+            .ToList();
+
         UpdateActiveGroups();
     }
 
@@ -110,26 +153,13 @@ public class LauncherViewModel : INotifyPropertyChanged
     {
         ActiveGroups.Clear();
 
-        if (_selectedViewMode == LauncherAllAppsViewMode.Alphabetical)
-        {
-            var letterGroups = AllApps
-                .GroupBy(item => GetGroupLetter(item.Name))
-                .OrderBy(g => g.Key, StringComparer.Ordinal)
-                .Select(g => new AppGroupViewModel(g.Key, g));
+        var sourceCache = _selectedViewMode == LauncherAllAppsViewMode.Alphabetical
+            ? _alphabeticalGroupsCache
+            : _categoryGroupsCache;
 
-            foreach (var group in letterGroups)
-            {
-                ActiveGroups.Add(group);
-            }
-        }
-        else
+        if (sourceCache != null)
         {
-            var catGroups = AllApps
-                .GroupBy(item => ResolveCategoryName(item.App.Categories))
-                .OrderBy(g => GetCategoryOrder(g.Key))
-                .Select(g => new AppGroupViewModel(g.Key, g.OrderBy(i => i.Name, StringComparer.CurrentCultureIgnoreCase)));
-
-            foreach (var group in catGroups)
+            foreach (var group in sourceCache)
             {
                 ActiveGroups.Add(group);
             }
@@ -162,15 +192,16 @@ public class LauncherViewModel : INotifyPropertyChanged
 
         foreach (var cat in categories)
         {
-            var c = cat.ToUpperInvariant();
-            if (c.Contains("DEVELOPMENT") || c.Contains("PROGRAMMING") || c.Contains("IDE")) return "Development";
-            if (c.Contains("GRAPHICS") || c.Contains("PHOTOGRAPHY") || c.Contains("DESIGN")) return "Graphics & Design";
-            if (c.Contains("OFFICE") || c.Contains("TEXTEDITOR") || c.Contains("DOCUMENT")) return "Office & Productivity";
-            if (c.Contains("NETWORK") || c.Contains("WEB") || c.Contains("INTERNET")) return "Internet & Network";
-            if (c.Contains("AUDIO") || c.Contains("VIDEO") || c.Contains("PLAYER") || c.Contains("MEDIA")) return "Sound & Video";
-            if (c.Contains("GAME")) return "Games";
-            if (c.Contains("SYSTEM") || c.Contains("TERMINAL") || c.Contains("FILEMANAGER") || c.Contains("CORE")) return "System Tools";
-            if (c.Contains("UTILITY") || c.Contains("SETTINGS")) return "Utilities & Tools";
+            if (string.IsNullOrWhiteSpace(cat)) continue;
+            
+            // Fast lookup in static dictionary
+            foreach (var kvp in CategoryKeywordMap)
+            {
+                if (cat.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase))
+                {
+                    return kvp.Value;
+                }
+            }
         }
 
         return "Utilities & Tools";
@@ -192,7 +223,7 @@ public class LauncherViewModel : INotifyPropertyChanged
     private static string FormatUsername(string user)
     {
         if (string.IsNullOrWhiteSpace(user)) return "User";
-        return char.ToUpper(user[0]) + user[1..];
+        return char.ToUpperInvariant(user[0]) + user[1..];
     }
 
     private static string GetInitials(string name)
@@ -201,7 +232,7 @@ public class LauncherViewModel : INotifyPropertyChanged
         var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length >= 2)
         {
-            return $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[1][0])}";
+            return $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[1][0])}";
         }
         return name.Length >= 2 ? name[..2].ToUpperInvariant() : name[..1].ToUpperInvariant();
     }

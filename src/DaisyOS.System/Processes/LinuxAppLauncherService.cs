@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
 
@@ -6,6 +12,11 @@ namespace DaisyOS.System.Processes;
 public sealed class LinuxAppLauncherService : IAppLauncherService
 {
     private const int MaxApps = 240;
+    private static readonly HashSet<string> SupportedKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Name", "Comment", "Icon", "Exec", "NoDisplay", "Hidden", "Terminal", "Type", "Categories"
+    };
+
     private readonly ILogService _log;
     private readonly SafeProcessLauncher _launcher;
     private readonly Lazy<IReadOnlyList<AppEntry>> _apps;
@@ -74,7 +85,7 @@ public sealed class LinuxAppLauncherService : IAppLauncherService
                 continue;
             }
 
-            foreach (var file in Directory.EnumerateFiles(directory, "*.desktop", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(directory, "*.desktop", SearchOption.TopDirectoryOnly))
             {
                 if (apps.Count >= MaxApps)
                 {
@@ -136,7 +147,7 @@ public sealed class LinuxAppLauncherService : IAppLauncherService
                 }
 
                 var key = line[..separator];
-                if (!IsSupportedKey(key))
+                if (!SupportedKeys.Contains(key))
                 {
                     continue;
                 }
@@ -169,9 +180,6 @@ public sealed class LinuxAppLauncherService : IAppLauncherService
         var icon = TryGet(entry, "Icon", out var iconValue) ? iconValue : string.Empty;
         var categories = TryGet(entry, "Categories", out var catValue)
             ? catValue.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select(c => c.Trim())
-                .Where(c => c.Length > 0)
-                .ToArray()
             : [];
 
         return new AppEntry(
@@ -206,11 +214,6 @@ public sealed class LinuxAppLauncherService : IAppLauncherService
             && !IsTruthy(entry, "NoDisplay")
             && !IsTruthy(entry, "Hidden")
             && !IsTruthy(entry, "Terminal");
-    }
-
-    private static bool IsSupportedKey(string key)
-    {
-        return key is "Name" or "Comment" or "Icon" or "Exec" or "NoDisplay" or "Hidden" or "Terminal" or "Type" or "Categories";
     }
 
     private static bool IsTruthy(Dictionary<string, string> entry, string key)
