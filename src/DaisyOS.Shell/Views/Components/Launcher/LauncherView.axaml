@@ -141,32 +141,16 @@
                     <MenuItem Click="OnSetViewAlphabetical">
                       <MenuItem.Header>
                         <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
-                          <TextBlock Grid.Column="0" Text="check" 
-                                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
-                                     FontSize="14" 
-                                     Foreground="{DynamicResource TextPrimaryBrush}" 
-                                     IsVisible="{Binding IsAlphabeticalMode}"
-                                     VerticalAlignment="Center" 
-                                     HorizontalAlignment="Center"/>
-                          <TextBlock Grid.Column="1" Text="Alphabetical (A–Z)" 
-                                     FontSize="12" 
-                                     VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="0" Text="check" Classes="MenuIcon" IsVisible="{Binding IsAlphabeticalMode}"/>
+                          <TextBlock Grid.Column="1" Text="Alphabetical (A–Z)" FontSize="12" VerticalAlignment="Center"/>
                         </Grid>
                       </MenuItem.Header>
                     </MenuItem>
                     <MenuItem Click="OnSetViewCategory">
                       <MenuItem.Header>
                         <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
-                          <TextBlock Grid.Column="0" Text="check" 
-                                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
-                                     FontSize="14" 
-                                     Foreground="{DynamicResource TextPrimaryBrush}" 
-                                     IsVisible="{Binding IsCategoryMode}"
-                                     VerticalAlignment="Center" 
-                                     HorizontalAlignment="Center"/>
-                          <TextBlock Grid.Column="1" Text="By Category" 
-                                     FontSize="12" 
-                                     VerticalAlignment="Center"/>
+                          <TextBlock Grid.Column="0" Text="check" Classes="MenuIcon" IsVisible="{Binding IsCategoryMode}"/>
+                          <TextBlock Grid.Column="1" Text="By Category" FontSize="12" VerticalAlignment="Center"/>
                         </Grid>
                       </MenuItem.Header>
                     </MenuItem>

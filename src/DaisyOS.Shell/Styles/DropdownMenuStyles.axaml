@@ -39,4 +39,39 @@
     <Setter Property="Background" Value="{DynamicResource DropdownMenuItemHoverBrush}" />
   </Style>
 
+  <Style Selector="MenuItem:disabled">
+    <Setter Property="Opacity" Value="0.4" />
+  </Style>
+
+  <!-- Reusable Menu Separator / Divider Style -->
+  <Style Selector="Separator">
+    <Setter Property="Background" Value="{DynamicResource TaskbarBorderBrush}" />
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Margin" Value="4,4" />
+  </Style>
+
+  <!-- Reusable Trigger Button Style (Button.SubtleLink) -->
+  <Style Selector="Button.SubtleLink">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="6,4" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+  <Style Selector="Button.SubtleLink:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#14FFFFFF" />
+  </Style>
+  <Style Selector="Button.SubtleLink:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#22FFFFFF" />
+  </Style>
+
+  <!-- Reusable Material Symbol Icon Class for MenuItems -->
+  <Style Selector="TextBlock.MenuIcon">
+    <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+  </Style>
+
 </Styles>
