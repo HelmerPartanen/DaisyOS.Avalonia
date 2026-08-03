@@ -36,7 +36,7 @@
       <!-- Pinned Apps / Content Area Placeholder -->
       <ScrollViewer Grid.Row="1" Padding="24,12,24,24">
         <StackPanel Spacing="24">
-          <TextBlock Text="Pinned" FontWeight="SemiBold" Foreground="White" FontSize="16" />
+          <TextBlock Text="Pinned" FontWeight="SemiBold" FontSize="16" />
           
           <WrapPanel ItemWidth="84" ItemHeight="96" HorizontalAlignment="Center">
             <!-- App Item Placeholder 1 -->
@@ -45,7 +45,7 @@
                 <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8">
                   <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24"/>
                 </Border>
-                <TextBlock Text="Settings" Foreground="White" TextAlignment="Center" FontSize="12" />
+                <TextBlock Text="Settings" TextAlignment="Center" FontSize="12" />
               </StackPanel>
             </Button>
 
@@ -55,7 +55,7 @@
                 <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8">
                   <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png" RenderOptions.BitmapInterpolationMode="HighQuality" Width="24" Height="24"/>
                 </Border>
-                <TextBlock Text="Files" Foreground="White" TextAlignment="Center" FontSize="12" />
+                <TextBlock Text="Files" TextAlignment="Center" FontSize="12" />
               </StackPanel>
             </Button>
             
@@ -63,25 +63,25 @@
             <Button Classes="LauncherApp">
               <StackPanel Spacing="8">
                 <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-                <TextBlock Text="Calculator" Foreground="White" TextAlignment="Center" FontSize="12" />
+                <TextBlock Text="Calculator" TextAlignment="Center" FontSize="12" />
               </StackPanel>
             </Button>
             <Button Classes="LauncherApp">
               <StackPanel Spacing="8">
                 <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-                <TextBlock Text="Terminal" Foreground="White" TextAlignment="Center" FontSize="12" />
+                <TextBlock Text="Terminal" TextAlignment="Center" FontSize="12" />
               </StackPanel>
             </Button>
             <Button Classes="LauncherApp">
               <StackPanel Spacing="8">
                 <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-                <TextBlock Text="Browser" Foreground="White" TextAlignment="Center" FontSize="12" />
+                <TextBlock Text="Browser" TextAlignment="Center" FontSize="12" />
               </StackPanel>
             </Button>
             <Button Classes="LauncherApp">
               <StackPanel Spacing="8">
                 <Border Width="48" Height="48" Background="#33FFFFFF" CornerRadius="8" />
-                <TextBlock Text="Photos" Foreground="White" TextAlignment="Center" FontSize="12" />
+                <TextBlock Text="Photos" TextAlignment="Center" FontSize="12" />
               </StackPanel>
             </Button>
             

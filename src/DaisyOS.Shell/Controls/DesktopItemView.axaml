@@ -30,7 +30,6 @@
     <!-- Label below the icon, wraps lines, centered -->
     <TextBlock Grid.Row="1"
                Text="{Binding Label}"
-               Foreground="White"
                TextAlignment="Center"
                TextWrapping="Wrap"
                TextTrimming="CharacterEllipsis"

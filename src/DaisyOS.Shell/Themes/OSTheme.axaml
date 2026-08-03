@@ -43,6 +43,15 @@
       <SolidColorBrush x:Key="TaskbarPressedBrush"
                        Color="#18FFFFFF"/>
 
+      <SolidColorBrush x:Key="TextPrimaryBrush"
+                       Color="#FF1A1A1A"/>
+
+      <SolidColorBrush x:Key="TextSecondaryBrush"
+                       Color="#CC1A1A1A"/>
+
+      <SolidColorBrush x:Key="TextTertiaryBrush"
+                       Color="#991A1A1A"/>
+
     </ResourceDictionary>
 
     <!-- Dark -->
@@ -59,6 +68,15 @@
 
       <SolidColorBrush x:Key="TaskbarPressedBrush"
                        Color="#22FFFFFF"/>
+
+      <SolidColorBrush x:Key="TextPrimaryBrush"
+                       Color="#FFF5F5F5"/>
+
+      <SolidColorBrush x:Key="TextSecondaryBrush"
+                       Color="#CCF5F5F5"/>
+
+      <SolidColorBrush x:Key="TextTertiaryBrush"
+                       Color="#99F5F5F5"/>
 
     </ResourceDictionary>
 

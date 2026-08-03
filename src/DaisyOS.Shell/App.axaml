@@ -13,5 +13,23 @@
 
   <Application.Styles>
     <FluentTheme DensityStyle="Normal" />
+
+    <Style Selector="TextBlock">
+      <Setter Property="FontFamily" Value="Inter" />
+      <Setter Property="FontWeight" Value="Regular" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="AccessText">
+      <Setter Property="FontFamily" Value="Inter" />
+      <Setter Property="FontWeight" Value="Regular" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBox">
+      <Setter Property="FontFamily" Value="Inter" />
+      <Setter Property="FontWeight" Value="Regular" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
   </Application.Styles>
 </Application>
