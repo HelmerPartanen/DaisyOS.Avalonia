@@ -54,7 +54,7 @@
           Background="{DynamicResource TaskbarBackgroundBrush}"
           BorderBrush="{DynamicResource TaskbarBorderBrush}"
           BorderThickness="1"
-          CornerRadius="14"
+          CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 8 32 0 #60000000">
     <Border.Transitions>
