@@ -2,14 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
              xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
-             x:Class="DaisyOS.Shell.Views.LauncherView"
+             x:Class="DaisyOS.Shell.Views.Components.Launcher.LauncherView"
              x:DataType="vm:LauncherViewModel"
              Width="680" Height="760">
   
   <Border Background="{DynamicResource TaskbarBackgroundBrush}"
           BorderBrush="{DynamicResource TaskbarBorderBrush}"
           BorderThickness="1"
-          CornerRadius="18"
+          CornerRadius="4"
           ClipToBounds="True"
           BoxShadow="0 16 48 0 #60000000">
     <Grid RowDefinitions="Auto,*,Auto">
@@ -18,7 +18,7 @@
         <Style Selector="Button.LauncherApp">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="12"/>
+          <Setter Property="CornerRadius" Value="4"/>
           <Setter Property="Padding" Value="6"/>
           <Setter Property="Width" Value="88"/>
           <Setter Property="Height" Value="88"/>
@@ -37,7 +37,7 @@
         <Style Selector="Button.RecItem">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="8"/>
+          <Setter Property="CornerRadius" Value="12"/>
           <Setter Property="Padding" Value="10,8"/>
           <Setter Property="Width" Value="308"/>
           <Setter Property="Margin" Value="0,2,8,2"/>
@@ -55,7 +55,7 @@
         <Style Selector="Button.SubtleLink">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="6"/>
+          <Setter Property="CornerRadius" Value="4"/>
           <Setter Property="Padding" Value="6,4"/>
           <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
         </Style>
@@ -103,7 +103,7 @@
                                RenderOptions.BitmapInterpolationMode="HighQuality" 
                                Width="36" Height="36"/>
                         <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                                Background="#33FFFFFF" CornerRadius="8" Width="36" Height="36">
+                                Background="#33FFFFFF" CornerRadius="4" Width="36" Height="36">
                           <TextBlock Text="{Binding Name[0]}" FontSize="16" FontWeight="Bold" 
                                      Foreground="{DynamicResource TextPrimaryBrush}" 
                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -179,7 +179,7 @@
                                        RenderOptions.BitmapInterpolationMode="HighQuality" 
                                        Width="32" Height="32"/>
                                 <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                                        Background="#2B0078D4" CornerRadius="6" Width="32" Height="32">
+                                        Background="#2B0078D4" CornerRadius="4" Width="32" Height="32">
                                   <TextBlock Text="{Binding Name[0]}" FontSize="14" FontWeight="Bold" 
                                              Foreground="#0078D4" 
                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -206,7 +206,7 @@
       </ScrollViewer>
 
       <!-- Footer Bar: Real Linux User Profile & Power Actions -->
-      <Border Grid.Row="2" Height="64" Padding="24,0" Background="#12FFFFFF" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,18,18">
+      <Border Grid.Row="2" Height="64" Padding="24,0" Background="#12FFFFFF" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,4,4">
         <Grid ColumnDefinitions="*,Auto">
           
           <!-- Left: Active Linux User Profile -->

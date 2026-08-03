@@ -1,0 +1,41 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Reusable Global Glass Dropdown Menu Container Style (MenuFlyoutPresenter) -->
+  <Style Selector="MenuFlyoutPresenter">
+    <Setter Property="Background" Value="{DynamicResource DropdownMenuBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource TaskbarBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="4" />
+  </Style>
+
+  <!-- Reusable Global Glass Context Menu Container Style -->
+  <Style Selector="ContextMenu">
+    <Setter Property="Background" Value="{DynamicResource DropdownMenuBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource TaskbarBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="4" />
+  </Style>
+
+  <!-- Reusable Global Glass Dropdown MenuItem Style -->
+  <Style Selector="MenuItem">
+    <Setter Property="FontFamily" Value="Inter" />
+    <Setter Property="FontWeight" Value="Regular" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="10,6" />
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+  </Style>
+
+  <Style Selector="MenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource DropdownMenuItemHoverBrush}" />
+  </Style>
+
+  <Style Selector="MenuItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource DropdownMenuItemHoverBrush}" />
+  </Style>
+
+</Styles>

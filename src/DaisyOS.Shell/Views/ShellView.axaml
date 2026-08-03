@@ -4,17 +4,18 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:desktop="clr-namespace:DaisyOS.Shell.Views.Components.Desktop"
     xmlns:taskbar="clr-namespace:DaisyOS.Shell.Views.Components.Taskbar"
+    xmlns:launcher="clr-namespace:DaisyOS.Shell.Views.Components.Launcher"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
         <desktop:DesktopView x:Name="Desktop" />
         
         <!-- Launcher (Overlays desktop, just above taskbar) -->
-        <views:LauncherView x:Name="Launcher" 
-                            HorizontalAlignment="Center" 
-                            VerticalAlignment="Bottom" 
-                            Margin="0,0,0,56" 
-                            IsVisible="False"
-                            ZIndex="10"/>
+        <launcher:LauncherView x:Name="Launcher" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Bottom" 
+                               Margin="0,0,0,56" 
+                               IsVisible="False"
+                               ZIndex="10"/>
 
         <!-- Taskbar -->
         <taskbar:TaskbarView x:Name="Taskbar" VerticalAlignment="Bottom" ZIndex="20"/>

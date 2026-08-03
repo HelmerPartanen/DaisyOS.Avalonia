@@ -3,7 +3,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using DaisyOS.Shell.ViewModels;
 
-namespace DaisyOS.Shell.Views;
+namespace DaisyOS.Shell.Views.Components.Launcher;
 
 public partial class LauncherView : UserControl
 {
