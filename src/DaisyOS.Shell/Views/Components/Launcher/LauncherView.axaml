@@ -9,7 +9,7 @@
   <Border Background="{DynamicResource TaskbarBackgroundBrush}"
           BorderBrush="{DynamicResource TaskbarBorderBrush}"
           BorderThickness="1"
-          CornerRadius="4"
+          CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 16 48 0 #60000000">
     <Grid RowDefinitions="Auto,*,Auto">
@@ -37,7 +37,7 @@
         <Style Selector="Button.RecItem">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="12"/>
+          <Setter Property="CornerRadius" Value="4"/>
           <Setter Property="Padding" Value="10,8"/>
           <Setter Property="Width" Value="308"/>
           <Setter Property="Margin" Value="0,2,8,2"/>
@@ -78,9 +78,13 @@
             <Grid ColumnDefinitions="*,Auto" Width="632">
               <TextBlock Grid.Column="0" Text="Pinned" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
               <Button Grid.Column="1" Classes="SubtleLink">
-                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                  <TextBlock Text="Show all" FontSize="12"/>
-                  <PathIcon Data="M 4 6 L 8 10 L 12 6" Width="10" Height="10" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                  <TextBlock Text="Show all" FontSize="12" VerticalAlignment="Center"/>
+                  <TextBlock Text="expand_more" 
+                             FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                             FontSize="18" 
+                             Foreground="{DynamicResource TextSecondaryBrush}" 
+                             VerticalAlignment="Center"/>
                 </StackPanel>
               </Button>
             </Grid>
@@ -124,21 +128,47 @@
               
               <!-- Native Subtle Menu Button Placeholder matching "Show all ˅" style -->
               <Button Grid.Column="1" Classes="SubtleLink">
-                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                  <TextBlock Text="{Binding SelectedViewModeText}" FontSize="12"/>
-                  <PathIcon Data="M 4 6 L 8 10 L 12 6" Width="10" Height="10" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding SelectedViewModeText}" FontSize="12" VerticalAlignment="Center"/>
+                  <TextBlock Text="expand_more" 
+                             FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                             FontSize="18" 
+                             Foreground="{DynamicResource TextSecondaryBrush}" 
+                             VerticalAlignment="Center"/>
                 </StackPanel>
                 <Button.Flyout>
                   <MenuFlyout Placement="BottomEdgeAlignedRight">
-                    <MenuItem Header="Alphabetical (A–Z)" Click="OnSetViewAlphabetical">
-                      <MenuItem.Icon>
-                        <PathIcon Data="M 6 12 L 10 16 L 18 8" Width="12" Height="12" Foreground="{DynamicResource TextPrimaryBrush}" IsVisible="{Binding IsAlphabeticalMode}"/>
-                      </MenuItem.Icon>
+                    <MenuItem Click="OnSetViewAlphabetical">
+                      <MenuItem.Header>
+                        <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
+                          <TextBlock Grid.Column="0" Text="check" 
+                                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                                     FontSize="14" 
+                                     Foreground="{DynamicResource TextPrimaryBrush}" 
+                                     IsVisible="{Binding IsAlphabeticalMode}"
+                                     VerticalAlignment="Center" 
+                                     HorizontalAlignment="Center"/>
+                          <TextBlock Grid.Column="1" Text="Alphabetical (A–Z)" 
+                                     FontSize="12" 
+                                     VerticalAlignment="Center"/>
+                        </Grid>
+                      </MenuItem.Header>
                     </MenuItem>
-                    <MenuItem Header="By Category" Click="OnSetViewCategory">
-                      <MenuItem.Icon>
-                        <PathIcon Data="M 6 12 L 10 16 L 18 8" Width="12" Height="12" Foreground="{DynamicResource TextPrimaryBrush}" IsVisible="{Binding IsCategoryMode}"/>
-                      </MenuItem.Icon>
+                    <MenuItem Click="OnSetViewCategory">
+                      <MenuItem.Header>
+                        <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
+                          <TextBlock Grid.Column="0" Text="check" 
+                                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                                     FontSize="14" 
+                                     Foreground="{DynamicResource TextPrimaryBrush}" 
+                                     IsVisible="{Binding IsCategoryMode}"
+                                     VerticalAlignment="Center" 
+                                     HorizontalAlignment="Center"/>
+                          <TextBlock Grid.Column="1" Text="By Category" 
+                                     FontSize="12" 
+                                     VerticalAlignment="Center"/>
+                        </Grid>
+                      </MenuItem.Header>
                     </MenuItem>
                   </MenuFlyout>
                 </Button.Flyout>
