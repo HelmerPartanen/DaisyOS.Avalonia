@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     HorizontalAlignment="Center"
     VerticalAlignment="Bottom"
-    Margin="0,0,0,12">
+    Margin="0,0,0,4">
 
   <UserControl.Styles>
     <Style Selector="Button.TaskbarApp">
