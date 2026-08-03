@@ -13,58 +13,85 @@ public struct MicaTheme
 
     /// <summary>
     /// Theme tint strength, from 0 to 1.
-    /// Higher values reduce wallpaper visibility.
+    /// Controls how strongly the theme color dyes the wallpaper.
     /// </summary>
     public float TintOpacity { get; set; }
 
     /// <summary>
+    /// Luminosity opacity, from 0 to 1.
+    /// Controls how much the wallpaper's brightness is forced to match the theme color, ensuring text contrast.
+    /// </summary>
+    public float LuminosityOpacity { get; set; }
+
+    /// <summary>
     /// Wallpaper saturation multiplier.
-    /// 0 produces grayscale and 1 preserves original saturation.
     /// </summary>
     public float Saturation { get; set; }
 
     /// <summary>
     /// Strength of the subtle Mica micro-noise.
-    /// Recommended range: 0.001 to 0.004.
     /// </summary>
     public float NoiseAmplitude { get; set; }
 
     public static MicaTheme DarkBase => new()
     {
-        TintColor = new SKColor(30, 30, 34),
-        TintOpacity = 0.85f,
-        Saturation = 0.60f,
-        NoiseAmplitude = 0.018f
+        TintColor = new SKColor(32, 32, 32),
+        TintOpacity = 0.70f,
+        LuminosityOpacity = 0.85f,
+        Saturation = 1.0f,
+        NoiseAmplitude = 0.015f
     };
 
     public static MicaTheme LightBase => new()
     {
-        TintColor = new SKColor(243, 243, 246),
-        TintOpacity = 0.88f,
-        Saturation = 0.70f,
-        NoiseAmplitude = 0.015f
+        TintColor = new SKColor(243, 243, 243),
+        TintOpacity = 0.70f,
+        LuminosityOpacity = 0.85f,
+        Saturation = 1.0f,
+        NoiseAmplitude = 0.012f
     };
 
     public static MicaTheme DarkAlt => new()
     {
-        TintColor = new SKColor(34, 32, 40),
-        TintOpacity = 0.80f,
-        Saturation = 0.65f,
+        TintColor = new SKColor(20, 20, 20),
+        TintOpacity = 0.75f,
+        LuminosityOpacity = 0.90f,
+        Saturation = 1.0f,
         NoiseAmplitude = 0.018f
     };
 
     public static MicaTheme LightAlt => new()
     {
-        TintColor = new SKColor(237, 238, 244),
-        TintOpacity = 0.82f,
-        Saturation = 0.75f,
-        NoiseAmplitude = 0.015f
+        TintColor = new SKColor(230, 230, 230),
+        TintOpacity = 0.75f,
+        LuminosityOpacity = 0.90f,
+        Saturation = 1.0f,
+        NoiseAmplitude = 0.012f
     };
 }
 
 public static class MicaMaterialGenerator
 {
     private const int NoiseSeed = 0x4D494341;
+
+    // The process (blur) image is sized off this reference dimension rather than a fixed
+    // ratio of the render size. 240px is what a 1920x1080 render already produced under the
+    // old "renderWidth / 8" scheme, so behavior at that reference resolution is unchanged.
+    //
+    // Using a fixed target instead of a fixed ratio is what makes the Mica blur's *effective*
+    // strength consistent across screen sizes. With a fixed ratio, the blur's absolute pixel
+    // radius on the final image never changes (sigma * downscale factor is constant), so the
+    // same blur that fully obliterates shapes at 1080p only softens them slightly relative to
+    // an 8K display, and over-blurs a small window/thumbnail. Tying the process size to a
+    // fixed reference dimension makes the downscale factor -- and therefore the effective
+    // blur strength relative to the screen -- scale automatically with render size.
+    private const int ProcessReferenceMaxDimension = 240;
+
+    // Floor so extreme aspect ratios or tiny render targets never collapse the process
+    // image into something too small to blur meaningfully.
+    private const int MinimumProcessDimension = 32;
+
+    private static readonly SKColorSpace MaterialColorSpace = SKColorSpace.CreateSrgb();
 
     /// <summary>
     /// Generates a complete Mica-inspired material brush from a wallpaper asset.
@@ -91,8 +118,9 @@ public static class MicaMaterialGenerator
                 $"Failed to decode wallpaper bitmap from '{assetUri}'.");
         }
 
-        int processWidth = Math.Max(1, renderWidth / 8);
-        int processHeight = Math.Max(1, renderHeight / 8);
+        (int processWidth, int processHeight) = CalculateProcessDimensions(
+            renderWidth,
+            renderHeight);
 
         using var processedImage = CreateProcessedWallpaper(
             originalBitmap,
@@ -165,7 +193,8 @@ public static class MicaMaterialGenerator
             processWidth,
             processHeight,
             SKColorType.Rgba8888,
-            SKAlphaType.Opaque);
+            SKAlphaType.Opaque,
+            MaterialColorSpace);
 
         using var resizedBitmap = ResizeWallpaperToFill(
             originalBitmap,
@@ -181,9 +210,11 @@ public static class MicaMaterialGenerator
 
         using var saturationFilter = CreateSaturationFilter(theme.Saturation);
 
-        // This blur occurs on the significantly reduced-resolution image.
-        // Sigma 30 at 1/8th resolution is equivalent to a massive ~240px blur on the final output,
-        // which completely obliterates recognizable shapes as per the Mica spec.
+        // This blur occurs on the process image, which is downscaled to a fixed reference
+        // dimension (see ProcessReferenceMaxDimension) rather than a fixed fraction of the
+        // render size. That keeps this sigma-30 blur's effective strength -- relative to
+        // whatever screen this is rendered on -- consistent: it fully obliterates
+        // recognizable shapes per the Mica spec whether this is a 1080p, 4K, or 8K display.
         using var blurFilter = SKImageFilter.CreateBlur(
             sigmaX: 30f,
             sigmaY: 30f,
@@ -210,11 +241,21 @@ public static class MicaMaterialGenerator
         int renderWidth,
         int renderHeight)
     {
+        // RgbaF16 (16-bit float per channel) rather than Rgba8888 here is deliberate: this
+        // surface goes through five sequential blend passes (wallpaper draw, luminosity,
+        // color, fallback opacity, noise). At 8-bit precision each pass rounds its result
+        // before the next one reads it, and that compounded rounding error shows up as
+        // visible contour banding in smooth, low-variance regions -- exactly what a heavily
+        // blurred dark wallpaper produces. Compositing in float defers all rounding to a
+        // single conversion at the very end (see ConvertToEightBit), at which point the
+        // per-pixel noise already baked in at full precision acts as a dither, breaking the
+        // rounding error into imperceptible noise instead of bands.
         var renderInfo = new SKImageInfo(
             renderWidth,
             renderHeight,
-            SKColorType.Rgba8888,
-            SKAlphaType.Opaque);
+            SKColorType.RgbaF16,
+            SKAlphaType.Opaque,
+            MaterialColorSpace);
 
         using var surface = SKSurface.Create(renderInfo)
             ?? throw new InvalidOperationException(
@@ -243,6 +284,34 @@ public static class MicaMaterialGenerator
 
         canvas.Flush();
 
+        using SKImage floatComposite = surface.Snapshot();
+
+        // The one and only place this material gets rounded to 8-bit per channel. Doing it
+        // here, once, after everything above has already had the per-pixel noise mixed in
+        // at full float precision, is what makes that noise function as a dither rather than
+        // just a texture drawn on top of already-banded 8-bit data.
+        return ConvertToEightBit(floatComposite, renderWidth, renderHeight);
+    }
+
+    private static SKImage ConvertToEightBit(
+        SKImage floatComposite,
+        int renderWidth,
+        int renderHeight)
+    {
+        var eightBitInfo = new SKImageInfo(
+            renderWidth,
+            renderHeight,
+            SKColorType.Rgba8888,
+            SKAlphaType.Opaque,
+            MaterialColorSpace);
+
+        using var surface = SKSurface.Create(eightBitInfo)
+            ?? throw new InvalidOperationException(
+                "Failed to create 8-bit conversion surface.");
+
+        surface.Canvas.DrawImage(floatComposite, 0f, 0f);
+        surface.Canvas.Flush();
+
         return surface.Snapshot();
     }
 
@@ -265,12 +334,14 @@ public static class MicaMaterialGenerator
             BlendMode = SKBlendMode.SrcOver
         };
 
+        // The process image is always downscaled to a fixed reference dimension (see
+        // ProcessReferenceMaxDimension), so the magnification factor here grows with the
+        // render size -- roughly 8x at 1080p, ~32x at 8K. Bilinear looks soft/faceted at
+        // the larger end of that range; a Mitchell cubic resampler stays smooth throughout.
         canvas.DrawImage(
             processedWallpaper,
             destination,
-            new SKSamplingOptions(
-                SKFilterMode.Linear,
-                SKMipmapMode.None),
+            new SKSamplingOptions(SKCubicResampler.Mitchell),
             paint);
     }
 
@@ -280,22 +351,43 @@ public static class MicaMaterialGenerator
         int renderWidth,
         int renderHeight)
     {
-        byte tintAlpha = FloatToByte(theme.TintOpacity);
-
-        using var tintPaint = new SKPaint
+        // 1. Luminosity Pass: Normalizes extreme bright/dark spots in the wallpaper
+        // to match the theme color's brightness, guaranteeing text readability.
+        if (theme.LuminosityOpacity > 0f)
         {
-            Color = theme.TintColor.WithAlpha(tintAlpha),
-            Style = SKPaintStyle.Fill,
-            BlendMode = SKBlendMode.SrcOver,
-            IsAntialias = false
-        };
+            using var lumPaint = new SKPaint
+            {
+                Color = theme.TintColor.WithAlpha(FloatToByte(theme.LuminosityOpacity)),
+                Style = SKPaintStyle.Fill,
+                BlendMode = SKBlendMode.Luminosity,
+                IsAntialias = false
+            };
+            canvas.DrawRect(0f, 0f, renderWidth, renderHeight, lumPaint);
+        }
 
-        canvas.DrawRect(
-            0f,
-            0f,
-            renderWidth,
-            renderHeight,
-            tintPaint);
+        // 2. Color Pass: Dyes the underlying blurred blobs with the theme color
+        if (theme.TintOpacity > 0f)
+        {
+            using var colorPaint = new SKPaint
+            {
+                Color = theme.TintColor.WithAlpha(FloatToByte(theme.TintOpacity)),
+                Style = SKPaintStyle.Fill,
+                BlendMode = SKBlendMode.Color,
+                IsAntialias = false
+            };
+            canvas.DrawRect(0f, 0f, renderWidth, renderHeight, colorPaint);
+            
+            // 3. Fallback Opacity Pass: Ensures a minimum baseline opacity so highly vibrant
+            // wallpapers don't overwhelm the tint (essentially creating an Acrylic/Mica hybrid).
+            using var alphaPaint = new SKPaint
+            {
+                Color = theme.TintColor.WithAlpha(FloatToByte(theme.TintOpacity * 0.6f)),
+                Style = SKPaintStyle.Fill,
+                BlendMode = SKBlendMode.SrcOver,
+                IsAntialias = false
+            };
+            canvas.DrawRect(0f, 0f, renderWidth, renderHeight, alphaPaint);
+        }
     }
 
     private static void DrawMicaNoise(
@@ -317,7 +409,7 @@ public static class MicaMaterialGenerator
             noiseWidth,
             noiseHeight,
             SKColorType.Rgba8888,
-            SKAlphaType.Premul);
+            SKAlphaType.Unpremul);
 
         using var noiseBitmap = new SKBitmap(noiseInfo);
 
@@ -326,8 +418,8 @@ public static class MicaMaterialGenerator
 
         const int neutralGray = 128;
 
-        // Increase source deviation for more noticeable grain contrast
-        const int sourceDeviation = 50;
+        // Keep source deviation moderate for a finer, softer grain
+        const int sourceDeviation = 35;
 
         // SoftLight with middle gray is close to neutral, so the layer may
         // use a slightly higher alpha. We raise the clamp ceiling to allow stronger noise.
@@ -365,14 +457,13 @@ public static class MicaMaterialGenerator
             noiseBitmap,
             SKShaderTileMode.Repeat,
             SKShaderTileMode.Repeat,
-            SKMatrix.CreateIdentity());
+            SKMatrix.CreateScale(0.5f, 0.5f));
 
         using var noisePaint = new SKPaint
         {
             Shader = noiseShader,
-            BlendMode = SKBlendMode.Overlay,
-            IsAntialias = false,
-            FilterQuality = SKFilterQuality.None
+            BlendMode = SKBlendMode.SoftLight,
+            IsAntialias = true
         };
 
         canvas.DrawRect(
@@ -427,6 +518,37 @@ public static class MicaMaterialGenerator
         canvas.Flush();
 
         return destinationBitmap;
+    }
+
+    /// <summary>
+    /// Calculates the process (pre-blur) image dimensions from the render size.
+    ///
+    /// The process image is scaled to a fixed reference dimension rather than a fixed
+    /// fraction of the render size, so that the blur's effective strength stays consistent
+    /// whether this is a small window, a 1080p display, or an 8K display. See
+    /// <see cref="ProcessReferenceMaxDimension"/> for the rationale.
+    /// </summary>
+    private static (int Width, int Height) CalculateProcessDimensions(
+        int renderWidth,
+        int renderHeight)
+    {
+        int longestSide = Math.Max(renderWidth, renderHeight);
+
+        // Never upscale the process image beyond the render size itself -- relevant for
+        // small windows/thumbnails where renderWidth/Height is already below the reference.
+        double scale = Math.Min(
+            1.0,
+            ProcessReferenceMaxDimension / (double)longestSide);
+
+        int processWidth = Math.Max(
+            MinimumProcessDimension,
+            (int)Math.Round(renderWidth * scale));
+
+        int processHeight = Math.Max(
+            MinimumProcessDimension,
+            (int)Math.Round(renderHeight * scale));
+
+        return (processWidth, processHeight);
     }
 
     /// <summary>
@@ -532,6 +654,11 @@ public static class MicaMaterialGenerator
             0f,
             1f);
 
+        theme.LuminosityOpacity = Math.Clamp(
+            theme.LuminosityOpacity,
+            0f,
+            1f);
+
         theme.Saturation = Math.Clamp(
             theme.Saturation,
             0f,
@@ -540,7 +667,7 @@ public static class MicaMaterialGenerator
         theme.NoiseAmplitude = Math.Clamp(
             theme.NoiseAmplitude,
             0f,
-            0.01f);
+            0.1f);
 
         return theme;
     }
