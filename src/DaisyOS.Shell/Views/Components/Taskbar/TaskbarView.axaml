@@ -51,9 +51,8 @@
   -->
   <Border Height="52"
           Padding="6"
-          Background="{DynamicResource TaskbarMaterialBrush}"
-          BorderBrush="{DynamicResource TaskbarBorderBrush}"
-          BorderThickness="1"
+          Background="Transparent"
+          BorderThickness="0"
           CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 8 32 0 #60000000">
@@ -68,26 +67,32 @@
 
       <!-- Start Button -->
       <Button x:Name="StartButton" Classes="TaskbarApp" ToolTip.Tip="Start Menu">
-        <Grid Width="20" Height="20" ColumnDefinitions="*,*" RowDefinitions="*,*">
-          <Border Grid.Row="0" Grid.Column="0" Background="White" Margin="0,0,1,1" CornerRadius="1" />
-          <Border Grid.Row="0" Grid.Column="1" Background="White" Margin="1,0,0,1" CornerRadius="1" />
-          <Border Grid.Row="1" Grid.Column="0" Background="White" Margin="0,1,1,0" CornerRadius="1" />
-          <Border Grid.Row="1" Grid.Column="1" Background="White" Margin="1,1,0,0" CornerRadius="1" />
-        </Grid>
+        <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
+          <Grid Width="20" Height="20" ColumnDefinitions="*,*" RowDefinitions="*,*">
+            <Border Grid.Row="0" Grid.Column="0" Background="White" Margin="0,0,1,1" CornerRadius="1" />
+            <Border Grid.Row="0" Grid.Column="1" Background="White" Margin="1,0,0,1" CornerRadius="1" />
+            <Border Grid.Row="1" Grid.Column="0" Background="White" Margin="0,1,1,0" CornerRadius="1" />
+            <Border Grid.Row="1" Grid.Column="1" Background="White" Margin="1,1,0,0" CornerRadius="1" />
+          </Grid>
+        </Border>
       </Button>
 
       <!-- Reorderable App Icons Canvas. Width is set from code-behind. -->
       <Canvas x:Name="AppIconsCanvas" Height="40">
         <Button Classes="TaskbarAppIcon" Tag="settings" ToolTip.Tip="Settings">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
-                 RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="24" Height="24" IsHitTestVisible="False"/>
+          <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="24" Height="24" IsHitTestVisible="False"/>
+          </Border>
         </Button>
 
         <Button Classes="TaskbarAppIcon" Tag="files" ToolTip.Tip="Files">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
-                 RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="24" Height="24" IsHitTestVisible="False"/>
+          <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="24" Height="24" IsHitTestVisible="False"/>
+          </Border>
         </Button>
       </Canvas>
 
