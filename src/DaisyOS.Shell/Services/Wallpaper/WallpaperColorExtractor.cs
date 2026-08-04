@@ -28,9 +28,37 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         }
     }
 
+    /// <summary>Applies the wallpaper sampler to arbitrary image data, including album artwork.</summary>
+    public async Task<Color> ExtractSeedAsync(Stream imageStream, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await Task.Run(() => ExtractSeed(imageStream, cancellationToken), cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            return FallbackSeed;
+        }
+    }
+
     private static Color ExtractSeed(string wallpaperUri, CancellationToken cancellationToken)
     {
         using var stream = OpenWallpaper(wallpaperUri);
+        return ExtractSeed(stream, cancellationToken);
+    }
+
+    private static Color ExtractSeed(Stream stream, CancellationToken cancellationToken)
+    {
+        if (stream.CanSeek)
+        {
+            stream.Position = 0;
+        }
+
         using var codec = SKCodec.Create(stream);
         if (codec is null)
         {

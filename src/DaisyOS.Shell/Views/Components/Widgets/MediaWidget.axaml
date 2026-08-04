@@ -1,0 +1,63 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Views.Components.Widgets.MediaWidget"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="400"
+    Height="52"
+    HorizontalAlignment="Left"
+    VerticalAlignment="Bottom"
+    Margin="4,0,0,4">
+  <Border x:Name="MediaFrame"
+          Height="52"
+          Background="{DynamicResource SystemBarMaterialBrush}"
+          BorderBrush="{DynamicResource TaskbarBorderBrush}"
+          BorderThickness="1"
+          CornerRadius="12"
+          ClipToBounds="True"
+          BoxShadow="0 8 32 0 #60000000">
+    <Grid>
+      <!-- The adaptive artwork color sits above the shared System Bar material. -->
+      <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False"/>
+      <Grid Margin="4" ColumnDefinitions="44,*,120,28">
+      <Border Width="44" Height="44" CornerRadius="8" ClipToBounds="True">
+        <Grid>
+        <Image x:Name="Artwork" Stretch="UniformToFill" IsVisible="False"
+               RenderOptions.BitmapInterpolationMode="HighQuality"/>
+        <Border x:Name="SourceFallback" Background="#26000000">
+          <Grid>
+            <Image x:Name="SourceIcon" Width="24" Height="24" IsVisible="False"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"/>
+            <TextBlock x:Name="SourceGlyph" Text="music_note" FontSize="22"
+                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Grid>
+        </Border>
+        </Grid>
+      </Border>
+
+      <StackPanel Grid.Column="1" Margin="10,0,8,0" Spacing="1" VerticalAlignment="Center">
+        <TextBlock x:Name="MediaTitle" Text="Nothing playing" FontSize="13" FontWeight="SemiBold"
+                   TextTrimming="CharacterEllipsis" MaxLines="1"/>
+        <TextBlock x:Name="MediaArtist" Text="Start media to see controls" FontSize="11"
+                   Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
+      </StackPanel>
+
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Button Classes="ShellButton" Width="40" Height="40" Click="OnPreviousClicked" ToolTip.Tip="Previous track">
+          <TextBlock Text="skip_previous" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+        </Button>
+        <Button x:Name="PlayPauseButton" Classes="ShellButton" Width="40" Height="40" Click="OnPlayPauseClicked" ToolTip.Tip="Play">
+          <TextBlock x:Name="PlayPauseGlyph" Text="play_arrow" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+        </Button>
+        <Button Classes="ShellButton" Width="40" Height="40" Click="OnNextClicked" ToolTip.Tip="Next track">
+          <TextBlock Text="skip_next" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+        </Button>
+      </StackPanel>
+
+      <Canvas x:Name="SpectrumCanvas" Grid.Column="3" Width="28" Height="28"
+              VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False"/>
+      </Grid>
+    </Grid>
+  </Border>
+
+</UserControl>

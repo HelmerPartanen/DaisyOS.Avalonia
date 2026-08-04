@@ -5,7 +5,7 @@ namespace DaisyOS.System.Audio;
 
 public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
 {
-    private const int BarCount = 7;
+    private const int BarCount = 6;
     private const int SampleRate = 16_000;
     private const int SampleCount = 512;
     private const int BytesPerSample = 2;
