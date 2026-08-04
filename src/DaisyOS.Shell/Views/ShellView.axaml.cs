@@ -25,6 +25,7 @@ namespace DaisyOS.Shell.Views
             if (taskbar != null && launcher != null)
             {
                 taskbar.StartButtonClicked += (_, _) => SetLauncherOpen(launcher, taskbar, !launcher.IsVisible);
+                launcher.AppLaunchRequested += (_, _) => SetLauncherOpen(launcher, taskbar, false);
                 taskbar.AppIconClicked += async (_, appId) => await LaunchTaskbarAppAsync(appId, launcher, taskbar);
                 AddHandler(InputElement.PointerPressedEvent, (_, e) => DismissLauncherOnOutsidePress(e, launcher, taskbar), RoutingStrategies.Tunnel, handledEventsToo: true);
                 AddHandler(InputElement.KeyDownEvent, (_, e) => DismissLauncherOnEscape(e, launcher, taskbar), RoutingStrategies.Bubble, handledEventsToo: true);
