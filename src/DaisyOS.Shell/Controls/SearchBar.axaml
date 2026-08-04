@@ -8,13 +8,19 @@
             BorderBrush="{DynamicResource AppPrimaryContainerBrush}"
             BorderThickness="2"
             CornerRadius="22"
-            IsVisible="False"
-            IsHitTestVisible="False"/>
+            Opacity="0"
+            IsHitTestVisible="False">
+      <Border.Transitions>
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.12" Easing="QuadraticEaseOut"/>
+          <BrushTransition Property="BorderBrush" Duration="0:0:0.12" Easing="QuadraticEaseOut"/>
+        </Transitions>
+      </Border.Transitions>
+    </Border>
     <Border x:Name="SearchFrame"
-            Margin="1"
+            Margin="2"
             Background="#1AFFFFFF"
-            BorderBrush="{DynamicResource TaskbarBorderBrush}"
-            BorderThickness="1"
+
             CornerRadius="20"
             Padding="12,0">
       <Grid ColumnDefinitions="Auto,*">
