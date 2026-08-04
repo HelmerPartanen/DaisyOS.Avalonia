@@ -51,7 +51,7 @@
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
     <Style Selector="ToggleButton.QuickAction">
-      <Setter Property="Height" Value="58"/>
+      <Setter Property="Height" Value="48"/>
       <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="9"/>
@@ -61,12 +61,6 @@
     </Style>
     <Style Selector="ToggleButton.QuickAction:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
-    </Style>
-    <Style Selector="TextBlock.QuickActionDetail">
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
-    </Style>
-    <Style Selector="ToggleButton.WallpaperPrimaryButton:checked TextBlock.QuickActionDetail">
-      <Setter Property="Foreground" Value="{DynamicResource WallpaperPrimaryForegroundBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -106,7 +100,6 @@
                       <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Wi-Fi" FontSize="12" FontWeight="Regular"/>
-                        <TextBlock Text="Network options" Classes="QuickActionDetail" FontSize="10"/>
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
@@ -115,7 +108,6 @@
                       <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Bluetooth" FontSize="12" FontWeight="Regular"/>
-                        <TextBlock Text="Off" Classes="QuickActionDetail" FontSize="10"/>
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
@@ -124,7 +116,6 @@
                       <TextBlock Text="do_not_disturb_on" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Do not disturb" FontSize="12" FontWeight="Regular"/>
-                        <TextBlock Text="Mute alerts" Classes="QuickActionDetail" FontSize="10"/>
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
@@ -133,7 +124,6 @@
                       <TextBlock Text="dark_mode" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Night light" FontSize="12" FontWeight="Regular"/>
-                        <TextBlock Text="Reduce blue light" Classes="QuickActionDetail" FontSize="10"/>
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
