@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -83,6 +84,47 @@ public static class MicaMaterialGenerator
     private static readonly SKColorSpace MaterialColorSpace = SKColorSpace.CreateSrgb();
 
     /// <summary>
+    /// Samples the wallpaper on a bounded grid to produce a stable primary UI color.
+    /// </summary>
+    public static SKColor GetAverageWallpaperColor(string assetUri)
+    {
+        if (string.IsNullOrWhiteSpace(assetUri))
+        {
+            throw new ArgumentException("The wallpaper asset URI cannot be empty.", nameof(assetUri));
+        }
+
+        using var assetStream = AssetLoader.Open(new Uri(assetUri));
+        using var bitmap = SKBitmap.Decode(assetStream)
+            ?? throw new InvalidOperationException("Failed to decode wallpaper bitmap.");
+
+        int stepX = Math.Max(1, bitmap.Width / 64);
+        int stepY = Math.Max(1, bitmap.Height / 64);
+        long red = 0;
+        long green = 0;
+        long blue = 0;
+        long samples = 0;
+
+        for (int y = 0; y < bitmap.Height; y += stepY)
+        {
+            for (int x = 0; x < bitmap.Width; x += stepX)
+            {
+                SKColor color = bitmap.GetPixel(x, y);
+                red += color.Red;
+                green += color.Green;
+                blue += color.Blue;
+                samples++;
+            }
+        }
+
+        return samples == 0
+            ? SKColors.Gray
+            : new SKColor(
+                (byte)(red / samples),
+                (byte)(green / samples),
+                (byte)(blue / samples));
+    }
+
+    /// <summary>
     /// Generates a complete Mica-inspired material brush from a wallpaper asset.
     ///
     /// renderWidth and renderHeight should be physical pixel dimensions,
@@ -94,7 +136,35 @@ public static class MicaMaterialGenerator
         int renderWidth = 1920,
         int renderHeight = 1080)
     {
+        return GenerateMicaBrushes(
+            assetUri,
+            theme,
+            renderWidth,
+            renderHeight,
+            new Dictionary<string, PixelRect>
+            {
+                ["full"] = new PixelRect(0, 0, renderWidth, renderHeight)
+            })["full"];
+    }
+
+    /// <summary>
+    /// Generates one material image, then returns crops that correspond to the physical
+    /// screen regions occupied by shell surfaces. This preserves wallpaper variation
+    /// between the dock, system bar, and overlays without repeating expensive processing.
+    /// </summary>
+    public static IReadOnlyDictionary<string, IBrush> GenerateMicaBrushes(
+        string assetUri,
+        MicaTheme theme,
+        int renderWidth,
+        int renderHeight,
+        IReadOnlyDictionary<string, PixelRect> surfaceRegions)
+    {
         ValidateArguments(assetUri, renderWidth, renderHeight);
+
+        if (surfaceRegions.Count == 0)
+        {
+            throw new ArgumentException("At least one material surface region is required.", nameof(surfaceRegions));
+        }
 
         theme = NormalizeTheme(theme);
 
@@ -123,7 +193,15 @@ public static class MicaMaterialGenerator
             renderWidth,
             renderHeight);
 
-        return CreateAvaloniaBrush(finalImage);
+        var brushes = new Dictionary<string, IBrush>(surfaceRegions.Count, StringComparer.Ordinal);
+        foreach (var (name, region) in surfaceRegions)
+        {
+            var crop = ClampRegion(region, renderWidth, renderHeight);
+            using var croppedImage = finalImage.Subset(new SKRectI(crop.X, crop.Y, crop.Right, crop.Bottom));
+            brushes[name] = CreateAvaloniaBrush(croppedImage);
+        }
+
+        return brushes;
     }
 
     /// <summary>
@@ -534,10 +612,19 @@ public static class MicaMaterialGenerator
 
         return new ImageBrush(avaloniaBitmap)
         {
-            Stretch = Stretch.UniformToFill,
+            Stretch = Stretch.Fill,
             AlignmentX = AlignmentX.Center,
             AlignmentY = AlignmentY.Center
         };
+    }
+
+    private static PixelRect ClampRegion(PixelRect region, int renderWidth, int renderHeight)
+    {
+        int x = Math.Clamp(region.X, 0, renderWidth - 1);
+        int y = Math.Clamp(region.Y, 0, renderHeight - 1);
+        int right = Math.Clamp(region.Right, x + 1, renderWidth);
+        int bottom = Math.Clamp(region.Bottom, y + 1, renderHeight);
+        return new PixelRect(x, y, right - x, bottom - y);
     }
 
     private static MicaTheme NormalizeTheme(MicaTheme theme)

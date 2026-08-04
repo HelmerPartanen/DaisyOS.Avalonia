@@ -33,10 +33,24 @@
       <!-- Taskbar itself is Mica, so the background is transparent -->
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
                        Color="#00FFFFFF"/>
+      <SolidColorBrush x:Key="TaskbarMaterialBrush"
+                       Color="#00FFFFFF"/>
+      <SolidColorBrush x:Key="SystemBarMaterialBrush"
+                       Color="#00FFFFFF"/>
+      <SolidColorBrush x:Key="LauncherMaterialBrush"
+                       Color="#00FFFFFF"/>
 
-      <!-- Source tint used by MicaMaterialGenerator for its wallpaper underlay and overlay. -->
+      <!-- Mica tint color; strength is configured independently below. -->
       <SolidColorBrush x:Key="MicaTintBrush"
                        Color="#FFF3F3F3"/>
+      <x:Double x:Key="MicaTintOpacity">0.16</x:Double>
+      <x:Double x:Key="MicaLuminosityOpacity">0.16</x:Double>
+
+      <!-- Replaced at startup with the average active-wallpaper color. -->
+      <SolidColorBrush x:Key="WallpaperPrimaryBrush"
+                       Color="#FF4B8DFF"/>
+      <SolidColorBrush x:Key="WallpaperPrimaryForegroundBrush"
+                       Color="#FFFFFFFF"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AC7C7C7"/>
@@ -46,9 +60,6 @@
 
       <SolidColorBrush x:Key="TaskbarPressedBrush"
                        Color="#18FFFFFF"/>
-
-      <SolidColorBrush x:Key="SystemBarActiveBrush"
-                       Color="#260078D4"/>
 
       <SolidColorBrush x:Key="TextPrimaryBrush"
                        Color="#FF1A1A1A"/>
@@ -69,10 +80,24 @@
 
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
                        Color="#00000000"/>
+      <SolidColorBrush x:Key="TaskbarMaterialBrush"
+                       Color="#00000000"/>
+      <SolidColorBrush x:Key="SystemBarMaterialBrush"
+                       Color="#00000000"/>
+      <SolidColorBrush x:Key="LauncherMaterialBrush"
+                       Color="#00000000"/>
 
-      <!-- Source tint used by MicaMaterialGenerator for its wallpaper underlay and overlay. -->
+      <!-- Mica tint color; strength is configured independently below. -->
       <SolidColorBrush x:Key="MicaTintBrush"
                        Color="#000000"/>
+      <x:Double x:Key="MicaTintOpacity">0.16</x:Double>
+      <x:Double x:Key="MicaLuminosityOpacity">0.16</x:Double>
+
+      <!-- Replaced at startup with the average active-wallpaper color. -->
+      <SolidColorBrush x:Key="WallpaperPrimaryBrush"
+                       Color="#FF4B8DFF"/>
+      <SolidColorBrush x:Key="WallpaperPrimaryForegroundBrush"
+                       Color="#FF162A4A"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AFFFFFF"/>
@@ -82,9 +107,6 @@
 
       <SolidColorBrush x:Key="TaskbarPressedBrush"
                        Color="#22FFFFFF"/>
-
-      <SolidColorBrush x:Key="SystemBarActiveBrush"
-                       Color="#354B8DFF"/>
 
       <SolidColorBrush x:Key="TextPrimaryBrush"
                        Color="#FFF5F5F5"/>

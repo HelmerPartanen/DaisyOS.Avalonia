@@ -62,15 +62,18 @@
     <Style Selector="ToggleButton.QuickAction:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
-    <Style Selector="ToggleButton.QuickAction:checked /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SystemBarActiveBrush}"/>
+    <Style Selector="TextBlock.QuickActionDetail">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+    </Style>
+    <Style Selector="ToggleButton.WallpaperPrimaryButton:checked TextBlock.QuickActionDetail">
+      <Setter Property="Foreground" Value="{DynamicResource WallpaperPrimaryForegroundBrush}"/>
     </Style>
   </UserControl.Styles>
 
   <!-- Same material, height, padding, corner radius and shadow as TaskbarView. -->
   <Border Height="52"
           Padding="6"
-          Background="{DynamicResource TaskbarBackgroundBrush}"
+          Background="{DynamicResource SystemBarMaterialBrush}"
           BorderBrush="{DynamicResource TaskbarBorderBrush}"
           BorderThickness="1"
           CornerRadius="12"
@@ -91,46 +94,46 @@
         <Button.Flyout>
           <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-14" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}">
             <Border Width="320" Padding="16,14"
-                    Background="{DynamicResource TaskbarBackgroundBrush}"
+                    Background="{DynamicResource SystemBarMaterialBrush}"
                     BorderBrush="{DynamicResource TaskbarBorderBrush}"
                     BorderThickness="1" CornerRadius="14"
                     BoxShadow="0 12 36 0 #60000000">
               <StackPanel Spacing="14">
                 <TextBlock Text="Quick settings" FontSize="15" FontWeight="Regular"/>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="6" RowDefinitions="Auto,Auto" RowSpacing="6">
-                  <ToggleButton Grid.Row="0" Grid.Column="0" Classes="QuickAction" IsChecked="True" ToolTip.Tip="Choose a network">
+                  <ToggleButton Grid.Row="0" Grid.Column="0" Classes="QuickAction WallpaperPrimaryButton" IsChecked="True" ToolTip.Tip="Choose a network">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Wi-Fi" FontSize="12" FontWeight="Regular"/>
-                        <TextBlock Text="Network options" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Network options" Classes="QuickActionDetail" FontSize="10"/>
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="0" Grid.Column="1" Classes="QuickAction" ToolTip.Tip="Bluetooth">
+                  <ToggleButton Grid.Row="0" Grid.Column="1" Classes="QuickAction WallpaperPrimaryButton" ToolTip.Tip="Bluetooth">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Bluetooth" FontSize="12" FontWeight="Regular"/>
-                        <TextBlock Text="Off" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Off" Classes="QuickActionDetail" FontSize="10"/>
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="1" Grid.Column="0" Classes="QuickAction" ToolTip.Tip="Do not disturb">
+                  <ToggleButton Grid.Row="1" Grid.Column="0" Classes="QuickAction WallpaperPrimaryButton" ToolTip.Tip="Do not disturb">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="do_not_disturb_on" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Do not disturb" FontSize="12" FontWeight="Regular"/>
-                        <TextBlock Text="Mute alerts" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Mute alerts" Classes="QuickActionDetail" FontSize="10"/>
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="1" Grid.Column="1" Classes="QuickAction" ToolTip.Tip="Night light">
+                  <ToggleButton Grid.Row="1" Grid.Column="1" Classes="QuickAction WallpaperPrimaryButton" ToolTip.Tip="Night light">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="dark_mode" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="Night light" FontSize="12" FontWeight="Regular"/>
-                        <TextBlock Text="Reduce blue light" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}"/>
+                        <TextBlock Text="Reduce blue light" Classes="QuickActionDetail" FontSize="10"/>
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>

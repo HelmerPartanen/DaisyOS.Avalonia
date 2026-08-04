@@ -10,7 +10,7 @@
       Background="Black">
     <Image
         x:Name="WallpaperImage"
-        Source="avares://DaisyOS.Shell/Assets/Wallpapers/Wallpaper.jpg"
+        Source="avares://DaisyOS.Shell/Assets/Wallpapers/Purple.jpg"
         Stretch="UniformToFill"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"

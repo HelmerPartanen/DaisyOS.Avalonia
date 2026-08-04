@@ -32,5 +32,18 @@
       <Setter Property="FontWeight" Value="Regular" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
+
+    <!-- Reusable wallpaper-derived primary action treatment. -->
+    <Style Selector="Button.WallpaperPrimaryButton /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource WallpaperPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource WallpaperPrimaryForegroundBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.WallpaperPrimaryButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource WallpaperPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource WallpaperPrimaryForegroundBrush}" />
+    </Style>
+    <Style Selector="Button.WallpaperPrimaryButton TextBlock, ToggleButton.WallpaperPrimaryButton:checked TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource WallpaperPrimaryForegroundBrush}" />
+    </Style>
   </Application.Styles>
 </Application>

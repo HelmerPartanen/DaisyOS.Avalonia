@@ -7,7 +7,7 @@
              Width="680" Height="640">
   
   
-  <Border Background="{DynamicResource TaskbarBackgroundBrush}"
+  <Border Background="{DynamicResource LauncherMaterialBrush}"
           BorderBrush="{DynamicResource TaskbarBorderBrush}"
           BorderThickness="1"
           CornerRadius="12"
