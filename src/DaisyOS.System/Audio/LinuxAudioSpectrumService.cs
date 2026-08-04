@@ -13,8 +13,11 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
     // Equal-loudness compensation keeps a raw monitor signal from pinning the
     // bass bands. Values track the six logarithmic band centers from bass to treble.
     private static readonly double[] BandResponseCompensation = [0.22, 0.42, 0.72, 1.00, 1.20, 1.35];
+    private static readonly double[] HannWindow = CreateHannWindow();
     private readonly object _syncRoot = new();
     private readonly double[] _latestSpectrum = new double[BarCount];
+    private readonly double[] _real = new double[SampleCount];
+    private readonly double[] _imaginary = new double[SampleCount];
     private readonly CancellationTokenSource _disposeCts = new();
     private Task? _captureTask;
     private bool _disposed;
@@ -184,24 +187,24 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
         return offset;
     }
 
-    private static double[] AnalyzeSamples(byte[] buffer)
+    private double[]? AnalyzeSamples(byte[] buffer)
     {
-        var samples = new double[SampleCount];
         var rms = 0d;
         for (var i = 0; i < SampleCount; i++)
         {
             var sample = BitConverter.ToInt16(buffer, i * BytesPerSample) / 32768d;
-            var window = 0.5 - (0.5 * Math.Cos((2 * Math.PI * i) / (SampleCount - 1)));
-            samples[i] = sample * window;
+            _real[i] = sample * HannWindow[i];
             rms += sample * sample;
         }
 
         rms = Math.Sqrt(rms / SampleCount);
         if (rms < SilenceThreshold)
         {
-            return new double[BarCount];
+            return null;
         }
 
+        Array.Clear(_imaginary);
+        FastFourierTransform(_real, _imaginary);
         var bars = new double[BarCount];
         for (var band = 0; band < BarCount; band++)
         {
@@ -214,17 +217,7 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
             var count = 0;
             for (var bin = startBin; bin <= endBin; bin++)
             {
-                var real = 0d;
-                var imaginary = 0d;
-                var angleStep = (2 * Math.PI * bin) / SampleCount;
-                for (var sampleIndex = 0; sampleIndex < SampleCount; sampleIndex++)
-                {
-                    var angle = angleStep * sampleIndex;
-                    real += samples[sampleIndex] * Math.Cos(angle);
-                    imaginary -= samples[sampleIndex] * Math.Sin(angle);
-                }
-
-                var magnitude = Math.Sqrt((real * real) + (imaginary * imaginary)) / (SampleCount * 0.5);
+                var magnitude = Math.Sqrt((_real[bin] * _real[bin]) + (_imaginary[bin] * _imaginary[bin])) / (SampleCount * 0.5);
                 energy += magnitude * magnitude;
                 count++;
             }
@@ -236,6 +229,63 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
         }
 
         return bars;
+    }
+
+    private static double[] CreateHannWindow()
+    {
+        var window = new double[SampleCount];
+        for (var i = 0; i < SampleCount; i++)
+        {
+            window[i] = 0.5 - (0.5 * Math.Cos((2 * Math.PI * i) / (SampleCount - 1)));
+        }
+
+        return window;
+    }
+
+    private static void FastFourierTransform(double[] real, double[] imaginary)
+    {
+        for (int i = 1, reversed = 0; i < SampleCount; i++)
+        {
+            var bit = SampleCount >> 1;
+            for (; (reversed & bit) != 0; bit >>= 1)
+            {
+                reversed ^= bit;
+            }
+
+            reversed ^= bit;
+            if (i < reversed)
+            {
+                (real[i], real[reversed]) = (real[reversed], real[i]);
+                (imaginary[i], imaginary[reversed]) = (imaginary[reversed], imaginary[i]);
+            }
+        }
+
+        for (var length = 2; length <= SampleCount; length <<= 1)
+        {
+            var angle = -2 * Math.PI / length;
+            var stepReal = Math.Cos(angle);
+            var stepImaginary = Math.Sin(angle);
+            var halfLength = length >> 1;
+            for (var offset = 0; offset < SampleCount; offset += length)
+            {
+                var currentReal = 1d;
+                var currentImaginary = 0d;
+                for (var index = 0; index < halfLength; index++)
+                {
+                    var even = offset + index;
+                    var odd = even + halfLength;
+                    var oddReal = (real[odd] * currentReal) - (imaginary[odd] * currentImaginary);
+                    var oddImaginary = (real[odd] * currentImaginary) + (imaginary[odd] * currentReal);
+                    real[odd] = real[even] - oddReal;
+                    imaginary[odd] = imaginary[even] - oddImaginary;
+                    real[even] += oddReal;
+                    imaginary[even] += oddImaginary;
+                    var nextReal = (currentReal * stepReal) - (currentImaginary * stepImaginary);
+                    currentImaginary = (currentReal * stepImaginary) + (currentImaginary * stepReal);
+                    currentReal = nextReal;
+                }
+            }
+        }
     }
 
     private static double FrequencyForBandEdge(int edge)

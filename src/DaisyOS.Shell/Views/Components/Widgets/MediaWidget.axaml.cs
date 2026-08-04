@@ -20,12 +20,13 @@ namespace DaisyOS.Shell.Views.Components.Widgets;
 public partial class MediaWidget : UserControl
 {
     private const int SpectrumColumns = 6;
+    private static readonly HttpClient ArtworkHttpClient = new() { Timeout = TimeSpan.FromSeconds(3) };
     private readonly IMediaSessionService _mediaService = new LinuxMediaSessionService(new SafeCommandRunner());
-    private readonly IAudioSpectrumService _audioSpectrumService = new LinuxAudioSpectrumService();
     private readonly IWallpaperColorExtractor _colorExtractor = new WallpaperColorExtractor();
     private readonly DispatcherTimer _spectrumTimer = new() { Interval = TimeSpan.FromMilliseconds(33) };
     private readonly List<Border> _spectrumBars = [];
     private CancellationTokenSource? _refreshCancellation;
+    private IAudioSpectrumService? _audioSpectrumService;
     private Bitmap? _artwork;
     private bool _isPlaying;
     private bool _spectrumUpdateInFlight;
@@ -57,7 +58,8 @@ public partial class MediaWidget : UserControl
         {
             disposable.Dispose();
         }
-        _audioSpectrumService.Dispose();
+        _audioSpectrumService?.Dispose();
+        _audioSpectrumService = null;
     }
 
     private void OnMediaChanged(object? sender, EventArgs e) =>
@@ -96,6 +98,7 @@ public partial class MediaWidget : UserControl
         _artwork?.Dispose();
         _artwork = artwork;
         _isPlaying = session?.IsPlaying == true;
+        UpdateSpectrumCaptureState();
 
         this.FindControl<TextBlock>("MediaTitle")!.Text = session?.Title ?? "Nothing playing";
         this.FindControl<TextBlock>("MediaArtist")!.Text = session is null
@@ -121,7 +124,22 @@ public partial class MediaWidget : UserControl
         tintLayer.Background = tint is { } color
             ? new SolidColorBrush(Color.FromArgb(128, color.R, color.G, color.B))
             : Brushes.Transparent;
+    }
 
+    private void UpdateSpectrumCaptureState()
+    {
+        if (_isPlaying && _audioSpectrumService is null)
+        {
+            _audioSpectrumService = new LinuxAudioSpectrumService();
+            return;
+        }
+
+        if (!_isPlaying && _audioSpectrumService is not null)
+        {
+            _audioSpectrumService.Dispose();
+            _audioSpectrumService = null;
+            ResetSpectrum();
+        }
     }
 
     private async void OnPreviousClicked(object? sender, RoutedEventArgs e) => await RunMediaCommandAsync(_mediaService.PreviousAsync);
@@ -192,10 +210,17 @@ public partial class MediaWidget : UserControl
             return;
         }
 
+        var spectrumService = _audioSpectrumService;
+        if (!_isPlaying || spectrumService is null)
+        {
+            ResetSpectrum();
+            return;
+        }
+
         _spectrumUpdateInFlight = true;
         try
         {
-            var spectrum = await _audioSpectrumService.GetSpectrumAsync();
+            var spectrum = await spectrumService.GetSpectrumAsync();
             for (var index = 0; index < _spectrumBars.Count; index++)
             {
                 // The analyser returns six logarithmic ranges: bass on the left, treble on the right.
@@ -209,14 +234,19 @@ public partial class MediaWidget : UserControl
         }
         catch
         {
-            foreach (var bar in _spectrumBars)
-            {
-                ((ScaleTransform)bar.RenderTransform!).ScaleY = 0.12;
-            }
+            ResetSpectrum();
         }
         finally
         {
             _spectrumUpdateInFlight = false;
+        }
+    }
+
+    private void ResetSpectrum()
+    {
+        foreach (var bar in _spectrumBars)
+        {
+            ((ScaleTransform)bar.RenderTransform!).ScaleY = 0.12;
         }
     }
 
@@ -238,8 +268,7 @@ public partial class MediaWidget : UserControl
             byte[] bytes;
             if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
             {
-                using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
-                bytes = await client.GetByteArrayAsync(uri, cancellationToken);
+                bytes = await ArtworkHttpClient.GetByteArrayAsync(uri, cancellationToken);
             }
             else
             {
