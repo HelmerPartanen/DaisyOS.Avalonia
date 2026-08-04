@@ -28,18 +28,12 @@ public struct MicaTheme
     /// </summary>
     public float Saturation { get; set; }
 
-    /// <summary>
-    /// Strength of the subtle Mica micro-noise.
-    /// </summary>
-    public float NoiseAmplitude { get; set; }
-
     public static MicaTheme DarkBase => new()
     {
         TintColor = new SKColor(32, 32, 32),
         TintOpacity = 0.70f,
         LuminosityOpacity = 0.85f,
-        Saturation = 1.0f,
-        NoiseAmplitude = 0.015f
+        Saturation = 1.0f
     };
 
     public static MicaTheme LightBase => new()
@@ -47,8 +41,7 @@ public struct MicaTheme
         TintColor = new SKColor(243, 243, 243),
         TintOpacity = 0.70f,
         LuminosityOpacity = 0.85f,
-        Saturation = 1.0f,
-        NoiseAmplitude = 0.012f
+        Saturation = 1.0f
     };
 
     public static MicaTheme DarkAlt => new()
@@ -56,8 +49,7 @@ public struct MicaTheme
         TintColor = new SKColor(20, 20, 20),
         TintOpacity = 0.75f,
         LuminosityOpacity = 0.90f,
-        Saturation = 1.0f,
-        NoiseAmplitude = 0.018f
+        Saturation = 1.0f
     };
 
     public static MicaTheme LightAlt => new()
@@ -65,15 +57,12 @@ public struct MicaTheme
         TintColor = new SKColor(230, 230, 230),
         TintOpacity = 0.75f,
         LuminosityOpacity = 0.90f,
-        Saturation = 1.0f,
-        NoiseAmplitude = 0.012f
+        Saturation = 1.0f
     };
 }
 
 public static class MicaMaterialGenerator
 {
-    private const int NoiseSeed = 0x4D494341;
-
     // The process (blur) image is sized off this reference dimension rather than a fixed
     // ratio of the render size. 240px is what a 1920x1080 render already produced under the
     // old "renderWidth / 8" scheme, so behavior at that reference resolution is unchanged.
@@ -242,13 +231,12 @@ public static class MicaMaterialGenerator
     {
         // RgbaF16 (16-bit float per channel) rather than Rgba8888 here is deliberate: this
         // surface goes through five sequential blend passes (wallpaper draw, luminosity,
-        // color, fallback opacity, noise). At 8-bit precision each pass rounds its result
+        // color, fallback opacity). At 8-bit precision each pass rounds its result
         // before the next one reads it, and that compounded rounding error shows up as
         // visible contour banding in smooth, low-variance regions -- exactly what a heavily
         // blurred dark wallpaper produces. Compositing in float defers all rounding to a
-        // single conversion at the very end (see ConvertToEightBit), at which point the
-        // per-pixel noise already baked in at full precision acts as a dither, breaking the
-        // rounding error into imperceptible noise instead of bands.
+        // single conversion at the very end (see ConvertToEightBit), keeping the material
+        // smooth without overlaying a visible texture.
         var renderInfo = new SKImageInfo(
             renderWidth,
             renderHeight,
@@ -275,20 +263,12 @@ public static class MicaMaterialGenerator
             renderWidth,
             renderHeight);
 
-        DrawMicaNoise(
-            canvas,
-            renderWidth,
-            renderHeight,
-            theme.NoiseAmplitude);
-
         canvas.Flush();
 
         using SKImage floatComposite = surface.Snapshot();
 
         // The one and only place this material gets rounded to 8-bit per channel. Doing it
-        // here, once, after everything above has already had the per-pixel noise mixed in
-        // at full float precision, is what makes that noise function as a dither rather than
-        // just a texture drawn on top of already-banded 8-bit data.
+        // here, once, after all wallpaper and tint compositing is complete.
         return ConvertToEightBit(floatComposite, renderWidth, renderHeight);
     }
 
@@ -386,90 +366,6 @@ public static class MicaMaterialGenerator
             };
             canvas.DrawRect(0f, 0f, renderWidth, renderHeight, alphaPaint);
         }
-    }
-
-    private static void DrawMicaNoise(
-        SKCanvas canvas,
-        int renderWidth,
-        int renderHeight,
-        float amplitude)
-    {
-        if (amplitude <= 0f)
-        {
-            return;
-        }
-
-        // Unequal, non-power-of-two dimensions make repetition less obvious.
-        const int noiseWidth = 73;
-        const int noiseHeight = 71;
-
-        var noiseInfo = new SKImageInfo(
-            noiseWidth,
-            noiseHeight,
-            SKColorType.Rgba8888,
-            SKAlphaType.Unpremul);
-
-        using var noiseBitmap = new SKBitmap(noiseInfo);
-
-        var random = new Random(NoiseSeed);
-        var pixels = new SKColor[noiseWidth * noiseHeight];
-
-        const int neutralGray = 128;
-
-        // Keep source deviation moderate for a finer, softer grain
-        const int sourceDeviation = 35;
-
-        // SoftLight with middle gray is close to neutral, so the layer may
-        // use a slightly higher alpha. We raise the clamp ceiling to allow stronger noise.
-        byte layerAlpha = FloatToByte(
-            Math.Clamp(amplitude * 16f, 0f, 0.40f));
-
-        for (int i = 0; i < pixels.Length; i++)
-        {
-            // Difference of two uniform samples gives a triangular
-            // distribution. Most values remain close to neutral gray,
-            // with fewer bright or dark extremes.
-            float triangularNoise =
-                (float)random.NextDouble() -
-                (float)random.NextDouble();
-
-            int grayValue = neutralGray +
-                (int)MathF.Round(
-                    triangularNoise * sourceDeviation);
-
-            byte gray = (byte)Math.Clamp(
-                grayValue,
-                0,
-                255);
-
-            pixels[i] = new SKColor(
-                gray,
-                gray,
-                gray,
-                layerAlpha);
-        }
-
-        noiseBitmap.Pixels = pixels;
-
-        using var noiseShader = SKShader.CreateBitmap(
-            noiseBitmap,
-            SKShaderTileMode.Repeat,
-            SKShaderTileMode.Repeat,
-            SKMatrix.CreateScale(0.5f, 0.5f));
-
-        using var noisePaint = new SKPaint
-        {
-            Shader = noiseShader,
-            BlendMode = SKBlendMode.SoftLight,
-            IsAntialias = true
-        };
-
-        canvas.DrawRect(
-            0f,
-            0f,
-            renderWidth,
-            renderHeight,
-            noisePaint);
     }
 
     private static SKBitmap ResizeWallpaperToFill(
@@ -660,11 +556,6 @@ public static class MicaMaterialGenerator
             theme.Saturation,
             0f,
             1f);
-
-        theme.NoiseAmplitude = Math.Clamp(
-            theme.NoiseAmplitude,
-            0f,
-            0.1f);
 
         return theme;
     }

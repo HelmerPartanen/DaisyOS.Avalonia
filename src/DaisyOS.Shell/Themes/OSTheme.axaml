@@ -34,6 +34,10 @@
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
                        Color="#00FFFFFF"/>
 
+      <!-- Source tint used by MicaMaterialGenerator for its wallpaper underlay and overlay. -->
+      <SolidColorBrush x:Key="MicaTintBrush"
+                       Color="#FFF3F3F3"/>
+
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AC7C7C7"/>
 
@@ -42,6 +46,9 @@
 
       <SolidColorBrush x:Key="TaskbarPressedBrush"
                        Color="#18FFFFFF"/>
+
+      <SolidColorBrush x:Key="SystemBarActiveBrush"
+                       Color="#260078D4"/>
 
       <SolidColorBrush x:Key="TextPrimaryBrush"
                        Color="#FF1A1A1A"/>
@@ -63,6 +70,10 @@
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
                        Color="#00000000"/>
 
+      <!-- Source tint used by MicaMaterialGenerator for its wallpaper underlay and overlay. -->
+      <SolidColorBrush x:Key="MicaTintBrush"
+                       Color="#FF1E1E1E"/>
+
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AFFFFFF"/>
 
@@ -71,6 +82,9 @@
 
       <SolidColorBrush x:Key="TaskbarPressedBrush"
                        Color="#22FFFFFF"/>
+
+      <SolidColorBrush x:Key="SystemBarActiveBrush"
+                       Color="#354B8DFF"/>
 
       <SolidColorBrush x:Key="TextPrimaryBrush"
                        Color="#FFF5F5F5"/>
@@ -82,7 +96,7 @@
                        Color="#99F5F5F5"/>
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
-                       Color="#202020"/>
+                       Color="#1E1E1E"/>
 
     </ResourceDictionary>
 

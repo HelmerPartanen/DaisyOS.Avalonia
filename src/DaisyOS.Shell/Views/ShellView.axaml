@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:desktop="clr-namespace:DaisyOS.Shell.Views.Components.Desktop"
     xmlns:taskbar="clr-namespace:DaisyOS.Shell.Views.Components.Taskbar"
+    xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
     xmlns:launcher="clr-namespace:DaisyOS.Shell.Views.Components.Launcher"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
@@ -19,5 +20,8 @@
 
         <!-- Taskbar -->
         <taskbar:TaskbarView x:Name="Taskbar" VerticalAlignment="Bottom" ZIndex="20"/>
+
+        <!-- System bar: right-edge status, tray, quick settings, notifications and calendar. -->
+        <systembar:SystemBarView x:Name="SystemBar" ZIndex="20"/>
     </Grid>
 </UserControl>
