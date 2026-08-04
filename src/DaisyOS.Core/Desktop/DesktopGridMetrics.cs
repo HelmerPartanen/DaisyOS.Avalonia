@@ -56,7 +56,7 @@ public class DesktopGridMetrics
         double availableHeight = Math.Max(0, WorkArea.Height - edgeInsetY * 2);
         
         // Calculate optimal column and row count
-        int cols = Math.Max(1, (int)Math.Round(availableWidth / cellWidth));
+        int cols = Math.Max(1, (int)Math.Floor(availableWidth / cellWidth));
         int rows = Math.Max(1, (int)Math.Floor(availableHeight / cellHeight));
         
         ColumnCount = cols;

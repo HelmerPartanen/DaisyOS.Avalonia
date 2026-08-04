@@ -34,10 +34,12 @@ public sealed class LinuxGamingService : IGamingService
 
         await Task.WhenAll(gpuTask, toolsTask, vulkanTask, vulkan32Task, controllerRulesTask, bluetoothTask);
 
-        var (gpuVendor, gpuModel) = gpuTask.Result;
-        var (steam, gamemode, mangohud, gamescope, wine) = toolsTask.Result;
-        var (vulkanAvailable, vulkanDriver) = vulkanTask.Result;
-        var (bluetoothAvailable, bluetoothRunning) = bluetoothTask.Result;
+        var (gpuVendor, gpuModel) = await gpuTask;
+        var (steam, gamemode, mangohud, gamescope, wine) = await toolsTask;
+        var (vulkanAvailable, vulkanDriver) = await vulkanTask;
+        var (bluetoothAvailable, bluetoothRunning) = await bluetoothTask;
+        var vulkan32 = await vulkan32Task;
+        var controllerRules = await controllerRulesTask;
 
         var details = BuildDetail(
             gpuVendor,
@@ -48,9 +50,9 @@ public sealed class LinuxGamingService : IGamingService
             gamescope,
             wine,
             vulkanAvailable,
-            vulkan32Task.Result,
+            vulkan32,
             vulkanDriver,
-            controllerRulesTask.Result,
+            controllerRules,
             bluetoothAvailable,
             bluetoothRunning);
 
@@ -61,11 +63,11 @@ public sealed class LinuxGamingService : IGamingService
             gamescope,
             wine,
             vulkanAvailable,
-            vulkan32Task.Result,
+            vulkan32,
             vulkanDriver,
             gpuVendor,
             gpuModel,
-            controllerRulesTask.Result,
+            controllerRules,
             bluetoothAvailable,
             bluetoothRunning,
             details);

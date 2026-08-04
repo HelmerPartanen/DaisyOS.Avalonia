@@ -1,16 +1,15 @@
 <UserControl
     x:Class="UIKit.Components.DateTimeField"
     xmlns="https://github.com/avaloniaui"
-    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls;assembly=DaisyOS.Shell"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
     <StackPanel Spacing="5">
       <TextBlock Classes="Caption" Text="DATE" />
-      <controls:TextField Text="{Binding DateText, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}" ToolTip.Tip="Localized date field" />
+      <TextBox Text="{Binding DateText, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}" ToolTip.Tip="Localized date field" />
     </StackPanel>
     <StackPanel Grid.Column="1" Spacing="5">
       <TextBlock Classes="Caption" Text="TIME" />
-      <controls:TextField Text="{Binding TimeText, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}" ToolTip.Tip="24-hour time field" />
+      <TextBox Text="{Binding TimeText, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}" ToolTip.Tip="24-hour time field" />
     </StackPanel>
   </Grid>
 </UserControl>

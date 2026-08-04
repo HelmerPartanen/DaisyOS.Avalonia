@@ -223,7 +223,6 @@ public static class MicaMaterialGenerator
         using var processPaint = new SKPaint
         {
             IsAntialias = true,
-            FilterQuality = SKFilterQuality.High,
             ColorFilter = saturationFilter,
             ImageFilter = blurFilter,
             BlendMode = SKBlendMode.SrcOver
@@ -330,7 +329,6 @@ public static class MicaMaterialGenerator
         using var paint = new SKPaint
         {
             IsAntialias = true,
-            FilterQuality = SKFilterQuality.High,
             BlendMode = SKBlendMode.SrcOver
         };
 
@@ -505,7 +503,6 @@ public static class MicaMaterialGenerator
         using var paint = new SKPaint
         {
             IsAntialias = true,
-            FilterQuality = SKFilterQuality.High,
             BlendMode = SKBlendMode.Src
         };
 

@@ -6,16 +6,12 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/OSColors.axaml" />
-        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/KWinBlurSettings.axaml" />
-        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/OSLayout.axaml" />
-        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/OSMotion.axaml" />
+        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/OSTheme.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
   <Application.Styles>
     <fluent:FluentTheme DensityStyle="Normal" />
-    <StyleInclude Source="avares://DaisyOS.Shell/Themes/DaisyOSTheme.axaml" />
     <StyleInclude Source="avares://UIKit/UIKitStyles.axaml" />
   </Application.Styles>
 </Application>

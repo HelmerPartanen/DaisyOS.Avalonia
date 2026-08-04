@@ -88,14 +88,14 @@
           <StackPanel Spacing="16">
             <StackPanel Spacing="3"><TextBlock Classes="UIKitSectionTitle" Text="Inputs &amp; selection" /><TextBlock Classes="UIKitSectionCaption" Text="Text, search, choice, toggles, value controls, and disabled states." /></StackPanel>
             <Grid ColumnDefinitions="*,*" ColumnSpacing="20" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="14">
-              <StackPanel Spacing="8"><TextBlock Classes="Caption" Text="TEXT FIELD" /><controls:TextField PlaceholderText="Type something" Text="Sample value" /></StackPanel>
-              <StackPanel Grid.Column="1" Spacing="8"><TextBlock Classes="Caption" Text="SEARCH" /><controls:SearchBox PlaceholderText="Search components" /></StackPanel>
+              <StackPanel Spacing="8"><TextBlock Classes="Caption" Text="TEXT FIELD" /><TextBox PlaceholderText="Type something" Text="Sample value" /></StackPanel>
+              <StackPanel Grid.Column="1" Spacing="8"><TextBlock Classes="Caption" Text="SEARCH" /><controls:SearchBar /></StackPanel>
               <StackPanel Grid.Row="1" Spacing="8"><TextBlock Classes="Caption" Text="COMBO BOX" /><components:ComboBox /></StackPanel>
               <StackPanel Grid.Row="1" Grid.Column="1" Spacing="8"><TextBlock Classes="Caption" Text="TOGGLE &amp; CHECK" /><StackPanel Orientation="Horizontal" Spacing="18"><ToggleSwitch IsChecked="True" Content="Enabled" /><CheckBox IsChecked="True" Content="Checked" /><CheckBox IsEnabled="False" Content="Disabled" /></StackPanel></StackPanel>
               <StackPanel Grid.Row="2" Spacing="8"><TextBlock Classes="Caption" Text="RADIO BUTTONS" /><StackPanel Orientation="Horizontal" Spacing="16"><RadioButton GroupName="density" IsChecked="True" Content="Comfortable" /><RadioButton GroupName="density" Content="Compact" /></StackPanel></StackPanel>
               <StackPanel Grid.Row="2" Grid.Column="1" Spacing="8"><TextBlock Classes="Caption" Text="SLIDER" /><components:Slider Minimum="0" Maximum="100" Value="62" Step="1" HorizontalAlignment="Stretch" /></StackPanel>
               <StackPanel Grid.Row="3" Spacing="8"><TextBlock Classes="Caption" Text="DATE &amp; TIME" /><components:DateTimeField /><TextBlock Classes="Caption Secondary" Text="Use localized date formats and a 24-hour time." /></StackPanel>
-              <StackPanel Grid.Row="3" Grid.Column="1" Spacing="8"><TextBlock Classes="Caption" Text="TEXT FIELD STATES" /><Grid ColumnDefinitions="*,*" ColumnSpacing="10"><controls:TextField PlaceholderText="Optional value" /><controls:TextField Grid.Column="1" Text="Unavailable" IsEnabled="False" /></Grid></StackPanel>
+              <StackPanel Grid.Row="3" Grid.Column="1" Spacing="8"><TextBlock Classes="Caption" Text="TEXT FIELD STATES" /><Grid ColumnDefinitions="*,*" ColumnSpacing="10"><TextBox PlaceholderText="Optional value" /><TextBox Grid.Column="1" Text="Unavailable" IsEnabled="False" /></Grid></StackPanel>
             </Grid>
           </StackPanel>
         </Border>

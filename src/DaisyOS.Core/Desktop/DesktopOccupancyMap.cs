@@ -60,9 +60,9 @@ public class DesktopOccupancyMap
         queue.Enqueue(target);
         visited.Add(target);
 
-        // Prioritize down and right to prefer filling naturally
-        int[] dx = { 0, 1, 0, -1 };
-        int[] dy = { 1, 0, -1, 0 };
+        // Prioritize candidates by lowest column first, then lowest row
+        int[] dx = { -1, 0, 0, 1 };
+        int[] dy = { 0, -1, 1, 0 };
 
         while (queue.Count > 0)
         {
