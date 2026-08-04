@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
              x:Class="DaisyOS.Shell.Views.Components.Launcher.LauncherView"
              x:DataType="vm:LauncherViewModel"
-             Width="680" Height="600">
+             Width="680" Height="640">
   
   
   <Border Background="{DynamicResource TaskbarBackgroundBrush}"
@@ -236,8 +236,14 @@
           </Button>
 
           <!-- Right: Power Action Button -->
-          <Button Grid.Column="1" Classes="SubtleLink" CornerRadius="18" Padding="8" VerticalAlignment="Center" ToolTip.Tip="Power">
-            <PathIcon Data="M 12 3 L 12 11 M 6.3 5.3 A 9 9 0 1 0 17.7 5.3" Width="18" Height="18" Foreground="{DynamicResource TextPrimaryBrush}"/>
+          <Button Grid.Column="1" Classes="SubtleLink"
+                  Width="40" Height="40" CornerRadius="8" Padding="0"
+                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                  VerticalAlignment="Center" ToolTip.Tip="Power">
+            <TextBlock Text="power_settings_new"
+                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                       FontSize="20"
+                       Foreground="{DynamicResource TextPrimaryBrush}"/>
           </Button>
 
         </Grid>
