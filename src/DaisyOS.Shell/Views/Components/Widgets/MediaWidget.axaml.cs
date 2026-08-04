@@ -1,4 +1,6 @@
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -21,7 +23,7 @@ public partial class MediaWidget : UserControl
     private readonly IMediaSessionService _mediaService = new LinuxMediaSessionService(new SafeCommandRunner());
     private readonly IAudioSpectrumService _audioSpectrumService = new LinuxAudioSpectrumService();
     private readonly IWallpaperColorExtractor _colorExtractor = new WallpaperColorExtractor();
-    private readonly DispatcherTimer _spectrumTimer = new() { Interval = TimeSpan.FromMilliseconds(42) };
+    private readonly DispatcherTimer _spectrumTimer = new() { Interval = TimeSpan.FromMilliseconds(33) };
     private readonly List<Border> _spectrumBars = [];
     private CancellationTokenSource? _refreshCancellation;
     private Bitmap? _artwork;
@@ -165,6 +167,17 @@ public partial class MediaWidget : UserControl
         Background = new SolidColorBrush(Color.FromArgb(185, 255, 255, 255)),
         RenderTransformOrigin = RelativePoint.Center,
         RenderTransform = new ScaleTransform(1, idleScale)
+        {
+            Transitions = new Transitions
+            {
+                new DoubleTransition
+                {
+                    Property = ScaleTransform.ScaleYProperty,
+                    Duration = TimeSpan.FromMilliseconds(75),
+                    Easing = new CubicEaseOut()
+                }
+            }
+        }
     };
 
     private async void UpdateSpectrum()
@@ -183,14 +196,14 @@ public partial class MediaWidget : UserControl
                 // The analyser returns six logarithmic ranges: bass on the left, treble on the right.
                 var amplitude = index < spectrum.Count ? spectrum[index] : 0;
                 var scale = 0.12 + (Math.Clamp(amplitude, 0, 1) * 0.88);
-                _spectrumBars[index].RenderTransform = new ScaleTransform(1, scale);
+                ((ScaleTransform)_spectrumBars[index].RenderTransform!).ScaleY = scale;
             }
         }
         catch
         {
             foreach (var bar in _spectrumBars)
             {
-                bar.RenderTransform = new ScaleTransform(1, 0.12);
+                ((ScaleTransform)bar.RenderTransform!).ScaleY = 0.12;
             }
         }
         finally

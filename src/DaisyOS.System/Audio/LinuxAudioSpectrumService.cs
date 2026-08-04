@@ -249,7 +249,9 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
             for (var i = 0; i < BarCount; i++)
             {
                 var target = spectrum is null ? 0 : spectrum[i];
-                _latestSpectrum[i] = (_latestSpectrum[i] * 0.3) + (target * 0.7);
+                // Fast attack keeps beats immediate; a gentler release removes flicker between samples.
+                var response = target > _latestSpectrum[i] ? 0.68 : 0.24;
+                _latestSpectrum[i] += (target - _latestSpectrum[i]) * response;
             }
         }
     }
