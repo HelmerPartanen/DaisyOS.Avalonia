@@ -14,6 +14,8 @@
   <SolidColorBrush x:Key="AppSurfaceContainerHighestBrush" Color="#FF36343B"/>
   <SolidColorBrush x:Key="AppOnSurfaceBrush" Color="#FFE6E1E5"/>
   <SolidColorBrush x:Key="AppOnSurfaceVariantBrush" Color="#FFCAC4D0"/>
+  <!-- Color companion for vector assets whose SVG fill uses currentColor. -->
+  <Color x:Key="AppPrimaryColor">#FFD0BCFF</Color>
   <SolidColorBrush x:Key="AppPrimaryBrush" Color="#FFD0BCFF"/>
   <SolidColorBrush x:Key="AppOnPrimaryBrush" Color="#FF381E72"/>
   <SolidColorBrush x:Key="AppPrimaryContainerBrush" Color="#FF4F378B"/>

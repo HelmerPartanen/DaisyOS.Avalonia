@@ -64,6 +64,7 @@ public sealed class DynamicThemeService
         Set(resources, "AppSurfaceContainerHighestBrush", scheme.SurfaceContainerHighest);
         Set(resources, "AppOnSurfaceBrush", scheme.OnSurface);
         Set(resources, "AppOnSurfaceVariantBrush", scheme.OnSurfaceVariant);
+        SetColor(resources, "AppPrimaryColor", scheme.Primary);
         Set(resources, "AppPrimaryBrush", scheme.Primary);
         Set(resources, "AppOnPrimaryBrush", scheme.OnPrimary);
         Set(resources, "AppPrimaryContainerBrush", scheme.PrimaryContainer);
@@ -91,4 +92,7 @@ public sealed class DynamicThemeService
 
     private static void Set(IResourceDictionary resources, string key, Color color) =>
         resources[key] = new SolidColorBrush(color);
+
+    private static void SetColor(IResourceDictionary resources, string key, Color color) =>
+        resources[key] = color;
 }

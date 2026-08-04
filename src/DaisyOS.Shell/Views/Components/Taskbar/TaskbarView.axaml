@@ -2,6 +2,7 @@
     x:Class="DaisyOS.Shell.Views.Components.Taskbar.TaskbarView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
     HorizontalAlignment="Center"
     VerticalAlignment="Bottom"
     Margin="0,0,0,4">
@@ -68,12 +69,11 @@
       <!-- Start Button -->
       <Button x:Name="StartButton" Classes="TaskbarApp" ToolTip.Tip="Start Menu">
         <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
-          <Grid Width="20" Height="20" ColumnDefinitions="*,*" RowDefinitions="*,*">
-            <Border Grid.Row="0" Grid.Column="0" Background="White" Margin="0,0,1,1" CornerRadius="1" />
-            <Border Grid.Row="0" Grid.Column="1" Background="White" Margin="1,0,0,1" CornerRadius="1" />
-            <Border Grid.Row="1" Grid.Column="0" Background="White" Margin="0,1,1,0" CornerRadius="1" />
-            <Border Grid.Row="1" Grid.Column="1" Background="White" Margin="1,1,0,0" CornerRadius="1" />
-          </Grid>
+          <!-- The favicon uses currentColor, allowing it to follow the dynamic primary role. -->
+          <svg:Svg Width="22" Height="22"
+                   Path="avares://DaisyOS.Shell/Assets/Brand/favicon.svg"
+                   CurrentColor="{DynamicResource AppPrimaryColor}"
+                   Stretch="Uniform"/>
         </Border>
       </Button>
 
