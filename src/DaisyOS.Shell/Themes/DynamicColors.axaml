@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <!-- Fallback Material 3 roles. DynamicThemeService replaces all values atomically. -->
+  <SolidColorBrush x:Key="DesktopItemLabelBrush" Color="#FFF5F5F5"/>
   <SolidColorBrush x:Key="AppBackgroundBrush" Color="#FF1C1B1F"/>
   <SolidColorBrush x:Key="AppOnBackgroundBrush" Color="#FFE6E1E5"/>
   <SolidColorBrush x:Key="AppSurfaceBrush" Color="#FF1C1B1F"/>

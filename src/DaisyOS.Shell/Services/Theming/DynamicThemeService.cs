@@ -29,10 +29,14 @@ public sealed class DynamicThemeService
         var token = _refreshCancellation.Token;
         var seed = await _extractor.ExtractSeedAsync(wallpaperUri, token).ConfigureAwait(false);
         var scheme = _generator.Generate(seed, theme == ThemeVariant.Dark);
-        await ApplySchemeAsync(scheme, token).ConfigureAwait(false);
+        var desktopLabelColor = WallpaperLabelContrast.ForWallpaper(seed);
+        await ApplySchemeAsync(scheme, desktopLabelColor, token).ConfigureAwait(false);
     }
 
-    public Task ApplySchemeAsync(DynamicColorScheme scheme, CancellationToken cancellationToken = default) =>
+    public Task ApplySchemeAsync(
+        DynamicColorScheme scheme,
+        Color desktopLabelColor,
+        CancellationToken cancellationToken = default) =>
         Dispatcher.UIThread.InvokeAsync(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -42,11 +46,12 @@ public sealed class DynamicThemeService
                 return;
             }
 
-            Apply(resources, scheme);
+            Apply(resources, scheme, desktopLabelColor);
         }).GetTask();
 
-    private static void Apply(IResourceDictionary resources, DynamicColorScheme scheme)
+    private static void Apply(IResourceDictionary resources, DynamicColorScheme scheme, Color desktopLabelColor)
     {
+        Set(resources, "DesktopItemLabelBrush", desktopLabelColor);
         Set(resources, "AppBackgroundBrush", scheme.Background);
         Set(resources, "AppOnBackgroundBrush", scheme.OnBackground);
         Set(resources, "AppSurfaceBrush", scheme.Surface);
