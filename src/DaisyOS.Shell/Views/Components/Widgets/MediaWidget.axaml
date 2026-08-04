@@ -6,7 +6,7 @@
     Height="52"
     HorizontalAlignment="Left"
     VerticalAlignment="Bottom"
-    Margin="4,0,0,4">
+    Margin="4">
   <Border x:Name="MediaFrame"
           Height="52"
           Background="{DynamicResource SystemBarMaterialBrush}"

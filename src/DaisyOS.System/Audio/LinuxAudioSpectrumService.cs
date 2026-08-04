@@ -10,6 +10,9 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
     private const int SampleCount = 512;
     private const int BytesPerSample = 2;
     private const double SilenceThreshold = 0.004;
+    // Equal-loudness compensation keeps a raw monitor signal from pinning the
+    // bass bands. Values track the six logarithmic band centers from bass to treble.
+    private static readonly double[] BandResponseCompensation = [0.22, 0.42, 0.72, 1.00, 1.20, 1.35];
     private readonly object _syncRoot = new();
     private readonly double[] _latestSpectrum = new double[BarCount];
     private readonly CancellationTokenSource _disposeCts = new();
@@ -227,6 +230,7 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
             }
 
             var bandMagnitude = count == 0 ? 0 : Math.Sqrt(energy / count);
+            bandMagnitude *= BandResponseCompensation[band];
             var decibels = 20 * Math.Log10(bandMagnitude + 0.000001);
             bars[band] = Math.Clamp((decibels + 52) / 46, 0, 1);
         }

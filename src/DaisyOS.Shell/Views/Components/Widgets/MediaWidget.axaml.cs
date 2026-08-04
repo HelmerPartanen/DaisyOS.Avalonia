@@ -200,7 +200,10 @@ public partial class MediaWidget : UserControl
             {
                 // The analyser returns six logarithmic ranges: bass on the left, treble on the right.
                 var amplitude = index < spectrum.Count ? spectrum[index] : 0;
-                var scale = 0.12 + (Math.Clamp(amplitude, 0, 1) * 0.88);
+                // Analysis remains linear; this display curve gives normal music enough
+                // headroom to use the available height while preserving real band balance.
+                var visualAmplitude = Math.Pow(Math.Clamp(amplitude * 1.35, 0, 1), 0.58);
+                var scale = 0.12 + (visualAmplitude * 0.88);
                 ((ScaleTransform)_spectrumBars[index].RenderTransform!).ScaleY = scale;
             }
         }
