@@ -2,5 +2,6 @@ namespace DaisyOS.Core.Services;
 
 public interface IAudioSpectrumService : IDisposable
 {
-    Task<IReadOnlyList<double>> GetSpectrumAsync(CancellationToken cancellationToken = default);
+    /// <summary>Copies the latest analyser values into a caller-owned buffer without allocating.</summary>
+    void CopySpectrum(Span<double> destination);
 }

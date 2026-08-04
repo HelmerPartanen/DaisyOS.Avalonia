@@ -25,11 +25,14 @@ public partial class MediaWidget : UserControl
     private readonly IWallpaperColorExtractor _colorExtractor = new WallpaperColorExtractor();
     private readonly DispatcherTimer _spectrumTimer = new() { Interval = TimeSpan.FromMilliseconds(33) };
     private readonly List<Border> _spectrumBars = [];
+    private readonly double[] _spectrumSnapshot = new double[SpectrumColumns];
     private CancellationTokenSource? _refreshCancellation;
     private IAudioSpectrumService? _audioSpectrumService;
     private Bitmap? _artwork;
+    private string? _artworkPath;
+    private Color? _artworkTint;
     private bool _isPlaying;
-    private bool _spectrumUpdateInFlight;
+    private bool _spectrumIsIdle = true;
 
     public MediaWidget()
     {
@@ -43,7 +46,6 @@ public partial class MediaWidget : UserControl
     {
         BuildSpectrum();
         _mediaService.MediaChanged += OnMediaChanged;
-        _spectrumTimer.Start();
         _ = RefreshMediaAsync();
     }
 
@@ -52,6 +54,8 @@ public partial class MediaWidget : UserControl
         _mediaService.MediaChanged -= OnMediaChanged;
         _spectrumTimer.Stop();
         _refreshCancellation?.Cancel();
+        _refreshCancellation?.Dispose();
+        _refreshCancellation = null;
         _artwork?.Dispose();
         _artwork = null;
         if (_mediaService is IDisposable disposable)
@@ -74,15 +78,23 @@ public partial class MediaWidget : UserControl
         try
         {
             var session = await _mediaService.GetCurrentSessionAsync(cancellation.Token);
-            var artwork = await LoadArtworkAsync(session?.AlbumArtPath, cancellation.Token);
-            Color? tint = artwork is null ? null : await ExtractArtworkTintAsync(artwork.Value.Bytes, cancellation.Token);
+            var artworkPath = session?.AlbumArtPath;
+            var replaceArtwork = !string.Equals(_artworkPath, artworkPath, StringComparison.Ordinal);
+            (Bitmap Bitmap, byte[] Bytes)? artwork = null;
+            Color? tint = null;
+            if (replaceArtwork)
+            {
+                artwork = await LoadArtworkAsync(artworkPath, cancellation.Token);
+                tint = artwork is null ? null : await ExtractArtworkTintAsync(artwork.Value.Bytes, cancellation.Token);
+            }
+
             if (cancellation.IsCancellationRequested)
             {
                 artwork?.Bitmap.Dispose();
                 return;
             }
 
-            await Dispatcher.UIThread.InvokeAsync(() => ApplySession(session, artwork?.Bitmap, tint));
+            await Dispatcher.UIThread.InvokeAsync(() => ApplySession(session, artworkPath, artwork?.Bitmap, tint, replaceArtwork));
         }
         catch (OperationCanceledException)
         {
@@ -93,10 +105,23 @@ public partial class MediaWidget : UserControl
         }
     }
 
-    private void ApplySession(MediaSession? session, Bitmap? artwork, Color? tint)
+    private void ApplySession(
+        MediaSession? session,
+        string? artworkPath,
+        Bitmap? artwork,
+        Color? tint,
+        bool replaceArtwork)
     {
-        _artwork?.Dispose();
-        _artwork = artwork;
+        if (replaceArtwork)
+        {
+            _artwork?.Dispose();
+            _artwork = artwork;
+            _artworkTint = tint;
+            // Keep successful artwork cached for the track, but retry unavailable remote artwork
+            // on a later media notification instead of permanently showing the fallback.
+            _artworkPath = artwork is null && !string.IsNullOrWhiteSpace(artworkPath) ? null : artworkPath;
+        }
+
         _isPlaying = session?.IsPlaying == true;
         UpdateSpectrumCaptureState();
 
@@ -116,12 +141,12 @@ public partial class MediaWidget : UserControl
 
         var image = this.FindControl<Image>("Artwork")!;
         var fallback = this.FindControl<Border>("SourceFallback")!;
-        image.Source = artwork;
-        image.IsVisible = artwork is not null;
-        fallback.IsVisible = artwork is null;
+        image.Source = _artwork;
+        image.IsVisible = _artwork is not null;
+        fallback.IsVisible = _artwork is null;
 
         var tintLayer = this.FindControl<Border>("ArtworkTint")!;
-        tintLayer.Background = tint is { } color
+        tintLayer.Background = _artworkTint is { } color
             ? new SolidColorBrush(Color.FromArgb(128, color.R, color.G, color.B))
             : Brushes.Transparent;
     }
@@ -131,15 +156,22 @@ public partial class MediaWidget : UserControl
         if (_isPlaying && _audioSpectrumService is null)
         {
             _audioSpectrumService = new LinuxAudioSpectrumService();
+        }
+
+        if (_isPlaying)
+        {
+            _spectrumTimer.Start();
             return;
         }
 
-        if (!_isPlaying && _audioSpectrumService is not null)
+        _spectrumTimer.Stop();
+        if (_audioSpectrumService is not null)
         {
             _audioSpectrumService.Dispose();
             _audioSpectrumService = null;
-            ResetSpectrum();
         }
+
+        ResetSpectrum();
     }
 
     private async void OnPreviousClicked(object? sender, RoutedEventArgs e) => await RunMediaCommandAsync(_mediaService.PreviousAsync);
@@ -203,28 +235,22 @@ public partial class MediaWidget : UserControl
         return bar;
     }
 
-    private async void UpdateSpectrum()
+    private void UpdateSpectrum()
     {
-        if (_spectrumUpdateInFlight)
-        {
-            return;
-        }
-
         var spectrumService = _audioSpectrumService;
         if (!_isPlaying || spectrumService is null)
         {
-            ResetSpectrum();
             return;
         }
 
-        _spectrumUpdateInFlight = true;
         try
         {
-            var spectrum = await spectrumService.GetSpectrumAsync();
+            spectrumService.CopySpectrum(_spectrumSnapshot);
+            _spectrumIsIdle = false;
             for (var index = 0; index < _spectrumBars.Count; index++)
             {
                 // The analyser returns six logarithmic ranges: bass on the left, treble on the right.
-                var amplitude = index < spectrum.Count ? spectrum[index] : 0;
+                var amplitude = _spectrumSnapshot[index];
                 // Analysis remains linear; this display curve gives normal music enough
                 // headroom to use the available height while preserving real band balance.
                 var visualAmplitude = Math.Pow(Math.Clamp(amplitude * 1.35, 0, 1), 0.58);
@@ -236,18 +262,21 @@ public partial class MediaWidget : UserControl
         {
             ResetSpectrum();
         }
-        finally
-        {
-            _spectrumUpdateInFlight = false;
-        }
     }
 
     private void ResetSpectrum()
     {
+        if (_spectrumIsIdle)
+        {
+            return;
+        }
+
         foreach (var bar in _spectrumBars)
         {
             ((ScaleTransform)bar.RenderTransform!).ScaleY = 0.12;
         }
+
+        _spectrumIsIdle = true;
     }
 
     private async Task<Color> ExtractArtworkTintAsync(byte[] bytes, CancellationToken cancellationToken)

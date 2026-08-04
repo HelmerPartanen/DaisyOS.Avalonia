@@ -16,20 +16,26 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
     private static readonly double[] HannWindow = CreateHannWindow();
     private readonly object _syncRoot = new();
     private readonly double[] _latestSpectrum = new double[BarCount];
+    private readonly double[] _analyzedSpectrum = new double[BarCount];
     private readonly double[] _real = new double[SampleCount];
     private readonly double[] _imaginary = new double[SampleCount];
     private readonly CancellationTokenSource _disposeCts = new();
     private Task? _captureTask;
     private bool _disposed;
 
-    public Task<IReadOnlyList<double>> GetSpectrumAsync(CancellationToken cancellationToken = default)
+    public void CopySpectrum(Span<double> destination)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
+        if (destination.Length < BarCount)
+        {
+            throw new ArgumentException($"Destination must hold at least {BarCount} values.", nameof(destination));
+        }
+
         EnsureCaptureStarted();
 
         lock (_syncRoot)
         {
-            return Task.FromResult<IReadOnlyList<double>>(_latestSpectrum.ToArray());
+            _latestSpectrum.AsSpan().CopyTo(destination);
         }
     }
 
@@ -67,7 +73,7 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
             }
             catch
             {
-                SetSpectrum(null);
+                SetSpectrum(ReadOnlySpan<double>.Empty);
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
         }
@@ -134,7 +140,7 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
         }
         catch (Exception ex) when (ex is InvalidOperationException or global::System.ComponentModel.Win32Exception)
         {
-            SetSpectrum(null);
+            SetSpectrum(ReadOnlySpan<double>.Empty);
             await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             return;
         }
@@ -152,7 +158,14 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
                     break;
                 }
 
-                SetSpectrum(AnalyzeSamples(buffer));
+                if (AnalyzeSamples(buffer))
+                {
+                    SetSpectrum(_analyzedSpectrum);
+                }
+                else
+                {
+                    SetSpectrum(ReadOnlySpan<double>.Empty);
+                }
             }
         }
         finally
@@ -187,7 +200,7 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
         return offset;
     }
 
-    private double[]? AnalyzeSamples(byte[] buffer)
+    private bool AnalyzeSamples(byte[] buffer)
     {
         var rms = 0d;
         for (var i = 0; i < SampleCount; i++)
@@ -200,12 +213,13 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
         rms = Math.Sqrt(rms / SampleCount);
         if (rms < SilenceThreshold)
         {
-            return null;
+            return false;
         }
 
         Array.Clear(_imaginary);
         FastFourierTransform(_real, _imaginary);
-        var bars = new double[BarCount];
+        const double magnitudeNormalization = SampleCount * 0.5;
+        var magnitudeNormalizationSquared = magnitudeNormalization * magnitudeNormalization;
         for (var band = 0; band < BarCount; band++)
         {
             var startFrequency = FrequencyForBandEdge(band);
@@ -217,18 +231,17 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
             var count = 0;
             for (var bin = startBin; bin <= endBin; bin++)
             {
-                var magnitude = Math.Sqrt((_real[bin] * _real[bin]) + (_imaginary[bin] * _imaginary[bin])) / (SampleCount * 0.5);
-                energy += magnitude * magnitude;
+                energy += ((_real[bin] * _real[bin]) + (_imaginary[bin] * _imaginary[bin])) / magnitudeNormalizationSquared;
                 count++;
             }
 
             var bandMagnitude = count == 0 ? 0 : Math.Sqrt(energy / count);
             bandMagnitude *= BandResponseCompensation[band];
             var decibels = 20 * Math.Log10(bandMagnitude + 0.000001);
-            bars[band] = Math.Clamp((decibels + 52) / 46, 0, 1);
+            _analyzedSpectrum[band] = Math.Clamp((decibels + 52) / 46, 0, 1);
         }
 
-        return bars;
+        return true;
     }
 
     private static double[] CreateHannWindow()
@@ -296,13 +309,13 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
         return minFrequency * Math.Pow(maxFrequency / minFrequency, ratio);
     }
 
-    private void SetSpectrum(double[]? spectrum)
+    private void SetSpectrum(ReadOnlySpan<double> spectrum)
     {
         lock (_syncRoot)
         {
             for (var i = 0; i < BarCount; i++)
             {
-                var target = spectrum is null ? 0 : spectrum[i];
+                var target = spectrum.IsEmpty ? 0 : spectrum[i];
                 // Fast attack keeps beats immediate; a gentler release removes flicker between samples.
                 var response = target > _latestSpectrum[i] ? 0.68 : 0.24;
                 _latestSpectrum[i] += (target - _latestSpectrum[i]) * response;
