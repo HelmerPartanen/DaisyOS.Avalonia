@@ -1,7 +1,6 @@
 using System;
 using System.Globalization;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
 
 namespace DaisyOS.Shell.Views.Components.SystemBar;
@@ -49,12 +48,4 @@ public partial class SystemBarView : UserControl
         }
     }
 
-    private void OnVolumeChanged(object? sender, RangeBaseValueChangedEventArgs e)
-    {
-        var volumeValue = this.FindControl<TextBlock>("VolumeValue");
-        if (volumeValue is not null)
-        {
-            volumeValue.Text = $"{Math.Round(e.NewValue):0}%";
-        }
-    }
 }

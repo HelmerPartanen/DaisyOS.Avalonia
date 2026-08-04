@@ -30,21 +30,14 @@
     <!-- Light -->
     <ResourceDictionary x:Key="Light">
 
-      <!-- Taskbar itself is Mica, so the background is transparent -->
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
-                       Color="#00FFFFFF"/>
+                       Color="#FF1E1E1E"/>
       <SolidColorBrush x:Key="TaskbarMaterialBrush"
-                       Color="#00FFFFFF"/>
+                       Color="#FF1E1E1E"/>
       <SolidColorBrush x:Key="SystemBarMaterialBrush"
-                       Color="#00FFFFFF"/>
+                       Color="#FF1E1E1E"/>
       <SolidColorBrush x:Key="LauncherMaterialBrush"
-                       Color="#00FFFFFF"/>
-
-      <!-- Mica tint color; strength is configured independently below. -->
-      <SolidColorBrush x:Key="MicaTintBrush"
-                       Color="#FFF3F3F3"/>
-      <x:Double x:Key="MicaTintOpacity">0.16</x:Double>
-      <x:Double x:Key="MicaLuminosityOpacity">0.16</x:Double>
+                       Color="#FF1E1E1E"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AC7C7C7"/>
@@ -73,19 +66,13 @@
     <ResourceDictionary x:Key="Dark">
 
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
-                       Color="#00000000"/>
+                       Color="#FF1E1E1E"/>
       <SolidColorBrush x:Key="TaskbarMaterialBrush"
-                       Color="#00000000"/>
+                       Color="#FF1E1E1E"/>
       <SolidColorBrush x:Key="SystemBarMaterialBrush"
-                       Color="#00000000"/>
+                       Color="#FF1E1E1E"/>
       <SolidColorBrush x:Key="LauncherMaterialBrush"
-                       Color="#00000000"/>
-
-      <!-- Mica tint color; strength is configured independently below. -->
-      <SolidColorBrush x:Key="MicaTintBrush"
-                       Color="#1e1e1e"/>
-      <x:Double x:Key="MicaTintOpacity">0.16</x:Double>
-      <x:Double x:Key="MicaLuminosityOpacity">0.16</x:Double>
+                       Color="#FF1E1E1E"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AFFFFFF"/>

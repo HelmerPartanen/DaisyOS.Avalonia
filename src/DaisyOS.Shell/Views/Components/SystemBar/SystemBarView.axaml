@@ -52,9 +52,9 @@
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
     <Style Selector="ToggleButton.QuickAction">
-      <!-- 88 px square cards preserve the same column rhythm for every action. -->
-      <Setter Property="Width" Value="88"/>
-      <Setter Property="Height" Value="88"/>
+      <!-- Compact squares preserve the same three-column rhythm without dominating the panel. -->
+      <Setter Property="Width" Value="76"/>
+      <Setter Property="Height" Value="76"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="12"/>
       <Setter Property="Padding" Value="6"/>
@@ -133,13 +133,11 @@
                     </StackPanel>
                   </ToggleButton>
                 </Grid>
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Grid>
                   <controls:QuickSettingsSlider Icon="volume_up"
                                                 Minimum="0"
                                                 Maximum="100"
-                                                Value="72"
-                                                ValueChanged="OnVolumeChanged" />
-                  <TextBlock x:Name="VolumeValue" Grid.Column="1" Text="72%" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+                                                Value="72" />
                 </Grid>
               </StackPanel>
             </Border>

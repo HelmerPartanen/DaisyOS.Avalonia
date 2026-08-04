@@ -47,30 +47,27 @@
     </ControlTheme>
   </UserControl.Resources>
 
-  <!-- The fill is an explicit layer: input and rendering stay independent. -->
-  <Grid ColumnDefinitions="40,*" ColumnSpacing="8">
-    <Border Background="{DynamicResource AppPrimaryContainerBrush}"
-            CornerRadius="10">
-      <TextBlock Text="{Binding Icon, ElementName=Root}"
-                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                 FontSize="20"
-                 Foreground="{DynamicResource AppOnPrimaryContainerBrush}"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Center" />
-    </Border>
-    <Grid Grid.Column="1" x:Name="RangeSurface">
-      <Border x:Name="TrackBackground"
-              Background="{DynamicResource AppSurfaceContainerBrush}"
-              CornerRadius="10" />
-      <Border x:Name="ProgressFill"
-              Background="{DynamicResource AppPrimaryContainerBrush}"
-              CornerRadius="10,0,0,10"
-              HorizontalAlignment="Left" />
-      <Slider Minimum="{Binding Minimum, ElementName=Root}"
-              Maximum="{Binding Maximum, ElementName=Root}"
-              Value="{Binding Value, ElementName=Root, Mode=TwoWay}"
-              Theme="{StaticResource QuickSettingsSliderTrackTheme}"
-              ValueChanged="OnSliderValueChanged" />
-    </Grid>
+  <!-- The glyph lives inside the slider's leading filled segment, never in a separate card. -->
+  <Grid x:Name="RangeSurface">
+    <Border x:Name="TrackBackground"
+            Background="{DynamicResource AppSurfaceContainerBrush}"
+            CornerRadius="10" />
+    <Border x:Name="ProgressFill"
+            Background="{DynamicResource AppPrimaryContainerBrush}"
+            CornerRadius="10,0,0,10"
+            HorizontalAlignment="Left" />
+    <TextBlock Text="{Binding Icon, ElementName=Root}"
+               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+               FontSize="20"
+               Foreground="{DynamicResource AppOnPrimaryContainerBrush}"
+               Margin="14,0,0,0"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Center"
+               IsHitTestVisible="False" />
+    <Slider Margin="40,0,0,0"
+            Minimum="{Binding Minimum, ElementName=Root}"
+            Maximum="{Binding Maximum, ElementName=Root}"
+            Value="{Binding Value, ElementName=Root, Mode=TwoWay}"
+            Theme="{StaticResource QuickSettingsSliderTrackTheme}" />
   </Grid>
 </UserControl>
