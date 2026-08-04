@@ -69,14 +69,17 @@
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="0">
 
       <!-- Network and sound are one Quick Settings action, laid out on an even two-icon grid. -->
-      <Button x:Name="QuickSettingsButton" Classes="ShellButton" Width="64" Height="40" ToolTip.Tip="Quick settings">
+      <Button x:Name="QuickSettingsButton" Classes="ShellButton" Width="96" Height="40" ToolTip.Tip="Quick settings">
         <!-- Matches TaskbarView's button content surface exactly; only the icons differ. -->
-        <Border Width="64" Height="40" Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
-          <Grid ColumnDefinitions="*,*">
+        <Border Width="96" Height="40" Background="Transparent" CornerRadius="8">
+          <Grid ColumnDefinitions="*,*,*">
             <TextBlock Grid.Column="0" Text="wifi"
                        FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Text="volume_up"
+            <TextBlock Grid.Column="1" Text="bluetooth"
+                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Text="volume_up"
                        FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Grid>
@@ -174,7 +177,7 @@
 
       <Button x:Name="CalendarButton" Classes="ShellButton" Height="40" MinWidth="140" Padding="10,0" ToolTip.Tip="Calendar and notifications">
         <!-- Same taskbar button content surface, with the clock as its icon/content. -->
-        <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
+        <Border Background="Transparent" CornerRadius="8">
           <TextBlock x:Name="ClockText" FontSize="13" FontWeight="Regular" TextAlignment="Center"
                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Border>
