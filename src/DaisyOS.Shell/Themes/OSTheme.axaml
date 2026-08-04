@@ -83,7 +83,7 @@
 
       <!-- Mica tint color; strength is configured independently below. -->
       <SolidColorBrush x:Key="MicaTintBrush"
-                       Color="#000000"/>
+                       Color="#1e1e1e"/>
       <x:Double x:Key="MicaTintOpacity">0.16</x:Double>
       <x:Double x:Key="MicaLuminosityOpacity">0.16</x:Double>
 
@@ -106,7 +106,7 @@
                        Color="#99F5F5F5"/>
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
-                       Color="Black"/>
+                       Color="#1e1e1e"/>
 
     </ResourceDictionary>
 
