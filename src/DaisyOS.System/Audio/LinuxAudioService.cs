@@ -126,9 +126,11 @@ public sealed partial class LinuxAudioService : IAudioService
                 if (inSinks)
                 {
                     if (line.Contains("Sources:", StringComparison.OrdinalIgnoreCase) ||
+                        line.Contains("Filters:", StringComparison.OrdinalIgnoreCase) ||
+                        line.Contains("Streams:", StringComparison.OrdinalIgnoreCase) ||
                         line.Contains("Video", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (list.Count > 0) break;
+                        break;
                     }
                     var isDefault = line.StartsWith("*");
                     var clean = line.TrimStart('*', ' ', '\t');
@@ -140,7 +142,9 @@ public sealed partial class LinuxAudioService : IAudioService
                         var volStart = name.IndexOf('[');
                         if (volStart > 0) name = name[..volStart].Trim();
 
-                        if (!string.IsNullOrWhiteSpace(name))
+                        // Stream-channel records (for example output_FL) are not output devices.
+                        if (!string.IsNullOrWhiteSpace(name) &&
+                            !name.StartsWith("output_", StringComparison.OrdinalIgnoreCase))
                         {
                             var isBt = name.Contains("Bluetooth", StringComparison.OrdinalIgnoreCase) || name.Contains("Headphones", StringComparison.OrdinalIgnoreCase);
                             var icon = isBt ? "headphones" : name.Contains("HDMI", StringComparison.OrdinalIgnoreCase) ? "tv" : "speaker";

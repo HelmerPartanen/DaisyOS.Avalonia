@@ -52,15 +52,48 @@
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
     <Style Selector="ToggleButton.QuickAction">
-      <!-- Compact squares preserve the same three-column rhythm without dominating the panel. -->
-      <Setter Property="Width" Value="76"/>
-      <Setter Property="Height" Value="76"/>
+      <!-- Full-width matrix: 92 px squares separated by a shared 6 px rhythm. -->
+      <Setter Property="Width" Value="92"/>
+      <Setter Property="Height" Value="92"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="12"/>
       <Setter Property="Padding" Value="6"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Button.OutputDevicesButton">
+      <Setter Property="Width" Value="40"/>
+      <Setter Property="Height" Value="40"/>
+      <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Padding" Value="0"/>
+    </Style>
+    <Style Selector="Button.OutputDevicesButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.OutputDeviceItem">
+      <Setter Property="Height" Value="44"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="Padding" Value="10,0"/>
+    </Style>
+    <Style Selector="Button.OutputDeviceItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}"/>
+    </Style>
+    <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}"/>
+    </Style>
+    <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -87,15 +120,18 @@
         </Grid>
         <Button.Flyout>
           <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-14" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}">
-            <Border Width="320" Padding="16,14"
+            <Border Width="320" Height="304" Padding="16,14"
                     Background="{DynamicResource SystemBarMaterialBrush}"
                     BorderBrush="{DynamicResource TaskbarBorderBrush}"
                     BorderThickness="1" CornerRadius="14"
                     BoxShadow="0 12 36 0 #60000000">
-              <StackPanel Spacing="14">
-                <TextBlock Text="Quick settings" FontSize="15" FontWeight="Regular"/>
-                <!-- Complete three-column rows; each cell is a true square action target. -->
-                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="6" RowDefinitions="Auto,Auto" RowSpacing="6">
+              <Grid>
+                <StackPanel x:Name="QuickSettingsMainPage" Spacing="14">
+                  <TextBlock Text="Quick settings" FontSize="15" FontWeight="Regular"/>
+                <!-- The square matrix spans the same content width as the volume rail. -->
+                <Grid Width="288" HorizontalAlignment="Center"
+                      ColumnDefinitions="92,92,92" ColumnSpacing="6"
+                      RowDefinitions="Auto,Auto" RowSpacing="6">
                   <ToggleButton Grid.Row="0" Grid.Column="0" Classes="QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Choose a network">
                     <StackPanel Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" HorizontalAlignment="Center"/>
@@ -133,13 +169,39 @@
                     </StackPanel>
                   </ToggleButton>
                 </Grid>
-                <Grid>
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
                   <controls:QuickSettingsSlider Icon="volume_up"
                                                 Minimum="0"
                                                 Maximum="100"
                                                 Value="72" />
+                  <Button Grid.Column="1" Classes="OutputDevicesButton" ToolTip.Tip="Choose output device"
+                          Click="OnOutputDevicesButtonClicked">
+                    <TextBlock Text="chevron_right"
+                               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                               FontSize="20"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                  </Button>
                 </Grid>
-              </StackPanel>
+                </StackPanel>
+
+                <StackPanel x:Name="OutputDevicesPage" IsVisible="False" Spacing="12">
+                  <Grid ColumnDefinitions="40,*,40">
+                    <Button Classes="OutputDevicesButton"
+                            Click="OnOutputDevicesBackClicked" ToolTip.Tip="Back to quick settings">
+                      <TextBlock Text="chevron_left"
+                                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                 FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                    <TextBlock Grid.Column="1" Text="Output devices" FontSize="15" FontWeight="Regular"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border Grid.Column="2" Width="40" Height="40"/>
+                  </Grid>
+                  <StackPanel x:Name="OutputDevicesHost" Spacing="2">
+                    <TextBlock Text="Loading devices…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/>
+                  </StackPanel>
+                </StackPanel>
+              </Grid>
             </Border>
           </Flyout>
         </Button.Flyout>

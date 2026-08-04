@@ -36,17 +36,17 @@
 
     <!-- Reusable Material You Quick Settings states. -->
     <Style Selector="ToggleButton.QuickSetting">
-      <Setter Property="Background" Value="{DynamicResource AppSurfaceContainerBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AppOnSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource QuickSettingForegroundBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppSurfaceContainerHighBrush}" />
+      <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppSurfaceContainerHighestBrush}" />
+      <Setter Property="Background" Value="{DynamicResource QuickSettingPressedBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource QuickSettingForegroundBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />

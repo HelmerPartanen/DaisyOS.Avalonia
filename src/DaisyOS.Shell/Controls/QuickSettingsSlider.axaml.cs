@@ -12,7 +12,6 @@ namespace DaisyOS.Shell.Controls;
 /// </summary>
 public partial class QuickSettingsSlider : UserControl
 {
-    private const double IconSegmentWidth = 40d;
     private bool _isAdjustingFromTrack;
     private readonly Border? _trackBackground;
     private readonly Border? _progressFill;
@@ -77,8 +76,7 @@ public partial class QuickSettingsSlider : UserControl
         }
 
         var progress = Math.Clamp((Value - Minimum) / (Maximum - Minimum), 0d, 1d);
-        var adjustableTrackWidth = Math.Max(0d, _trackBackground.Bounds.Width - IconSegmentWidth);
-        _progressFill.Width = IconSegmentWidth + (adjustableTrackWidth * progress);
+        _progressFill.Width = _trackBackground.Bounds.Width * progress;
     }
 
     private void OnTrackPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -126,8 +124,7 @@ public partial class QuickSettingsSlider : UserControl
         }
 
         var position = e.GetPosition(_trackBackground).X;
-        var adjustableTrackWidth = Math.Max(1d, _trackBackground.Bounds.Width - IconSegmentWidth);
-        var progress = Math.Clamp((position - IconSegmentWidth) / adjustableTrackWidth, 0d, 1d);
+        var progress = Math.Clamp(position / _trackBackground.Bounds.Width, 0d, 1d);
         SetCurrentValue(ValueProperty, Minimum + ((Maximum - Minimum) * progress));
     }
 }

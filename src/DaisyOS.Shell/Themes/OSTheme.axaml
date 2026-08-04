@@ -57,6 +57,16 @@
       <SolidColorBrush x:Key="TextTertiaryBrush"
                        Color="#991A1A1A"/>
 
+      <!-- Inactive quick-setting tiles are OS chrome, not wallpaper accents. -->
+      <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
+                       Color="#FFF3F3F3"/>
+      <SolidColorBrush x:Key="QuickSettingForegroundBrush"
+                       Color="#FF1A1A1A"/>
+      <SolidColorBrush x:Key="QuickSettingHoverBrush"
+                       Color="#FFE7E7E7"/>
+      <SolidColorBrush x:Key="QuickSettingPressedBrush"
+                       Color="#FFDCDCDC"/>
+
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
                        Color="#F3F3F3"/>
 
@@ -91,6 +101,16 @@
 
       <SolidColorBrush x:Key="TextTertiaryBrush"
                        Color="#99F5F5F5"/>
+
+      <!-- Tune these independent of wallpaper-derived active quick-setting colors. -->
+      <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
+                       Color="#FF262626"/>
+      <SolidColorBrush x:Key="QuickSettingForegroundBrush"
+                       Color="#FFF3F3F3"/>
+      <SolidColorBrush x:Key="QuickSettingHoverBrush"
+                       Color="#FF303030"/>
+      <SolidColorBrush x:Key="QuickSettingPressedBrush"
+                       Color="#FF383838"/>
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
                        Color="#1e1e1e"/>
