@@ -120,17 +120,18 @@
         <Button.Flyout>
           <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-14" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}"
                   Opened="OnQuickSettingsFlyoutOpened" Closed="OnQuickSettingsFlyoutClosed">
-            <Border Width="320" Height="304" Padding="16,14"
+            <Border Width="320" Height="304" Padding="16,14,16,0"
                     Background="{DynamicResource SystemBarMaterialBrush}"
                     BorderBrush="{DynamicResource TaskbarBorderBrush}"
                     BorderThickness="1" CornerRadius="14"
                     BoxShadow="0 12 36 0 #60000000">
               <Grid>
-                <StackPanel x:Name="QuickSettingsMainPage" Spacing="10">
-                <!-- Labels remain outside the controls; Wi-Fi and Bluetooth split into action + details. -->
-                <Grid Width="288" HorizontalAlignment="Center"
-                      ColumnDefinitions="92,92,92" ColumnSpacing="6"
-                      RowDefinitions="Auto,Auto" RowSpacing="6">
+                <Grid x:Name="QuickSettingsMainPage" RowDefinitions="*,Auto">
+                  <StackPanel Grid.Row="0" Spacing="10">
+                    <!-- Labels remain outside the controls; Wi-Fi and Bluetooth split into action + details. -->
+                    <Grid Width="288" HorizontalAlignment="Center"
+                          ColumnDefinitions="92,92,92" ColumnSpacing="6"
+                          RowDefinitions="Auto,Auto" RowSpacing="6">
                   <StackPanel Grid.Row="0" Grid.Column="0" Width="92" Spacing="4">
                     <Grid Height="56" ColumnDefinitions="64,1,27">
                       <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="64" CornerRadius="10,0,0,10" IsChecked="True" ToolTip.Tip="Toggle Wi-Fi">
@@ -186,22 +187,48 @@
                     <TextBlock Classes="QuickSettingLabel" Text="Gaming"/>
                   </StackPanel>
                 </Grid>
-                <Grid ColumnDefinitions="*,1,40">
-                  <controls:QuickSettingsSlider Grid.Column="0" Icon="volume_up"
-                                                Minimum="0"
-                                                Maximum="100"
-                                                Value="72" />
-                  <Border Grid.Column="1" Background="#33000000" IsHitTestVisible="False"/>
-                  <Button Grid.Column="2" Classes="ShellButton VolumeOutputDetails" ToolTip.Tip="Choose output device"
-                          Click="OnOutputDevicesButtonClicked">
-                    <TextBlock Text="chevron_right"
-                               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                               FontSize="20"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
-                  </Button>
+                    <Grid ColumnDefinitions="*,1,40">
+                      <controls:QuickSettingsSlider Grid.Column="0" Icon="volume_up"
+                                                    Minimum="0"
+                                                    Maximum="100"
+                                                    Value="72" />
+                      <Border Grid.Column="1" Background="#33000000" IsHitTestVisible="False"/>
+                      <Button Grid.Column="2" Classes="ShellButton VolumeOutputDetails" ToolTip.Tip="Choose output device"
+                              Click="OnOutputDevicesButtonClicked">
+                        <TextBlock Text="chevron_right"
+                                   FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                   FontSize="20"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                      </Button>
+                    </Grid>
+                  </StackPanel>
+
+                  <!-- Mock footer; its actions are intentionally not wired until their surfaces are available. -->
+                  <Grid Grid.Row="1" Height="52" RowDefinitions="1,*">
+                    <Border Grid.Row="0" Background="{DynamicResource TaskbarBorderBrush}" Opacity="0.7"/>
+                    <Grid Grid.Row="1" ColumnDefinitions="*,40,40">
+                      <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="2,0,0,0">
+                        <TextBlock Text="battery_full"
+                                   FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                   FontSize="19"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                        <TextBlock Text="100%" FontSize="13" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                      </StackPanel>
+                      <Button Grid.Column="1" Classes="ShellButton" Width="40" Height="40" VerticalAlignment="Center" ToolTip.Tip="Edit quick settings">
+                        <TextBlock Text="edit"
+                                   FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                   FontSize="19"/>
+                      </Button>
+                      <Button Grid.Column="2" Classes="ShellButton" Width="40" Height="40" VerticalAlignment="Center" ToolTip.Tip="Settings">
+                        <TextBlock Text="settings"
+                                   FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                   FontSize="19"/>
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </Grid>
-                </StackPanel>
 
                 <StackPanel x:Name="OutputDevicesPage" IsVisible="False" Spacing="12">
                   <Grid ColumnDefinitions="40,*,40">
