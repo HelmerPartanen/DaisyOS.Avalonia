@@ -57,10 +57,4 @@ public partial class SystemBarView : UserControl
             volumeValue.Text = $"{Math.Round(e.NewValue):0}%";
         }
     }
-
-    private void OnSoundButtonClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        var quickSettingsButton = this.FindControl<Button>("QuickSettingsButton");
-        quickSettingsButton?.Flyout?.ShowAt(quickSettingsButton);
-    }
 }

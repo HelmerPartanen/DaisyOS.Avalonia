@@ -18,8 +18,8 @@
 
   <UserControl.Styles>
     <!-- Mirrors TaskbarView: 40 px targets inside the same 52 px floating surface. -->
-    <Style Selector="Button.StatusButton">
-      <Setter Property="Width" Value="40"/>
+    <Style Selector="Button.StatusClusterButton">
+      <Setter Property="Width" Value="64"/>
       <Setter Property="Height" Value="40"/>
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
@@ -28,10 +28,10 @@
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
-    <Style Selector="Button.StatusButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.StatusClusterButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
     </Style>
-    <Style Selector="Button.StatusButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.StatusClusterButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
     <Style Selector="Button.ClockButton">
@@ -76,11 +76,18 @@
           CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 8 32 0 #60000000">
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="0">
 
-      <!-- Each visible status has its own 40 px target and the same 4 px rhythm as the dock. -->
-      <Button x:Name="QuickSettingsButton" Classes="StatusButton" ToolTip.Tip="Network and quick settings">
-        <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"/>
+      <!-- Network and sound are one Quick Settings action, laid out on an even two-icon grid. -->
+      <Button x:Name="QuickSettingsButton" Classes="StatusClusterButton" ToolTip.Tip="Quick settings">
+        <Grid Width="64" ColumnDefinitions="*,*">
+          <TextBlock Grid.Column="0" Text="wifi"
+                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          <TextBlock Grid.Column="1" Text="volume_up"
+                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
         <Button.Flyout>
           <Flyout Placement="TopEdgeAlignedRight" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}">
             <Border Width="360" Padding="16"
@@ -136,10 +143,6 @@
             </Border>
           </Flyout>
         </Button.Flyout>
-      </Button>
-
-      <Button Classes="StatusButton" ToolTip.Tip="Sound and quick settings" Click="OnSoundButtonClick">
-        <TextBlock Text="volume_up" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"/>
       </Button>
 
       <Button Classes="ClockButton" ToolTip.Tip="Calendar and notifications">

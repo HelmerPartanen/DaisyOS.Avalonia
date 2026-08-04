@@ -72,7 +72,7 @@
 
       <!-- Source tint used by MicaMaterialGenerator for its wallpaper underlay and overlay. -->
       <SolidColorBrush x:Key="MicaTintBrush"
-                       Color="#FF1E1E1E"/>
+                       Color="#000000"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AFFFFFF"/>
@@ -96,7 +96,7 @@
                        Color="#99F5F5F5"/>
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
-                       Color="#1E1E1E"/>
+                       Color="Black"/>
 
     </ResourceDictionary>
 
