@@ -22,7 +22,7 @@
       <!-- Labels sit below the interactive tile, so the hit target stays visually quiet. -->
       <Setter Property="Width" Value="92"/>
       <Setter Property="Height" Value="56"/>
-      <Setter Property="CornerRadius" Value="12"/>
+      <Setter Property="CornerRadius" Value="10"/>
       <Setter Property="Padding" Value="6"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
@@ -120,7 +120,7 @@
         <Button.Flyout>
           <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-14" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}"
                   Opened="OnQuickSettingsFlyoutOpened" Closed="OnQuickSettingsFlyoutClosed">
-            <Border Width="320" Height="304" Padding="16,14,16,0"
+            <Border Width="320" Height="280" Padding="16,14,16,0"
                     Background="{DynamicResource SystemBarMaterialBrush}"
                     BorderBrush="{DynamicResource TaskbarBorderBrush}"
                     BorderThickness="1" CornerRadius="14"
@@ -208,7 +208,7 @@
                   <Grid Grid.Row="1" Height="52" RowDefinitions="1,*">
                     <Border Grid.Row="0" Background="{DynamicResource TaskbarBorderBrush}" Opacity="0.7"/>
                     <Grid Grid.Row="1" ColumnDefinitions="*,40,40">
-                      <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="2,0,0,0">
+                      <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                         <TextBlock Text="battery_full"
                                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                                    FontSize="19"
