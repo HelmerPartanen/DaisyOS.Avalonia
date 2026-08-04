@@ -29,6 +29,16 @@ public sealed class MaterialDynamicSchemeGeneratorTests
         Assert.NotEqual(purple.PrimaryContainer, green.PrimaryContainer);
     }
 
+    [Fact]
+    public void DarkSchemeAccentsAreMutedWithoutLosingContrast()
+    {
+        var scheme = _generator.Generate(Color.Parse("#123012"), isDark: true);
+
+        Assert.InRange(ChannelSpread(scheme.PrimaryContainer), 0, 32);
+        Assert.InRange(ChannelSpread(scheme.OnPrimaryContainer), 0, 32);
+        Assert.True(Contrast(scheme.PrimaryContainer, scheme.OnPrimaryContainer) >= 4.5);
+    }
+
     [Theory]
     [InlineData("#6750A4", false)]
     [InlineData("#6750A4", true)]
@@ -51,6 +61,9 @@ public sealed class MaterialDynamicSchemeGeneratorTests
         return (Math.Max(firstLuminance, secondLuminance) + 0.05) /
                (Math.Min(firstLuminance, secondLuminance) + 0.05);
     }
+
+    private static int ChannelSpread(Color color) =>
+        Math.Max(color.R, Math.Max(color.G, color.B)) - Math.Min(color.R, Math.Min(color.G, color.B));
 
     private static double Luminance(Color color) =>
         0.2126 * Linear(color.R) +

@@ -15,6 +15,21 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
             ? new DarkSchemeMapper().Map(palette)
             : new LightSchemeMapper().Map(palette);
 
+        var primary = FromArgb(scheme.Primary);
+        var onPrimary = FromArgb(scheme.OnPrimary);
+        var primaryContainer = FromArgb(scheme.PrimaryContainer);
+        var onPrimaryContainer = FromArgb(scheme.OnPrimaryContainer);
+
+        if (isDark)
+        {
+            // Tonal Spot intentionally amplifies seed chroma. Desaturate its dark-theme
+            // accents so a small bright detail cannot turn a subdued scene into neon chrome.
+            primary = MuteAccent(primary);
+            onPrimary = MuteAccent(onPrimary);
+            primaryContainer = MuteAccent(primaryContainer);
+            onPrimaryContainer = MuteAccent(onPrimaryContainer);
+        }
+
         return new DynamicColorScheme(
             FromArgb(scheme.Background),
             FromArgb(scheme.OnBackground),
@@ -28,10 +43,10 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
             FromArgb(scheme.SurfaceContainerHighest),
             FromArgb(scheme.OnSurface),
             FromArgb(scheme.OnSurfaceVariant),
-            FromArgb(scheme.Primary),
-            FromArgb(scheme.OnPrimary),
-            FromArgb(scheme.PrimaryContainer),
-            FromArgb(scheme.OnPrimaryContainer),
+            primary,
+            onPrimary,
+            primaryContainer,
+            onPrimaryContainer,
             FromArgb(scheme.Secondary),
             FromArgb(scheme.OnSecondary),
             FromArgb(scheme.SecondaryContainer),
@@ -61,4 +76,14 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
         (byte)(color >> 16),
         (byte)(color >> 8),
         (byte)color);
+
+    private static Color MuteAccent(Color color)
+    {
+        var luminance = 0.2126 * color.R + 0.7152 * color.G + 0.0722 * color.B;
+        const double retainedChroma = 0.35;
+
+        byte Blend(byte channel) => (byte)Math.Round(luminance + ((channel - luminance) * retainedChroma));
+
+        return Color.FromArgb(color.A, Blend(color.R), Blend(color.G), Blend(color.B));
+    }
 }
