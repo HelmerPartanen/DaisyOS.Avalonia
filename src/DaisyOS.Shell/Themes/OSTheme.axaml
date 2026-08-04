@@ -92,7 +92,7 @@
                        Color="#FF1E1E1E"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
-                       Color="#1AFFFFFF"/>
+                       Color="#14FFFFFF"/>
 
       <SolidColorBrush x:Key="TaskbarHoverBrush"
                        Color="#14FFFFFF"/>

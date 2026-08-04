@@ -159,26 +159,31 @@ public partial class MediaWidget : UserControl
         }
     }
 
-    private static Border CreateSpectrumBar(double idleScale) => new()
+    private Border CreateSpectrumBar(double idleScale)
     {
-        Width = 2,
-        Height = 24,
-        CornerRadius = new CornerRadius(1),
-        Background = new SolidColorBrush(Color.FromArgb(185, 255, 255, 255)),
-        RenderTransformOrigin = RelativePoint.Center,
-        RenderTransform = new ScaleTransform(1, idleScale)
+        var bar = new Border
         {
-            Transitions = new Transitions
+            Width = 2,
+            Height = 24,
+            CornerRadius = new CornerRadius(1),
+            RenderTransformOrigin = RelativePoint.Center,
+            RenderTransform = new ScaleTransform(1, idleScale)
             {
-                new DoubleTransition
+                Transitions = new Transitions
                 {
-                    Property = ScaleTransform.ScaleYProperty,
-                    Duration = TimeSpan.FromMilliseconds(75),
-                    Easing = new CubicEaseOut()
+                    new DoubleTransition
+                    {
+                        Property = ScaleTransform.ScaleYProperty,
+                        Duration = TimeSpan.FromMilliseconds(75),
+                        Easing = new CubicEaseOut()
+                    }
                 }
             }
-        }
-    };
+        };
+
+        bar.Bind(Border.BackgroundProperty, bar.GetResourceObservable("TextTertiaryBrush"));
+        return bar;
+    }
 
     private async void UpdateSpectrum()
     {
