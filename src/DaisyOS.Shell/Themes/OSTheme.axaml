@@ -31,22 +31,22 @@
     <ResourceDictionary x:Key="Light">
 
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
-                       Color="#FF1E1E1E"/>
+                       Color="#FFF5F5F5"/>
       <SolidColorBrush x:Key="TaskbarMaterialBrush"
-                       Color="#FF1E1E1E"/>
+                       Color="#FFF5F5F5"/>
       <SolidColorBrush x:Key="SystemBarMaterialBrush"
-                       Color="#FF1E1E1E"/>
+                       Color="#FFF5F5F5"/>
       <SolidColorBrush x:Key="LauncherMaterialBrush"
-                       Color="#FF1E1E1E"/>
+                       Color="#FFF5F5F5"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
-                       Color="#1AC7C7C7"/>
+                       Color="#1A000000"/>
 
       <SolidColorBrush x:Key="TaskbarHoverBrush"
-                       Color="#0FFFFFFF"/>
+                       Color="#12000000"/>
 
       <SolidColorBrush x:Key="TaskbarPressedBrush"
-                       Color="#18FFFFFF"/>
+                       Color="#20000000"/>
 
       <SolidColorBrush x:Key="TextPrimaryBrush"
                        Color="#FF1A1A1A"/>
@@ -59,13 +59,20 @@
 
       <!-- Inactive quick-setting tiles are OS chrome, not wallpaper accents. -->
       <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
-                       Color="#FFF3F3F3"/>
+                       Color="#FFE8E8E8"/>
       <SolidColorBrush x:Key="QuickSettingForegroundBrush"
                        Color="#FF1A1A1A"/>
       <SolidColorBrush x:Key="QuickSettingHoverBrush"
-                       Color="#FFE7E7E7"/>
+                       Color="#FFDDDDDD"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
-                       Color="#FFDCDCDC"/>
+                       Color="#FFD2D2D2"/>
+
+      <SolidColorBrush x:Key="LauncherItemHoverBrush"
+                       Color="#12000000"/>
+      <SolidColorBrush x:Key="LauncherItemPressedBrush"
+                       Color="#20000000"/>
+      <SolidColorBrush x:Key="LauncherFooterBrush"
+                       Color="#08000000"/>
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
                        Color="#F3F3F3"/>
@@ -111,6 +118,13 @@
                        Color="#FF303030"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
                        Color="#FF383838"/>
+
+      <SolidColorBrush x:Key="LauncherItemHoverBrush"
+                       Color="#1AFFFFFF"/>
+      <SolidColorBrush x:Key="LauncherItemPressedBrush"
+                       Color="#2DFFFFFF"/>
+      <SolidColorBrush x:Key="LauncherFooterBrush"
+                       Color="#12FFFFFF"/>
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
                        Color="#1e1e1e"/>

@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using DaisyOS.Core.Models;
 using DaisyOS.Shell.Services.Theming;
 using DaisyOS.Shell.Services.Wallpaper;
@@ -44,6 +45,18 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>Applies the requested appearance to the complete shell and refreshes its dynamic palette.</summary>
+    public async Task SetShellThemeAsync(ThemeVariant theme)
+    {
+        RequestedThemeVariant = theme;
+
+        if (_dynamicThemeService is not null)
+        {
+            var wallpaperUri = _wallpaperService?.CurrentWallpaperUri ?? ShellSettings.DefaultWallpaperUri;
+            await _dynamicThemeService.RefreshFromWallpaperAsync(wallpaperUri, theme);
+        }
     }
 
 }

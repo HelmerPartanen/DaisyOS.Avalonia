@@ -1,10 +1,14 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.Threading;
+using DaisyOS.Shell;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
 using DaisyOS.System.Audio;
@@ -54,6 +58,16 @@ public partial class SystemBarView : UserControl
         {
             calendarHeading.Text = now.ToString("D", culture);
         }
+    }
+
+    private async void OnThemeToggleClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is not ToggleButton { IsChecked: { } isDark } || Application.Current is not App app)
+        {
+            return;
+        }
+
+        await app.SetShellThemeAsync(isDark ? ThemeVariant.Dark : ThemeVariant.Light);
     }
 
     private async void OnOutputDevicesButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

@@ -28,10 +28,10 @@
           <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style Selector="Button.LauncherApp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="#1AFFFFFF"/>
+          <Setter Property="Background" Value="{DynamicResource LauncherItemHoverBrush}"/>
         </Style>
         <Style Selector="Button.LauncherApp:pressed /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="#2DFFFFFF"/>
+          <Setter Property="Background" Value="{DynamicResource LauncherItemPressedBrush}"/>
         </Style>
 
         <!-- 2-Column Precise Bounded App Card Style (308px exact width fit) -->
@@ -46,10 +46,10 @@
           <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.RecItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="#1AFFFFFF"/>
+          <Setter Property="Background" Value="{DynamicResource LauncherItemHoverBrush}"/>
         </Style>
         <Style Selector="Button.RecItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="#2DFFFFFF"/>
+          <Setter Property="Background" Value="{DynamicResource LauncherItemPressedBrush}"/>
         </Style>
 
         <!-- Subtle Header Links & Menu Placeholders -->
@@ -61,7 +61,7 @@
           <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
         </Style>
         <Style Selector="Button.SubtleLink:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="#14FFFFFF"/>
+          <Setter Property="Background" Value="{DynamicResource LauncherItemHoverBrush}"/>
         </Style>
       </Grid.Styles>
       
@@ -221,7 +221,7 @@
       </ScrollViewer>
 
       <!-- Footer Bar: Real Linux User Profile & Power Actions -->
-      <Border Grid.Row="2" Height="64" Padding="24,0" Background="#12FFFFFF" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,12,12">
+      <Border Grid.Row="2" Height="64" Padding="24,0" Background="{DynamicResource LauncherFooterBrush}" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,12,12">
         <Grid ColumnDefinitions="*,Auto">
           
           <!-- Left: Active Linux User Profile -->
