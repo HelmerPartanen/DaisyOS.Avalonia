@@ -46,12 +46,6 @@
       <x:Double x:Key="MicaTintOpacity">0.16</x:Double>
       <x:Double x:Key="MicaLuminosityOpacity">0.16</x:Double>
 
-      <!-- Replaced at startup with the average active-wallpaper color. -->
-      <SolidColorBrush x:Key="WallpaperPrimaryBrush"
-                       Color="#FF4B8DFF"/>
-      <SolidColorBrush x:Key="WallpaperPrimaryForegroundBrush"
-                       Color="#FFFFFFFF"/>
-
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AC7C7C7"/>
 
@@ -92,12 +86,6 @@
                        Color="#000000"/>
       <x:Double x:Key="MicaTintOpacity">0.16</x:Double>
       <x:Double x:Key="MicaLuminosityOpacity">0.16</x:Double>
-
-      <!-- Replaced at startup with the average active-wallpaper color. -->
-      <SolidColorBrush x:Key="WallpaperPrimaryBrush"
-                       Color="#FF4B8DFF"/>
-      <SolidColorBrush x:Key="WallpaperPrimaryForegroundBrush"
-                       Color="#FF162A4A"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
                        Color="#1AFFFFFF"/>

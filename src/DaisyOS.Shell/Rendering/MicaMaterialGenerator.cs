@@ -84,47 +84,6 @@ public static class MicaMaterialGenerator
     private static readonly SKColorSpace MaterialColorSpace = SKColorSpace.CreateSrgb();
 
     /// <summary>
-    /// Samples the wallpaper on a bounded grid to produce a stable primary UI color.
-    /// </summary>
-    public static SKColor GetAverageWallpaperColor(string assetUri)
-    {
-        if (string.IsNullOrWhiteSpace(assetUri))
-        {
-            throw new ArgumentException("The wallpaper asset URI cannot be empty.", nameof(assetUri));
-        }
-
-        using var assetStream = AssetLoader.Open(new Uri(assetUri));
-        using var bitmap = SKBitmap.Decode(assetStream)
-            ?? throw new InvalidOperationException("Failed to decode wallpaper bitmap.");
-
-        int stepX = Math.Max(1, bitmap.Width / 64);
-        int stepY = Math.Max(1, bitmap.Height / 64);
-        long red = 0;
-        long green = 0;
-        long blue = 0;
-        long samples = 0;
-
-        for (int y = 0; y < bitmap.Height; y += stepY)
-        {
-            for (int x = 0; x < bitmap.Width; x += stepX)
-            {
-                SKColor color = bitmap.GetPixel(x, y);
-                red += color.Red;
-                green += color.Green;
-                blue += color.Blue;
-                samples++;
-            }
-        }
-
-        return samples == 0
-            ? SKColors.Gray
-            : new SKColor(
-                (byte)(red / samples),
-                (byte)(green / samples),
-                (byte)(blue / samples));
-    }
-
-    /// <summary>
     /// Generates a complete Mica-inspired material brush from a wallpaper asset.
     ///
     /// renderWidth and renderHeight should be physical pixel dimensions,

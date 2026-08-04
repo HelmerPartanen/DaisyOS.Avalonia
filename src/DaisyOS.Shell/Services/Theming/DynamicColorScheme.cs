@@ -1,0 +1,41 @@
+using Avalonia.Media;
+
+namespace DaisyOS.Shell.Services.Theming;
+
+/// <summary>Semantic Material 3 colors for one DaisyOS theme variant.</summary>
+public sealed record DynamicColorScheme(
+    Color Background,
+    Color OnBackground,
+    Color Surface,
+    Color SurfaceDim,
+    Color SurfaceBright,
+    Color SurfaceContainerLowest,
+    Color SurfaceContainerLow,
+    Color SurfaceContainer,
+    Color SurfaceContainerHigh,
+    Color SurfaceContainerHighest,
+    Color OnSurface,
+    Color OnSurfaceVariant,
+    Color Primary,
+    Color OnPrimary,
+    Color PrimaryContainer,
+    Color OnPrimaryContainer,
+    Color Secondary,
+    Color OnSecondary,
+    Color SecondaryContainer,
+    Color OnSecondaryContainer,
+    Color Tertiary,
+    Color OnTertiary,
+    Color TertiaryContainer,
+    Color OnTertiaryContainer,
+    Color Outline,
+    Color OutlineVariant,
+    Color Error,
+    Color OnError,
+    Color ErrorContainer,
+    Color OnErrorContainer,
+    Color InverseSurface,
+    Color InverseOnSurface,
+    Color InversePrimary,
+    Color Scrim,
+    Color Shadow);

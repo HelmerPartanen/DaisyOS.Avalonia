@@ -6,6 +6,7 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/DynamicColors.axaml" />
         <ResourceInclude Source="avares://DaisyOS.Shell/Themes/OSTheme.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
@@ -33,17 +34,26 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
-    <!-- Reusable wallpaper-derived primary action treatment. -->
-    <Style Selector="Button.WallpaperPrimaryButton /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource WallpaperPrimaryBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource WallpaperPrimaryForegroundBrush}" />
+    <!-- Reusable Material You Quick Settings states. -->
+    <Style Selector="ToggleButton.QuickSetting">
+      <Setter Property="Background" Value="{DynamicResource AppSurfaceContainerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AppOnSurfaceBrush}" />
     </Style>
-    <Style Selector="ToggleButton.WallpaperPrimaryButton:checked /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource WallpaperPrimaryBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource WallpaperPrimaryForegroundBrush}" />
+    <Style Selector="ToggleButton.QuickSetting:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppSurfaceContainerHighBrush}" />
     </Style>
-    <Style Selector="Button.WallpaperPrimaryButton TextBlock, ToggleButton.WallpaperPrimaryButton:checked TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource WallpaperPrimaryForegroundBrush}" />
+    <Style Selector="ToggleButton.QuickSetting:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppSurfaceContainerHighestBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.QuickSetting:checked TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.QuickSetting:disabled">
+      <Setter Property="Opacity" Value="0.48" />
     </Style>
   </Application.Styles>
 </Application>

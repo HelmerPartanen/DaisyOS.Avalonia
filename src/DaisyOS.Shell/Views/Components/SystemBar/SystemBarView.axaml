@@ -52,15 +52,11 @@
     </Style>
     <Style Selector="ToggleButton.QuickAction">
       <Setter Property="Height" Value="48"/>
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="9"/>
       <Setter Property="Padding" Value="9"/>
       <Setter Property="HorizontalContentAlignment" Value="Left"/>
       <Setter Property="HorizontalAlignment" Value="Stretch"/>
-    </Style>
-    <Style Selector="ToggleButton.QuickAction:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -95,7 +91,7 @@
               <StackPanel Spacing="14">
                 <TextBlock Text="Quick settings" FontSize="15" FontWeight="Regular"/>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="6" RowDefinitions="Auto,Auto" RowSpacing="6">
-                  <ToggleButton Grid.Row="0" Grid.Column="0" Classes="QuickAction WallpaperPrimaryButton" IsChecked="True" ToolTip.Tip="Choose a network">
+                  <ToggleButton Grid.Row="0" Grid.Column="0" Classes="QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Choose a network">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
@@ -103,7 +99,7 @@
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="0" Grid.Column="1" Classes="QuickAction WallpaperPrimaryButton" ToolTip.Tip="Bluetooth">
+                  <ToggleButton Grid.Row="0" Grid.Column="1" Classes="QuickAction QuickSetting" ToolTip.Tip="Bluetooth">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
@@ -111,7 +107,7 @@
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="1" Grid.Column="0" Classes="QuickAction WallpaperPrimaryButton" ToolTip.Tip="Do not disturb">
+                  <ToggleButton Grid.Row="1" Grid.Column="0" Classes="QuickAction QuickSetting" ToolTip.Tip="Do not disturb">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="do_not_disturb_on" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">
@@ -119,7 +115,7 @@
                       </StackPanel>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="1" Grid.Column="1" Classes="QuickAction WallpaperPrimaryButton" ToolTip.Tip="Night light">
+                  <ToggleButton Grid.Row="1" Grid.Column="1" Classes="QuickAction QuickSetting" ToolTip.Tip="Night light">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                       <TextBlock Text="dark_mode" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
                       <StackPanel VerticalAlignment="Center">

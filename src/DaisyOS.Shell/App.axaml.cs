@@ -3,6 +3,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using DaisyOS.Core.Models;
+using DaisyOS.Shell.Services.Theming;
+using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.Views;
 using System;
 using System.Collections.Generic;
@@ -11,6 +14,9 @@ namespace DaisyOS.Shell;
 
 public partial class App : Application
 {
+    private DynamicThemeService? _dynamicThemeService;
+    private IWallpaperService? _wallpaperService;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -31,8 +37,7 @@ public partial class App : Application
                 double logicalWidth = screen != null ? screen.WorkingArea.Width / scaling : 1920;
                 double logicalHeight = screen != null ? screen.WorkingArea.Height / scaling : 1080;
 
-                var wallpaperPath = "avares://DaisyOS.Shell/Assets/Wallpapers/Purple.jpg";
-                var wallpaperPrimaryColor = DaisyOS.Shell.Rendering.MicaMaterialGenerator.GetAverageWallpaperColor(wallpaperPath);
+                var wallpaperPath = ShellSettings.DefaultWallpaperUri;
                 int physicalWidth = Math.Max(1, checked((int)Math.Ceiling(logicalWidth * scaling)));
                 int physicalHeight = Math.Max(1, checked((int)Math.Ceiling(logicalHeight * scaling)));
                 var materialRegions = CreateMaterialRegions(physicalWidth, physicalHeight, scaling);
@@ -70,7 +75,6 @@ public partial class App : Application
                         darkDict["TaskbarMaterialBrush"] = darkBrushes["Taskbar"];
                         darkDict["SystemBarMaterialBrush"] = darkBrushes["SystemBar"];
                         darkDict["LauncherMaterialBrush"] = darkBrushes["Launcher"];
-                        ApplyWallpaperPrimaryBrushes(darkDict, wallpaperPrimaryColor, useWhiteForeground: false);
                     }
 
                     if (lightDict is not null)
@@ -78,9 +82,16 @@ public partial class App : Application
                         lightDict["TaskbarMaterialBrush"] = lightBrushes["Taskbar"];
                         lightDict["SystemBarMaterialBrush"] = lightBrushes["SystemBar"];
                         lightDict["LauncherMaterialBrush"] = lightBrushes["Launcher"];
-                        ApplyWallpaperPrimaryBrushes(lightDict, wallpaperPrimaryColor, useWhiteForeground: true);
                     }
                 }
+
+                _dynamicThemeService = new DynamicThemeService(
+                    new WallpaperColorExtractor(),
+                    new MaterialDynamicSchemeGenerator());
+                _wallpaperService = new WallpaperService(wallpaperPath);
+                _wallpaperService.WallpaperChanged += (_, changedWallpaperUri) =>
+                    _ = _dynamicThemeService.RefreshFromWallpaperAsync(changedWallpaperUri, ActualThemeVariant);
+                _ = _dynamicThemeService.RefreshFromWallpaperAsync(_wallpaperService.CurrentWallpaperUri, ActualThemeVariant);
             }
             catch (Exception ex)
             {
@@ -156,39 +167,4 @@ public partial class App : Application
         return fallback;
     }
 
-    private static void ApplyWallpaperPrimaryBrushes(
-        ResourceDictionary themeResources,
-        SkiaSharp.SKColor wallpaperColor,
-        bool useWhiteForeground)
-    {
-        var primary = NormalizeWallpaperPrimaryColor(wallpaperColor);
-
-        themeResources["WallpaperPrimaryBrush"] = new SolidColorBrush(
-            Color.FromArgb(primary.Alpha, primary.Red, primary.Green, primary.Blue));
-
-        var foreground = useWhiteForeground
-            ? new SkiaSharp.SKColor(255, 255, 255)
-            : new SkiaSharp.SKColor(
-                (byte)Math.Round(primary.Red * 0.30f),
-                (byte)Math.Round(primary.Green * 0.30f),
-                (byte)Math.Round(primary.Blue * 0.30f));
-
-        themeResources["WallpaperPrimaryForegroundBrush"] = new SolidColorBrush(
-            Color.FromArgb(foreground.Alpha, foreground.Red, foreground.Green, foreground.Blue));
-    }
-
-    private static SkiaSharp.SKColor NormalizeWallpaperPrimaryColor(SkiaSharp.SKColor color)
-    {
-        var luminance = (0.2126f * color.Red + 0.7152f * color.Green + 0.0722f * color.Blue) / 255f;
-        if (luminance < 0.08f)
-        {
-            return new SkiaSharp.SKColor(92, 76, 124);
-        }
-
-        var scale = Math.Clamp(0.62f / luminance, 1f, 3.5f);
-        return new SkiaSharp.SKColor(
-            (byte)Math.Min(255, Math.Round(color.Red * scale)),
-            (byte)Math.Min(255, Math.Round(color.Green * scale)),
-            (byte)Math.Min(255, Math.Round(color.Blue * scale)));
-    }
 }
