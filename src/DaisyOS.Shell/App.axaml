@@ -34,6 +34,40 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
+    <!-- Shared native Avalonia button chrome for shell controls. Individual views only define size and semantics. -->
+    <Style Selector="Button.ShellButton">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.ShellButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
+    </Style>
+    <Style Selector="Button.ShellButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}" />
+    </Style>
+    <!-- Flyout triggers stay visibly active for the duration of their open surface. -->
+    <Style Selector="Button.ShellButton.ShellButtonActive /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.ShellButton">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="ToggleButton.ShellButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
+    </Style>
+    <Style Selector="ToggleButton.ShellButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}" />
+    </Style>
+
     <!-- Reusable Material You Quick Settings states. -->
     <Style Selector="ToggleButton.QuickSetting">
       <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}" />

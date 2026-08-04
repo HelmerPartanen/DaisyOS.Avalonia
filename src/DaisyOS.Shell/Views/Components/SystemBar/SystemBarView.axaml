@@ -18,57 +18,19 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <!-- Mirrors TaskbarView: 40 px targets inside the same 52 px floating surface. -->
-    <Style Selector="Button.StatusClusterButton">
-      <Setter Property="Width" Value="64"/>
-      <Setter Property="Height" Value="40"/>
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="Padding" Value="0"/>
-      <Setter Property="HorizontalContentAlignment" Value="Center"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="Button.StatusClusterButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
-    </Style>
-    <Style Selector="Button.StatusClusterButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
-    </Style>
-    <Style Selector="Button.ClockButton">
-      <Setter Property="Height" Value="40"/>
-      <Setter Property="MinWidth" Value="140"/>
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="Padding" Value="10,0"/>
-      <Setter Property="HorizontalContentAlignment" Value="Center"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="Button.ClockButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
-    </Style>
-    <Style Selector="Button.ClockButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
-    </Style>
     <Style Selector="ToggleButton.QuickAction">
       <!-- Full-width matrix: 92 px squares separated by a shared 6 px rhythm. -->
       <Setter Property="Width" Value="92"/>
       <Setter Property="Height" Value="92"/>
-      <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="12"/>
       <Setter Property="Padding" Value="6"/>
-      <Setter Property="HorizontalContentAlignment" Value="Center"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
       <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}"/>
-      <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="10"/>
-      <Setter Property="Padding" Value="0"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}"/>
@@ -77,8 +39,6 @@
       <Setter Property="Height" Value="44"/>
       <Setter Property="HorizontalAlignment" Value="Stretch"/>
       <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="8"/>
       <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
       <Setter Property="Padding" Value="10,0"/>
     </Style>
@@ -109,17 +69,21 @@
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="0">
 
       <!-- Network and sound are one Quick Settings action, laid out on an even two-icon grid. -->
-      <Button x:Name="QuickSettingsButton" Classes="StatusClusterButton" ToolTip.Tip="Quick settings">
-        <Grid Width="64" ColumnDefinitions="*,*">
-          <TextBlock Grid.Column="0" Text="wifi"
-                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
-                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
-          <TextBlock Grid.Column="1" Text="volume_up"
-                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
-                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </Grid>
+      <Button x:Name="QuickSettingsButton" Classes="ShellButton" Width="64" Height="40" ToolTip.Tip="Quick settings">
+        <!-- Matches TaskbarView's button content surface exactly; only the icons differ. -->
+        <Border Width="64" Height="40" Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
+          <Grid ColumnDefinitions="*,*">
+            <TextBlock Grid.Column="0" Text="wifi"
+                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" Text="volume_up"
+                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Grid>
+        </Border>
         <Button.Flyout>
-          <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-14" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}">
+          <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-14" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}"
+                  Opened="OnQuickSettingsFlyoutOpened" Closed="OnQuickSettingsFlyoutClosed">
             <Border Width="320" Height="304" Padding="16,14"
                     Background="{DynamicResource SystemBarMaterialBrush}"
                     BorderBrush="{DynamicResource TaskbarBorderBrush}"
@@ -132,38 +96,38 @@
                 <Grid Width="288" HorizontalAlignment="Center"
                       ColumnDefinitions="92,92,92" ColumnSpacing="6"
                       RowDefinitions="Auto,Auto" RowSpacing="6">
-                  <ToggleButton Grid.Row="0" Grid.Column="0" Classes="QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Choose a network">
+                  <ToggleButton Grid.Row="0" Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Choose a network">
                     <StackPanel Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" HorizontalAlignment="Center"/>
                       <TextBlock Text="Wi-Fi" FontSize="11" FontWeight="Regular" HorizontalAlignment="Center"/>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="0" Grid.Column="1" Classes="QuickAction QuickSetting" ToolTip.Tip="Bluetooth">
+                  <ToggleButton Grid.Row="0" Grid.Column="1" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Bluetooth">
                     <StackPanel Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" HorizontalAlignment="Center"/>
                       <TextBlock Text="Bluetooth" FontSize="11" FontWeight="Regular" HorizontalAlignment="Center"/>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="0" Grid.Column="2" Classes="QuickAction QuickSetting" ToolTip.Tip="Do not disturb">
+                  <ToggleButton Grid.Row="0" Grid.Column="2" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Do not disturb">
                     <StackPanel Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <TextBlock Text="do_not_disturb_on" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" HorizontalAlignment="Center"/>
                       <TextBlock Text="Focus" FontSize="11" FontWeight="Regular" HorizontalAlignment="Center"/>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="1" Grid.Column="0" Classes="QuickAction QuickSetting" ToolTip.Tip="Night light">
+                  <ToggleButton Grid.Row="1" Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Night light">
                     <StackPanel Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <TextBlock Text="nightlight" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" HorizontalAlignment="Center"/>
                       <TextBlock Text="Night light" FontSize="11" FontWeight="Regular" HorizontalAlignment="Center"/>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton x:Name="ThemeToggle" Grid.Row="1" Grid.Column="1" Classes="QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Dark theme"
+                  <ToggleButton x:Name="ThemeToggle" Grid.Row="1" Grid.Column="1" Classes="ShellButton QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Dark theme"
                                 Click="OnThemeToggleClicked">
                     <StackPanel Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <TextBlock Text="contrast" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" HorizontalAlignment="Center"/>
                       <TextBlock Text="Theme" FontSize="11" FontWeight="Regular" HorizontalAlignment="Center"/>
                     </StackPanel>
                   </ToggleButton>
-                  <ToggleButton Grid.Row="1" Grid.Column="2" Classes="QuickAction QuickSetting" ToolTip.Tip="Gaming mode">
+                  <ToggleButton Grid.Row="1" Grid.Column="2" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Gaming mode">
                     <StackPanel Spacing="3" HorizontalAlignment="Center" VerticalAlignment="Center">
                       <TextBlock Text="sports_esports" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" HorizontalAlignment="Center"/>
                       <TextBlock Text="Gaming" FontSize="11" FontWeight="Regular" HorizontalAlignment="Center"/>
@@ -175,7 +139,7 @@
                                                 Minimum="0"
                                                 Maximum="100"
                                                 Value="72" />
-                  <Button Grid.Column="1" Classes="OutputDevicesButton" ToolTip.Tip="Choose output device"
+                  <Button Grid.Column="1" Classes="ShellButton OutputDevicesButton" ToolTip.Tip="Choose output device"
                           Click="OnOutputDevicesButtonClicked">
                     <TextBlock Text="chevron_right"
                                FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
@@ -188,7 +152,7 @@
 
                 <StackPanel x:Name="OutputDevicesPage" IsVisible="False" Spacing="12">
                   <Grid ColumnDefinitions="40,*,40">
-                    <Button Classes="OutputDevicesButton"
+                    <Button Classes="ShellButton OutputDevicesButton"
                             Click="OnOutputDevicesBackClicked" ToolTip.Tip="Back to quick settings">
                       <TextBlock Text="chevron_left"
                                  FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
@@ -208,10 +172,15 @@
         </Button.Flyout>
       </Button>
 
-      <Button Classes="ClockButton" ToolTip.Tip="Calendar and notifications">
-        <TextBlock x:Name="ClockText" FontSize="13" FontWeight="Regular" TextAlignment="Center"/>
+      <Button x:Name="CalendarButton" Classes="ShellButton" Height="40" MinWidth="140" Padding="10,0" ToolTip.Tip="Calendar and notifications">
+        <!-- Same taskbar button content surface, with the clock as its icon/content. -->
+        <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
+          <TextBlock x:Name="ClockText" FontSize="13" FontWeight="Regular" TextAlignment="Center"
+                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
         <Button.Flyout>
-          <Flyout Placement="TopEdgeAlignedRight" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}">
+          <Flyout Placement="TopEdgeAlignedRight" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}"
+                  Opened="OnCalendarFlyoutOpened" Closed="OnCalendarFlyoutClosed">
             <Border Padding="16" Background="{DynamicResource DropdownMenuBackgroundBrush}"
                     BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="1" CornerRadius="12">
               <StackPanel Spacing="12">

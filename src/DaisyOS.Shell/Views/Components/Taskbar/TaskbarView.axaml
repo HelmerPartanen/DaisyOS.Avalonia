@@ -11,16 +11,9 @@
     <Style Selector="Button.TaskbarApp">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="Padding" Value="0"/>
     </Style>
-    <Style Selector="Button.TaskbarApp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.TaskbarApp.LauncherActive /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
-    </Style>
-    <Style Selector="Button.TaskbarApp:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
 
     <!-- Reorderable app icon. Positioned absolutely inside AppIconsCanvas via Canvas.Left,
@@ -28,16 +21,6 @@
     <Style Selector="Button.TaskbarAppIcon">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
-      <Setter Property="Background" Value="Transparent"/>
-      <Setter Property="CornerRadius" Value="8"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Padding" Value="0"/>
-    </Style>
-    <Style Selector="Button.TaskbarAppIcon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
-    </Style>
-    <Style Selector="Button.TaskbarAppIcon:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
     </Style>
     <Style Selector="Button.TaskbarAppIcon.dragging /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
@@ -67,7 +50,7 @@
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
 
       <!-- Start Button -->
-      <Button x:Name="StartButton" Classes="TaskbarApp" ToolTip.Tip="Start Menu">
+      <Button x:Name="StartButton" Classes="ShellButton TaskbarApp" ToolTip.Tip="Start Menu">
         <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
           <!-- The favicon uses currentColor, allowing it to follow the dynamic primary role. -->
           <svg:Svg Width="22" Height="22"
@@ -79,7 +62,7 @@
 
       <!-- Reorderable App Icons Canvas. Width is set from code-behind. -->
       <Canvas x:Name="AppIconsCanvas" Height="40">
-        <Button Classes="TaskbarAppIcon" Tag="settings" ToolTip.Tip="Settings">
+        <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="settings" ToolTip.Tip="Settings">
           <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
             <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
                    RenderOptions.BitmapInterpolationMode="HighQuality"
@@ -87,7 +70,7 @@
           </Border>
         </Button>
 
-        <Button Classes="TaskbarAppIcon" Tag="files" ToolTip.Tip="Files">
+        <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="files" ToolTip.Tip="Files">
           <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
             <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
                    RenderOptions.BitmapInterpolationMode="HighQuality"

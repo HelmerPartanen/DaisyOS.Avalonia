@@ -26,4 +26,7 @@ public partial class LauncherView : UserControl
 
     private void OnSetViewCategory(object? sender, RoutedEventArgs e) =>
         ViewModel.SetViewCategory();
+
+    public void FocusSearch() =>
+        this.FindControl<Controls.SearchBar>("LauncherSearchBar")?.FocusInput();
 }

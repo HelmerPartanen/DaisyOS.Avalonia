@@ -26,6 +26,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private const double DragThreshold = 4; // px of movement before a press becomes a drag
 
         private Canvas? _canvas;
+        private Button? _startButton;
         private readonly List<Button> _order = new();
         private int _testAppCounter = 1;
 
@@ -41,10 +42,10 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         {
             InitializeComponent();
 
-            var startBtn = this.FindControl<Button>("StartButton");
-            if (startBtn != null)
+            _startButton = this.FindControl<Button>("StartButton");
+            if (_startButton != null)
             {
-                startBtn.Click += (s, e) => StartButtonClicked?.Invoke(this, e);
+                _startButton.Click += (s, e) => StartButtonClicked?.Invoke(this, e);
             }
 
             _canvas = this.FindControl<Canvas>("AppIconsCanvas");
@@ -54,6 +55,9 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                 Loaded += (_, _) => InitializeIcons();
             }
         }
+
+        public void SetLauncherOpen(bool isOpen) =>
+            _startButton?.Classes.Set("LauncherActive", isOpen);
 
         private void InitializeIcons()
         {
@@ -129,7 +133,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
 
             var iconButton = new Button
             {
-                Classes = { "TaskbarAppIcon" },
+                Classes = { "ShellButton", "TaskbarApp", "TaskbarAppIcon" },
                 Tag = appId,
                 [ToolTip.TipProperty] = appName,
                 Content = new Panel
@@ -213,8 +217,8 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             _isDragging = false;
             _pointerStartX = e.GetPosition(_canvas).X;
             _dragStartLeft = Canvas.GetLeft(icon);
-
-            e.Pointer.Capture(icon);
+            // Leave a normal press to Avalonia's Button lifecycle. Capture begins only once this
+            // gesture crosses the drag threshold, preserving the same pressed/click effect as Start.
         }
 
         private void Icon_PointerMoved(object? sender, PointerEventArgs e)
@@ -229,6 +233,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             {
                 if (Math.Abs(delta) < DragThreshold) return;
                 BeginDrag(icon);
+                e.Pointer.Capture(icon);
             }
 
             var maxLeft = SlotX(_order.Count - 1);

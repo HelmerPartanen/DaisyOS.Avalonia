@@ -79,6 +79,21 @@ public partial class SystemBarView : UserControl
     private void OnOutputDevicesBackClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         SetOutputDevicesPageVisible(false);
 
+    private void OnQuickSettingsFlyoutOpened(object? sender, EventArgs e) =>
+        SetFlyoutButtonActive("QuickSettingsButton", true);
+
+    private void OnQuickSettingsFlyoutClosed(object? sender, EventArgs e) =>
+        SetFlyoutButtonActive("QuickSettingsButton", false);
+
+    private void OnCalendarFlyoutOpened(object? sender, EventArgs e) =>
+        SetFlyoutButtonActive("CalendarButton", true);
+
+    private void OnCalendarFlyoutClosed(object? sender, EventArgs e) =>
+        SetFlyoutButtonActive("CalendarButton", false);
+
+    private void SetFlyoutButtonActive(string buttonName, bool isActive) =>
+        this.FindControl<Button>(buttonName)?.Classes.Set("ShellButtonActive", isActive);
+
     private async Task LoadOutputDevicesAsync()
     {
         var host = this.FindControl<StackPanel>("OutputDevicesHost");
@@ -148,6 +163,7 @@ public partial class SystemBarView : UserControl
         {
             Content = content
         };
+        button.Classes.Add("ShellButton");
         button.Classes.Add("OutputDeviceItem");
         if (device.IsDefault)
         {
