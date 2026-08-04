@@ -63,19 +63,23 @@
       <!-- Reorderable App Icons Canvas. Width is set from code-behind. -->
       <Canvas x:Name="AppIconsCanvas" Height="40">
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="settings" ToolTip.Tip="Settings">
-          <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
-            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
-                   RenderOptions.BitmapInterpolationMode="HighQuality"
-                   Width="24" Height="24" IsHitTestVisible="False"/>
-          </Border>
+          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
+                 RenderOptions.BitmapInterpolationMode="HighQuality"
+                 Width="24" Height="24" IsHitTestVisible="False">
+            <Image.Effect>
+              <DropShadowEffect BlurRadius="6" OffsetX="0" OffsetY="2" Opacity="0.45" Color="#000000"/>
+            </Image.Effect>
+          </Image>
         </Button>
 
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="files" ToolTip.Tip="Files">
-          <Border Background="Transparent" CornerRadius="8" BoxShadow="0 3 10 0 #80000000">
-            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
-                   RenderOptions.BitmapInterpolationMode="HighQuality"
-                   Width="24" Height="24" IsHitTestVisible="False"/>
-          </Border>
+          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
+                 RenderOptions.BitmapInterpolationMode="HighQuality"
+                 Width="24" Height="24" IsHitTestVisible="False">
+            <Image.Effect>
+              <DropShadowEffect BlurRadius="6" OffsetX="0" OffsetY="2" Opacity="0.45" Color="#000000"/>
+            </Image.Effect>
+          </Image>
         </Button>
       </Canvas>
 
