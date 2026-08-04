@@ -19,6 +19,8 @@
   <SolidColorBrush x:Key="AppPrimaryBrush" Color="#FFD0BCFF"/>
   <SolidColorBrush x:Key="AppOnPrimaryBrush" Color="#FF381E72"/>
   <SolidColorBrush x:Key="AppPrimaryContainerBrush" Color="#FF4F378B"/>
+  <SolidColorBrush x:Key="AppPrimaryContainerHoverBrush" Color="#FF594294"/>
+  <SolidColorBrush x:Key="AppPrimaryContainerPressedBrush" Color="#FF644C9E"/>
   <SolidColorBrush x:Key="AppOnPrimaryContainerBrush" Color="#FFE9DDFF"/>
   <SolidColorBrush x:Key="AppSecondaryBrush" Color="#FFCCC2DC"/>
   <SolidColorBrush x:Key="AppOnSecondaryBrush" Color="#FF332D41"/>

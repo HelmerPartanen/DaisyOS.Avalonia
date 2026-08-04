@@ -68,6 +68,8 @@ public sealed class DynamicThemeService
         Set(resources, "AppPrimaryBrush", scheme.Primary);
         Set(resources, "AppOnPrimaryBrush", scheme.OnPrimary);
         Set(resources, "AppPrimaryContainerBrush", scheme.PrimaryContainer);
+        Set(resources, "AppPrimaryContainerHoverBrush", Blend(scheme.PrimaryContainer, scheme.Primary, 0.08));
+        Set(resources, "AppPrimaryContainerPressedBrush", Blend(scheme.PrimaryContainer, scheme.Primary, 0.16));
         Set(resources, "AppOnPrimaryContainerBrush", scheme.OnPrimaryContainer);
         Set(resources, "AppSecondaryBrush", scheme.Secondary);
         Set(resources, "AppOnSecondaryBrush", scheme.OnSecondary);
@@ -95,4 +97,11 @@ public sealed class DynamicThemeService
 
     private static void SetColor(IResourceDictionary resources, string key, Color color) =>
         resources[key] = color;
+
+    private static Color Blend(Color background, Color foreground, double amount) =>
+        Color.FromArgb(
+            255,
+            (byte)Math.Round(background.R + ((foreground.R - background.R) * amount)),
+            (byte)Math.Round(background.G + ((foreground.G - background.G) * amount)),
+            (byte)Math.Round(background.B + ((foreground.B - background.B) * amount)));
 }
