@@ -13,6 +13,7 @@ namespace DaisyOS.Shell.Controls;
 public partial class QuickSettingsSlider : UserControl
 {
     private bool _isAdjustingFromTrack;
+    private double _lastProgressFillWidth = double.NaN;
     private readonly Border? _trackBackground;
     private readonly Border? _progressFill;
     public static readonly StyledProperty<string> IconProperty =
@@ -76,7 +77,14 @@ public partial class QuickSettingsSlider : UserControl
         }
 
         var progress = Math.Clamp((Value - Minimum) / (Maximum - Minimum), 0d, 1d);
-        _progressFill.Width = _trackBackground.Bounds.Width * progress;
+        var width = _trackBackground.Bounds.Width * progress;
+        if (Math.Abs(width - _lastProgressFillWidth) < 0.01)
+        {
+            return;
+        }
+
+        _lastProgressFillWidth = width;
+        _progressFill.Width = width;
     }
 
     private void OnTrackPointerPressed(object? sender, PointerPressedEventArgs e)

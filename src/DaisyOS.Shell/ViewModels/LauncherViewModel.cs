@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 using DaisyOS.Core.Models;
 using DaisyOS.System.Processes;
 
@@ -95,27 +97,45 @@ public class LauncherViewModel : INotifyPropertyChanged
         Username = FormatUsername(rawUser);
         UserInitials = GetInitials(Username);
 
-        LoadApplications();
+        _ = LoadApplicationsAsync();
     }
 
     public void SetViewAlphabetical() => SelectedViewMode = LauncherAllAppsViewMode.Alphabetical;
     public void SetViewCategory() => SelectedViewMode = LauncherAllAppsViewMode.ByCategory;
 
-    private void LoadApplications()
+    private async Task LoadApplicationsAsync()
     {
-        var discoveredApps = _launcherService.GetAvailableApps();
-
-        var sortedApps = discoveredApps
-            .OrderBy(app => app.Name, StringComparer.CurrentCultureIgnoreCase)
-            .ToList();
-
-        foreach (var app in sortedApps)
+        try
         {
+            var items = await Task.Run(BuildApplicationCatalog).ConfigureAwait(false);
+            await Dispatcher.UIThread.InvokeAsync(() => ApplyApplicationCatalog(items));
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to load launcher applications: {ex.Message}");
+        }
+    }
+
+    private IReadOnlyList<AppEntry> BuildApplicationCatalog()
+    {
+        return _launcherService.GetAvailableApps()
+            .OrderBy(app => app.Name, StringComparer.CurrentCultureIgnoreCase)
+            .ToArray();
+    }
+
+    private void ApplyApplicationCatalog(IReadOnlyList<AppEntry> apps)
+    {
+        if (apps.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var app in apps)
+        {
+            // SvgImage and other Avalonia image sources are UI-thread-affine.
             var iconPath = DesktopItemLoader.ResolveIconPath(app.Icon);
             var iconBitmap = string.IsNullOrEmpty(iconPath) ? null : DesktopItemLoader.LoadBitmapSafe(iconPath);
-
-            var item = new LauncherItemViewModel(app, iconBitmap);
-            AllApps.Add(item);
+            AllApps.Add(new LauncherItemViewModel(app, iconBitmap));
         }
 
         var pinnedList = AllApps

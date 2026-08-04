@@ -20,6 +20,10 @@ public partial class SystemBarView : UserControl
 {
     private readonly DispatcherTimer _clockTimer;
     private readonly IAudioService _audioService = new LinuxAudioService(new SafeCommandRunner());
+    private TextBlock? _clockText;
+    private TextBlock? _calendarHeading;
+    private string? _lastClockValue;
+    private string? _lastCalendarHeading;
 
     public SystemBarView()
     {
@@ -33,9 +37,10 @@ public partial class SystemBarView : UserControl
 
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        _clockText ??= this.FindControl<TextBlock>("ClockText");
+        _calendarHeading ??= this.FindControl<TextBlock>("CalendarHeading");
         UpdateClock();
         _clockTimer.Start();
-
     }
 
     private void OnUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _clockTimer.Stop();
@@ -44,19 +49,18 @@ public partial class SystemBarView : UserControl
     {
         var now = DateTime.Now;
         var culture = CultureInfo.CurrentCulture;
-        var clockText = this.FindControl<TextBlock>("ClockText");
-        var calendarHeading = this.FindControl<TextBlock>("CalendarHeading");
-
-        if (clockText is not null)
+        var clockValue = $"{now:ddd MMM d}  {now:HH.mm}";
+        if (_clockText is not null && !string.Equals(clockValue, _lastClockValue, StringComparison.Ordinal))
         {
-            var date = now.ToString("ddd MMM d", culture);
-            var time = now.ToString("HH.mm", culture);
-            clockText.Text = $"{date}  {time}";
+            _lastClockValue = clockValue;
+            _clockText.Text = clockValue;
         }
 
-        if (calendarHeading is not null)
+        var calendarValue = now.ToString("D", culture);
+        if (_calendarHeading is not null && !string.Equals(calendarValue, _lastCalendarHeading, StringComparison.Ordinal))
         {
-            calendarHeading.Text = now.ToString("D", culture);
+            _lastCalendarHeading = calendarValue;
+            _calendarHeading.Text = calendarValue;
         }
     }
 

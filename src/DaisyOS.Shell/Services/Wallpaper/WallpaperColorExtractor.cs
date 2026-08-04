@@ -31,23 +31,30 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
     private static Color ExtractSeed(string wallpaperUri, CancellationToken cancellationToken)
     {
         using var stream = OpenWallpaper(wallpaperUri);
-        using var bitmap = SKBitmap.Decode(stream);
-        if (bitmap is null)
+        using var codec = SKCodec.Create(stream);
+        if (codec is null)
         {
             return FallbackSeed;
         }
 
-        int longest = Math.Max(bitmap.Width, bitmap.Height);
-        int step = Math.Max(1, (int)Math.Ceiling(longest / (double)MaxSampleEdge));
+        int longest = Math.Max(codec.Info.Width, codec.Info.Height);
+        float scale = Math.Min(1f, MaxSampleEdge / (float)longest);
+        var sampleInfo = codec.Info.WithSize(codec.GetScaledDimensions(scale));
+        using var bitmap = new SKBitmap(sampleInfo);
+        if (codec.GetPixels(sampleInfo, bitmap.GetPixels()) != SKCodecResult.Success)
+        {
+            return FallbackSeed;
+        }
+
         long redTotal = 0;
         long greenTotal = 0;
         long blueTotal = 0;
         long alphaTotal = 0;
 
-        for (int y = 0; y < bitmap.Height; y += step)
+        for (int y = 0; y < bitmap.Height; y++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            for (int x = 0; x < bitmap.Width; x += step)
+            for (int x = 0; x < bitmap.Width; x++)
             {
                 var color = bitmap.GetPixel(x, y);
                 if (color.Alpha < 24)
