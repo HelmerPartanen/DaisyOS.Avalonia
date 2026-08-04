@@ -39,6 +39,15 @@ public sealed class MaterialDynamicSchemeGeneratorTests
         Assert.True(Contrast(scheme.PrimaryContainer, scheme.OnPrimaryContainer) >= 4.5);
     }
 
+    [Fact]
+    public void LightSchemePrimaryContainerIsTemperedWithoutLosingContrast()
+    {
+        var scheme = _generator.Generate(Color.Parse("#121D12"), isDark: false);
+
+        Assert.True(Luminance(scheme.PrimaryContainer) < 0.65);
+        Assert.True(Contrast(scheme.PrimaryContainer, scheme.OnPrimaryContainer) >= 4.5);
+    }
+
     [Theory]
     [InlineData("#6750A4", false)]
     [InlineData("#6750A4", true)]

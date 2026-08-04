@@ -29,6 +29,12 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
             primaryContainer = MuteAccent(primaryContainer);
             onPrimaryContainer = MuteAccent(onPrimaryContainer);
         }
+        else
+        {
+            // Material's light primary container is intentionally very pale. Pull it slightly
+            // toward the same palette's primary tone so dark wallpapers do not read as neon.
+            primaryContainer = Blend(primaryContainer, primary, 0.18);
+        }
 
         return new DynamicColorScheme(
             FromArgb(scheme.Background),
@@ -85,5 +91,17 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
         byte Blend(byte channel) => (byte)Math.Round(luminance + ((channel - luminance) * retainedChroma));
 
         return Color.FromArgb(color.A, Blend(color.R), Blend(color.G), Blend(color.B));
+    }
+
+    private static Color Blend(Color baseColor, Color accentColor, double accentWeight)
+    {
+        byte Channel(byte baseChannel, byte accentChannel) =>
+            (byte)Math.Round(baseChannel + ((accentChannel - baseChannel) * accentWeight));
+
+        return Color.FromArgb(
+            baseColor.A,
+            Channel(baseColor.R, accentColor.R),
+            Channel(baseColor.G, accentColor.G),
+            Channel(baseColor.B, accentColor.B));
     }
 }

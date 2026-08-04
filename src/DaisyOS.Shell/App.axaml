@@ -50,10 +50,10 @@
     </Style>
     <Style Selector="ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:checked TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:disabled">
       <Setter Property="Opacity" Value="0.48" />
