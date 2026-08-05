@@ -6,6 +6,7 @@ using Avalonia.Styling;
 using DaisyOS.Core.Models;
 using DaisyOS.Shell.Services.Theming;
 using DaisyOS.Shell.Services.Wallpaper;
+using DaisyOS.Shell.Apps.System.Settings;
 using DaisyOS.Shell.Views;
 using System;
 

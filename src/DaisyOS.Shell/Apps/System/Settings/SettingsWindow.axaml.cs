@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace DaisyOS.Shell.Views;
+namespace DaisyOS.Shell.Apps.System.Settings;
 
 public partial class SettingsWindow : Window
 {

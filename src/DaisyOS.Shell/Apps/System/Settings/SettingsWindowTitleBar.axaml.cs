@@ -4,13 +4,13 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 
-namespace DaisyOS.Shell.Controls;
+namespace DaisyOS.Shell.Apps.System.Settings;
 
-/// <summary>Reusable client-side title bar for DottOS-owned normal windows.</summary>
-public partial class AppWindowTitleBar : UserControl
+/// <summary>Client-side title bar used exclusively by the DottOS Settings app.</summary>
+public partial class SettingsWindowTitleBar : UserControl
 {
     public static readonly StyledProperty<string> TitleProperty =
-        AvaloniaProperty.Register<AppWindowTitleBar, string>(nameof(Title), "DottOS");
+        AvaloniaProperty.Register<SettingsWindowTitleBar, string>(nameof(Title), "DottOS");
 
     public string Title
     {
@@ -18,7 +18,7 @@ public partial class AppWindowTitleBar : UserControl
         set => SetValue(TitleProperty, value);
     }
 
-    public AppWindowTitleBar()
+    public SettingsWindowTitleBar()
     {
         InitializeComponent();
     }

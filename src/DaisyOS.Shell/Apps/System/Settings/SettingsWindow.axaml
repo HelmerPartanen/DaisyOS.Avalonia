@@ -1,9 +1,8 @@
 <Window
-    x:Class="DaisyOS.Shell.Views.SettingsWindow"
+    x:Class="DaisyOS.Shell.Apps.System.Settings.SettingsWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
-    xmlns:views="clr-namespace:DaisyOS.Shell.Views"
+    xmlns:settings="clr-namespace:DaisyOS.Shell.Apps.System.Settings"
     Title="Settings"
     Width="1080"
     Height="720"
@@ -22,8 +21,8 @@
             CornerRadius="11"
             ClipToBounds="True">
       <Grid RowDefinitions="38,*">
-        <controls:AppWindowTitleBar Title="Settings" />
-        <views:SettingsView Grid.Row="1" />
+        <settings:SettingsWindowTitleBar Title="Settings" />
+        <settings:SettingsView Grid.Row="1" />
       </Grid>
     </Border>
   </Border>

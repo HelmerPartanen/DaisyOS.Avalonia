@@ -1,8 +1,8 @@
 <UserControl
-    x:Class="DaisyOS.Shell.Controls.AppWindowTitleBar"
+    x:Class="DaisyOS.Shell.Apps.System.Settings.SettingsWindowTitleBar"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:DaisyOS.Shell.Controls"
+    xmlns:local="clr-namespace:DaisyOS.Shell.Apps.System.Settings"
     Height="38">
   <UserControl.Styles>
     <Style Selector="Button.CaptionButton">
@@ -49,7 +49,7 @@
              Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
              RenderOptions.BitmapInterpolationMode="HighQuality"
              IsHitTestVisible="False" />
-      <TextBlock Grid.Column="1" Text="{Binding Title, RelativeSource={RelativeSource AncestorType=local:AppWindowTitleBar}}"
+      <TextBlock Grid.Column="1" Text="{Binding Title, RelativeSource={RelativeSource AncestorType=local:SettingsWindowTitleBar}}"
                  FontSize="13" FontWeight="Regular" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
       <StackPanel Grid.Column="2" Orientation="Horizontal">
         <Button Classes="CaptionButton" Click="OnMinimizeClicked" ToolTip.Tip="Minimize">

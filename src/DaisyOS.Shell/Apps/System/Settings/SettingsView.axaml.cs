@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
 
-namespace DaisyOS.Shell.Views
+namespace DaisyOS.Shell.Apps.System.Settings
 {
     public partial class SettingsView : UserControl
     {
