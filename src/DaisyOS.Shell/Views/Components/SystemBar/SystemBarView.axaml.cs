@@ -12,7 +12,10 @@ using DaisyOS.Shell;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
 using DaisyOS.System.Audio;
+using DaisyOS.System.Bluetooth;
+using DaisyOS.System.Networking;
 using DaisyOS.System.Processes;
+using DaisyOS.Shell.Controls;
 
 namespace DaisyOS.Shell.Views.Components.SystemBar;
 
@@ -20,10 +23,13 @@ public partial class SystemBarView : UserControl
 {
     private readonly DispatcherTimer _clockTimer;
     private readonly IAudioService _audioService = new LinuxAudioService(new SafeCommandRunner());
+    private readonly IWirelessNetworkService _wirelessNetworkService = new LinuxWirelessNetworkService(new SafeCommandRunner());
+    private readonly IBluetoothService _bluetoothService = new LinuxBluetoothService(new SafeCommandRunner());
     private TextBlock? _clockText;
     private TextBlock? _calendarHeading;
     private string? _lastClockValue;
     private string? _lastCalendarHeading;
+    private string? _demoConnectedWifi = "DottOS Guest";
 
     public SystemBarView()
     {
@@ -76,12 +82,30 @@ public partial class SystemBarView : UserControl
 
     private async void OnOutputDevicesButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        SetOutputDevicesPageVisible(true);
+        SetQuickSettingsPage(QuickSettingsPage.OutputDevices);
         await LoadOutputDevicesAsync();
     }
 
     private void OnOutputDevicesBackClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-        SetOutputDevicesPageVisible(false);
+        SetQuickSettingsPage(QuickSettingsPage.Main);
+
+    private async void OnWifiNetworksButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SetQuickSettingsPage(QuickSettingsPage.WifiNetworks);
+        await LoadWifiNetworksAsync();
+    }
+
+    private void OnWifiNetworksBackClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+        SetQuickSettingsPage(QuickSettingsPage.Main);
+
+    private async void OnBluetoothDevicesButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SetQuickSettingsPage(QuickSettingsPage.BluetoothDevices);
+        await LoadBluetoothDevicesAsync();
+    }
+
+    private void OnBluetoothDevicesBackClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+        SetQuickSettingsPage(QuickSettingsPage.Main);
 
     private void OnQuickSettingsFlyoutOpened(object? sender, EventArgs e) =>
         SetFlyoutButtonActive("QuickSettingsButton", true);
@@ -181,19 +205,17 @@ public partial class SystemBarView : UserControl
         return button;
     }
 
-    private void SetOutputDevicesPageVisible(bool visible)
+    private void SetQuickSettingsPage(QuickSettingsPage page)
     {
         var mainPage = this.FindControl<Grid>("QuickSettingsMainPage");
         var outputPage = this.FindControl<StackPanel>("OutputDevicesPage");
-        if (mainPage is not null)
-        {
-            mainPage.IsVisible = !visible;
-        }
+        var wifiPage = this.FindControl<StackPanel>("WifiNetworksPage");
+        var bluetoothPage = this.FindControl<StackPanel>("BluetoothDevicesPage");
 
-        if (outputPage is not null)
-        {
-            outputPage.IsVisible = visible;
-        }
+        if (mainPage is not null) mainPage.IsVisible = page == QuickSettingsPage.Main;
+        if (outputPage is not null) outputPage.IsVisible = page == QuickSettingsPage.OutputDevices;
+        if (wifiPage is not null) wifiPage.IsVisible = page == QuickSettingsPage.WifiNetworks;
+        if (bluetoothPage is not null) bluetoothPage.IsVisible = page == QuickSettingsPage.BluetoothDevices;
     }
 
     private static string FormatOutputDeviceName(string name)
@@ -209,6 +231,214 @@ public partial class SystemBarView : UserControl
     private async Task RefreshOutputDevicesAsync()
     {
         await LoadOutputDevicesAsync();
+    }
+
+    private async Task LoadWifiNetworksAsync()
+    {
+        var host = this.FindControl<StackPanel>("WifiNetworksHost");
+        if (host is null) return;
+
+        host.Children.Clear();
+        host.Children.Add(CreateStatusText("Loading networks…"));
+
+        WirelessNetworkStatus status;
+        try
+        {
+            status = IsDemoWifiEnabled()
+                ? CreateDemoWifiStatus()
+                : await _wirelessNetworkService.GetNetworksAsync();
+        }
+        catch
+        {
+            status = new WirelessNetworkStatus(false, Array.Empty<WirelessNetworkInfo>(), "Wi-Fi networks could not be loaded.");
+        }
+
+        host.Children.Clear();
+        if (!status.IsAvailable || status.Networks.Count == 0)
+        {
+            host.Children.Add(CreateStatusText(status.Detail));
+            return;
+        }
+
+        foreach (var network in status.Networks)
+        {
+            host.Children.Add(CreateWifiNetworkButton(network));
+        }
+    }
+
+    private Button CreateWifiNetworkButton(WirelessNetworkInfo network)
+    {
+        var content = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("18,10,*"),
+            RowDefinitions = new RowDefinitions(network.IsActive ? "20,16" : "36"),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        var signalIcon = new WifiSignalIcon
+        {
+            SignalPercent = network.SignalPercent,
+            Width = 18,
+            Height = 18,
+            ActiveBrush = this.FindResource("TextPrimaryBrush") as IBrush ?? Brushes.White,
+            InactiveBrush = this.FindResource("TextTertiaryBrush") as IBrush ?? Brushes.Gray,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        content.Children.Add(signalIcon);
+        Grid.SetRowSpan(signalIcon, network.IsActive ? 2 : 1);
+
+        var name = new TextBlock
+        {
+            Text = network.Ssid,
+            FontSize = 13,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(name, 2);
+        content.Children.Add(name);
+
+        if (network.IsActive)
+        {
+            var detail = new TextBlock
+            {
+                Text = "Connected",
+                FontSize = 11,
+                Foreground = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.Gray,
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            Grid.SetRow(detail, 1);
+            Grid.SetColumn(detail, 2);
+            content.Children.Add(detail);
+        }
+
+        var button = CreateQuickSettingsListButton(content, false);
+        button.Classes.Set("ConnectedWifiNetwork", network.IsActive);
+        if (IsDemoWifiEnabled())
+        {
+            button.Click += async (_, _) =>
+            {
+                _demoConnectedWifi = network.IsActive ? null : network.Ssid;
+                await LoadWifiNetworksAsync();
+            };
+        }
+        else if (network.IsActive)
+        {
+            button.Click += async (_, _) =>
+            {
+                await _wirelessNetworkService.DisconnectFromNetworkAsync();
+                await LoadWifiNetworksAsync();
+            };
+        }
+        else if (network.Security.Equals("Open", StringComparison.OrdinalIgnoreCase))
+        {
+            button.Click += async (_, _) =>
+            {
+                await _wirelessNetworkService.ConnectToNetworkAsync(network.Ssid);
+                await LoadWifiNetworksAsync();
+            };
+        }
+        else
+        {
+            ToolTip.SetTip(button, "A password is required to join this network.");
+        }
+
+        return button;
+    }
+
+    private static bool IsDemoWifiEnabled() =>
+        string.Equals(Environment.GetEnvironmentVariable("DAISYOS_MOCK_WIFI"), "1", StringComparison.Ordinal);
+
+    private WirelessNetworkStatus CreateDemoWifiStatus()
+    {
+        var networks = new[]
+        {
+            new WirelessNetworkInfo("DottOS Guest", 92, "WPA2", _demoConnectedWifi == "DottOS Guest"),
+            new WirelessNetworkInfo("Hemppu 5G", 68, "WPA2", _demoConnectedWifi == "Hemppu 5G"),
+            new WirelessNetworkInfo("Coffee Shop Wi-Fi", 43, "Open", _demoConnectedWifi == "Coffee Shop Wi-Fi"),
+            new WirelessNetworkInfo("Neighbourhood Wi-Fi", 16, "WPA2", _demoConnectedWifi == "Neighbourhood Wi-Fi"),
+        };
+
+        return new WirelessNetworkStatus(true, networks, "Demo Wi-Fi networks are enabled.");
+    }
+
+    private async Task LoadBluetoothDevicesAsync()
+    {
+        var host = this.FindControl<StackPanel>("BluetoothDevicesHost");
+        if (host is null) return;
+
+        host.Children.Clear();
+        host.Children.Add(CreateStatusText("Loading devices…"));
+
+        BluetoothStatus status;
+        try
+        {
+            status = await _bluetoothService.GetStatusAsync();
+        }
+        catch
+        {
+            status = new BluetoothStatus(false, false, false, Array.Empty<BluetoothDevice>(), "Bluetooth devices could not be loaded.");
+        }
+
+        host.Children.Clear();
+        if (!status.IsAvailable || !status.IsEnabled || status.Devices.Count == 0)
+        {
+            host.Children.Add(CreateStatusText(status.Detail));
+            return;
+        }
+
+        foreach (var device in status.Devices.OrderByDescending(device => device.IsConnected).ThenBy(device => device.Name, StringComparer.CurrentCultureIgnoreCase))
+        {
+            host.Children.Add(CreateBluetoothDeviceButton(device));
+        }
+    }
+
+    private Button CreateBluetoothDeviceButton(BluetoothDevice device)
+    {
+        var content = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
+        content.Children.Add(new TextBlock
+        {
+            Text = device.Type.Equals("Audio", StringComparison.OrdinalIgnoreCase) ? "headphones" : "bluetooth",
+            FontFamily = new FontFamily("avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"),
+            FontSize = 18,
+            VerticalAlignment = VerticalAlignment.Center,
+        });
+
+        var labels = new StackPanel { Spacing = 1, VerticalAlignment = VerticalAlignment.Center };
+        labels.Children.Add(new TextBlock { Text = device.Name, FontSize = 13, TextTrimming = TextTrimming.CharacterEllipsis });
+        labels.Children.Add(new TextBlock
+        {
+            Text = device.IsConnected ? "Connected" : device.IsPaired ? "Paired" : "Available",
+            FontSize = 11,
+            Foreground = this.FindResource("TextSecondaryBrush") as IBrush,
+        });
+        Grid.SetColumn(labels, 1);
+        content.Children.Add(labels);
+        return CreateQuickSettingsListButton(content, device.IsConnected);
+    }
+
+    private static Button CreateQuickSettingsListButton(Control content, bool isSelected)
+    {
+        var button = new Button { Content = content };
+        button.Classes.Add("ShellButton");
+        button.Classes.Add("OutputDeviceItem");
+        if (isSelected) button.Classes.Add("SelectedOutputDevice");
+        return button;
+    }
+
+    private TextBlock CreateStatusText(string text) => new()
+    {
+        Text = text,
+        Foreground = this.FindResource("TextSecondaryBrush") as IBrush,
+        Margin = new Avalonia.Thickness(10, 8),
+        TextWrapping = TextWrapping.Wrap,
+    };
+
+    private enum QuickSettingsPage
+    {
+        Main,
+        OutputDevices,
+        WifiNetworks,
+        BluetoothDevices,
     }
 
 }

@@ -88,6 +88,12 @@
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
     </Style>
+    <Style Selector="Button.OutputDeviceItem.ConnectedWifiNetwork">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+    </Style>
+    <Style Selector="Button.OutputDeviceItem.ConnectedWifiNetwork:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+    </Style>
   </UserControl.Styles>
 
   <!-- Same material, height, padding, corner radius and shadow as TaskbarView. -->
@@ -138,7 +144,7 @@
                         <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </ToggleButton>
                       <Border Grid.Column="1" Background="{DynamicResource QuickSettingActiveDividerBrush}" IsHitTestVisible="False"/>
-                      <Button Grid.Column="2" Classes="ShellButton QuickSettingDetails Active">
+                      <Button Grid.Column="2" Classes="ShellButton QuickSettingDetails Active" Click="OnWifiNetworksButtonClicked">
                         <ToolTip.Tip>
                           <TextBlock Text="Wi-Fi networks" Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </ToolTip.Tip>
@@ -153,7 +159,7 @@
                         <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </ToggleButton>
                       <Border Grid.Column="1" Background="{DynamicResource QuickSettingInactiveDividerBrush}" IsHitTestVisible="False"/>
-                      <Button Grid.Column="2" Classes="ShellButton QuickSettingDetails">
+                      <Button Grid.Column="2" Classes="ShellButton QuickSettingDetails" Click="OnBluetoothDevicesButtonClicked">
                         <ToolTip.Tip>
                           <TextBlock Text="Bluetooth devices" Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </ToolTip.Tip>
@@ -243,6 +249,40 @@
                     <Border Grid.Column="2" Width="40" Height="40"/>
                   </Grid>
                   <StackPanel x:Name="OutputDevicesHost" Spacing="2">
+                    <TextBlock Text="Loading devices…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/>
+                  </StackPanel>
+                </StackPanel>
+
+                <StackPanel x:Name="WifiNetworksPage" IsVisible="False" Spacing="12">
+                  <Grid ColumnDefinitions="40,*,40">
+                    <Button Classes="ShellButton OutputDevicesButton"
+                            Click="OnWifiNetworksBackClicked" ToolTip.Tip="Back to quick settings">
+                      <TextBlock Text="chevron_left"
+                                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                 FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                    <TextBlock Grid.Column="1" Text="Wi-Fi networks" FontSize="15" FontWeight="Regular"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border Grid.Column="2" Width="40" Height="40"/>
+                  </Grid>
+                  <StackPanel x:Name="WifiNetworksHost" Spacing="2">
+                    <TextBlock Text="Loading networks…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/>
+                  </StackPanel>
+                </StackPanel>
+
+                <StackPanel x:Name="BluetoothDevicesPage" IsVisible="False" Spacing="12">
+                  <Grid ColumnDefinitions="40,*,40">
+                    <Button Classes="ShellButton OutputDevicesButton"
+                            Click="OnBluetoothDevicesBackClicked" ToolTip.Tip="Back to quick settings">
+                      <TextBlock Text="chevron_left"
+                                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                 FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Button>
+                    <TextBlock Grid.Column="1" Text="Bluetooth devices" FontSize="15" FontWeight="Regular"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Border Grid.Column="2" Width="40" Height="40"/>
+                  </Grid>
+                  <StackPanel x:Name="BluetoothDevicesHost" Spacing="2">
                     <TextBlock Text="Loading devices…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/>
                   </StackPanel>
                 </StackPanel>
