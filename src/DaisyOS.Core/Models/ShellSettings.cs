@@ -2,7 +2,7 @@ namespace DaisyOS.Core.Models;
 
 public sealed class ShellSettings
 {
-    public const string DefaultWallpaperUri = "avares://DaisyOS.Shell/Assets/Wallpapers/Dark.jpg";
+    public const string DefaultWallpaperUri = "avares://DaisyOS.Shell/Assets/Wallpapers/Green.jpg";
 
     public const string DefaultProfilePictureUri = "";
 

@@ -125,9 +125,9 @@ public partial class MediaWidget : UserControl
         _isPlaying = session?.IsPlaying == true;
         UpdateSpectrumCaptureState();
 
-        this.FindControl<TextBlock>("MediaTitle")!.Text = session?.Title ?? "Nothing playing";
+        this.FindControl<TextBlock>("MediaTitle")!.Text = session?.Title ?? "Not playing";
         this.FindControl<TextBlock>("MediaArtist")!.Text = session is null
-            ? "Start media to see controls"
+            ? ""
             : string.IsNullOrWhiteSpace(session.Artist) ? SourceLabel(session.SourceIdentity) : session.Artist;
         this.FindControl<TextBlock>("PlayPauseGlyph")!.Text = _isPlaying ? "pause" : "play_arrow";
         ToolTip.SetTip(this.FindControl<Button>("PlayPauseButton")!, _isPlaying ? "Pause" : "Play");

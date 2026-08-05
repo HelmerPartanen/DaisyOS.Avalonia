@@ -36,9 +36,9 @@
       </Border>
 
       <StackPanel Grid.Column="1" Margin="10,0,8,0" Spacing="1" VerticalAlignment="Center">
-        <TextBlock x:Name="MediaTitle" Text="Nothing playing" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"
+        <TextBlock x:Name="MediaTitle" Text="Not playing" FontSize="13" FontWeight="Regular" Foreground="{DynamicResource TextPrimaryBrush}"
                    TextTrimming="CharacterEllipsis" MaxLines="1"/>
-        <TextBlock x:Name="MediaArtist" Text="Start media to see controls" FontSize="11"
+        <TextBlock x:Name="MediaArtist" FontSize="11"
                    Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
       </StackPanel>
 

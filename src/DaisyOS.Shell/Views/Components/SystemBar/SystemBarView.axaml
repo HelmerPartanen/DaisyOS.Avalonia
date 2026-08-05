@@ -120,21 +120,21 @@
         <Button.Flyout>
           <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-14" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}"
                   Opened="OnQuickSettingsFlyoutOpened" Closed="OnQuickSettingsFlyoutClosed">
-            <Border Width="320" Height="280" Padding="16,14,16,0"
+            <Border Width="336" Height="304" Padding="16,16,16,0"
                     Background="{DynamicResource SystemBarMaterialBrush}"
                     BorderBrush="{DynamicResource TaskbarBorderBrush}"
                     BorderThickness="1" CornerRadius="14"
                     BoxShadow="0 12 36 0 #60000000">
               <Grid>
                 <Grid x:Name="QuickSettingsMainPage" RowDefinitions="*,Auto">
-                  <StackPanel Grid.Row="0" Spacing="10">
+                  <StackPanel Grid.Row="0" Spacing="12">
                     <!-- Labels remain outside the controls; Wi-Fi and Bluetooth split into action + details. -->
-                    <Grid Width="288" HorizontalAlignment="Center"
-                          ColumnDefinitions="92,92,92" ColumnSpacing="6"
-                          RowDefinitions="Auto,Auto" RowSpacing="6">
-                  <StackPanel Grid.Row="0" Grid.Column="0" Width="92" Spacing="4">
-                    <Grid Height="56" ColumnDefinitions="64,1,27">
-                      <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="64" CornerRadius="10,0,0,10" IsChecked="True" ToolTip.Tip="Toggle Wi-Fi">
+                    <Grid Width="304" HorizontalAlignment="Center"
+                          ColumnDefinitions="96,96,96" ColumnSpacing="8"
+                          RowDefinitions="Auto,Auto" RowSpacing="8">
+                  <StackPanel Grid.Row="0" Grid.Column="0" Width="96" Spacing="6">
+                    <Grid Height="56" ColumnDefinitions="68,1,27">
+                      <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" IsChecked="True" ToolTip.Tip="Toggle Wi-Fi">
                         <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </ToggleButton>
                       <Border Grid.Column="1" Background="#33000000" IsHitTestVisible="False"/>
@@ -147,9 +147,9 @@
                     </Grid>
                     <TextBlock Classes="QuickSettingLabel" Text="Wi-Fi"/>
                   </StackPanel>
-                  <StackPanel Grid.Row="0" Grid.Column="1" Width="92" Spacing="4">
-                    <Grid Height="56" ColumnDefinitions="64,1,27">
-                      <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="64" CornerRadius="10,0,0,10" ToolTip.Tip="Toggle Bluetooth">
+                  <StackPanel Grid.Row="0" Grid.Column="1" Width="96" Spacing="6">
+                    <Grid Height="56" ColumnDefinitions="68,1,27">
+                      <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" ToolTip.Tip="Toggle Bluetooth">
                         <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </ToggleButton>
                       <Border Grid.Column="1" Background="#33000000" IsHitTestVisible="False"/>
@@ -162,25 +162,25 @@
                     </Grid>
                     <TextBlock Classes="QuickSettingLabel" Text="Bluetooth"/>
                   </StackPanel>
-                  <StackPanel Grid.Row="0" Grid.Column="2" Width="92" Spacing="4">
+                  <StackPanel Grid.Row="0" Grid.Column="2" Width="96" Spacing="6">
                     <ToggleButton Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Do not disturb">
                       <TextBlock Text="do_not_disturb_on" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                     </ToggleButton>
                     <TextBlock Classes="QuickSettingLabel" Text="Focus"/>
                   </StackPanel>
-                  <StackPanel Grid.Row="1" Grid.Column="0" Width="92" Spacing="4">
+                  <StackPanel Grid.Row="1" Grid.Column="0" Width="96" Spacing="6">
                     <ToggleButton Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Night light">
                       <TextBlock Text="nightlight" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                     </ToggleButton>
                     <TextBlock Classes="QuickSettingLabel" Text="Night light"/>
                   </StackPanel>
-                  <StackPanel Grid.Row="1" Grid.Column="1" Width="92" Spacing="4">
+                  <StackPanel Grid.Row="1" Grid.Column="1" Width="96" Spacing="6">
                     <ToggleButton x:Name="ThemeToggle" Classes="ShellButton QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Dark theme" Click="OnThemeToggleClicked">
                       <TextBlock Text="contrast" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                     </ToggleButton>
                     <TextBlock Classes="QuickSettingLabel" Text="Theme"/>
                   </StackPanel>
-                  <StackPanel Grid.Row="1" Grid.Column="2" Width="92" Spacing="4">
+                  <StackPanel Grid.Row="1" Grid.Column="2" Width="96" Spacing="6">
                     <ToggleButton Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Gaming mode">
                       <TextBlock Text="sports_esports" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                     </ToggleButton>
@@ -211,7 +211,7 @@
                       <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                         <TextBlock Text="battery_full"
                                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                   FontSize="19"
+                                   FontSize="18"
                                    Foreground="{DynamicResource TextPrimaryBrush}"/>
                         <TextBlock Text="100%" FontSize="13" VerticalAlignment="Center"
                                    Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -219,12 +219,12 @@
                       <Button Grid.Column="1" Classes="ShellButton" Width="40" Height="40" VerticalAlignment="Center" ToolTip.Tip="Edit quick settings">
                         <TextBlock Text="edit"
                                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                   FontSize="19"/>
+                                   FontSize="18"/>
                       </Button>
                       <Button Grid.Column="2" Classes="ShellButton" Width="40" Height="40" VerticalAlignment="Center" ToolTip.Tip="Settings">
                         <TextBlock Text="settings"
                                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                   FontSize="19"/>
+                                   FontSize="18"/>
                       </Button>
                     </Grid>
                   </Grid>
