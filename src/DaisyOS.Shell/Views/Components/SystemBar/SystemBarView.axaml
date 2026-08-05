@@ -94,7 +94,7 @@
   <Border Height="52"
           Padding="6"
           Background="{DynamicResource SystemBarMaterialBrush}"
-          BorderBrush="{DynamicResource TaskbarBorderBrush}"
+          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
           BorderThickness="1"
           CornerRadius="12"
           ClipToBounds="True"
@@ -122,7 +122,7 @@
                   Opened="OnQuickSettingsFlyoutOpened" Closed="OnQuickSettingsFlyoutClosed">
             <Border Width="336" Height="304" Padding="16,16,16,0"
                     Background="{DynamicResource SystemBarMaterialBrush}"
-                    BorderBrush="{DynamicResource TaskbarBorderBrush}"
+                    BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
                     BorderThickness="1" CornerRadius="14"
                     BoxShadow="0 12 36 0 #60000000">
               <Grid>
@@ -137,7 +137,7 @@
                       <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" IsChecked="True" ToolTip.Tip="Toggle Wi-Fi">
                         <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </ToggleButton>
-                      <Border Grid.Column="1" Background="#33000000" IsHitTestVisible="False"/>
+                      <Border Grid.Column="1" Background="{DynamicResource QuickSettingActiveDividerBrush}" IsHitTestVisible="False"/>
                       <Button Grid.Column="2" Classes="ShellButton QuickSettingDetails Active">
                         <ToolTip.Tip>
                           <TextBlock Text="Wi-Fi networks" Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -152,7 +152,7 @@
                       <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" ToolTip.Tip="Toggle Bluetooth">
                         <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </ToggleButton>
-                      <Border Grid.Column="1" Background="#33000000" IsHitTestVisible="False"/>
+                      <Border Grid.Column="1" Background="{DynamicResource QuickSettingInactiveDividerBrush}" IsHitTestVisible="False"/>
                       <Button Grid.Column="2" Classes="ShellButton QuickSettingDetails">
                         <ToolTip.Tip>
                           <TextBlock Text="Bluetooth devices" Foreground="{DynamicResource TextPrimaryBrush}"/>
@@ -192,7 +192,7 @@
                                                     Minimum="0"
                                                     Maximum="100"
                                                     Value="72" />
-                      <Border Grid.Column="1" Background="#33000000" IsHitTestVisible="False"/>
+                      <Border Grid.Column="1" Background="{DynamicResource QuickSettingInactiveDividerBrush}" IsHitTestVisible="False"/>
                       <Button Grid.Column="2" Classes="ShellButton VolumeOutputDetails" ToolTip.Tip="Choose output device"
                               Click="OnOutputDevicesButtonClicked">
                         <TextBlock Text="chevron_right"

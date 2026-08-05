@@ -8,7 +8,7 @@
   
   
   <Border Background="{DynamicResource LauncherMaterialBrush}"
-          BorderBrush="{DynamicResource TaskbarBorderBrush}"
+          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
           BorderThickness="1"
           CornerRadius="12"
           ClipToBounds="True"
@@ -221,7 +221,7 @@
       </ScrollViewer>
 
       <!-- Footer Bar: Real Linux User Profile & Power Actions -->
-      <Border Grid.Row="2" Height="64" Padding="24,0" Background="{DynamicResource LauncherFooterBrush}" BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,12,12">
+      <Border Grid.Row="2" Height="64" Padding="24,0" Background="{DynamicResource LauncherFooterBrush}" BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,12,12">
         <Grid ColumnDefinitions="*,Auto">
           
           <!-- Left: Active Linux User Profile -->

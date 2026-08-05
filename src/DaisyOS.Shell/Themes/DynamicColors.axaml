@@ -12,6 +12,11 @@
   <SolidColorBrush x:Key="AppSurfaceContainerBrush" Color="#FF211F26"/>
   <SolidColorBrush x:Key="AppSurfaceContainerHighBrush" Color="#FF2B2930"/>
   <SolidColorBrush x:Key="AppSurfaceContainerHighestBrush" Color="#FF36343B"/>
+  <!-- Opaque, wallpaper-derived shell materials. DynamicThemeService refreshes these on each wallpaper or theme change. -->
+  <SolidColorBrush x:Key="LauncherMaterialBrush" Color="#FF2B2930"/>
+  <SolidColorBrush x:Key="SystemBarMaterialBrush" Color="#FF2B2930"/>
+  <SolidColorBrush x:Key="LauncherFooterBrush" Color="#FF36343B"/>
+  <SolidColorBrush x:Key="ShellSurfaceBorderBrush" Color="#69CAC4D0"/>
   <SolidColorBrush x:Key="AppOnSurfaceBrush" Color="#FFE6E1E5"/>
   <SolidColorBrush x:Key="AppOnSurfaceVariantBrush" Color="#FFCAC4D0"/>
   <!-- Color companion for vector assets whose SVG fill uses currentColor. -->
@@ -22,6 +27,7 @@
   <SolidColorBrush x:Key="AppPrimaryContainerHoverBrush" Color="#FF594294"/>
   <SolidColorBrush x:Key="AppPrimaryContainerPressedBrush" Color="#FF644C9E"/>
   <SolidColorBrush x:Key="AppOnPrimaryContainerBrush" Color="#FFE9DDFF"/>
+  <SolidColorBrush x:Key="QuickSettingActiveDividerBrush" Color="#FF625093"/>
   <SolidColorBrush x:Key="AppSecondaryBrush" Color="#FFCCC2DC"/>
   <SolidColorBrush x:Key="AppOnSecondaryBrush" Color="#FF332D41"/>
   <SolidColorBrush x:Key="AppSecondaryContainerBrush" Color="#FF4A4458"/>

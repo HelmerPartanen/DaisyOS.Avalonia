@@ -51,6 +51,8 @@ public sealed class DynamicThemeService
 
     private static void Apply(IResourceDictionary resources, DynamicColorScheme scheme, Color desktopLabelColor)
     {
+        var isDarkSurface = RelativeLuminance(scheme.Surface) < 0.5;
+
         Set(resources, "DesktopItemLabelBrush", desktopLabelColor);
         Set(resources, "AppBackgroundBrush", scheme.Background);
         Set(resources, "AppOnBackgroundBrush", scheme.OnBackground);
@@ -71,6 +73,7 @@ public sealed class DynamicThemeService
         Set(resources, "AppPrimaryContainerHoverBrush", Blend(scheme.PrimaryContainer, scheme.Primary, 0.08));
         Set(resources, "AppPrimaryContainerPressedBrush", Blend(scheme.PrimaryContainer, scheme.Primary, 0.16));
         Set(resources, "AppOnPrimaryContainerBrush", scheme.OnPrimaryContainer);
+        Set(resources, "QuickSettingActiveDividerBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.14));
         Set(resources, "AppSecondaryBrush", scheme.Secondary);
         Set(resources, "AppOnSecondaryBrush", scheme.OnSecondary);
         Set(resources, "AppSecondaryContainerBrush", scheme.SecondaryContainer);
@@ -90,6 +93,14 @@ public sealed class DynamicThemeService
         Set(resources, "AppInversePrimaryBrush", scheme.InversePrimary);
         Set(resources, "AppScrimBrush", scheme.Scrim);
         Set(resources, "AppShadowBrush", scheme.Shadow);
+
+        // Shell chrome stays opaque until an actual acrylic material exists. It still
+        // inherits the wallpaper palette, so launcher and system-bar surfaces feel
+        // cohesive without showing a distracting unblurred wallpaper beneath them.
+        Set(resources, "LauncherMaterialBrush", scheme.SurfaceContainerHigh);
+        Set(resources, "SystemBarMaterialBrush", scheme.SurfaceContainerHigh);
+        Set(resources, "LauncherFooterBrush", scheme.SurfaceContainerHighest);
+        Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, isDarkSurface ? 105 : 82));
     }
 
     private static void Set(IResourceDictionary resources, string key, Color color) =>
@@ -104,4 +115,10 @@ public sealed class DynamicThemeService
             (byte)Math.Round(background.R + ((foreground.R - background.R) * amount)),
             (byte)Math.Round(background.G + ((foreground.G - background.G) * amount)),
             (byte)Math.Round(background.B + ((foreground.B - background.B) * amount)));
+
+    private static Color WithAlpha(Color color, int alpha) =>
+        Color.FromArgb((byte)alpha, color.R, color.G, color.B);
+
+    private static double RelativeLuminance(Color color) =>
+        (0.2126 * color.R + (0.7152 * color.G) + (0.0722 * color.B)) / 255;
 }

@@ -59,13 +59,15 @@
 
       <!-- Inactive quick-setting tiles are OS chrome, not wallpaper accents. -->
       <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
-                       Color="#FFE8E8E8"/>
+                       Color="#1A000000"/>
       <SolidColorBrush x:Key="QuickSettingForegroundBrush"
                        Color="#FF1A1A1A"/>
       <SolidColorBrush x:Key="QuickSettingHoverBrush"
                        Color="#FFDDDDDD"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
                        Color="#FFD2D2D2"/>
+      <SolidColorBrush x:Key="QuickSettingInactiveDividerBrush"
+                       Color="#26000000"/>
 
       <SolidColorBrush x:Key="LauncherItemHoverBrush"
                        Color="#12000000"/>
@@ -111,13 +113,15 @@
 
       <!-- Tune these independent of wallpaper-derived active quick-setting colors. -->
       <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
-                       Color="#FF262626"/>
+                       Color="#26000000"/>
       <SolidColorBrush x:Key="QuickSettingForegroundBrush"
                        Color="#FFF3F3F3"/>
       <SolidColorBrush x:Key="QuickSettingHoverBrush"
-                       Color="#FF303030"/>
+                       Color="#0DFFFFFF"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
                        Color="#FF383838"/>
+      <SolidColorBrush x:Key="QuickSettingInactiveDividerBrush"
+                       Color="#1AFFFFFF"/>
 
       <SolidColorBrush x:Key="LauncherItemHoverBrush"
                        Color="#1AFFFFFF"/>
