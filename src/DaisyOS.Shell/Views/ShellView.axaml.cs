@@ -36,9 +36,14 @@ namespace DaisyOS.Shell.Views
         {
             SetLauncherOpen(launcher, taskbar, false);
 
+            if (appId == "settings" && Application.Current is App app)
+            {
+                app.ShowSettings();
+                return;
+            }
+
             var matchingApp = appId switch
             {
-                "settings" => FindInstalledApp("systemsettings", "settings", "gnome-control-center"),
                 "files" => FindInstalledApp("dolphin", "nautilus", "thunar", "files"),
                 _ => null
             };

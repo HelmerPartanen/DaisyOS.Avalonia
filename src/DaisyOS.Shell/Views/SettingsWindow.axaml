@@ -1,0 +1,27 @@
+<Window
+    x:Class="DaisyOS.Shell.Views.SettingsWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+    xmlns:views="clr-namespace:DaisyOS.Shell.Views"
+    Title="Settings"
+    Width="1080"
+    Height="720"
+    MinWidth="760"
+    MinHeight="540"
+    WindowStartupLocation="CenterScreen"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    ExtendClientAreaTitleBarHeightHint="38"
+    Background="Transparent">
+  <Border Background="{DynamicResource AppSurfaceBrush}"
+          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
+          BorderThickness="1"
+          CornerRadius="12"
+          ClipToBounds="True">
+    <Grid RowDefinitions="38,*">
+      <controls:AppWindowTitleBar Title="Settings" />
+      <views:SettingsView Grid.Row="1" />
+    </Grid>
+  </Border>
+</Window>

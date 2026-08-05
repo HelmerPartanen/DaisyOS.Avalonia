@@ -1,5 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using DaisyOS.Shell;
 using DaisyOS.Core.Desktop;
 using DaisyOS.System.Display;
 using DaisyOS.Shell.ViewModels;
@@ -16,6 +19,7 @@ namespace DaisyOS.Shell.Views.Components.Desktop
         private Avalonia.Point _dragStartPointerPos;
         private Avalonia.Point _dragStartItemPos;
         private bool _isDragging;
+        private App? _app;
 
         // The fill-order slot last previewed under the pointer, so we only recompute the
         // reflow when the pointer actually moves into a different slot.
@@ -29,9 +33,41 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             _metricsProvider = new AvaloniaMetricsProvider();
             
             DataContext = _viewModel;
+            _app = Application.Current as App;
+            if (_app is not null)
+            {
+                _app.WallpaperChanged += OnWallpaperChanged;
+            }
+
+            Unloaded += (_, _) =>
+            {
+                if (_app is not null)
+                {
+                    _app.WallpaperChanged -= OnWallpaperChanged;
+                }
+            };
             
             // Listen to layout changes to rebuild the grid
             this.SizeChanged += DesktopView_SizeChanged;
+        }
+
+        private void OnWallpaperChanged(object? sender, string wallpaperUri)
+        {
+            var wallpaperImage = this.FindControl<Image>("WallpaperImage");
+            if (wallpaperImage is null)
+            {
+                return;
+            }
+
+            try
+            {
+                using var stream = AssetLoader.Open(new Uri(wallpaperUri));
+                wallpaperImage.Source = new Bitmap(stream);
+            }
+            catch
+            {
+                // Keep the current wallpaper visible if an asset cannot be loaded.
+            }
         }
 
         private void DesktopView_SizeChanged(object? sender, SizeChangedEventArgs e)

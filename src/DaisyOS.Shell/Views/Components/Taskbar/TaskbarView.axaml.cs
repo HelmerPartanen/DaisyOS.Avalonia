@@ -34,6 +34,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private Button? _dragItem;
         private bool _pointerDown;
         private bool _isDragging;
+        private bool _suppressNextClick;
         private double _pointerStartX;
         private double _dragStartLeft;
         private List<string>? _orderAtDragStart;
@@ -84,6 +85,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             icon.PointerMoved += Icon_PointerMoved;
             icon.PointerReleased += Icon_PointerReleased;
             icon.PointerCaptureLost += Icon_PointerCaptureLost;
+            icon.Click += Icon_Click;
         }
 
         private void UnwireIcon(Button icon)
@@ -92,6 +94,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             icon.PointerMoved -= Icon_PointerMoved;
             icon.PointerReleased -= Icon_PointerReleased;
             icon.PointerCaptureLost -= Icon_PointerCaptureLost;
+            icon.Click -= Icon_Click;
         }
 
         private static readonly Transitions SharedPositionTransitions = new()
@@ -293,17 +296,17 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private void Icon_PointerReleased(object? sender, PointerReleasedEventArgs e)
         {
             if (sender is not Button icon) return;
-            EndInteraction(icon, raiseClickIfTap: true, e);
+            EndInteraction(icon, e);
             e.Pointer.Capture(null);
         }
 
         private void Icon_PointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
         {
             if (sender is not Button icon) return;
-            EndInteraction(icon, raiseClickIfTap: false, e);
+            EndInteraction(icon, e);
         }
 
-        private void EndInteraction(Button icon, bool raiseClickIfTap, RoutedEventArgs e)
+        private void EndInteraction(Button icon, RoutedEventArgs e)
         {
             if (!_pointerDown) return;
 
@@ -322,21 +325,33 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             if (wasDragging)
             {
                 e.Handled = true;
+                _suppressNextClick = true;
                 var newOrder = _order.Select(b => b.Tag as string ?? string.Empty).ToList();
                 if (_orderAtDragStart != null && !newOrder.SequenceEqual(_orderAtDragStart))
                 {
                     OrderChanged?.Invoke(this, newOrder);
                 }
             }
-            else if (raiseClickIfTap && icon.Tag is string tag)
-            {
-                AppIconClicked?.Invoke(this, tag);
-            }
-
             _pointerDown = false;
             _isDragging = false;
             _dragItem = null;
             _orderAtDragStart = null;
+        }
+
+        // Let Button own normal activation. The pointer handlers above are only for reordering;
+        // emitting activation from both paths made taps susceptible to capture/drag sequencing.
+        private void Icon_Click(object? sender, RoutedEventArgs e)
+        {
+            if (_suppressNextClick)
+            {
+                _suppressNextClick = false;
+                return;
+            }
+
+            if (sender is Button { Tag: string tag })
+            {
+                AppIconClicked?.Invoke(this, tag);
+            }
         }
     }
 }
