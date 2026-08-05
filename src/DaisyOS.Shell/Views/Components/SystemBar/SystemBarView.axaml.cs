@@ -147,7 +147,7 @@ public partial class SystemBarView : UserControl
         var content = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
         content.Children.Add(new TextBlock
         {
-            Text = "speaker",
+            Text = device.IconGlyph,
             FontFamily = new FontFamily("avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"),
             FontSize = 18,
             VerticalAlignment = VerticalAlignment.Center
@@ -183,7 +183,7 @@ public partial class SystemBarView : UserControl
 
     private void SetOutputDevicesPageVisible(bool visible)
     {
-        var mainPage = this.FindControl<StackPanel>("QuickSettingsMainPage");
+        var mainPage = this.FindControl<Grid>("QuickSettingsMainPage");
         var outputPage = this.FindControl<StackPanel>("OutputDevicesPage");
         if (mainPage is not null)
         {

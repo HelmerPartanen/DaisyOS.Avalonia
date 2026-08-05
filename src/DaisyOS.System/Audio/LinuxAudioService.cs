@@ -146,8 +146,8 @@ public sealed partial class LinuxAudioService : IAudioService
                         if (!string.IsNullOrWhiteSpace(name) &&
                             !name.StartsWith("output_", StringComparison.OrdinalIgnoreCase))
                         {
-                            var isBt = name.Contains("Bluetooth", StringComparison.OrdinalIgnoreCase) || name.Contains("Headphones", StringComparison.OrdinalIgnoreCase);
-                            var icon = isBt ? "headphones" : name.Contains("HDMI", StringComparison.OrdinalIgnoreCase) ? "tv" : "speaker";
+                            var isBt = name.Contains("Bluetooth", StringComparison.OrdinalIgnoreCase) || IsHeadphones(name);
+                            var icon = IsHeadphones(name) ? "headphones" : "speaker";
                             list.Add(new AudioDeviceInfo(deviceId, name, icon, isDefault, isBt));
                         }
                     }
@@ -158,12 +158,20 @@ public sealed partial class LinuxAudioService : IAudioService
         if (list.Count == 0)
         {
             list.Add(new AudioDeviceInfo("default", "Internal Speakers", "speaker", true));
-            list.Add(new AudioDeviceInfo("hdmi", "HDMI / DisplayPort Output", "tv", false));
+            list.Add(new AudioDeviceInfo("hdmi", "HDMI / DisplayPort Output", "speaker", false));
             list.Add(new AudioDeviceInfo("bt", "Wireless Headphones", "headphones", false, true));
         }
 
         return list;
     }
+
+    private static bool IsHeadphones(string deviceName) =>
+        deviceName.Contains("headphone", StringComparison.OrdinalIgnoreCase) ||
+        deviceName.Contains("headset", StringComparison.OrdinalIgnoreCase) ||
+        deviceName.Contains("earbud", StringComparison.OrdinalIgnoreCase) ||
+        deviceName.Contains("airpod", StringComparison.OrdinalIgnoreCase) ||
+        deviceName.Contains("hands-free", StringComparison.OrdinalIgnoreCase) ||
+        deviceName.Contains("handsfree", StringComparison.OrdinalIgnoreCase);
 
     public async Task SetDefaultAudioDeviceAsync(string deviceId, CancellationToken cancellationToken = default)
     {
