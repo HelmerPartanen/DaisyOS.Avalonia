@@ -72,15 +72,7 @@ public sealed class LinuxBluetoothService : IBluetoothService
                         {
                             isConnected = resultInfo.StandardOutput.Contains("Connected: yes", StringComparison.OrdinalIgnoreCase);
                             isPaired = resultInfo.StandardOutput.Contains("Paired: yes", StringComparison.OrdinalIgnoreCase);
-                            if (resultInfo.StandardOutput.Contains("Icon: audio", StringComparison.OrdinalIgnoreCase) ||
-                                resultInfo.StandardOutput.Contains("UUID: Audio", StringComparison.OrdinalIgnoreCase))
-                            {
-                                type = "Audio";
-                            }
-                            else if (resultInfo.StandardOutput.Contains("Icon: input", StringComparison.OrdinalIgnoreCase))
-                            {
-                                type = "Input";
-                            }
+                            type = ParseDeviceType(resultInfo.StandardOutput);
                         }
 
                         devices.Add(new BluetoothDevice(address, name, isConnected, isPaired, type));
@@ -124,6 +116,24 @@ public sealed class LinuxBluetoothService : IBluetoothService
     private static bool ParseShowOutput(string output)
     {
         return output.Contains("Powered: yes", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ParseDeviceType(string output)
+    {
+        var icon = output.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .FirstOrDefault(line => line.StartsWith("Icon:", StringComparison.OrdinalIgnoreCase));
+
+        if (icon is not null)
+        {
+            if (icon.Contains("audio", StringComparison.OrdinalIgnoreCase)) return "Audio";
+            if (icon.Contains("keyboard", StringComparison.OrdinalIgnoreCase)) return "Keyboard";
+            if (icon.Contains("mouse", StringComparison.OrdinalIgnoreCase)) return "Mouse";
+            if (icon.Contains("phone", StringComparison.OrdinalIgnoreCase)) return "Phone";
+            if (icon.Contains("gamepad", StringComparison.OrdinalIgnoreCase) || icon.Contains("joystick", StringComparison.OrdinalIgnoreCase)) return "Controller";
+            if (icon.Contains("input", StringComparison.OrdinalIgnoreCase)) return "Input";
+        }
+
+        return output.Contains("UUID: Audio", StringComparison.OrdinalIgnoreCase) ? "Audio" : "Unknown";
     }
 
     private static string BuildFailureDetail(CommandResult result, string operation)

@@ -100,6 +100,12 @@
     <Style Selector="Button.OutputDeviceItem.ConnectedWifiNetwork:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
     </Style>
+    <Style Selector="Button.OutputDeviceItem.ConnectedBluetoothDevice">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+    </Style>
+    <Style Selector="Button.OutputDeviceItem.ConnectedBluetoothDevice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+    </Style>
   </UserControl.Styles>
 
   <!-- Same material, height, padding, corner radius and shadow as TaskbarView. -->

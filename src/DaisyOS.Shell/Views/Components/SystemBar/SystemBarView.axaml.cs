@@ -384,7 +384,9 @@ public partial class SystemBarView : UserControl
         BluetoothStatus status;
         try
         {
-            status = await _bluetoothService.GetStatusAsync();
+            status = IsDemoBluetoothEnabled()
+                ? CreateDemoBluetoothStatus()
+                : await _bluetoothService.GetStatusAsync();
         }
         catch
         {
@@ -406,27 +408,82 @@ public partial class SystemBarView : UserControl
 
     private Button CreateBluetoothDeviceButton(BluetoothDevice device)
     {
-        var content = new Grid { ColumnDefinitions = new ColumnDefinitions("Auto,*") };
-        content.Children.Add(new TextBlock
+        var content = new Grid
         {
-            Text = device.Type.Equals("Audio", StringComparison.OrdinalIgnoreCase) ? "headphones" : "bluetooth",
+            ColumnDefinitions = new ColumnDefinitions("18,10,*"),
+            RowDefinitions = new RowDefinitions(device.IsConnected ? "20,16" : "36"),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        var icon = new TextBlock
+        {
+            Text = BluetoothIconFor(device),
             FontFamily = new FontFamily("avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"),
             FontSize = 18,
             VerticalAlignment = VerticalAlignment.Center,
-        });
+        };
+        content.Children.Add(icon);
+        Grid.SetRowSpan(icon, device.IsConnected ? 2 : 1);
 
-        var labels = new StackPanel { Spacing = 1, VerticalAlignment = VerticalAlignment.Center };
-        labels.Children.Add(new TextBlock { Text = device.Name, FontSize = 13, TextTrimming = TextTrimming.CharacterEllipsis });
-        labels.Children.Add(new TextBlock
+        var name = new TextBlock
         {
-            Text = device.IsConnected ? "Connected" : device.IsPaired ? "Paired" : "Available",
-            FontSize = 11,
-            Foreground = this.FindResource("TextSecondaryBrush") as IBrush,
-        });
-        Grid.SetColumn(labels, 1);
-        content.Children.Add(labels);
-        return CreateQuickSettingsListButton(content, device.IsConnected);
+            Text = device.Name,
+            FontSize = 13,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(name, 2);
+        content.Children.Add(name);
+
+        if (device.IsConnected)
+        {
+            var detail = new TextBlock
+            {
+                Text = "Connected",
+                FontSize = 11,
+                Foreground = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.Gray,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+            Grid.SetRow(detail, 1);
+            Grid.SetColumn(detail, 2);
+            content.Children.Add(detail);
+        }
+
+        var button = CreateQuickSettingsListButton(content, false);
+        button.Classes.Set("ConnectedBluetoothDevice", device.IsConnected);
+        return button;
     }
+
+    private static bool IsDemoBluetoothEnabled() =>
+        string.Equals(Environment.GetEnvironmentVariable("DAISYOS_MOCK_BLUETOOTH"), "1", StringComparison.Ordinal);
+
+    private static BluetoothStatus CreateDemoBluetoothStatus() =>
+        new(
+            IsAvailable: true,
+            IsEnabled: true,
+            IsDiscovering: false,
+            Devices:
+            [
+                new BluetoothDevice("10:24:98:7A:3B:01", "DottBuds Pro", true, true, "Audio"),
+                new BluetoothDevice("10:24:98:7A:3B:02", "MX Master 3S", false, true, "Mouse"),
+                new BluetoothDevice("10:24:98:7A:3B:03", "Keychron K3", false, true, "Keyboard"),
+                new BluetoothDevice("10:24:98:7A:3B:04", "DualSense Wireless Controller", false, true, "Controller"),
+            ],
+            Detail: "Demo Bluetooth devices are enabled.");
+
+    private static string BluetoothIconFor(BluetoothDevice device)
+    {
+        var type = device.Type;
+        var name = device.Name;
+        if (Contains(type, "audio") || Contains(type, "headphone") || Contains(type, "headset") || Contains(name, "bud")) return "headphones";
+        if (Contains(type, "keyboard") || Contains(name, "keyboard") || Contains(name, "keychron")) return "keyboard";
+        if (Contains(type, "mouse") || Contains(name, "mouse") || Contains(name, "master")) return "mouse";
+        if (Contains(type, "phone") || Contains(name, "phone")) return "smartphone";
+        if (Contains(type, "controller") || Contains(type, "gamepad") || Contains(name, "controller") || Contains(name, "dualsense")) return "sports_esports";
+        return "bluetooth";
+    }
+
+    private static bool Contains(string value, string fragment) =>
+        value.Contains(fragment, StringComparison.OrdinalIgnoreCase);
 
     private static Button CreateQuickSettingsListButton(Control content, bool isSelected)
     {
