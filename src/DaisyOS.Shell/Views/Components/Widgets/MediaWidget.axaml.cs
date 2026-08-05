@@ -149,6 +149,7 @@ public partial class MediaWidget : UserControl
         tintLayer.Background = _artworkTint is { } color
             ? new SolidColorBrush(Color.FromArgb(128, color.R, color.G, color.B))
             : Brushes.Transparent;
+        ApplyArtworkAccent();
     }
 
     private void UpdateSpectrumCaptureState()
@@ -231,7 +232,7 @@ public partial class MediaWidget : UserControl
             }
         };
 
-        bar.Bind(Border.BackgroundProperty, bar.GetResourceObservable("TextTertiaryBrush"));
+        bar.Background = this.FindResource("TextTertiaryBrush") as IBrush ?? Brushes.Gray;
         return bar;
     }
 
@@ -284,6 +285,37 @@ public partial class MediaWidget : UserControl
         await using var stream = new MemoryStream(bytes, writable: false);
         return await _colorExtractor.ExtractSeedAsync(stream, cancellationToken);
     }
+
+    private void ApplyArtworkAccent()
+    {
+        var primaryText = GetResourceColor("TextPrimaryBrush", Colors.White);
+        var secondaryText = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.White;
+        var spectrumFallback = this.FindResource("TextTertiaryBrush") as IBrush ?? Brushes.Gray;
+        var controlAccent = _artworkTint is { } tint
+            ? new SolidColorBrush(Blend(tint, primaryText, 0.68))
+            : secondaryText;
+        var spectrumAccent = _artworkTint is { } spectrumTint
+            ? new SolidColorBrush(Blend(spectrumTint, primaryText, 0.45))
+            : spectrumFallback;
+
+        this.FindControl<TextBlock>("PreviousGlyph")!.Foreground = controlAccent;
+        this.FindControl<TextBlock>("PlayPauseGlyph")!.Foreground = controlAccent;
+        this.FindControl<TextBlock>("NextGlyph")!.Foreground = controlAccent;
+        foreach (var bar in _spectrumBars)
+        {
+            bar.Background = spectrumAccent;
+        }
+    }
+
+    private Color GetResourceColor(string key, Color fallback) =>
+        this.FindResource(key) is ISolidColorBrush brush ? brush.Color : fallback;
+
+    private static Color Blend(Color artworkTint, Color textColor, double textWeight) =>
+        Color.FromArgb(
+            255,
+            (byte)Math.Round(artworkTint.R + ((textColor.R - artworkTint.R) * textWeight)),
+            (byte)Math.Round(artworkTint.G + ((textColor.G - artworkTint.G) * textWeight)),
+            (byte)Math.Round(artworkTint.B + ((textColor.B - artworkTint.B) * textWeight)));
 
     private static async Task<(Bitmap Bitmap, byte[] Bytes)?> LoadArtworkAsync(string? path, CancellationToken cancellationToken)
     {

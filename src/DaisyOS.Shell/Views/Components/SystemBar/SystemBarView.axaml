@@ -45,6 +45,12 @@
     <Style Selector="Button.QuickSettingDetails.Active:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerPressedBrush}"/>
     </Style>
+    <Style Selector="Border.QuickSettingSplitDivider">
+      <Setter Property="Background" Value="{DynamicResource QuickSettingInactiveDividerBrush}"/>
+    </Style>
+    <Style Selector="Border.QuickSettingSplitDivider.Active">
+      <Setter Property="Background" Value="{DynamicResource QuickSettingActiveDividerBrush}"/>
+    </Style>
     <Style Selector="Button.VolumeOutputDetails">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
@@ -140,11 +146,11 @@
                           RowDefinitions="Auto,Auto" RowSpacing="8">
                   <StackPanel Grid.Row="0" Grid.Column="0" Width="96" Spacing="6">
                     <Grid Height="56" ColumnDefinitions="68,1,27">
-                      <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" IsChecked="True" ToolTip.Tip="Toggle Wi-Fi">
+                      <ToggleButton x:Name="WifiToggle" Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" IsChecked="True" Click="OnWifiToggleStateChanged" ToolTip.Tip="Toggle Wi-Fi">
                         <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </ToggleButton>
-                      <Border Grid.Column="1" Background="{DynamicResource QuickSettingActiveDividerBrush}" IsHitTestVisible="False"/>
-                      <Button Grid.Column="2" Classes="ShellButton QuickSettingDetails Active" Click="OnWifiNetworksButtonClicked">
+                      <Border x:Name="WifiSplitDivider" Grid.Column="1" Classes="QuickSettingSplitDivider Active" IsHitTestVisible="False"/>
+                      <Button x:Name="WifiDetailsButton" Grid.Column="2" Classes="ShellButton QuickSettingDetails Active" Click="OnWifiNetworksButtonClicked">
                         <ToolTip.Tip>
                           <TextBlock Text="Wi-Fi networks" Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </ToolTip.Tip>
@@ -155,11 +161,11 @@
                   </StackPanel>
                   <StackPanel Grid.Row="0" Grid.Column="1" Width="96" Spacing="6">
                     <Grid Height="56" ColumnDefinitions="68,1,27">
-                      <ToggleButton Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" ToolTip.Tip="Toggle Bluetooth">
+                      <ToggleButton x:Name="BluetoothToggle" Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" Click="OnBluetoothToggleStateChanged" ToolTip.Tip="Toggle Bluetooth">
                         <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </ToggleButton>
-                      <Border Grid.Column="1" Background="{DynamicResource QuickSettingInactiveDividerBrush}" IsHitTestVisible="False"/>
-                      <Button Grid.Column="2" Classes="ShellButton QuickSettingDetails" Click="OnBluetoothDevicesButtonClicked">
+                      <Border x:Name="BluetoothSplitDivider" Grid.Column="1" Classes="QuickSettingSplitDivider" IsHitTestVisible="False"/>
+                      <Button x:Name="BluetoothDetailsButton" Grid.Column="2" Classes="ShellButton QuickSettingDetails" Click="OnBluetoothDevicesButtonClicked">
                         <ToolTip.Tip>
                           <TextBlock Text="Bluetooth devices" Foreground="{DynamicResource TextPrimaryBrush}"/>
                         </ToolTip.Tip>
