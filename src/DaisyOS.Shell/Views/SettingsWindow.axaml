@@ -14,14 +14,17 @@
     ExtendClientAreaToDecorationsHint="True"
     ExtendClientAreaTitleBarHeightHint="38"
     Background="Transparent">
-  <Border Background="{DynamicResource AppSurfaceBrush}"
-          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
-          BorderThickness="1"
-          CornerRadius="12"
-          ClipToBounds="True">
-    <Grid RowDefinitions="38,*">
-      <controls:AppWindowTitleBar Title="Settings" />
-      <views:SettingsView Grid.Row="1" />
-    </Grid>
+  <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
+  <Border Background="#3DFFFFFF"
+          Padding="1"
+          CornerRadius="12">
+    <Border Background="{DynamicResource SystemBarMaterialBrush}"
+            CornerRadius="11"
+            ClipToBounds="True">
+      <Grid RowDefinitions="38,*">
+        <controls:AppWindowTitleBar Title="Settings" />
+        <views:SettingsView Grid.Row="1" />
+      </Grid>
+    </Border>
   </Border>
 </Window>

@@ -40,9 +40,8 @@
     </Style>
   </UserControl.Styles>
 
-  <Border Background="{DynamicResource AppSurfaceContainerBrush}"
-          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
-          BorderThickness="0,0,0,1"
+  <Border Background="{DynamicResource SystemBarMaterialBrush}"
+          BorderThickness="0"
           PointerPressed="OnTitleBarPointerPressed"
           DoubleTapped="OnTitleBarDoubleTapped">
     <Grid ColumnDefinitions="Auto,*,Auto">

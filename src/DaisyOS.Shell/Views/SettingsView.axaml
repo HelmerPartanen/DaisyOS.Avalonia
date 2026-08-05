@@ -36,8 +36,8 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid ColumnDefinitions="244,*," Background="{DynamicResource AppSurfaceBrush}">
-    <Border Background="{DynamicResource AppSurfaceContainerLowBrush}" BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="0,0,1,0">
+  <Grid ColumnDefinitions="244,*," Background="{DynamicResource SystemBarMaterialBrush}">
+    <Border Background="{DynamicResource SystemBarMaterialBrush}" BorderThickness="0">
       <StackPanel Margin="16" Spacing="4">
         <TextBlock Text="Settings" FontSize="22" FontWeight="SemiBold" Margin="8,8,8,18" />
         <Button Classes="SettingsNavItem" IsEnabled="False">
