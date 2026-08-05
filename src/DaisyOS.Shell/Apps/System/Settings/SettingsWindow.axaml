@@ -14,7 +14,7 @@
     ExtendClientAreaTitleBarHeightHint="38"
     Background="Transparent">
   <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
-  <Border Background="#3DFFFFFF"
+  <Border Background="{DynamicResource TaskbarBorderBrush}"
           Padding="1"
           CornerRadius="12">
     <Border Background="{DynamicResource SystemBarMaterialBrush}"
