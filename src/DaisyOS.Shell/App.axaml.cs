@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Skia;
 using Avalonia.Styling;
 using DaisyOS.Core.Models;
 using DaisyOS.Shell.Services.Theming;

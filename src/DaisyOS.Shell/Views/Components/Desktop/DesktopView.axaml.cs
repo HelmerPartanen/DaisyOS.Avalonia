@@ -1,10 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using DaisyOS.Shell;
 using DaisyOS.Core.Desktop;
 using DaisyOS.System.Display;
+using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.ViewModels;
 
 namespace DaisyOS.Shell.Views.Components.Desktop
@@ -24,6 +27,11 @@ namespace DaisyOS.Shell.Views.Components.Desktop
         // The fill-order slot last previewed under the pointer, so we only recompute the
         // reflow when the pointer actually moves into a different slot.
         private int? _lastHoverSlot;
+
+        // High-performance wallpaper image service
+        private WallpaperImageService? _wallpaperImageService;
+        private WallpaperRenderMetrics _currentWallpaperMetrics;
+        private bool _wallpaperMetricsInitialized;
 
         public DesktopView()
         {
@@ -45,13 +53,14 @@ namespace DaisyOS.Shell.Views.Components.Desktop
                 {
                     _app.WallpaperChanged -= OnWallpaperChanged;
                 }
+                _wallpaperImageService?.Dispose();
             };
             
             // Listen to layout changes to rebuild the grid
             this.SizeChanged += DesktopView_SizeChanged;
         }
 
-        private void OnWallpaperChanged(object? sender, string wallpaperUri)
+        private async void OnWallpaperChanged(object? sender, string wallpaperUri)
         {
             var wallpaperImage = this.FindControl<Image>("WallpaperImage");
             if (wallpaperImage is null)
@@ -61,8 +70,34 @@ namespace DaisyOS.Shell.Views.Components.Desktop
 
             try
             {
-                using var stream = AssetLoader.Open(new Uri(wallpaperUri));
-                wallpaperImage.Source = new Bitmap(stream);
+                // Create or update the wallpaper image service
+                _wallpaperImageService?.Dispose();
+                _wallpaperImageService = new WallpaperImageService(wallpaperUri);
+                _wallpaperImageService.WallpaperBitmapChanged += (s, bitmap) =>
+                {
+                    // Update the image source on UI thread
+                    if (Dispatcher.UIThread.CheckAccess())
+                    {
+                        wallpaperImage.Source = bitmap;
+                    }
+                };
+
+                // Calculate current metrics
+                if (!_wallpaperMetricsInitialized)
+                {
+                    UpdateWallpaperMetrics();
+                    _wallpaperMetricsInitialized = true;
+                }
+
+                // Get the wallpaper bitmap asynchronously
+                if (_currentWallpaperMetrics.PhysicalWidth > 0 && _currentWallpaperMetrics.PhysicalHeight > 0)
+                {
+                    var bitmap = await _wallpaperImageService.GetWallpaperAsync(_currentWallpaperMetrics);
+                    if (bitmap is not null)
+                    {
+                        wallpaperImage.Source = bitmap;
+                    }
+                }
             }
             catch
             {
@@ -70,9 +105,65 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             }
         }
 
+        private void UpdateWallpaperMetrics()
+        {
+            if (Bounds.Width <= 0 || Bounds.Height <= 0)
+            {
+                return;
+            }
+
+            // Get the scaling factor from the current monitor
+            // In a real implementation, this would come from display services
+            double scaling = 1.0; // Default to 1.0 for now
+
+            // Calculate physical pixel dimensions
+            int physicalWidth = (int)Math.Round(Bounds.Width * scaling);
+            int physicalHeight = (int)Math.Round(Bounds.Height * scaling);
+
+            _currentWallpaperMetrics = WallpaperRenderMetrics.FromPixelSize(
+                physicalWidth,
+                physicalHeight,
+                scaling,
+                Stretch.UniformToFill);
+        }
+
         private void DesktopView_SizeChanged(object? sender, SizeChangedEventArgs e)
         {
             RebuildGrid();
+            
+            // Update wallpaper metrics if the size changed
+            if (_wallpaperImageService is not null && _wallpaperMetricsInitialized)
+            {
+                UpdateWallpaperMetrics();
+                _ = RefreshWallpaperAsync();
+            }
+        }
+
+        private async Task RefreshWallpaperAsync()
+        {
+            if (_wallpaperImageService is null || _currentWallpaperMetrics.PhysicalWidth <= 0)
+            {
+                return;
+            }
+
+            try
+            {
+                var wallpaperImage = this.FindControl<Image>("WallpaperImage");
+                if (wallpaperImage is null)
+                {
+                    return;
+                }
+
+                var bitmap = await _wallpaperImageService.GetWallpaperAsync(_currentWallpaperMetrics);
+                if (bitmap is not null)
+                {
+                    wallpaperImage.Source = bitmap;
+                }
+            }
+            catch
+            {
+                // Ignore refresh errors
+            }
         }
 
         private void RebuildGrid()

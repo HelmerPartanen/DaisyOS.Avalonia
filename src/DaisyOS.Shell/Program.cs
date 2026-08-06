@@ -16,7 +16,14 @@ internal static class Program
     {
         var builder = AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .LogToTrace();
+            .LogToTrace()
+            // Configure Skia GPU resource cache for wallpaper performance
+            // 256 MB allows multiple 4K wallpapers to remain in GPU memory
+            // without excessive eviction and re-upload
+            .With(new SkiaOptions
+            {
+                MaxGpuResourceSizeBytes = 256L * 1024 * 1024
+            });
 
         var x11Options = new X11PlatformOptions
         {
