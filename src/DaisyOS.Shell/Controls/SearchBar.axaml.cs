@@ -1,4 +1,6 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 
@@ -6,6 +8,33 @@ namespace DaisyOS.Shell.Controls;
 
 public partial class SearchBar : UserControl
 {
+    public static new readonly StyledProperty<CornerRadius> CornerRadiusProperty =
+        AvaloniaProperty.Register<SearchBar, CornerRadius>(nameof(CornerRadius), new CornerRadius(8));
+
+    public static readonly StyledProperty<string> PlaceholderTextProperty =
+        AvaloniaProperty.Register<SearchBar, string>(nameof(PlaceholderText), "Search...");
+
+    public static readonly StyledProperty<string> TextProperty =
+        AvaloniaProperty.Register<SearchBar, string>(nameof(Text), string.Empty, defaultBindingMode: BindingMode.TwoWay);
+
+    public new CornerRadius CornerRadius
+    {
+        get => GetValue(CornerRadiusProperty);
+        set => SetValue(CornerRadiusProperty, value);
+    }
+
+    public string PlaceholderText
+    {
+        get => GetValue(PlaceholderTextProperty);
+        set => SetValue(PlaceholderTextProperty, value);
+    }
+
+    public string Text
+    {
+        get => GetValue(TextProperty);
+        set => SetValue(TextProperty, value);
+    }
+
     public SearchBar()
     {
         InitializeComponent();

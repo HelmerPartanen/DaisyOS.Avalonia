@@ -28,7 +28,7 @@ public partial class SettingsWindowTitleBar : UserControl
     private void OnTitleBarPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed ||
-            e.Source is Visual source && (source is Button || source.GetVisualAncestors().OfType<Button>().Any()))
+            (e.Source is Visual source && IsInteractiveControl(source)))
         {
             return;
         }
@@ -38,12 +38,18 @@ public partial class SettingsWindowTitleBar : UserControl
 
     private void OnTitleBarDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (e.Source is Visual source && (source is Button || source.GetVisualAncestors().OfType<Button>().Any()))
+        if (e.Source is Visual source && IsInteractiveControl(source))
         {
             return;
         }
 
         ToggleMaximizeRestore();
+    }
+
+    private static bool IsInteractiveControl(Visual source)
+    {
+        return source is Button || source is TextBox || source is Controls.SearchBar ||
+               source.GetVisualAncestors().Any(v => v is Button || v is TextBox || v is Controls.SearchBar);
     }
 
     private void OnMinimizeClicked(object? sender, RoutedEventArgs e)

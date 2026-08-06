@@ -12,7 +12,7 @@
     WindowStartupLocation="CenterScreen"
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
-    ExtendClientAreaTitleBarHeightHint="38"
+    ExtendClientAreaTitleBarHeightHint="44"
     Background="Transparent">
   <Grid>
     <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
@@ -22,7 +22,7 @@
       <Border Background="{DynamicResource SystemBarMaterialBrush}"
               CornerRadius="11"
               ClipToBounds="True">
-        <Grid RowDefinitions="38,*">
+        <Grid RowDefinitions="44,*">
           <settings:SettingsWindowTitleBar Title="Settings" />
           <settings:SettingsView Grid.Row="1" />
         </Grid>

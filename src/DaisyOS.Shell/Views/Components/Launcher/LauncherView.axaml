@@ -67,7 +67,7 @@
       
       <!-- Top Search Bar Area -->
       <Border Grid.Row="0" Padding="24,24,24,16">
-        <controls:SearchBar x:Name="LauncherSearchBar" />
+        <controls:SearchBar x:Name="LauncherSearchBar" Height="44" CornerRadius="20" PlaceholderText="Search for apps, settings, and documents" />
       </Border>
       
       <!-- Scrollable Main Content (Strict 632px Content Boundary) -->
