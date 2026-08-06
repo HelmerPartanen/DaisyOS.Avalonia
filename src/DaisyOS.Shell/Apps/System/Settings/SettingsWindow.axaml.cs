@@ -1,5 +1,7 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.VisualTree;
 
 namespace DaisyOS.Shell.Apps.System.Settings;
 
@@ -8,6 +10,17 @@ public partial class SettingsWindow : Window
     public SettingsWindow()
     {
         InitializeComponent();
+    }
+
+    private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.Source is Visual source &&
+            source is not TextBox &&
+            source is not Controls.SearchBar &&
+            !source.GetVisualAncestors().Any(v => v is Controls.SearchBar || v is TextBox))
+        {
+            FocusManager?.Focus(null);
+        }
     }
 
     private void OnResizeTopPressed(object? sender, PointerPressedEventArgs e)

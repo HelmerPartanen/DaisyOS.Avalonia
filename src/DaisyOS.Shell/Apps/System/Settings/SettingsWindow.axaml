@@ -13,7 +13,8 @@
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
     ExtendClientAreaTitleBarHeightHint="44"
-    Background="Transparent">
+    Background="Transparent"
+    PointerPressed="OnWindowPointerPressed">
   <Grid>
     <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
     <Border Background="{DynamicResource TaskbarBorderBrush}"

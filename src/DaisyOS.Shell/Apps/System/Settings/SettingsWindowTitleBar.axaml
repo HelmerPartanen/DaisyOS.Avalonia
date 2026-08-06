@@ -57,7 +57,7 @@
 
       <controls:SearchBar Grid.Column="1"
                           Width="340"
-                          Height="38"
+                          Height="36"
                           Margin="12,0"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center"
