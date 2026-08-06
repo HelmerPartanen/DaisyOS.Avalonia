@@ -2,6 +2,135 @@
     x:Class="DaisyOS.Shell.Apps.System.Settings.SettingsView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Grid Background="{DynamicResource SystemBarMaterialBrush}">
+  <UserControl.Styles>
+    <!-- Sidebar navigation button style -->
+    <Style Selector="Button.SettingsNavItem">
+      <Setter Property="Height" Value="40" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Padding" Value="12,0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem.Active /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerHoverBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem.Active:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerPressedBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem.Active TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.NavIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="Width" Value="24" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.NavLabel">
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="12,0,0,0" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid ColumnDefinitions="240,*" Background="{DynamicResource SystemBarMaterialBrush}">
+    <!-- Transparent Sidebar Container -->
+    <Border Grid.Column="0" Background="Transparent" Padding="12,12,8,12">
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="4">
+          <Button x:Name="NavSystem" Classes="SettingsNavItem Active" Click="OnNavCategoryClicked" Tag="System">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="computer" Classes="NavIcon" />
+              <TextBlock Text="System" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavDisplays" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Displays">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="display_settings" Classes="NavIcon" />
+              <TextBlock Text="Displays" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavSound" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Sound">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="volume_up" Classes="NavIcon" />
+              <TextBlock Text="Sound" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavNetwork" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Network">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="wifi" Classes="NavIcon" />
+              <TextBlock Text="Network" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavBluetooth" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Bluetooth">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="bluetooth" Classes="NavIcon" />
+              <TextBlock Text="Bluetooth" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavAppearance" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Appearance">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="palette" Classes="NavIcon" />
+              <TextBlock Text="Appearance" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavNotifications" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Notifications">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="notifications" Classes="NavIcon" />
+              <TextBlock Text="Notifications" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavApps" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Apps">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="apps" Classes="NavIcon" />
+              <TextBlock Text="Apps" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavStorage" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Storage">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="storage" Classes="NavIcon" />
+              <TextBlock Text="Storage" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavAbout" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="About">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="info" Classes="NavIcon" />
+              <TextBlock Text="About" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </ScrollViewer>
+    </Border>
+
+    <!-- Main Content Area (Ready to build from scratch) -->
+    <Grid Grid.Column="1" Background="Transparent" Margin="16">
+    </Grid>
   </Grid>
 </UserControl>

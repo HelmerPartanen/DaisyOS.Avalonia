@@ -73,30 +73,32 @@
       <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource QuickSettingForegroundBrush}" />
     </Style>
-    <Style Selector="ToggleButton.QuickSetting:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="ToggleButton.QuickSetting:not(:checked):pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}" />
     </Style>
-    <Style Selector="ToggleButton.QuickSetting:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="ToggleButton.QuickSetting:not(:checked):pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource QuickSettingPressedBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting > TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource QuickSettingForegroundBrush}" />
     </Style>
-    <Style Selector="ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="ToggleButton.QuickSetting:disabled">
+      <Setter Property="Opacity" Value="0.48" />
+    </Style>
+
+    <!-- Reusable Active Button & Quick Settings states. -->
+    <Style Selector="Button.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
-    <Style Selector="ToggleButton.QuickSetting:checked > TextBlock">
+    <Style Selector="Button.Active TextBlock, ToggleButton.Active TextBlock, ToggleButton.QuickSetting:checked > TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
-    <Style Selector="ToggleButton.QuickSetting:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerHoverBrush}" />
     </Style>
-    <Style Selector="ToggleButton.QuickSetting:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.Active:pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerPressedBrush}" />
-    </Style>
-    <Style Selector="ToggleButton.QuickSetting:disabled">
-      <Setter Property="Opacity" Value="0.48" />
     </Style>
   </Application.Styles>
 </Application>

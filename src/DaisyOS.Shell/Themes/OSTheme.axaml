@@ -119,7 +119,7 @@
       <SolidColorBrush x:Key="QuickSettingHoverBrush"
                        Color="#0DFFFFFF"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
-                       Color="#FF383838"/>
+                       Color="#1AFFFFFF"/>
       <SolidColorBrush x:Key="QuickSettingInactiveDividerBrush"
                        Color="#1AFFFFFF"/>
 
