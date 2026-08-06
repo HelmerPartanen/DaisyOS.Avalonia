@@ -35,8 +35,9 @@
   -->
   <Border Height="52"
           Padding="6"
-          Background="Transparent"
-          BorderThickness="0"
+          Background="{DynamicResource SystemBarMaterialBrush}"
+          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
+          BorderThickness="1"
           CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 8 32 0 #60000000">

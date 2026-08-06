@@ -143,11 +143,11 @@
 
       <!-- Settings buttons theme brushes -->
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush"
-                       Color="#14FFFFFF"/>
+                       Color="#0DFFFFFF"/>
       <SolidColorBrush x:Key="SettingsButtonHoverBrush"
-                       Color="#24FFFFFF"/>
+                       Color="#1AFFFFFF"/>
       <SolidColorBrush x:Key="SettingsButtonPressedBrush"
-                       Color="#33FFFFFF"/>
+                       Color="#26FFFFFF"/>
 
     </ResourceDictionary>
 

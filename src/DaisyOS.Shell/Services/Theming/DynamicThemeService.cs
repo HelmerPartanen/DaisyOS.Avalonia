@@ -106,10 +106,6 @@ public sealed class DynamicThemeService
             Set(resources, "TaskbarBackgroundBrush", scheme.SurfaceContainerHigh);
             Set(resources, "LauncherFooterBrush", scheme.SurfaceContainerHighest);
             Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 105));
-
-            Set(resources, "SettingsButtonBackgroundBrush", Color.FromArgb(20, 255, 255, 255));
-            Set(resources, "SettingsButtonHoverBrush", Color.FromArgb(36, 255, 255, 255));
-            Set(resources, "SettingsButtonPressedBrush", Color.FromArgb(51, 255, 255, 255));
         }
         else
         {
@@ -126,11 +122,6 @@ public sealed class DynamicThemeService
             Set(resources, "TaskbarBackgroundBrush", lightMaterial);
             Set(resources, "LauncherFooterBrush", lightFooter);
             Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 82));
-
-            // Settings card buttons in light theme: crisp solid white cards with subtle hover/pressed
-            Set(resources, "SettingsButtonBackgroundBrush", Color.FromRgb(255, 255, 255));
-            Set(resources, "SettingsButtonHoverBrush", Color.FromRgb(244, 245, 247));
-            Set(resources, "SettingsButtonPressedBrush", Color.FromRgb(235, 236, 238));
         }
     }
 
