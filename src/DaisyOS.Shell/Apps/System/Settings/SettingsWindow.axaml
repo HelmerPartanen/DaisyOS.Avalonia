@@ -8,22 +8,36 @@
     Height="720"
     MinWidth="760"
     MinHeight="540"
+    CanResize="True"
     WindowStartupLocation="CenterScreen"
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
     ExtendClientAreaTitleBarHeightHint="38"
     Background="Transparent">
-  <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
-  <Border Background="{DynamicResource TaskbarBorderBrush}"
-          Padding="1"
-          CornerRadius="12">
-    <Border Background="{DynamicResource SystemBarMaterialBrush}"
-            CornerRadius="11"
-            ClipToBounds="True">
-      <Grid RowDefinitions="38,*">
-        <settings:SettingsWindowTitleBar Title="Settings" />
-        <settings:SettingsView Grid.Row="1" />
-      </Grid>
+  <Grid>
+    <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
+    <Border Background="{DynamicResource TaskbarBorderBrush}"
+            Padding="1"
+            CornerRadius="12">
+      <Border Background="{DynamicResource SystemBarMaterialBrush}"
+              CornerRadius="11"
+              ClipToBounds="True">
+        <Grid RowDefinitions="38,*">
+          <settings:SettingsWindowTitleBar Title="Settings" />
+          <settings:SettingsView Grid.Row="1" />
+        </Grid>
+      </Border>
     </Border>
-  </Border>
+
+    <!-- Invisible edge resize handles for custom framed window resizing -->
+    <Border Name="ResizeTop" Height="6" VerticalAlignment="Top" Background="Transparent" Cursor="TopSide" PointerPressed="OnResizeTopPressed" />
+    <Border Name="ResizeBottom" Height="6" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomSide" PointerPressed="OnResizeBottomPressed" />
+    <Border Name="ResizeLeft" Width="6" HorizontalAlignment="Left" Background="Transparent" Cursor="LeftSide" PointerPressed="OnResizeLeftPressed" />
+    <Border Name="ResizeRight" Width="6" HorizontalAlignment="Right" Background="Transparent" Cursor="RightSide" PointerPressed="OnResizeRightPressed" />
+
+    <Border Name="ResizeTopLeft" Width="10" Height="10" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Cursor="TopLeftCorner" PointerPressed="OnResizeTopLeftPressed" />
+    <Border Name="ResizeTopRight" Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" Cursor="TopRightCorner" PointerPressed="OnResizeTopRightPressed" />
+    <Border Name="ResizeBottomLeft" Width="10" Height="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomLeftCorner" PointerPressed="OnResizeBottomLeftPressed" />
+    <Border Name="ResizeBottomRight" Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomRightCorner" PointerPressed="OnResizeBottomRightPressed" />
+  </Grid>
 </Window>
