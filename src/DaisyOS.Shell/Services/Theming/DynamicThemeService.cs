@@ -30,12 +30,13 @@ public sealed class DynamicThemeService
         var seed = await _extractor.ExtractSeedAsync(wallpaperUri, token).ConfigureAwait(false);
         var scheme = _generator.Generate(seed, theme == ThemeVariant.Dark);
         var desktopLabelColor = WallpaperLabelContrast.ForWallpaper(seed);
-        await ApplySchemeAsync(scheme, desktopLabelColor, token).ConfigureAwait(false);
+        await ApplySchemeAsync(scheme, desktopLabelColor, seed, token).ConfigureAwait(false);
     }
 
     public Task ApplySchemeAsync(
         DynamicColorScheme scheme,
         Color desktopLabelColor,
+        Color seed = default,
         CancellationToken cancellationToken = default) =>
         Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -46,10 +47,10 @@ public sealed class DynamicThemeService
                 return;
             }
 
-            Apply(resources, scheme, desktopLabelColor);
+            Apply(resources, scheme, desktopLabelColor, seed);
         }).GetTask();
 
-    private static void Apply(IResourceDictionary resources, DynamicColorScheme scheme, Color desktopLabelColor)
+    private static void Apply(IResourceDictionary resources, DynamicColorScheme scheme, Color desktopLabelColor, Color seed)
     {
         var isDarkSurface = RelativeLuminance(scheme.Surface) < 0.5;
 
@@ -97,10 +98,40 @@ public sealed class DynamicThemeService
         // Shell chrome stays opaque until an actual acrylic material exists. It still
         // inherits the wallpaper palette, so launcher and system-bar surfaces feel
         // cohesive without showing a distracting unblurred wallpaper beneath them.
-        Set(resources, "LauncherMaterialBrush", scheme.SurfaceContainerHigh);
-        Set(resources, "SystemBarMaterialBrush", scheme.SurfaceContainerHigh);
-        Set(resources, "LauncherFooterBrush", scheme.SurfaceContainerHighest);
-        Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, isDarkSurface ? 105 : 82));
+        if (isDarkSurface)
+        {
+            Set(resources, "LauncherMaterialBrush", scheme.SurfaceContainerHigh);
+            Set(resources, "SystemBarMaterialBrush", scheme.SurfaceContainerHigh);
+            Set(resources, "TaskbarMaterialBrush", scheme.SurfaceContainerHigh);
+            Set(resources, "TaskbarBackgroundBrush", scheme.SurfaceContainerHigh);
+            Set(resources, "LauncherFooterBrush", scheme.SurfaceContainerHighest);
+            Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 105));
+
+            Set(resources, "SettingsButtonBackgroundBrush", Color.FromArgb(20, 255, 255, 255));
+            Set(resources, "SettingsButtonHoverBrush", Color.FromArgb(36, 255, 255, 255));
+            Set(resources, "SettingsButtonPressedBrush", Color.FromArgb(51, 255, 255, 255));
+        }
+        else
+        {
+            // Base Light surface #F6F7F9 with a soft 5% wallpaper tint: clean, luminous, elegant
+            var tintSource = seed.A > 0 ? seed : scheme.Primary;
+            var baseLight = Color.FromRgb(246, 247, 249);
+            var lightMaterial = Blend(baseLight, tintSource, 0.05);
+            var lightLauncher = Blend(baseLight, tintSource, 0.04);
+            var lightFooter = Blend(Color.FromRgb(240, 241, 243), tintSource, 0.06);
+
+            Set(resources, "LauncherMaterialBrush", lightLauncher);
+            Set(resources, "SystemBarMaterialBrush", lightMaterial);
+            Set(resources, "TaskbarMaterialBrush", lightMaterial);
+            Set(resources, "TaskbarBackgroundBrush", lightMaterial);
+            Set(resources, "LauncherFooterBrush", lightFooter);
+            Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 82));
+
+            // Settings card buttons in light theme: crisp solid white cards with subtle hover/pressed
+            Set(resources, "SettingsButtonBackgroundBrush", Color.FromRgb(255, 255, 255));
+            Set(resources, "SettingsButtonHoverBrush", Color.FromRgb(244, 245, 247));
+            Set(resources, "SettingsButtonPressedBrush", Color.FromRgb(235, 236, 238));
+        }
     }
 
     private static void Set(IResourceDictionary resources, string key, Color color) =>

@@ -34,8 +34,8 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
-    <!-- Global Normalized Subtle / Ghost Buttons (Shell, Nav, List, Back, Subtle links) -->
-    <Style Selector="Button.ShellButton:not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails), ToggleButton.ShellButton:not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails), Button.SettingsNavItem, Button.SettingsListItem, Button.BackButton, Button.SubtleLink">
+    <!-- Global Normalized Subtle / Ghost Buttons (Shell, Nav, Back, Subtle links) -->
+    <Style Selector="Button.ShellButton:not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails), ToggleButton.ShellButton:not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails), Button.SettingsNavItem, Button.BackButton, Button.SubtleLink">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="8" />
@@ -43,11 +43,28 @@
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
-    <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsListItem:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
+
+    <!-- Settings List Items (Main panel subcategory cards) -->
+    <Style Selector="Button.SettingsListItem">
+      <Setter Property="Background" Value="{DynamicResource SettingsButtonBackgroundBrush}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
-    <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsListItem:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}" />
+    <Style Selector="Button.SettingsListItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SettingsButtonHoverBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsListItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SettingsButtonPressedBrush}" />
+    </Style>
+
+    <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SettingsButtonHoverBrush}" />
+    </Style>
+    <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SettingsButtonPressedBrush}" />
     </Style>
     <!-- Flyout triggers stay visibly active for the duration of their open surface. -->
     <Style Selector="Button.ShellButton.ShellButtonActive /template/ ContentPresenter#PART_ContentPresenter">
@@ -80,10 +97,9 @@
     <!-- Global Normalized Active / Accent Button states. -->
     <Style Selector="Button.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
-    <Style Selector="Button.Active TextBlock, ToggleButton.Active TextBlock, ToggleButton.QuickSetting:checked > TextBlock, Button.QuickSettingDetails.Active > TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
+    <Style Selector="Button.Active TextBlock, ToggleButton.Active TextBlock, ToggleButton.QuickSetting:checked > TextBlock, Button.QuickSettingDetails.Active > TextBlock, Button.Active TextBlock.NavIcon, Button.Active TextBlock.NavLabel">
+      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}" />
     </Style>
     <Style Selector="Button.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerHoverBrush}" />

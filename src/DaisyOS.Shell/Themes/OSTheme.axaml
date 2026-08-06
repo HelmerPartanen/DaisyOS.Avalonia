@@ -31,16 +31,16 @@
     <ResourceDictionary x:Key="Light">
 
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
-                       Color="#FFF5F5F5"/>
+                       Color="#FFF3F3F3"/>
       <SolidColorBrush x:Key="TaskbarMaterialBrush"
-                       Color="#FFF5F5F5"/>
+                       Color="#FFF3F3F3"/>
       <SolidColorBrush x:Key="SystemBarMaterialBrush"
-                       Color="#FFF5F5F5"/>
+                       Color="#FFF3F3F3"/>
       <SolidColorBrush x:Key="LauncherMaterialBrush"
-                       Color="#FFF5F5F5"/>
+                       Color="#FFF3F3F3"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
-                       Color="#1A000000"/>
+                       Color="#1F000000"/>
 
       <SolidColorBrush x:Key="TaskbarHoverBrush"
                        Color="#12000000"/>
@@ -57,17 +57,17 @@
       <SolidColorBrush x:Key="TextTertiaryBrush"
                        Color="#991A1A1A"/>
 
-      <!-- Inactive quick-setting tiles are OS chrome, not wallpaper accents. -->
+      <!-- Inactive quick-setting tiles are OS chrome in Light mode -->
       <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
-                       Color="#1A000000"/>
+                       Color="#14000000"/>
       <SolidColorBrush x:Key="QuickSettingForegroundBrush"
                        Color="#FF1A1A1A"/>
       <SolidColorBrush x:Key="QuickSettingHoverBrush"
-                       Color="#FFDDDDDD"/>
+                       Color="#20000000"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
-                       Color="#FFD2D2D2"/>
+                       Color="#2E000000"/>
       <SolidColorBrush x:Key="QuickSettingInactiveDividerBrush"
-                       Color="#26000000"/>
+                       Color="#1F000000"/>
 
       <SolidColorBrush x:Key="LauncherItemHoverBrush"
                        Color="#12000000"/>
@@ -78,6 +78,14 @@
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
                        Color="#F3F3F3"/>
+
+      <!-- Settings buttons theme brushes -->
+      <SolidColorBrush x:Key="SettingsButtonBackgroundBrush"
+                       Color="#FFFFFF"/>
+      <SolidColorBrush x:Key="SettingsButtonHoverBrush"
+                       Color="#F2F2F2"/>
+      <SolidColorBrush x:Key="SettingsButtonPressedBrush"
+                       Color="#E0E0E0"/>
 
     </ResourceDictionary>
 
@@ -132,6 +140,14 @@
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
                        Color="#1e1e1e"/>
+
+      <!-- Settings buttons theme brushes -->
+      <SolidColorBrush x:Key="SettingsButtonBackgroundBrush"
+                       Color="#14FFFFFF"/>
+      <SolidColorBrush x:Key="SettingsButtonHoverBrush"
+                       Color="#24FFFFFF"/>
+      <SolidColorBrush x:Key="SettingsButtonPressedBrush"
+                       Color="#33FFFFFF"/>
 
     </ResourceDictionary>
 

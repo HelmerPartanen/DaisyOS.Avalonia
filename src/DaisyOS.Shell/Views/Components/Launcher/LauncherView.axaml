@@ -108,7 +108,7 @@
                                RenderOptions.BitmapInterpolationMode="HighQuality" 
                                Width="36" Height="36"/>
                         <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                                Background="#33FFFFFF" CornerRadius="8" Width="36" Height="36">
+                                Background="{DynamicResource QuickSettingBackgroundBrush}" CornerRadius="8" Width="36" Height="36">
                           <TextBlock Text="{Binding Name[0]}" FontSize="16" FontWeight="Bold" 
                                      Foreground="{DynamicResource TextPrimaryBrush}" 
                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>

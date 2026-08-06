@@ -232,7 +232,7 @@ public partial class MediaWidget : UserControl
             }
         };
 
-        bar.Background = this.FindResource("TextTertiaryBrush") as IBrush ?? Brushes.Gray;
+        bar.Background = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.Gray;
         return bar;
     }
 
@@ -290,13 +290,10 @@ public partial class MediaWidget : UserControl
     {
         var primaryText = GetResourceColor("TextPrimaryBrush", Colors.White);
         var secondaryText = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.White;
-        var spectrumFallback = this.FindResource("TextTertiaryBrush") as IBrush ?? Brushes.Gray;
         var controlAccent = _artworkTint is { } tint
             ? new SolidColorBrush(Blend(tint, primaryText, 0.68))
             : secondaryText;
-        var spectrumAccent = _artworkTint is { } spectrumTint
-            ? new SolidColorBrush(Blend(spectrumTint, primaryText, 0.45))
-            : spectrumFallback;
+        var spectrumAccent = controlAccent;
 
         this.FindControl<TextBlock>("PreviousGlyph")!.Foreground = controlAccent;
         this.FindControl<TextBlock>("PlayPauseGlyph")!.Foreground = controlAccent;

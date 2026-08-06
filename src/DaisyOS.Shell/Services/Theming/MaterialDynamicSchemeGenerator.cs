@@ -31,9 +31,9 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
         }
         else
         {
-            // Material's light primary container is intentionally very pale. Pull it slightly
-            // toward the same palette's primary tone so dark wallpapers do not read as neon.
-            primaryContainer = Blend(primaryContainer, primary, 0.18);
+            // Soft, refined light accent container with high contrast dark text/icons
+            primaryContainer = Blend(Color.FromRgb(240, 243, 246), primary, 0.22);
+            onPrimaryContainer = Color.FromRgb(26, 26, 26);
         }
 
         return new DynamicColorScheme(

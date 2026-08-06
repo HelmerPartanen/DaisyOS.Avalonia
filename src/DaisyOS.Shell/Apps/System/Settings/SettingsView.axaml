@@ -65,7 +65,7 @@
     <!-- Transparent Sidebar Container -->
     <Border Grid.Column="0" Background="Transparent" Padding="12,12,8,12">
       <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Spacing="4">
+        <StackPanel Spacing="6">
           <Button x:Name="NavSystem" Classes="SettingsNavItem Active" Click="OnNavCategoryClicked" Tag="System">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
               <TextBlock Text="computer" Classes="NavIcon" />
@@ -75,7 +75,7 @@
 
           <Button x:Name="NavDisplays" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Displays">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-              <TextBlock Text="display_settings" Classes="NavIcon" />
+              <TextBlock Text="desktop_windows" Classes="NavIcon" />
               <TextBlock Text="Displays" Classes="NavLabel" />
             </StackPanel>
           </Button>
@@ -103,7 +103,7 @@
 
           <Button x:Name="NavAppearance" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Appearance">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-              <TextBlock Text="palette" Classes="NavIcon" />
+              <TextBlock Text="contrast" Classes="NavIcon" />
               <TextBlock Text="Appearance" Classes="NavLabel" />
             </StackPanel>
           </Button>
@@ -145,12 +145,16 @@
       <ScrollViewer x:Name="SystemListView" IsVisible="True" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
         <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="1240">
           <!-- Page Header -->
-          <Border Height="40">
-            <TextBlock Text="System" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" Margin="6,0,0,0" />
+          <Border Height="40" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <Button Classes="BreadcrumbItem" IsHitTestVisible="False">
+                <TextBlock Text="System" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+              </Button>
+            </StackPanel>
           </Border>
 
           <!-- System Settings List -->
-          <StackPanel Spacing="2" HorizontalAlignment="Stretch">
+          <StackPanel Spacing="8" HorizontalAlignment="Stretch">
             <!-- Power & Battery Card -->
             <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Power">
               <Grid ColumnDefinitions="Auto,*,Auto">
@@ -216,7 +220,7 @@
 
       <!-- SYSTEM SUB-PAGE DETAIL VIEW -->
       <ScrollViewer x:Name="SystemDetailView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-        <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="760">
+        <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="1240">
           <!-- Breadcrumb Navigation Bar -->
           <Border Height="40" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="2">

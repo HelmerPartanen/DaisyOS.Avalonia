@@ -19,7 +19,7 @@
     </Border>
     <Border x:Name="SearchFrame"
             Margin="1"
-            Background="#1AFFFFFF"
+            Background="{DynamicResource QuickSettingBackgroundBrush}"
             CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=controls:SearchBar}}"
             Padding="12,0">
       <Grid ColumnDefinitions="Auto,*">
