@@ -65,7 +65,7 @@
 
           <Button x:Name="NavDisplays" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Displays">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-              <TextBlock Text="display_settings" Classes="NavIcon" />
+              <TextBlock Text="desktop_windows" Classes="NavIcon" />
               <TextBlock Text="Displays" Classes="NavLabel" />
             </StackPanel>
           </Button>
@@ -93,7 +93,7 @@
 
           <Button x:Name="NavAppearance" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Appearance">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-              <TextBlock Text="palette" Classes="NavIcon" />
+              <TextBlock Text="contrast" Classes="NavIcon" />
               <TextBlock Text="Appearance" Classes="NavLabel" />
             </StackPanel>
           </Button>
