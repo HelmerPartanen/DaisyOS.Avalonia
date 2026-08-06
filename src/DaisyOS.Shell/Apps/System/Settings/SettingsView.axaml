@@ -3,34 +3,13 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <UserControl.Styles>
-    <!-- Sidebar navigation button style -->
+    <!-- Sidebar navigation button layout -->
     <Style Selector="Button.SettingsNavItem">
       <Setter Property="Height" Value="40" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Padding" Value="12,0" />
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="8" />
-    </Style>
-    <Style Selector="Button.SettingsNavItem:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
-    </Style>
-    <Style Selector="Button.SettingsNavItem:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}" />
-    </Style>
-    <Style Selector="Button.SettingsNavItem.Active /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
-    </Style>
-    <Style Selector="Button.SettingsNavItem.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerHoverBrush}" />
-    </Style>
-    <Style Selector="Button.SettingsNavItem.Active:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerPressedBrush}" />
-    </Style>
-    <Style Selector="Button.SettingsNavItem.Active TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
 
     <Style Selector="TextBlock.NavIcon">
@@ -53,6 +32,33 @@
     <Style Selector="Button.SettingsNavItem.Active TextBlock.NavIcon, Button.SettingsNavItem.Active TextBlock.NavLabel">
       <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
+
+    <!-- List item button layout -->
+    <Style Selector="Button.SettingsListItem">
+      <Setter Property="MinHeight" Value="52" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Padding" Value="12,8" />
+    </Style>
+
+    <!-- Breadcrumb button style -->
+    <Style Selector="Button.BreadcrumbItem">
+      <Setter Property="Padding" Value="6,4" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.BreadcrumbItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
+    </Style>
+    <Style Selector="Button.BreadcrumbItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}" />
+    </Style>
+    <Style Selector="Button.BreadcrumbItem:pointerover TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
   </UserControl.Styles>
 
   <Grid ColumnDefinitions="240,*" Background="{DynamicResource SystemBarMaterialBrush}">
@@ -69,7 +75,7 @@
 
           <Button x:Name="NavDisplays" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Displays">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-              <TextBlock Text="desktop_windows" Classes="NavIcon" />
+              <TextBlock Text="display_settings" Classes="NavIcon" />
               <TextBlock Text="Displays" Classes="NavLabel" />
             </StackPanel>
           </Button>
@@ -97,7 +103,7 @@
 
           <Button x:Name="NavAppearance" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Appearance">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-              <TextBlock Text="contrast" Classes="NavIcon" />
+              <TextBlock Text="palette" Classes="NavIcon" />
               <TextBlock Text="Appearance" Classes="NavLabel" />
             </StackPanel>
           </Button>
@@ -133,8 +139,96 @@
       </ScrollViewer>
     </Border>
 
-    <!-- Main Content Area (Ready to build from scratch) -->
-    <Grid Grid.Column="1" Background="Transparent" Margin="16">
+    <!-- Main Content Area -->
+    <Grid Grid.Column="1" Background="Transparent" Margin="24,12,24,12" HorizontalAlignment="Stretch">
+      <!-- SYSTEM CATEGORY MAIN LIST -->
+      <ScrollViewer x:Name="SystemListView" IsVisible="True" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
+        <StackPanel Spacing="20" HorizontalAlignment="Stretch">
+          <!-- Page Header -->
+          <Border Height="40">
+            <TextBlock Text="System" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" Margin="6,0,0,0" />
+          </Border>
+
+          <!-- System Settings List -->
+          <StackPanel Spacing="2" HorizontalAlignment="Stretch">
+            <!-- Power & Battery Card -->
+            <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Power">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Text="battery_charging_full" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                  <TextBlock Text="Power &amp; Battery" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Text="Energy saver, screen sleep timeouts, and performance mode" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+              </Grid>
+            </Button>
+
+            <!-- Multitasking & Workspaces Card -->
+            <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Multitasking">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Text="space_dashboard" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                  <TextBlock Text="Multitasking &amp; Workspaces" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Text="Window snapping, desktop workspaces, and alt-tab behavior" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+              </Grid>
+            </Button>
+
+            <!-- System Performance Card -->
+            <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Performance">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Text="speed" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                  <TextBlock Text="System Performance" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Text="RAM usage, background processes, and performance profile" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+              </Grid>
+            </Button>
+
+            <!-- Recovery & Maintenance Card -->
+            <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Recovery">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Text="restore" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                  <TextBlock Text="Recovery &amp; Maintenance" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Text="System reset, diagnostic logs, and restore options" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+              </Grid>
+            </Button>
+
+            <!-- Clipboard & History Card -->
+            <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Clipboard">
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Text="content_paste" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                  <TextBlock Text="Clipboard &amp; History" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                  <TextBlock Text="Clipboard history and cross-device sync" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+              </Grid>
+            </Button>
+          </StackPanel>
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- SYSTEM SUB-PAGE DETAIL VIEW -->
+      <ScrollViewer x:Name="SystemDetailView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
+        <StackPanel Spacing="20" HorizontalAlignment="Stretch">
+          <!-- Breadcrumb Navigation Bar -->
+          <Border Height="40" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="2">
+              <Button Classes="BreadcrumbItem" Click="OnBackToSystemListClicked">
+                <TextBlock Text="System" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" />
+              </Button>
+              <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0" />
+              <TextBlock x:Name="DetailTitleText" Text="Power &amp; Battery" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" Margin="4,0,0,0" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
     </Grid>
   </Grid>
 </UserControl>

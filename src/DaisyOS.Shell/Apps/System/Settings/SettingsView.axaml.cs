@@ -27,6 +27,52 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 }
 
                 clickedBtn.Classes.Add("Active");
+
+                if (SystemListView != null && SystemDetailView != null)
+                {
+                    SystemListView.IsVisible = true;
+                    SystemDetailView.IsVisible = false;
+                }
+            }
+        }
+
+        private void OnSystemSettingItemClicked(object? sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: string settingKey })
+            {
+                if (SystemListView != null && SystemDetailView != null)
+                {
+                    SystemListView.IsVisible = false;
+                    SystemDetailView.IsVisible = true;
+
+                    switch (settingKey)
+                    {
+                        case "Power":
+                            DetailTitleText.Text = "Power & Battery";
+                            break;
+                        case "Multitasking":
+                            DetailTitleText.Text = "Multitasking & Workspaces";
+                            break;
+                        case "Performance":
+                            DetailTitleText.Text = "System Performance";
+                            break;
+                        case "Recovery":
+                            DetailTitleText.Text = "Recovery & Maintenance";
+                            break;
+                        case "Clipboard":
+                            DetailTitleText.Text = "Clipboard & History";
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void OnBackToSystemListClicked(object? sender, RoutedEventArgs e)
+        {
+            if (SystemListView != null && SystemDetailView != null)
+            {
+                SystemListView.IsVisible = true;
+                SystemDetailView.IsVisible = false;
             }
         }
     }

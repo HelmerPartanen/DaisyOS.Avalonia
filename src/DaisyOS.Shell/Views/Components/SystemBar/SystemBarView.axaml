@@ -23,8 +23,10 @@
       <Setter Property="Width" Value="92"/>
       <Setter Property="Height" Value="56"/>
       <Setter Property="CornerRadius" Value="10"/>
-      <Setter Property="Padding" Value="6"/>
+      <Setter Property="Padding" Value="0"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style Selector="Button.QuickSettingDetails">
       <Setter Property="Width" Value="27"/>
@@ -32,18 +34,8 @@
       <Setter Property="Padding" Value="0"/>
       <Setter Property="CornerRadius" Value="0,10,10,0"/>
       <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}"/>
-    </Style>
-    <Style Selector="Button.QuickSettingDetails.Active">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
-    </Style>
-    <Style Selector="Button.QuickSettingDetails.Active > TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}"/>
-    </Style>
-    <Style Selector="Button.QuickSettingDetails.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerHoverBrush}"/>
-    </Style>
-    <Style Selector="Button.QuickSettingDetails.Active:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerPressedBrush}"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <Style Selector="Border.QuickSettingSplitDivider">
       <Setter Property="Background" Value="{DynamicResource QuickSettingInactiveDividerBrush}"/>
