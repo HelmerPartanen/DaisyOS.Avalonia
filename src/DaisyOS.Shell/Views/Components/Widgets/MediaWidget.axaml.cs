@@ -45,12 +45,14 @@ public partial class MediaWidget : UserControl
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         BuildSpectrum();
+        ActualThemeVariantChanged += OnThemeVariantChanged;
         _mediaService.MediaChanged += OnMediaChanged;
         _ = RefreshMediaAsync();
     }
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
+        ActualThemeVariantChanged -= OnThemeVariantChanged;
         _mediaService.MediaChanged -= OnMediaChanged;
         _spectrumTimer.Stop();
         _refreshCancellation?.Cancel();
@@ -210,6 +212,9 @@ public partial class MediaWidget : UserControl
         }
     }
 
+    private void OnThemeVariantChanged(object? sender, EventArgs e) =>
+        ApplyArtworkAccent();
+
     private Border CreateSpectrumBar(double idleScale)
     {
         var bar = new Border
@@ -232,7 +237,8 @@ public partial class MediaWidget : UserControl
             }
         };
 
-        bar.Background = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.Gray;
+        var secondaryBrush = this.FindResource("TextSecondaryBrush") as IBrush ?? new SolidColorBrush(Color.FromRgb(87, 96, 106));
+        bar.Background = secondaryBrush;
         return bar;
     }
 
@@ -288,19 +294,18 @@ public partial class MediaWidget : UserControl
 
     private void ApplyArtworkAccent()
     {
-        var primaryText = GetResourceColor("TextPrimaryBrush", Colors.White);
-        var secondaryText = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.White;
+        var primaryText = GetResourceColor("TextPrimaryBrush", Colors.Black);
+        var secondaryBrush = this.FindResource("TextSecondaryBrush") as IBrush ?? new SolidColorBrush(Color.FromRgb(87, 96, 106));
         var controlAccent = _artworkTint is { } tint
             ? new SolidColorBrush(Blend(tint, primaryText, 0.68))
-            : secondaryText;
-        var spectrumAccent = controlAccent;
+            : secondaryBrush;
 
         this.FindControl<TextBlock>("PreviousGlyph")!.Foreground = controlAccent;
         this.FindControl<TextBlock>("PlayPauseGlyph")!.Foreground = controlAccent;
         this.FindControl<TextBlock>("NextGlyph")!.Foreground = controlAccent;
         foreach (var bar in _spectrumBars)
         {
-            bar.Background = spectrumAccent;
+            bar.Background = controlAccent;
         }
     }
 

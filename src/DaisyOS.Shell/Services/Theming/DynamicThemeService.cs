@@ -109,19 +109,19 @@ public sealed class DynamicThemeService
         }
         else
         {
-            // Base Light surface #F6F7F9 with a soft 5% wallpaper tint: clean, luminous, elegant
+            // Base Light surface #F4F5F7 with a soft 4% wallpaper tint: warm, elegant, easy on the eyes
             var tintSource = seed.A > 0 ? seed : scheme.Primary;
-            var baseLight = Color.FromRgb(246, 247, 249);
-            var lightMaterial = Blend(baseLight, tintSource, 0.05);
-            var lightLauncher = Blend(baseLight, tintSource, 0.04);
-            var lightFooter = Blend(Color.FromRgb(240, 241, 243), tintSource, 0.06);
+            var baseLight = Color.FromRgb(244, 245, 247);
+            var lightMaterial = Blend(baseLight, tintSource, 0.04);
+            var lightLauncher = Blend(baseLight, tintSource, 0.035);
+            var lightFooter = Blend(Color.FromRgb(233, 235, 239), tintSource, 0.05);
 
             Set(resources, "LauncherMaterialBrush", lightLauncher);
             Set(resources, "SystemBarMaterialBrush", lightMaterial);
             Set(resources, "TaskbarMaterialBrush", lightMaterial);
             Set(resources, "TaskbarBackgroundBrush", lightMaterial);
             Set(resources, "LauncherFooterBrush", lightFooter);
-            Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 82));
+            Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 64));
         }
     }
 

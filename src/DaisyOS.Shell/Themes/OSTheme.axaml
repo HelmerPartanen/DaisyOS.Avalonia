@@ -31,61 +31,61 @@
     <ResourceDictionary x:Key="Light">
 
       <SolidColorBrush x:Key="TaskbarBackgroundBrush"
-                       Color="#FFF3F3F3"/>
+                       Color="#FFF4F5F7"/>
       <SolidColorBrush x:Key="TaskbarMaterialBrush"
-                       Color="#FFF3F3F3"/>
+                       Color="#FFF4F5F7"/>
       <SolidColorBrush x:Key="SystemBarMaterialBrush"
-                       Color="#FFF3F3F3"/>
+                       Color="#FFF4F5F7"/>
       <SolidColorBrush x:Key="LauncherMaterialBrush"
-                       Color="#FFF3F3F3"/>
+                       Color="#FFF4F5F7"/>
 
       <SolidColorBrush x:Key="TaskbarBorderBrush"
-                       Color="#1F000000"/>
+                       Color="#14000000"/>
 
       <SolidColorBrush x:Key="TaskbarHoverBrush"
                        Color="#12000000"/>
 
       <SolidColorBrush x:Key="TaskbarPressedBrush"
-                       Color="#20000000"/>
+                       Color="#22000000"/>
 
       <SolidColorBrush x:Key="TextPrimaryBrush"
-                       Color="#FF1A1A1A"/>
+                       Color="#FF1F2328"/>
 
       <SolidColorBrush x:Key="TextSecondaryBrush"
-                       Color="#CC1A1A1A"/>
+                       Color="#FF57606A"/>
 
       <SolidColorBrush x:Key="TextTertiaryBrush"
-                       Color="#991A1A1A"/>
+                       Color="#FF8C959F"/>
 
       <!-- Inactive quick-setting tiles are OS chrome in Light mode -->
       <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
-                       Color="#14000000"/>
+                       Color="#0A000000"/>
       <SolidColorBrush x:Key="QuickSettingForegroundBrush"
-                       Color="#FF1A1A1A"/>
+                       Color="#FF1F2328"/>
       <SolidColorBrush x:Key="QuickSettingHoverBrush"
-                       Color="#20000000"/>
+                       Color="#12000000"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
-                       Color="#2E000000"/>
+                       Color="#22000000"/>
       <SolidColorBrush x:Key="QuickSettingInactiveDividerBrush"
-                       Color="#1F000000"/>
+                       Color="#14000000"/>
 
       <SolidColorBrush x:Key="LauncherItemHoverBrush"
                        Color="#12000000"/>
       <SolidColorBrush x:Key="LauncherItemPressedBrush"
-                       Color="#20000000"/>
+                       Color="#22000000"/>
       <SolidColorBrush x:Key="LauncherFooterBrush"
-                       Color="#08000000"/>
+                       Color="#0A000000"/>
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
-                       Color="#F3F3F3"/>
+                       Color="#F4F5F8"/>
 
       <!-- Settings buttons theme brushes -->
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush"
                        Color="#FFFFFF"/>
       <SolidColorBrush x:Key="SettingsButtonHoverBrush"
-                       Color="#F2F2F2"/>
+                       Color="#FFF5F5F5"/>
       <SolidColorBrush x:Key="SettingsButtonPressedBrush"
-                       Color="#E0E0E0"/>
+                       Color="#FFE8EAEF"/>
 
     </ResourceDictionary>
 
