@@ -125,16 +125,16 @@
       <SolidColorBrush x:Key="QuickSettingForegroundBrush"
                        Color="#FFF3F3F3"/>
       <SolidColorBrush x:Key="QuickSettingHoverBrush"
-                       Color="#0DFFFFFF"/>
+                       Color="#14FFFFFF"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
-                       Color="#1AFFFFFF"/>
+                       Color="#22FFFFFF"/>
       <SolidColorBrush x:Key="QuickSettingInactiveDividerBrush"
                        Color="#1AFFFFFF"/>
 
       <SolidColorBrush x:Key="LauncherItemHoverBrush"
-                       Color="#1AFFFFFF"/>
+                       Color="#14FFFFFF"/>
       <SolidColorBrush x:Key="LauncherItemPressedBrush"
-                       Color="#2DFFFFFF"/>
+                       Color="#22FFFFFF"/>
       <SolidColorBrush x:Key="LauncherFooterBrush"
                        Color="#12FFFFFF"/>
 

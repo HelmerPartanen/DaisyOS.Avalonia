@@ -20,6 +20,11 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
         var primaryContainer = FromArgb(scheme.PrimaryContainer);
         var onPrimaryContainer = FromArgb(scheme.OnPrimaryContainer);
 
+        var error = FromArgb(scheme.Error);
+        var onError = FromArgb(scheme.OnError);
+        var errorContainer = FromArgb(scheme.ErrorContainer);
+        var onErrorContainer = FromArgb(scheme.OnErrorContainer);
+
         if (isDark)
         {
             // Tonal Spot intentionally amplifies seed chroma. Desaturate its dark-theme
@@ -34,6 +39,12 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
             // Soft, refined light accent container with high contrast dark text/icons
             primaryContainer = Blend(Color.FromRgb(234, 237, 241), primary, 0.20);
             onPrimaryContainer = Color.FromRgb(31, 35, 40);
+
+            // Refine Light Mode danger/error roles for rich contrast
+            error = Color.FromRgb(211, 47, 47);
+            onError = Color.FromRgb(255, 255, 255);
+            errorContainer = Color.FromRgb(252, 232, 230);
+            onErrorContainer = Color.FromRgb(140, 29, 24);
         }
 
         return new DynamicColorScheme(
@@ -63,10 +74,10 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
             FromArgb(scheme.OnTertiaryContainer),
             FromArgb(scheme.Outline),
             FromArgb(scheme.OutlineVariant),
-            FromArgb(scheme.Error),
-            FromArgb(scheme.OnError),
-            FromArgb(scheme.ErrorContainer),
-            FromArgb(scheme.OnErrorContainer),
+            error,
+            onError,
+            errorContainer,
+            onErrorContainer,
             FromArgb(scheme.InverseSurface),
             FromArgb(scheme.InverseOnSurface),
             FromArgb(scheme.InversePrimary),

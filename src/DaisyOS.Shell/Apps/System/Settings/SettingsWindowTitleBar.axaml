@@ -24,8 +24,16 @@
       <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}" />
     </Style>
     <Style Selector="Button.CaptionClose:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppErrorContainerBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource AppOnErrorContainerBrush}" />
+      <Setter Property="Background" Value="#E81123" />
+    </Style>
+    <Style Selector="Button.CaptionClose:pointerover TextBlock.CaptionIcon">
+      <Setter Property="Foreground" Value="#FFFFFF" />
+    </Style>
+    <Style Selector="Button.CaptionClose:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#C42B1C" />
+    </Style>
+    <Style Selector="Button.CaptionClose:pressed TextBlock.CaptionIcon">
+      <Setter Property="Foreground" Value="#FFFFFF" />
     </Style>
     <Style Selector="TextBlock.CaptionIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
