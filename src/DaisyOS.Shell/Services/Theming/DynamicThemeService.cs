@@ -50,7 +50,7 @@ public sealed class DynamicThemeService
             Apply(resources, scheme, desktopLabelColor, seed);
         }).GetTask();
 
-    private static void Apply(IResourceDictionary resources, DynamicColorScheme scheme, Color desktopLabelColor, Color seed)
+    internal static void Apply(IResourceDictionary resources, DynamicColorScheme scheme, Color desktopLabelColor, Color seed)
     {
         var isDarkSurface = RelativeLuminance(scheme.Surface) < 0.5;
 

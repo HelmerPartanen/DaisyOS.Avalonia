@@ -55,7 +55,7 @@ public sealed class LinuxBluetoothServiceTests
                 Assert.Equal("Keyboard", device.Name);
                 Assert.False(device.IsConnected);
                 Assert.True(device.IsPaired);
-                Assert.Equal("Input", device.Type);
+                Assert.Equal("Keyboard", device.Type);
             });
     }
 
