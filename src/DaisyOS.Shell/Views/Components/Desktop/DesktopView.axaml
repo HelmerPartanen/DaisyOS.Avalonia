@@ -5,9 +5,16 @@
     xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls">
   <Grid
-      x:Name="WallpaperRoot"
-      Classes="Wallpaper"
-      Background="Black">
+      x:Name="InteractionSurface"
+      Focusable="True"
+      Background="Black"
+      PointerPressed="OnInteractionSurfacePointerPressed"
+      PointerMoved="OnInteractionSurfacePointerMoved"
+      PointerReleased="OnInteractionSurfacePointerReleased"
+      PointerCaptureLost="OnInteractionSurfacePointerCaptureLost"
+      KeyDown="OnInteractionSurfaceKeyDown">
+
+    <!-- Wallpaper -->
     <Image
         x:Name="WallpaperImage"
         Source="avares://DaisyOS.Shell/Assets/Wallpapers/Dusk.png"
@@ -15,14 +22,17 @@
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         IsHitTestVisible="False" />
-        
-    <ItemsControl ItemsSource="{Binding Items}"
-                  PointerPressed="ItemsControl_PointerPressed"
-                  PointerMoved="ItemsControl_PointerMoved"
-                  PointerReleased="ItemsControl_PointerReleased">
+
+    <!-- Items Layer -->
+    <ItemsControl
+        x:Name="ItemsControl"
+        ItemsSource="{Binding Items}">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
-          <Canvas />
+          <controls:DesktopReorderPanel
+              x:Name="ItemsPanel"
+              Metrics="{Binding $parent[UserControl].CurrentMetrics}"
+              ViewModel="{Binding $parent[UserControl].ViewModel}" />
         </ItemsPanelTemplate>
       </ItemsControl.ItemsPanel>
       <ItemsControl.ItemTemplate>
@@ -30,28 +40,21 @@
           <controls:DesktopItemView />
         </DataTemplate>
       </ItemsControl.ItemTemplate>
-      <ItemsControl.Styles>
-        <Style Selector="ItemsControl > ContentPresenter">
-          <Setter Property="Canvas.Left" Value="{Binding X}" />
-          <Setter Property="Canvas.Top" Value="{Binding Y}" />
-          <!-- Tag the presenter with a "dragging" class while its item is the one under the pointer,
-               so it can opt out of the transition below and follow the cursor 1:1. -->
-          <Setter Property="Classes.dragging" Value="{Binding IsDragging}" />
-          <Setter Property="Transitions">
-            <Transitions>
-              <DoubleTransition Property="Canvas.Left" Duration="0:0:0.22" Easing="CubicEaseOut" />
-              <DoubleTransition Property="Canvas.Top" Duration="0:0:0.22" Easing="CubicEaseOut" />
-            </Transitions>
-          </Setter>
-        </Style>
-
-        <!-- The item actively being dragged should not animate - it must track the pointer directly.
-             Every other item (including one being displaced to make room) keeps the transition above,
-             which is what produces the "flip" glide. -->
-        <Style Selector="ItemsControl > ContentPresenter.dragging">
-          <Setter Property="Transitions" Value="{x:Null}" />
-        </Style>
-      </ItemsControl.Styles>
     </ItemsControl>
+
+    <!-- Overlay Layer for Drag Proxy -->
+    <Canvas
+        x:Name="OverlayLayer"
+        IsHitTestVisible="False">
+      <Panel
+          x:Name="DragProxyContainer"
+          IsVisible="False"
+          RenderTransformOrigin="50%,50%">
+        <Panel.RenderTransform>
+          <ScaleTransform ScaleX="1.04" ScaleY="1.04" />
+        </Panel.RenderTransform>
+        <controls:DesktopItemView x:Name="DragProxyView" IsDragProxy="True" />
+      </Panel>
+    </Canvas>
   </Grid>
 </UserControl>

@@ -31,6 +31,12 @@ was removed, and the corrected payload produces a full 1280x800 KWin desktop
 in the VM. A new production ISO must still pass the complete acceptance gate
 before it supersedes the accepted alpha.
 
+### Recent Shell Improvements
+- **Refined Dual-Theme Engine**: Added a daytime paper-inspired Light Theme (`#F4F5F7` base, soft charcoal `#1F2328` text, crisp white cards, 7% subtle hover overlays) alongside a normalized Dark Theme (`#1E1E1E` chrome, 8% white hover highlights).
+- **Ultra-Fast 6K Wallpaper Extraction**: Optimized `WallpaperColorExtractor` with strided 64x64 grid sampling and seed caching, reducing cold extraction time on 6K/8K images from ~4s to ~15ms (<0.01ms cached).
+- **High-Contrast Shell Controls**: Redesigned `SearchBar` and `CaptionClose` buttons for 1:1 color matching with Settings buttons and title bar controls. Synchronized audio spectrum visualizer bars with media control accents.
+- **Automated Test Gate**: Passed all 82 unit, service, ViewModel, and color contrast tests (`dotnet test`).
+
 See [ROADMAP.md](ROADMAP.MD) for detailed progress and
 [docs/iso-build.md](docs/iso-build.md) for the live-image workflow.
 

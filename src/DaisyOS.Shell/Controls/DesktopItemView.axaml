@@ -1,33 +1,41 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
+             xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
              x:Class="DaisyOS.Shell.Controls.DesktopItemView"
              Width="74" Height="88">
-  <!-- The width and height act as the logical footprint for rendering.
-       They are usually overridden or scaled by the grid placement math in code behind,
-       but this provides a sensible fallback at 96 DPI. -->
   <UserControl.Styles>
-    <Style Selector="Grid#ContainerGrid:pointerover Border#IconWrapper">
-      <Setter Property="Opacity" Value="0.6" />
+    <Style Selector="Grid#ContainerGrid">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.1" Easing="QuadraticEaseOut" />
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
     </Style>
-    <Style Selector="Grid#ContainerGrid:pressed Border#IconWrapper">
-      <Setter Property="Opacity" Value="0.6" />
+
+    <Style Selector="controls|DesktopItemView[IsHiddenPlaceholder=True] Grid#ContainerGrid">
+      <Setter Property="Opacity" Value="0.0" />
+    </Style>
+
+
+    <Style Selector="Grid#ContainerGrid:pointerover Border#IconWrapper">
+      <Setter Property="Opacity" Value="0.85" />
     </Style>
   </UserControl.Styles>
 
   <Grid Name="ContainerGrid" Background="Transparent" RowDefinitions="Auto,*">
-    <!-- Icon centered near the top -->
-    <Border Name="IconWrapper" Grid.Row="0" Width="48" Height="48" Margin="0,4,0,0">
-      <Border.Transitions>
-        <Transitions>
-          <DoubleTransition Property="Opacity" Duration="0:0:0.1" Easing="QuadraticEaseOut" />
-        </Transitions>
-      </Border.Transitions>
-      <Image Name="AppIcon" 
-             Source="{Binding IconBitmap}" 
-             RenderOptions.BitmapInterpolationMode="HighQuality" />
+
+    <Border Name="IconWrapper" Grid.Row="0" Width="48" Height="48" Margin="0,4,0,0" HorizontalAlignment="Center">
+      <Panel>
+        <!-- Standard Icon -->
+        <Image Name="AppIcon" 
+               Source="{Binding IconBitmap}" 
+               RenderOptions.BitmapInterpolationMode="HighQuality" />
+      </Panel>
     </Border>
 
-    <!-- Label below the icon, wraps lines, centered -->
+    <!-- Label below the icon -->
     <TextBlock Grid.Row="1"
                Text="{Binding Label}"
                TextAlignment="Center"

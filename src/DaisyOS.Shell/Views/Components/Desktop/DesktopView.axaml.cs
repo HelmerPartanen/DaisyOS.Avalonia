@@ -1,34 +1,43 @@
+using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
-using DaisyOS.Shell;
+using Avalonia.VisualTree;
 using DaisyOS.Core.Desktop;
-using DaisyOS.System.Display;
+using DaisyOS.Shell.Controls;
+using DaisyOS.Shell.Services.Desktop;
 using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.ViewModels;
+using DaisyOS.System.Display;
 
 namespace DaisyOS.Shell.Views.Components.Desktop
 {
     public partial class DesktopView : UserControl
     {
-        private DesktopViewModel _viewModel;
-        private AvaloniaMetricsProvider _metricsProvider;
-        
+        public static readonly DirectProperty<DesktopView, DesktopGridMetrics?> CurrentMetricsProperty =
+            AvaloniaProperty.RegisterDirect<DesktopView, DesktopGridMetrics?>(
+                nameof(CurrentMetrics),
+                o => o.CurrentMetrics);
+
         private DesktopGridMetrics? _currentMetrics;
-        private DesktopItemViewModel? _draggedItem;
-        private Avalonia.Point _dragStartPointerPos;
-        private Avalonia.Point _dragStartItemPos;
-        private bool _isDragging;
+        public DesktopGridMetrics? CurrentMetrics
+        {
+            get => _currentMetrics;
+            private set => SetAndRaise(CurrentMetricsProperty, ref _currentMetrics, value);
+        }
+
+        private readonly DesktopViewModel _viewModel;
+        public DesktopViewModel ViewModel => _viewModel;
+
+        private readonly AvaloniaMetricsProvider _metricsProvider;
+        private readonly DesktopDragController _dragController;
         private App? _app;
 
-        // The fill-order slot last previewed under the pointer, so we only recompute the
-        // reflow when the pointer actually moves into a different slot.
-        private int? _lastHoverSlot;
-
-        // High-performance wallpaper image service
+        // Wallpaper service
         private WallpaperImageService? _wallpaperImageService;
         private WallpaperRenderMetrics _currentWallpaperMetrics;
         private bool _wallpaperMetricsInitialized;
@@ -36,11 +45,18 @@ namespace DaisyOS.Shell.Views.Components.Desktop
         public DesktopView()
         {
             InitializeComponent();
-            
+
             _viewModel = new DesktopViewModel();
             _metricsProvider = new AvaloniaMetricsProvider();
-            
+            _dragController = new DesktopDragController();
+
+            _dragController.SessionStarted += OnDragSessionStarted;
+            _dragController.SessionUpdated += OnDragSessionUpdated;
+            _dragController.SessionEnded += OnDragSessionEnded;
+            _dragController.ReorderReflowed += OnReorderReflowed;
+
             DataContext = _viewModel;
+
             _app = Application.Current as App;
             if (_app is not null)
             {
@@ -55,41 +71,76 @@ namespace DaisyOS.Shell.Views.Components.Desktop
                 }
                 _wallpaperImageService?.Dispose();
             };
-            
-            // Listen to layout changes to rebuild the grid
-            this.SizeChanged += DesktopView_SizeChanged;
+
+            SizeChanged += DesktopView_SizeChanged;
+        }
+
+        private void OnDragSessionStarted(DragSession session)
+        {
+            var item = _viewModel.GetItem(session.SourceId);
+            if (item == null) return;
+
+            DragProxyView.DataContext = item;
+            DragProxyView.IsHiddenPlaceholder = false; // Drag proxy visual must ALWAYS remain visible!
+            DragProxyContainer.IsVisible = true;
+            UpdateProxyPosition(session);
+        }
+
+        private void OnDragSessionUpdated(DragSession session)
+        {
+            UpdateProxyPosition(session);
+        }
+
+        private void OnDragSessionEnded(DragSession session, bool isSuccess)
+        {
+            DragProxyContainer.IsVisible = false;
+            DragProxyView.DataContext = null;
+            InvalidateReorderPanel();
+        }
+
+        private void OnReorderReflowed()
+        {
+            InvalidateReorderPanel();
+        }
+
+        private void InvalidateReorderPanel()
+        {
+            var panel = this.FindDescendantOfType<DesktopReorderPanel>();
+            panel?.InvalidateArrange();
+        }
+
+        private void UpdateProxyPosition(DragSession session)
+        {
+            double posX = session.CurrentPointer.X - session.GrabOffset.X;
+            double posY = session.CurrentPointer.Y - session.GrabOffset.Y;
+
+            Canvas.SetLeft(DragProxyContainer, posX);
+            Canvas.SetTop(DragProxyContainer, posY);
         }
 
         private async void OnWallpaperChanged(object? sender, string wallpaperUri)
         {
             var wallpaperImage = this.FindControl<Image>("WallpaperImage");
-            if (wallpaperImage is null)
-            {
-                return;
-            }
+            if (wallpaperImage is null) return;
 
             try
             {
-                // Create or update the wallpaper image service
                 _wallpaperImageService?.Dispose();
                 _wallpaperImageService = new WallpaperImageService(wallpaperUri);
                 _wallpaperImageService.WallpaperBitmapChanged += (s, bitmap) =>
                 {
-                    // Update the image source on UI thread
                     if (Dispatcher.UIThread.CheckAccess())
                     {
                         wallpaperImage.Source = bitmap;
                     }
                 };
 
-                // Calculate current metrics
                 if (!_wallpaperMetricsInitialized)
                 {
                     UpdateWallpaperMetrics();
                     _wallpaperMetricsInitialized = true;
                 }
 
-                // Get the wallpaper bitmap asynchronously
                 if (_currentWallpaperMetrics.PhysicalWidth > 0 && _currentWallpaperMetrics.PhysicalHeight > 0)
                 {
                     var bitmap = await _wallpaperImageService.GetWallpaperAsync(_currentWallpaperMetrics);
@@ -101,22 +152,14 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             }
             catch
             {
-                // Keep the current wallpaper visible if an asset cannot be loaded.
             }
         }
 
         private void UpdateWallpaperMetrics()
         {
-            if (Bounds.Width <= 0 || Bounds.Height <= 0)
-            {
-                return;
-            }
+            if (Bounds.Width <= 0 || Bounds.Height <= 0) return;
 
-            // Get the scaling factor from the current monitor
-            // In a real implementation, this would come from display services
-            double scaling = 1.0; // Default to 1.0 for now
-
-            // Calculate physical pixel dimensions
+            double scaling = 1.0;
             int physicalWidth = (int)Math.Round(Bounds.Width * scaling);
             int physicalHeight = (int)Math.Round(Bounds.Height * scaling);
 
@@ -130,8 +173,7 @@ namespace DaisyOS.Shell.Views.Components.Desktop
         private void DesktopView_SizeChanged(object? sender, SizeChangedEventArgs e)
         {
             RebuildGrid();
-            
-            // Update wallpaper metrics if the size changed
+
             if (_wallpaperImageService is not null && _wallpaperMetricsInitialized)
             {
                 UpdateWallpaperMetrics();
@@ -141,18 +183,12 @@ namespace DaisyOS.Shell.Views.Components.Desktop
 
         private async Task RefreshWallpaperAsync()
         {
-            if (_wallpaperImageService is null || _currentWallpaperMetrics.PhysicalWidth <= 0)
-            {
-                return;
-            }
+            if (_wallpaperImageService is null || _currentWallpaperMetrics.PhysicalWidth <= 0) return;
 
             try
             {
                 var wallpaperImage = this.FindControl<Image>("WallpaperImage");
-                if (wallpaperImage is null)
-                {
-                    return;
-                }
+                if (wallpaperImage is null) return;
 
                 var bitmap = await _wallpaperImageService.GetWallpaperAsync(_currentWallpaperMetrics);
                 if (bitmap is not null)
@@ -162,100 +198,86 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             }
             catch
             {
-                // Ignore refresh errors
             }
         }
 
         private void RebuildGrid()
         {
             if (Bounds.Width <= 0 || Bounds.Height <= 0) return;
-            
-            // Note: 48px bottom inset to account exactly for the taskbar height.
+
             var workArea = new DaisyOS.Core.Desktop.Rect(0, 0, Bounds.Width, Bounds.Height - 48);
-            
-            // Assume 96 DPI for this example Avalonia control view.
             double dpi = 96.0;
-            
+
             double cellW = _metricsProvider.GetCellWidth(dpi);
             double cellH = _metricsProvider.GetCellHeight(dpi);
-            
-            // Windows desktop grid places remaining space on the right/bottom.
-            // Start with a small inset on the top-left edge.
-            _currentMetrics = new DesktopGridMetrics("primary", workArea, dpi, cellW, cellH, edgeInsetX: 2, edgeInsetY: 2);
-            
-            _viewModel.CalculateLayout(_currentMetrics);
+
+            CurrentMetrics = new DesktopGridMetrics("primary", workArea, dpi, cellW, cellH, edgeInsetX: 2, edgeInsetY: 2);
+            _viewModel.CalculateLayout(CurrentMetrics);
+            InvalidateReorderPanel();
         }
-        
-        private void ItemsControl_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+
+        private void OnInteractionSurfacePointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (e.Source is Control control && control.DataContext is DesktopItemViewModel item)
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
+
+            var surfacePoint = e.GetPosition(InteractionSurface);
+
+            Control? sourceControl = e.Source as Control;
+            DesktopItemView? itemView = sourceControl as DesktopItemView ?? sourceControl?.FindAncestorOfType<DesktopItemView>();
+            DesktopItemViewModel? itemVm = itemView?.DataContext as DesktopItemViewModel;
+
+            if (itemView != null && itemVm != null)
             {
-                if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
-                
-                _draggedItem = item;
-                _dragStartPointerPos = e.GetPosition(this);
-                _dragStartItemPos = new Avalonia.Point(item.X, item.Y);
-                _isDragging = false;
-                _lastHoverSlot = null;
-                
-                e.Pointer.Capture((Avalonia.Input.InputElement)sender!);
+                var itemPoint = e.GetPosition(itemView);
+                var itemSize = itemView.Bounds.Size;
+                if (itemSize.Width <= 0 || itemSize.Height <= 0)
+                {
+                    itemSize = new Size(74, 88);
+                }
+
+                _dragController.OnPointerPressed(
+                    itemVm,
+                    surfacePoint,
+                    itemPoint,
+                    itemSize,
+                    e.Pointer,
+                    InteractionSurface);
+
                 e.Handled = true;
             }
         }
 
-        private void ItemsControl_PointerMoved(object? sender, Avalonia.Input.PointerEventArgs e)
+        private void OnInteractionSurfacePointerMoved(object? sender, PointerEventArgs e)
         {
-            if (_draggedItem == null || _currentMetrics == null) return;
-            
-            var currentPointer = e.GetPosition(this);
-            var dx = currentPointer.X - _dragStartPointerPos.X;
-            var dy = currentPointer.Y - _dragStartPointerPos.Y;
-            
-            if (!_isDragging && (global::System.Math.Abs(dx) > 3 || global::System.Math.Abs(dy) > 3))
-            {
-                _isDragging = true;
-                _draggedItem.IsDragging = true;
-                _viewModel.BeginDrag(_draggedItem, _currentMetrics);
-            }
-            
-            if (_isDragging)
-            {
-                // Free-form movement during drag
-                _draggedItem.X = _dragStartItemPos.X + dx;
-                _draggedItem.Y = _dragStartItemPos.Y + dy;
+            if (_dragController.State == DragState.Idle || CurrentMetrics == null) return;
 
-                var hoverCell = _currentMetrics.GetNearestCell(currentPointer.X, currentPointer.Y);
-                var hoverSlot = _currentMetrics.GetSlotIndex(hoverCell);
+            var surfacePoint = e.GetPosition(InteractionSurface);
+            _dragController.OnPointerMoved(surfacePoint, _viewModel, CurrentMetrics);
+        }
 
-                if (_lastHoverSlot != hoverSlot)
-                {
-                    _lastHoverSlot = hoverSlot;
-                    _viewModel.PreviewReflow(_draggedItem, hoverSlot, _currentMetrics);
-                }
+        private void OnInteractionSurfacePointerReleased(object? sender, PointerReleasedEventArgs e)
+        {
+            if (_dragController.State == DragState.Idle) return;
+
+            _dragController.OnPointerReleased(e.Pointer, _viewModel);
+            e.Handled = true;
+        }
+
+        private void OnInteractionSurfacePointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+        {
+            if (_dragController.State != DragState.Idle)
+            {
+                _dragController.OnPointerCaptureLost(_viewModel);
             }
         }
 
-        private void ItemsControl_PointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e)
+        private void OnInteractionSurfaceKeyDown(object? sender, KeyEventArgs e)
         {
-            if (_draggedItem == null || _currentMetrics == null) return;
-            
-            if (_isDragging)
+            if (e.Key == Key.Escape && _dragController.State != DragState.Idle)
             {
-                // Resolve the drop slot from release position and commit - this reflows the
-                // other items around it (matching whatever was last previewed) and places the
-                // dragged item into the resulting gap.
-                var pointerPos = e.GetPosition(this);
-                var releaseCell = _currentMetrics.GetNearestCell(pointerPos.X, pointerPos.Y);
-                var releaseSlot = _currentMetrics.GetSlotIndex(releaseCell);
-                
-                _viewModel.CommitItemMove(_draggedItem, releaseSlot, _currentMetrics);
+                _dragController.CancelDrag(_viewModel);
+                e.Handled = true;
             }
-            
-            _draggedItem.IsDragging = false;
-            _draggedItem = null;
-            _lastHoverSlot = null;
-            _isDragging = false;
-            e.Pointer.Capture(null);
         }
     }
 }
