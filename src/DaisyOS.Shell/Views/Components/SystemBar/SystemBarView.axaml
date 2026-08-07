@@ -32,6 +32,7 @@
       <Setter Property="Width" Value="27"/>
       <Setter Property="Height" Value="56"/>
       <Setter Property="Padding" Value="0"/>
+      <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="CornerRadius" Value="0,10,10,0"/>
       <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -46,6 +47,8 @@
     <Style Selector="Button.VolumeOutputDetails">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}"/>
       <Setter Property="CornerRadius" Value="0,10,10,0"/>
     </Style>

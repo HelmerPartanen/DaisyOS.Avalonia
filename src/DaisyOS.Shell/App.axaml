@@ -74,6 +74,7 @@
     <!-- Reusable Material You Quick Settings container buttons. -->
     <Style Selector="ToggleButton.QuickSetting, Button.QuickSettingDetails">
       <Setter Property="Foreground" Value="{DynamicResource QuickSettingForegroundBrush}" />
+      <Setter Property="BorderThickness" Value="0" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Padding" Value="0" />
