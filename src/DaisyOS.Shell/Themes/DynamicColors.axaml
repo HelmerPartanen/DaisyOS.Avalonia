@@ -16,6 +16,7 @@
   <SolidColorBrush x:Key="LauncherMaterialBrush" Color="#FF2B2930"/>
   <SolidColorBrush x:Key="SystemBarMaterialBrush" Color="#FF2B2930"/>
   <SolidColorBrush x:Key="LauncherFooterBrush" Color="#FF36343B"/>
+  <SolidColorBrush x:Key="SearchBarBackgroundBrush" Color="#FF2B2930"/>
   <SolidColorBrush x:Key="ShellSurfaceBorderBrush" Color="#69CAC4D0"/>
   <SolidColorBrush x:Key="AppOnSurfaceBrush" Color="#FFE6E1E5"/>
   <SolidColorBrush x:Key="AppOnSurfaceVariantBrush" Color="#FFCAC4D0"/>

@@ -79,6 +79,9 @@
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
                        Color="#F4F5F8"/>
 
+      <SolidColorBrush x:Key="SearchBarBackgroundBrush"
+                       Color="#FFFFFF"/>
+
       <!-- Settings buttons theme brushes -->
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush"
                        Color="#FFFFFF"/>
@@ -140,6 +143,9 @@
 
       <SolidColorBrush x:Key="DropdownMenuBackgroundBrush"
                        Color="#1e1e1e"/>
+
+      <SolidColorBrush x:Key="SearchBarBackgroundBrush"
+                       Color="#0DFFFFFF"/>
 
       <!-- Settings buttons theme brushes -->
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush"
