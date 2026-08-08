@@ -95,22 +95,29 @@ public sealed class DynamicThemeService
         Set(resources, "AppScrimBrush", scheme.Scrim);
         Set(resources, "AppShadowBrush", scheme.Shadow);
 
+        var tintSource = seed.A > 0 ? seed : scheme.Primary;
+
         // Shell chrome stays opaque until an actual acrylic material exists. It still
         // inherits the wallpaper palette, so launcher and system-bar surfaces feel
         // cohesive without showing a distracting unblurred wallpaper beneath them.
         if (isDarkSurface)
         {
-            Set(resources, "LauncherMaterialBrush", scheme.SurfaceContainerHigh);
-            Set(resources, "SystemBarMaterialBrush", scheme.SurfaceContainerHigh);
-            Set(resources, "TaskbarMaterialBrush", scheme.SurfaceContainerHigh);
-            Set(resources, "TaskbarBackgroundBrush", scheme.SurfaceContainerHigh);
-            Set(resources, "LauncherFooterBrush", scheme.SurfaceContainerHighest);
+            // Base Dark surface #121212 with a strong wallpaper tint to mimic a heavily blurred acrylic effect
+            var baseDark = Color.FromRgb(18, 18, 18);
+            var darkMaterial = Blend(baseDark, tintSource, 0.15);
+            var darkLauncher = Blend(baseDark, tintSource, 0.12);
+            var darkFooter = Blend(Color.FromRgb(28, 28, 28), tintSource, 0.18);
+
+            Set(resources, "LauncherMaterialBrush", darkLauncher);
+            Set(resources, "SystemBarMaterialBrush", darkMaterial);
+            Set(resources, "TaskbarMaterialBrush", darkMaterial);
+            Set(resources, "TaskbarBackgroundBrush", darkMaterial);
+            Set(resources, "LauncherFooterBrush", darkFooter);
             Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 105));
         }
         else
         {
             // Base Light surface #F4F5F7 with a soft 4% wallpaper tint: warm, elegant, easy on the eyes
-            var tintSource = seed.A > 0 ? seed : scheme.Primary;
             var baseLight = Color.FromRgb(244, 245, 247);
             var lightMaterial = Blend(baseLight, tintSource, 0.04);
             var lightLauncher = Blend(baseLight, tintSource, 0.035);
