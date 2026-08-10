@@ -1,0 +1,8 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Apps.Notes.NotesView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Grid Background="{DynamicResource SystemBarMaterialBrush}">
+    <!-- Empty blank canvas with DaisyOS SystemBarMaterialBrush -->
+  </Grid>
+</UserControl>

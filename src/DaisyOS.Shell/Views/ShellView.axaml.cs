@@ -36,9 +36,15 @@ namespace DaisyOS.Shell.Views
         {
             SetLauncherOpen(launcher, taskbar, false);
 
-            if (appId == "settings" && Application.Current is App app)
+            if (appId == "settings" && Application.Current is App settingsApp)
             {
-                app.ShowSettings();
+                settingsApp.ShowSettings();
+                return;
+            }
+
+            if (appId == "notes" && Application.Current is App notesApp)
+            {
+                notesApp.ShowNotes();
                 return;
             }
 

@@ -11,6 +11,8 @@ using DaisyOS.Shell.Apps.System.Settings;
 using DaisyOS.Shell.Views;
 using System;
 
+using DaisyOS.Shell.Apps.Notes;
+
 namespace DaisyOS.Shell;
 
 public partial class App : Application
@@ -18,6 +20,7 @@ public partial class App : Application
     private DynamicThemeService? _dynamicThemeService;
     private IWallpaperService? _wallpaperService;
     private SettingsWindow? _settingsWindow;
+    private NotesWindow? _notesWindow;
 
     public event EventHandler<string>? WallpaperChanged;
 
@@ -89,6 +92,29 @@ public partial class App : Application
         else
         {
             _settingsWindow.Show();
+        }
+    }
+
+    /// <summary>Opens one instance of the native DaisyOS Notes app.</summary>
+    public void ShowNotes()
+    {
+        if (_notesWindow is { IsVisible: true } notesWindow)
+        {
+            notesWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+            notesWindow.Activate();
+            return;
+        }
+
+        _notesWindow = new NotesWindow();
+        _notesWindow.Closed += (_, _) => _notesWindow = null;
+
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
+        {
+            _notesWindow.Show(mainWindow);
+        }
+        else
+        {
+            _notesWindow.Show();
         }
     }
 
