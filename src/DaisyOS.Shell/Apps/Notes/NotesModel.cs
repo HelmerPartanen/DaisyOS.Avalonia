@@ -9,8 +9,70 @@ public class NoteItem : INotifyPropertyChanged
     private string _title = string.Empty;
     private string _content = string.Empty;
     private bool _isSelected;
+    private string? _filePath;
+    private bool _isDirty;
+    private DateTime _lastModified = DateTime.Now;
 
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
+
+    public string? FilePath
+    {
+        get => _filePath;
+        set
+        {
+            if (_filePath != value)
+            {
+                _filePath = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    private bool _showDivider;
+    public bool ShowDivider
+    {
+        get => _showDivider;
+        set
+        {
+            if (_showDivider != value)
+            {
+                _showDivider = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool IsDirty
+    {
+        get => _isDirty;
+        set
+        {
+            if (_isDirty != value)
+            {
+                _isDirty = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FontStyle));
+            }
+        }
+    }
+
+    public string FontStyle => IsDirty ? "Italic" : "Normal";
+
+    public DateTime LastModified
+    {
+        get => _lastModified;
+        set
+        {
+            if (_lastModified != value)
+            {
+                _lastModified = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(LastModifiedFormatted));
+            }
+        }
+    }
+
+    public string LastModifiedFormatted => LastModified.ToString("MMM d, yyyy  HH:mm");
 
     public string Content
     {
@@ -20,6 +82,8 @@ public class NoteItem : INotifyPropertyChanged
             if (_content != value)
             {
                 _content = value;
+                IsDirty = true;
+                LastModified = DateTime.Now;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Title));
             }

@@ -5,6 +5,10 @@
     xmlns:notes="clr-namespace:DaisyOS.Shell.Apps.Notes"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls">
 
+  <UserControl.KeyBindings>
+    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveNoteCommand}" />
+  </UserControl.KeyBindings>
+
   <UserControl.Styles>
     <!-- Sidebar navigation button layout - 100% identical to Settings app -->
     <Style Selector="Button.SettingsNavItem">
@@ -66,15 +70,28 @@
                             CornerRadius="6"
                             PlaceholderText="Search notes..." />
 
-        <!-- New Note Button -->
-        <Button Grid.Row="1" Classes="SettingsNavItem"
-                Margin="0,0,0,12"
-                Command="{Binding AddNoteCommand}">
-          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <TextBlock Text="add" Classes="NavIcon" />
-            <TextBlock Text="New Note" Classes="NavLabel" FontWeight="SemiBold" />
-          </StackPanel>
-        </Button>
+        <!-- Action Buttons -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="0,0,0,12">
+          <!-- New Note Button -->
+          <Button Grid.Column="0" Classes="SettingsNavItem"
+                  Margin="0,0,4,0"
+                  Command="{Binding AddNoteCommand}">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="add" Classes="NavIcon" />
+              <TextBlock Text="New" Classes="NavLabel" FontWeight="SemiBold" />
+            </StackPanel>
+          </Button>
+          
+          <!-- Open File Button -->
+          <Button Grid.Column="1" Classes="SettingsNavItem"
+                  Margin="4,0,0,0"
+                  Click="OnOpenFileClick">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="folder_open" Classes="NavIcon" />
+              <TextBlock Text="Open" Classes="NavLabel" FontWeight="SemiBold" />
+            </StackPanel>
+          </Button>
+        </Grid>
 
         <!-- Scrollable List of Notes -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
@@ -82,23 +99,30 @@
             <ItemsControl ItemsSource="{Binding FilteredNotes}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <StackPanel Spacing="6" />
+                  <StackPanel />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type notes:NoteItem}">
-                  <Button Classes="SettingsNavItem"
-                          Classes.Active="{Binding IsSelected}"
-                          Command="{Binding $parent[UserControl].DataContext.SelectNoteCommand}"
-                          CommandParameter="{Binding}">
-                    <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
-                      <TextBlock Grid.Column="0" Text="{Binding Icon}" Classes="NavIcon" />
-                      <Panel Grid.Column="1">
-                        <TextBlock Text="New Note" Classes="NavLabel" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
-                        <TextBlock Text="{Binding Title}" Classes="NavLabel" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                      </Panel>
-                    </Grid>
-                  </Button>
+                  <StackPanel>
+                    <Button Classes="SettingsNavItem"
+                            HorizontalContentAlignment="Stretch"
+                            Classes.Active="{Binding IsSelected}"
+                            Command="{Binding $parent[UserControl].DataContext.SelectNoteCommand}"
+                            CommandParameter="{Binding}">
+                      <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
+                        <TextBlock Grid.Column="0" Text="{Binding Icon}" Classes="NavIcon" />
+                        <Grid Grid.Column="1" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
+                          <Panel Grid.Row="0">
+                            <TextBlock Text="New Note" Classes="NavLabel" FontStyle="{Binding FontStyle}" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+                            <TextBlock Text="{Binding Title}" Classes="NavLabel" FontStyle="{Binding FontStyle}" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                          </Panel>
+                          <TextBlock Grid.Row="1" Text="{Binding LastModifiedFormatted}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Opacity="0.8" HorizontalAlignment="Left" Margin="12,2,0,0" />
+                        </Grid>
+                      </Grid>
+                    </Button>
+                    <Rectangle Height="1" Fill="{DynamicResource TaskbarBorderBrush}" Margin="12,4,12,4" IsVisible="{Binding ShowDivider}" />
+                  </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>

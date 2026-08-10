@@ -2,8 +2,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Avalonia.Threading;
 using DaisyOS.Core.Helpers;
 
 namespace DaisyOS.Shell.Apps.Notes;
@@ -12,6 +14,8 @@ public class NotesViewModel : INotifyPropertyChanged
 {
     private NoteItem? _selectedNote;
     private string _searchQuery = string.Empty;
+    private readonly string _notesDir;
+    private DispatcherTimer _autosaveTimer;
 
     public ObservableCollection<NoteItem> Notes { get; } = new();
     
@@ -44,6 +48,7 @@ public class NotesViewModel : INotifyPropertyChanged
 
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(HasSelectedNote));
+                FilterNotes(); // Resort list based on new selection
             }
         }
     }
@@ -53,9 +58,13 @@ public class NotesViewModel : INotifyPropertyChanged
     public ICommand AddNoteCommand { get; }
     public ICommand DeleteNoteCommand { get; }
     public ICommand SelectNoteCommand { get; }
+    public ICommand SaveNoteCommand { get; }
 
     public NotesViewModel()
     {
+        _notesDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Notes");
+        Directory.CreateDirectory(_notesDir);
+
         AddNoteCommand = new RelayCommand(_ => AddNote());
         DeleteNoteCommand = new RelayCommand(param =>
         {
@@ -66,6 +75,75 @@ public class NotesViewModel : INotifyPropertyChanged
         {
             if (param is NoteItem note) SelectNote(note);
         });
+        SaveNoteCommand = new RelayCommand(param =>
+        {
+            if (param is NoteItem note) SaveNote(note);
+            else if (SelectedNote != null) SaveNote(SelectedNote);
+        });
+
+        _autosaveTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(5)
+        };
+        _autosaveTimer.Tick += OnAutosaveTick;
+        _autosaveTimer.Start();
+
+        LoadNotes();
+    }
+
+    private void OnAutosaveTick(object? sender, EventArgs e)
+    {
+        foreach (var note in Notes.Where(n => n.IsDirty))
+        {
+            SaveNote(note);
+        }
+    }
+
+    private void LoadNotes()
+    {
+        Notes.Clear();
+        if (Directory.Exists(_notesDir))
+        {
+            var files = Directory.GetFiles(_notesDir, "*.txt");
+            foreach (var file in files)
+            {
+                var content = File.ReadAllText(file);
+                var fileInfo = new FileInfo(file);
+                var note = new NoteItem
+                {
+                    Content = content,
+                    FilePath = file,
+                    LastModified = fileInfo.LastWriteTime,
+                    Icon = "description"
+                };
+                note.IsDirty = false;
+                Notes.Add(note);
+            }
+        }
+        FilterNotes();
+    }
+
+    public void SaveNote(NoteItem note)
+    {
+        if (string.IsNullOrWhiteSpace(note.Content)) return;
+
+        if (string.IsNullOrEmpty(note.FilePath))
+        {
+            string title = note.Title;
+            if (string.IsNullOrWhiteSpace(title)) title = "Untitled";
+            
+            // Clean invalid chars
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                title = title.Replace(c, '_');
+            }
+            
+            string fileName = $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss}_{title}.txt";
+            note.FilePath = Path.Combine(_notesDir, fileName);
+        }
+
+        File.WriteAllText(note.FilePath, note.Content);
+        note.IsDirty = false;
     }
 
     private void SelectNote(NoteItem? note)
@@ -75,14 +153,44 @@ public class NotesViewModel : INotifyPropertyChanged
 
     private void FilterNotes()
     {
-        FilteredNotes.Clear();
-        foreach (var note in Notes)
+        var filtered = Notes.Where(note => 
+            string.IsNullOrWhiteSpace(SearchQuery) || 
+            note.Content.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || 
+            note.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
+            
+        var sorted = filtered
+            .OrderByDescending(n => n.LastModified)
+            .ToList();
+
+        // Check if order is identical to prevent UI thrashing
+        bool identical = FilteredNotes.Count == sorted.Count;
+        if (identical)
         {
-            if (string.IsNullOrWhiteSpace(SearchQuery) || 
-                note.Content.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || 
-                note.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+            for (int i = 0; i < sorted.Count; i++)
             {
+                if (FilteredNotes[i] != sorted[i])
+                {
+                    identical = false;
+                    break;
+                }
+            }
+        }
+
+        if (!identical)
+        {
+            FilteredNotes.Clear();
+            for (int i = 0; i < sorted.Count; i++)
+            {
+                var note = sorted[i];
+                note.ShowDivider = i < sorted.Count - 1;
                 FilteredNotes.Add(note);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < FilteredNotes.Count; i++)
+            {
+                FilteredNotes[i].ShowDivider = i < FilteredNotes.Count - 1;
             }
         }
     }
@@ -97,7 +205,6 @@ public class NotesViewModel : INotifyPropertyChanged
             Icon = "description"
         };
         Notes.Add(note);
-        FilterNotes(); // Refresh filter to include new note
         SelectedNote = note;
         
         NoteCreated?.Invoke(this, EventArgs.Empty);
@@ -107,12 +214,36 @@ public class NotesViewModel : INotifyPropertyChanged
     {
         if (note != null)
         {
+            if (!string.IsNullOrEmpty(note.FilePath) && File.Exists(note.FilePath))
+            {
+                File.Delete(note.FilePath);
+            }
+            
             Notes.Remove(note);
             FilterNotes(); // Refresh filter
             if (SelectedNote == note)
             {
                 SelectedNote = null;
             }
+        }
+    }
+
+    public void InsertExternalNote(string filePath)
+    {
+        if (File.Exists(filePath))
+        {
+            var content = File.ReadAllText(filePath);
+            var fileInfo = new FileInfo(filePath);
+            var note = new NoteItem
+            {
+                Content = content,
+                FilePath = filePath,
+                LastModified = fileInfo.LastWriteTime,
+                Icon = "description"
+            };
+            note.IsDirty = false;
+            Notes.Add(note);
+            SelectedNote = note;
         }
     }
 
