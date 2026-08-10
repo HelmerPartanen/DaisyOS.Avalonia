@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -10,8 +11,25 @@ namespace DaisyOS.Shell.Apps.Notes;
 public class NotesViewModel : INotifyPropertyChanged
 {
     private NoteItem? _selectedNote;
+    private string _searchQuery = string.Empty;
 
     public ObservableCollection<NoteItem> Notes { get; } = new();
+    
+    public ObservableCollection<NoteItem> FilteredNotes { get; } = new();
+
+    public string SearchQuery
+    {
+        get => _searchQuery;
+        set
+        {
+            if (_searchQuery != value)
+            {
+                _searchQuery = value;
+                OnPropertyChanged();
+                FilterNotes();
+            }
+        }
+    }
 
     public NoteItem? SelectedNote
     {
@@ -46,20 +64,40 @@ public class NotesViewModel : INotifyPropertyChanged
         });
         SelectNoteCommand = new RelayCommand(param =>
         {
-            if (param is NoteItem note) SelectedNote = note;
+            if (param is NoteItem note) SelectNote(note);
         });
+    }
+
+    private void SelectNote(NoteItem? note)
+    {
+        SelectedNote = note;
+    }
+
+    private void FilterNotes()
+    {
+        FilteredNotes.Clear();
+        foreach (var note in Notes)
+        {
+            if (string.IsNullOrWhiteSpace(SearchQuery) || 
+                note.Content.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || 
+                note.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+            {
+                FilteredNotes.Add(note);
+            }
+        }
     }
 
     public event EventHandler? NoteCreated;
 
-    public void AddNote(string? title = null, string? content = null)
+    public void AddNote()
     {
         var note = new NoteItem
         {
-            Content = content ?? string.Empty,
+            Content = string.Empty,
             Icon = "description"
         };
         Notes.Add(note);
+        FilterNotes(); // Refresh filter to include new note
         SelectedNote = note;
         
         NoteCreated?.Invoke(this, EventArgs.Empty);
@@ -67,10 +105,14 @@ public class NotesViewModel : INotifyPropertyChanged
 
     public void DeleteNote(NoteItem note)
     {
-        Notes.Remove(note);
-        if (SelectedNote == note)
+        if (note != null)
         {
-            SelectedNote = Notes.FirstOrDefault();
+            Notes.Remove(note);
+            FilterNotes(); // Refresh filter
+            if (SelectedNote == note)
+            {
+                SelectedNote = null;
+            }
         }
     }
 

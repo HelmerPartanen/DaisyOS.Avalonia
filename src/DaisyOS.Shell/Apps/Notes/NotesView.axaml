@@ -2,7 +2,8 @@
     x:Class="DaisyOS.Shell.Apps.Notes.NotesView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:notes="clr-namespace:DaisyOS.Shell.Apps.Notes">
+    xmlns:notes="clr-namespace:DaisyOS.Shell.Apps.Notes"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls">
 
   <UserControl.Styles>
     <!-- Sidebar navigation button layout - 100% identical to Settings app -->
@@ -55,43 +56,55 @@
   <Grid ColumnDefinitions="240,*" Background="{DynamicResource SystemBarMaterialBrush}">
     <!-- Transparent Sidebar Container (matching Settings 240px sidebar) -->
     <Border Grid.Column="0" Background="Transparent" Padding="12,12,8,12">
-      <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Spacing="6">
-          <!-- New Note Button -->
-          <Button Classes="SettingsNavItem"
-                  Command="{Binding AddNoteCommand}">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-              <TextBlock Text="add" Classes="NavIcon" />
-              <TextBlock Text="New Note" Classes="NavLabel" FontWeight="SemiBold" />
-            </StackPanel>
-          </Button>
+      <Grid RowDefinitions="Auto,Auto,*">
+        <!-- Search Bar -->
+        <controls:SearchBar Grid.Row="0"
+                            Text="{Binding SearchQuery, Mode=TwoWay}"
+                            Height="40"
+                            Margin="0,0,0,12"
+                            HorizontalAlignment="Stretch"
+                            CornerRadius="6"
+                            PlaceholderText="Search notes..." />
 
-          <!-- Notes Navigation List -->
-          <ItemsControl ItemsSource="{Binding Notes}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Spacing="6" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate DataType="{x:Type notes:NoteItem}">
-                <Button Classes="SettingsNavItem"
-                        Classes.Active="{Binding IsSelected}"
-                        Command="{Binding $parent[UserControl].DataContext.SelectNoteCommand}"
-                        CommandParameter="{Binding}">
-                  <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
-                    <TextBlock Grid.Column="0" Text="{Binding Icon}" Classes="NavIcon" />
-                    <Panel Grid.Column="1">
-                      <TextBlock Text="New Note" Classes="NavLabel" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
-                      <TextBlock Text="{Binding Title}" Classes="NavLabel" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    </Panel>
-                  </Grid>
-                </Button>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-        </StackPanel>
-      </ScrollViewer>
+        <!-- New Note Button -->
+        <Button Grid.Row="1" Classes="SettingsNavItem"
+                Margin="0,0,0,12"
+                Command="{Binding AddNoteCommand}">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Text="add" Classes="NavIcon" />
+            <TextBlock Text="New Note" Classes="NavLabel" FontWeight="SemiBold" />
+          </StackPanel>
+        </Button>
+
+        <!-- Scrollable List of Notes -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+          <StackPanel Spacing="6">
+            <ItemsControl ItemsSource="{Binding FilteredNotes}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="6" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type notes:NoteItem}">
+                  <Button Classes="SettingsNavItem"
+                          Classes.Active="{Binding IsSelected}"
+                          Command="{Binding $parent[UserControl].DataContext.SelectNoteCommand}"
+                          CommandParameter="{Binding}">
+                    <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
+                      <TextBlock Grid.Column="0" Text="{Binding Icon}" Classes="NavIcon" />
+                      <Panel Grid.Column="1">
+                        <TextBlock Text="New Note" Classes="NavLabel" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+                        <TextBlock Text="{Binding Title}" Classes="NavLabel" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                      </Panel>
+                    </Grid>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
     </Border>
 
     <!-- Divider Line -->
@@ -134,7 +147,6 @@
                    Classes="EditorTextBox"
                    Text="{Binding SelectedNote.Content, Mode=TwoWay}"
                    FontSize="15"
-                   PlaceholderText="Note Title"
                    AcceptsReturn="True"
                    TextWrapping="Wrap"
                    MinHeight="400" />

@@ -57,14 +57,14 @@ public partial class SearchBar : UserControl
 
         if (frame is not null)
         {
-            var borderKey = isFocused ? "AppPrimaryContainerBrush" : "TaskbarBorderBrush";
-            frame.BorderBrush = frame.FindResource(borderKey) as IBrush;
             if (isFocused)
             {
+                frame.BorderBrush = frame.FindResource("AppPrimaryContainerBrush") as IBrush;
                 frame.Background = frame.FindResource("SettingsButtonPressedBrush") as IBrush;
             }
             else
             {
+                frame.ClearValue(Border.BorderBrushProperty);
                 frame.ClearValue(Border.BackgroundProperty);
             }
         }

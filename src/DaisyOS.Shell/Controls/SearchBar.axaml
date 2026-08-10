@@ -5,8 +5,7 @@
   <UserControl.Styles>
     <Style Selector="Border#SearchFrame">
       <Setter Property="Background" Value="{DynamicResource SettingsButtonBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource TaskbarBorderBrush}" />
-      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="UserControl:pointerover Border#SearchFrame">
       <Setter Property="Background" Value="{DynamicResource SettingsButtonHoverBrush}" />
