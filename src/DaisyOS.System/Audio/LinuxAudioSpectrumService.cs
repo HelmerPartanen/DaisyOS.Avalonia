@@ -332,6 +332,20 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
 
         _disposed = true;
         _disposeCts.Cancel();
+
+        // Wait briefly for the background task to observe cancellation before we
+        // dispose the token source. Without this, the background loop can call
+        // _disposeCts.Token.ThrowIfCancellationRequested() after the CTS is disposed
+        // and throw ObjectDisposedException.
+        try
+        {
+            _captureTask?.Wait(TimeSpan.FromSeconds(2));
+        }
+        catch (AggregateException)
+        {
+            // OperationCanceledException wrapped by Task.Wait — expected on cancellation.
+        }
+
         _disposeCts.Dispose();
     }
 }

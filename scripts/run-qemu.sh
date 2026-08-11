@@ -43,7 +43,7 @@ if ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
   exit 1
 fi
 
-latest_iso="$(find "$out_dir" -maxdepth 1 -type f -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -nr | awk 'NR == 1 {print $2}')"
+latest_iso="$(find "$out_dir" -maxdepth 1 -type f -name '*.iso' -printf '%T@ %p\n' 2>/dev/null | sort -nr | sed -n '1s/^[^ ]* //p')"
 
 if [[ -z "${latest_iso:-}" ]]; then
   echo "No ISO found in $out_dir. Run scripts/build-iso.sh first."

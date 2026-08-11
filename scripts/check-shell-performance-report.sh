@@ -7,7 +7,7 @@ report="${1:?Usage: scripts/check-shell-performance-report.sh REPORT}"
 bytes_to_mib() { awk -v value="$1" -v unit="$2" 'BEGIN { if (unit == "GiB") print value * 1024; else if (unit == "MiB") print value; else if (unit == "KiB") print value / 1024; else print value / 1048576 }'; }
 metric_mib() {
   local label="$1" value unit
-  read -r value unit < <(awk -v label="$label" '$0 ~ label { value=$(NF-1); unit=$NF } END { print value, unit }' "$report")
+  read -r value unit < <(awk -v label="$label" '$0 ~ label { value=$(NF-1); unit=$NF } END { print value, unit }' "$report") || true
   [[ -n "${value:-}" ]] || { echo "Report does not contain $label" >&2; exit 2; }
   bytes_to_mib "$value" "$unit"
 }

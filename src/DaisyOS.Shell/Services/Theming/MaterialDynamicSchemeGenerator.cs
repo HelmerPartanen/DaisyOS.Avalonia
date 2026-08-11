@@ -90,16 +90,6 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
         (byte)(color >> 8),
         (byte)color);
 
-    private static Color MuteAccent(Color color)
-    {
-        var luminance = 0.2126 * color.R + 0.7152 * color.G + 0.0722 * color.B;
-        const double retainedChroma = 0.35;
-
-        byte Blend(byte channel) => (byte)Math.Round(luminance + ((channel - luminance) * retainedChroma));
-
-        return Color.FromArgb(color.A, Blend(color.R), Blend(color.G), Blend(color.B));
-    }
-
     private static Color Blend(Color baseColor, Color accentColor, double accentWeight)
     {
         byte Channel(byte baseChannel, byte accentChannel) =>

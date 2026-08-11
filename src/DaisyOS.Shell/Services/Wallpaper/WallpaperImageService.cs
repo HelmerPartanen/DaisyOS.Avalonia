@@ -85,13 +85,13 @@ public sealed class WallpaperImageService : IAsyncDisposable
     /// <summary>
     /// Global cache of decoded source bitmaps keyed by file path.
     /// The decoded bitmap is the full-resolution image as loaded from disk.
+    /// Bounded to the 3 most-recently loaded paths to prevent unbounded RAM growth;
+    /// each full-resolution wallpaper Bitmap can be 30–60 MB in memory.
     /// </summary>
     private static readonly ConcurrentDictionary<string, Bitmap?> s_sourceBitmapCache = new();
 
-    /// <summary>
-    /// Semaphore to prevent duplicate simultaneous loads for the same wallpaper path.
-    /// </summary>
-    private static readonly SemaphoreSlim s_loadSemaphore = new(1, 1);
+    /// <summary>Insertion order used to enforce the source-cache bound.</summary>
+    private static readonly Queue<string> s_sourceCacheOrder = new();
 
     /// <summary>
     /// Currently cached pre-rendered bitmap assigned to the Image control.
@@ -313,38 +313,63 @@ public sealed class WallpaperImageService : IAsyncDisposable
     /// </summary>
     private static async Task<Bitmap?> LoadSourceBitmapAsync(string path, CancellationToken cancellationToken)
     {
-        // Use GetOrAdd for atomic cache insertion
-        // The value factory is only called if the key doesn't exist
+        // Return early from cache without Task.Run allocation cost.
+        if (s_sourceBitmapCache.TryGetValue(path, out var cached))
+        {
+            return cached;
+        }
+
         return await Task.Run(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            return s_sourceBitmapCache.GetOrAdd(path, p =>
+            // Double-check inside Task.Run to avoid duplicate decode races.
+            if (s_sourceBitmapCache.TryGetValue(path, out var existing))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                return existing;
+            }
 
-                try
+            Bitmap? loaded;
+            try
+            {
+                if (path.StartsWith("avares://", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (p.StartsWith("avares://", StringComparison.OrdinalIgnoreCase))
+                    var uri = new Uri(path);
+                    using var stream = AssetLoader.Open(uri);
+                    loaded = new Bitmap(stream);
+                }
+                else if (File.Exists(path))
+                {
+                    loaded = new Bitmap(path);
+                }
+                else
+                {
+                    loaded = null;
+                }
+            }
+            catch
+            {
+                loaded = null;
+            }
+
+            s_sourceBitmapCache[path] = loaded;
+
+            // Enforce the cache bound: keep only the 3 most-recently used paths.
+            lock (s_sourceCacheOrder)
+            {
+                s_sourceCacheOrder.Enqueue(path);
+                const int MaxCachedSources = 3;
+                while (s_sourceCacheOrder.Count > MaxCachedSources)
+                {
+                    var evictKey = s_sourceCacheOrder.Dequeue();
+                    if (s_sourceBitmapCache.TryRemove(evictKey, out var evicted))
                     {
-                        var uri = new Uri(p);
-                        using var stream = AssetLoader.Open(uri);
-                        return new Bitmap(stream);
-                    }
-                    else if (File.Exists(p))
-                    {
-                        return new Bitmap(p);
-                    }
-                    else
-                    {
-                        return null;
+                        evicted?.Dispose();
                     }
                 }
-                catch
-                {
-                    return null;
-                }
-            });
+            }
+
+            return loaded;
         }, cancellationToken).ConfigureAwait(false);
     }
 

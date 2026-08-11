@@ -150,6 +150,8 @@ cat >&3 <<EOF
 Summary: ${failures} required failure(s), ${warnings} warning(s).
 EOF
 
+exec 3>&-
+
 if [[ -n "$output_path" ]]; then
   echo "Compositor session report written to $output_path"
 fi

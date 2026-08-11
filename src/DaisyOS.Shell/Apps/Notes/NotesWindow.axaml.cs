@@ -14,6 +14,12 @@ public partial class NotesWindow : Window
         DataContext = new NotesViewModel();
     }
 
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        (DataContext as NotesViewModel)?.Dispose();
+    }
+
     private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.Source is Visual source &&

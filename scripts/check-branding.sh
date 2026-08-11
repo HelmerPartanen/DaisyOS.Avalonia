@@ -29,13 +29,17 @@ for file in "${required_files[@]}"; do
   fi
 done
 
-if rg -n --hidden \
-    -g '!**/.git/**' -g '!**/bin/**' -g '!**/obj/**' \
-    -g '!docs/branding.md' \
-    -g '!scripts/check-branding.sh' \
-    'DottOS|dottos|DOTTOS|DottOs' "$repo_root"; then
-  echo "Legacy product branding remains in the repository."
-  exit 1
+if command -v rg >/dev/null 2>&1; then
+  if rg -n --hidden \
+      -g '!**/.git/**' -g '!**/bin/**' -g '!**/obj/**' \
+      -g '!docs/branding.md' \
+      -g '!scripts/check-branding.sh' \
+      'DottOS|dottos|DOTTOS|DottOs' "$repo_root"; then
+    echo "Legacy product branding remains in the repository."
+    exit 1
+  fi
+else
+  echo "rg (ripgrep) is unavailable; legacy-branding text search was skipped."
 fi
 
 grep -Fq 'iso_name="DaisyOS"' "$repo_root/os/archiso/DaisyOS/profiledef.sh"

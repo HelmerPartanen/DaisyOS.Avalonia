@@ -72,7 +72,7 @@ done
 iso_path="${iso_path:-}"
 if [[ -z "$iso_path" ]]; then
   iso_path="$(find "$out_dir" -maxdepth 1 -type f -name '*.iso' -printf '%T@ %p\n' 2>/dev/null \
-    | sort -nr | awk 'NR == 1 {print $2}')"
+    | sort -nr | sed -n '1s/^[^ ]* //p')"
 fi
 if [[ -z "$iso_path" || ! -f "$iso_path" ]]; then
   echo "No ISO was found. Build one with sudo scripts/build-iso.sh first."

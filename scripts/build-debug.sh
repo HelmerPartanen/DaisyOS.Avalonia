@@ -24,7 +24,7 @@ properties=(
   "-p:DaisyOSSourceRevision=$revision"
 )
 
-dotnet restore
+dotnet restore "${properties[@]}"
 dotnet build --configuration Debug --no-restore "${properties[@]}"
 dotnet test --configuration Debug --no-build "${properties[@]}"
 

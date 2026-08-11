@@ -10,7 +10,7 @@ using DaisyOS.Core.Helpers;
 
 namespace DaisyOS.Shell.Apps.Notes;
 
-public class NotesViewModel : INotifyPropertyChanged
+public class NotesViewModel : INotifyPropertyChanged, IDisposable
 {
     private NoteItem? _selectedNote;
     private string _searchQuery = string.Empty;
@@ -132,17 +132,24 @@ public class NotesViewModel : INotifyPropertyChanged
             var files = Directory.GetFiles(_notesDir, "*.txt");
             foreach (var file in files)
             {
-                var content = File.ReadAllText(file);
-                var fileInfo = new FileInfo(file);
-                var note = new NoteItem
+                try
                 {
-                    Content = content,
-                    FilePath = file,
-                    LastModified = fileInfo.LastWriteTime,
-                    Icon = "description"
-                };
-                note.IsDirty = false;
-                Notes.Add(note);
+                    var content = File.ReadAllText(file);
+                    var fileInfo = new FileInfo(file);
+                    var note = new NoteItem
+                    {
+                        Content = content,
+                        FilePath = file,
+                        LastModified = fileInfo.LastWriteTime,
+                        Icon = "description"
+                    };
+                    note.IsDirty = false;
+                    Notes.Add(note);
+                }
+                catch (IOException)
+                {
+                    // Skip files that cannot be read (locked, permission denied, etc.).
+                }
             }
         }
         FilterNotes();
@@ -167,8 +174,15 @@ public class NotesViewModel : INotifyPropertyChanged
             note.FilePath = Path.Combine(_notesDir, fileName);
         }
 
-        File.WriteAllText(note.FilePath, note.Content);
-        note.IsDirty = false;
+        try
+        {
+            File.WriteAllText(note.FilePath, note.Content);
+            note.IsDirty = false;
+        }
+        catch (IOException)
+        {
+            // Leave IsDirty = true so the next autosave tick retries.
+        }
     }
 
     private void SelectNote(NoteItem? note)
@@ -239,7 +253,14 @@ public class NotesViewModel : INotifyPropertyChanged
         {
             if (!string.IsNullOrEmpty(note.FilePath) && File.Exists(note.FilePath))
             {
-                File.Delete(note.FilePath);
+                try
+                {
+                    File.Delete(note.FilePath);
+                }
+                catch (IOException)
+                {
+                    // Ignore deletion errors — the note is removed from the UI regardless.
+                }
             }
             
             Notes.Remove(note);
@@ -253,7 +274,12 @@ public class NotesViewModel : INotifyPropertyChanged
 
     public void InsertExternalNote(string filePath)
     {
-        if (File.Exists(filePath))
+        if (!File.Exists(filePath))
+        {
+            return;
+        }
+
+        try
         {
             var content = File.ReadAllText(filePath);
             var fileInfo = new FileInfo(filePath);
@@ -267,6 +293,26 @@ public class NotesViewModel : INotifyPropertyChanged
             note.IsDirty = false;
             Notes.Add(note);
             SelectedNote = note;
+        }
+        catch (IOException)
+        {
+            // Silently skip files that cannot be read.
+        }
+    }
+
+    /// <summary>
+    /// Flushes any unsaved notes and stops the autosave timer.
+    /// Called by <see cref="NotesWindow"/> when the window is closed.
+    /// </summary>
+    public void Dispose()
+    {
+        _autosaveTimer.Stop();
+        _autosaveTimer.Tick -= OnAutosaveTick;
+
+        // Final save pass so no work is lost on close.
+        foreach (var note in Notes.Where(n => n.IsDirty))
+        {
+            SaveNote(note);
         }
     }
 

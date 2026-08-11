@@ -1,11 +1,11 @@
+using System.Text.RegularExpressions;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
 using DaisyOS.System.Processes;
-using System.Text.RegularExpressions;
 
 namespace DaisyOS.System.Bluetooth;
 
-public sealed class LinuxBluetoothService : IBluetoothService
+public sealed partial class LinuxBluetoothService : IBluetoothService
 {
     private static readonly TimeSpan CommandTimeout = TimeSpan.FromSeconds(5);
     private readonly ICommandRunner _commandRunner;
@@ -50,33 +50,42 @@ public sealed class LinuxBluetoothService : IBluetoothService
             {
                 var lines = resultDevices.StandardOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 var seenAddresses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                // Collect the unique (address, name) pairs first.
+                var deviceEntries = new List<(string Address, string Name)>();
                 foreach (var line in lines)
                 {
-                    var match = Regex.Match(line, @"^Device\s+([0-9A-Fa-f:]{17})\s+(.+)$");
+                    var match = DeviceLineRegex().Match(line);
                     if (match.Success && seenAddresses.Add(match.Groups[1].Value))
                     {
-                        var address = match.Groups[1].Value;
-                        var name = match.Groups[2].Value;
-
-                        var isConnected = false;
-                        var isPaired = false;
-                        var type = "Unknown";
-
-                        var resultInfo = await _commandRunner.RunAsync(
-                            "bluetoothctl",
-                            ["info", address],
-                            TimeSpan.FromSeconds(2),
-                            cancellationToken);
-
-                        if (resultInfo.Succeeded)
-                        {
-                            isConnected = resultInfo.StandardOutput.Contains("Connected: yes", StringComparison.OrdinalIgnoreCase);
-                            isPaired = resultInfo.StandardOutput.Contains("Paired: yes", StringComparison.OrdinalIgnoreCase);
-                            type = ParseDeviceType(resultInfo.StandardOutput);
-                        }
-
-                        devices.Add(new BluetoothDevice(address, name, isConnected, isPaired, type));
+                        deviceEntries.Add((match.Groups[1].Value, match.Groups[2].Value));
                     }
+                }
+
+                // Fetch all device info concurrently instead of sequentially — avoids
+                // N × (50–150 ms) stall when many devices are paired.
+                var infoTasks = deviceEntries.Select(entry =>
+                    _commandRunner.RunAsync("bluetoothctl", ["info", entry.Address], TimeSpan.FromSeconds(2), cancellationToken));
+
+                var infoResults = await Task.WhenAll(infoTasks);
+
+                for (var i = 0; i < deviceEntries.Count; i++)
+                {
+                    var (address, name) = deviceEntries[i];
+                    var resultInfo = infoResults[i];
+
+                    var isConnected = false;
+                    var isPaired = false;
+                    var type = "Unknown";
+
+                    if (resultInfo.Succeeded)
+                    {
+                        isConnected = resultInfo.StandardOutput.Contains("Connected: yes", StringComparison.OrdinalIgnoreCase);
+                        isPaired = resultInfo.StandardOutput.Contains("Paired: yes", StringComparison.OrdinalIgnoreCase);
+                        type = ParseDeviceType(resultInfo.StandardOutput);
+                    }
+
+                    devices.Add(new BluetoothDevice(address, name, isConnected, isPaired, type));
                 }
             }
             else
@@ -148,4 +157,7 @@ public sealed class LinuxBluetoothService : IBluetoothService
             ? $"{operation} failed."
             : $"{operation} failed: {error}";
     }
+
+    [GeneratedRegex(@"^Device\s+([0-9A-Fa-f:]{17})\s+(.+)$")]
+    private static partial Regex DeviceLineRegex();
 }

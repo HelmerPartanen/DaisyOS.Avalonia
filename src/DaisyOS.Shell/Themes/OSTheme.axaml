@@ -130,15 +130,15 @@
 
       <!-- Tune these independent of wallpaper-derived active quick-setting colors. -->
       <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
-                       Color="#26000000"/>
+                       Color="#14FFFFFF"/>
       <SolidColorBrush x:Key="QuickSettingForegroundBrush"
                        Color="#FFF3F3F3"/>
       <SolidColorBrush x:Key="QuickSettingHoverBrush"
-                       Color="#14FFFFFF"/>
+                       Color="#26FFFFFF"/>
       <SolidColorBrush x:Key="QuickSettingPressedBrush"
-                       Color="#22FFFFFF"/>
+                       Color="#33FFFFFF"/>
       <SolidColorBrush x:Key="QuickSettingInactiveDividerBrush"
-                       Color="#1AFFFFFF"/>
+                       Color="#26FFFFFF"/>
 
       <SolidColorBrush x:Key="LauncherItemHoverBrush"
                        Color="#14FFFFFF"/>

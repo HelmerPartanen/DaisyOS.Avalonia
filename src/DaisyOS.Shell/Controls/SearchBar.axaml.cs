@@ -52,13 +52,7 @@ public partial class SearchBar : UserControl
 
     private void SetFocusVisualState(bool isFocused)
     {
-        var frame = this.FindControl<Border>("SearchFrame");
         var outline = this.FindControl<Border>("FocusOutline");
-
-        if (frame is not null)
-        {
-            // The inner frame keeps its default styling and no longer updates its border or background on focus.
-        }
 
         if (outline is not null)
         {

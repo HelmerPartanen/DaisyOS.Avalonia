@@ -149,18 +149,12 @@ public sealed class LinuxGamingService : IGamingService
         return (true, driver);
     }
 
-    private async Task<bool> CheckAnyFileAsync(IReadOnlyList<string> paths, CancellationToken ct)
+    private static Task<bool> CheckAnyFileAsync(IReadOnlyList<string> paths, CancellationToken ct)
     {
-        foreach (var path in paths)
-        {
-            var result = await _runner.RunAsync("test", ["-e", path], DefaultTimeout, ct);
-            if (result.Succeeded)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        // File.Exists is semantically equivalent to `test -e` for regular files and is
+        // orders of magnitude faster than spawning a child process per path.
+        _ = ct; // cancellation not needed for synchronous filesystem check
+        return Task.FromResult(paths.Any(File.Exists));
     }
 
     private async Task<(bool Available, bool Running)> CheckBluetoothServiceAsync(CancellationToken ct)

@@ -43,7 +43,7 @@ public sealed class SafeProcessLauncher
 
         try
         {
-            var process = Process.Start(startInfo);
+            using var process = Process.Start(startInfo);
             return new AppLaunchResult(true, "Launch requested.", process?.Id);
         }
         catch (Exception ex) when (ex is InvalidOperationException or Win32Exception)

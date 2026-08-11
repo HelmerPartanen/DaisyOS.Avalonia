@@ -73,8 +73,6 @@ public class DesktopReorderPanel : Panel
 
         foreach (var child in Children)
         {
-            ItemMotionAnimator.Attach(child, DesktopMotionSettings.Default.ReorderAnimationDuration);
-
             if (child.DataContext is DesktopItemViewModel item)
             {
                 var cell = ViewModel.GetPreviewCell(item.Id);
