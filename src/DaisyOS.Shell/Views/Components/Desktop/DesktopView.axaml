@@ -17,7 +17,7 @@
     <!-- Wallpaper -->
     <Image
         x:Name="WallpaperImage"
-        Source="avares://DaisyOS.Shell/Assets/Wallpapers/Sequoia.jpg"
+        Source="avares://DaisyOS.Shell/Assets/Wallpapers/Dusk.png"
         Stretch="UniformToFill"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"

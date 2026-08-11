@@ -147,11 +147,7 @@ public partial class MediaWidget : UserControl
         image.IsVisible = _artwork is not null;
         fallback.IsVisible = _artwork is null;
 
-        var tintLayer = this.FindControl<Border>("ArtworkTint")!;
-        tintLayer.Background = _artworkTint is { } color
-            ? new SolidColorBrush(Color.FromArgb(128, color.R, color.G, color.B))
-            : Brushes.Transparent;
-        ApplyArtworkAccent();
+        UpdateTintLayer();
     }
 
     private void UpdateSpectrumCaptureState()
@@ -212,8 +208,25 @@ public partial class MediaWidget : UserControl
         }
     }
 
-    private void OnThemeVariantChanged(object? sender, EventArgs e) =>
-        ApplyArtworkAccent();
+    private void OnThemeVariantChanged(object? sender, EventArgs e)
+    {
+        UpdateTintLayer();
+    }
+
+    private void UpdateTintLayer()
+    {
+        var tintLayer = this.FindControl<Border>("ArtworkTint")!;
+        if (_artworkTint is { } color)
+        {
+            var isLightMode = ActualThemeVariant == Avalonia.Styling.ThemeVariant.Light;
+            byte alpha = isLightMode ? (byte)40 : (byte)128;
+            tintLayer.Background = new SolidColorBrush(Color.FromArgb(alpha, color.R, color.G, color.B));
+        }
+        else
+        {
+            tintLayer.Background = Brushes.Transparent;
+        }
+    }
 
     private Border CreateSpectrumBar(double idleScale)
     {
@@ -237,8 +250,7 @@ public partial class MediaWidget : UserControl
             }
         };
 
-        var secondaryBrush = this.FindResource("TextSecondaryBrush") as IBrush ?? new SolidColorBrush(Color.FromRgb(87, 96, 106));
-        bar.Background = secondaryBrush;
+        bar.Classes.Add("spectrumBar");
         return bar;
     }
 
@@ -285,39 +297,15 @@ public partial class MediaWidget : UserControl
 
         _spectrumIsIdle = true;
     }
-
+    
     private async Task<Color> ExtractArtworkTintAsync(byte[] bytes, CancellationToken cancellationToken)
     {
         await using var stream = new MemoryStream(bytes, writable: false);
         return await _colorExtractor.ExtractSeedAsync(stream, cancellationToken);
     }
 
-    private void ApplyArtworkAccent()
-    {
-        var primaryText = GetResourceColor("TextPrimaryBrush", Colors.Black);
-        var secondaryBrush = this.FindResource("TextSecondaryBrush") as IBrush ?? new SolidColorBrush(Color.FromRgb(87, 96, 106));
-        var controlAccent = _artworkTint is { } tint
-            ? new SolidColorBrush(Blend(tint, primaryText, 0.68))
-            : secondaryBrush;
-
-        this.FindControl<TextBlock>("PreviousGlyph")!.Foreground = controlAccent;
-        this.FindControl<TextBlock>("PlayPauseGlyph")!.Foreground = controlAccent;
-        this.FindControl<TextBlock>("NextGlyph")!.Foreground = controlAccent;
-        foreach (var bar in _spectrumBars)
-        {
-            bar.Background = controlAccent;
-        }
-    }
-
     private Color GetResourceColor(string key, Color fallback) =>
         this.FindResource(key) is ISolidColorBrush brush ? brush.Color : fallback;
-
-    private static Color Blend(Color artworkTint, Color textColor, double textWeight) =>
-        Color.FromArgb(
-            255,
-            (byte)Math.Round(artworkTint.R + ((textColor.R - artworkTint.R) * textWeight)),
-            (byte)Math.Round(artworkTint.G + ((textColor.G - artworkTint.G) * textWeight)),
-            (byte)Math.Round(artworkTint.B + ((textColor.B - artworkTint.B) * textWeight)));
 
     private static async Task<(Bitmap Bitmap, byte[] Bytes)?> LoadArtworkAsync(string? path, CancellationToken cancellationToken)
     {

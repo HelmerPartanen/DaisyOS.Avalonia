@@ -7,6 +7,12 @@
     HorizontalAlignment="Left"
     VerticalAlignment="Bottom"
     Margin="4">
+  <UserControl.Styles>
+    <Style Selector="Border.spectrumBar">
+      <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Opacity" Value="0.8" />
+    </Style>
+  </UserControl.Styles>
   <Border x:Name="MediaFrame"
           Height="52"
           Background="{DynamicResource SystemBarMaterialBrush}"
@@ -44,13 +50,13 @@
 
       <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="0" VerticalAlignment="Center" HorizontalAlignment="Center">
         <Button Classes="ShellButton" Width="40" Height="40" Click="OnPreviousClicked" ToolTip.Tip="Previous track">
-          <TextBlock x:Name="PreviousGlyph" Text="skip_previous" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" FontSize="18" Foreground="{DynamicResource TextSecondaryBrush}"/>
+          <TextBlock x:Name="PreviousGlyph" Text="skip_previous" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" FontSize="18" Foreground="{DynamicResource TextPrimaryBrush}" Opacity="0.8"/>
         </Button>
         <Button x:Name="PlayPauseButton" Classes="ShellButton" Width="40" Height="40" Click="OnPlayPauseClicked" ToolTip.Tip="Play">
-          <TextBlock x:Name="PlayPauseGlyph" Text="play_arrow" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" FontSize="18" Foreground="{DynamicResource TextSecondaryBrush}"/>
+          <TextBlock x:Name="PlayPauseGlyph" Text="play_arrow" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" FontSize="18" Foreground="{DynamicResource TextPrimaryBrush}" Opacity="0.8"/>
         </Button>
         <Button Classes="ShellButton" Width="40" Height="40" Click="OnNextClicked" ToolTip.Tip="Next track">
-          <TextBlock x:Name="NextGlyph" Text="skip_next" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" FontSize="18" Foreground="{DynamicResource TextSecondaryBrush}"/>
+          <TextBlock x:Name="NextGlyph" Text="skip_next" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" FontSize="18" Foreground="{DynamicResource TextPrimaryBrush}" Opacity="0.8"/>
         </Button>
       </StackPanel>
 

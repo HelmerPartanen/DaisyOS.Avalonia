@@ -54,7 +54,7 @@
       <Button x:Name="StartButton" Classes="ShellButton TaskbarApp" ToolTip.Tip="Start Menu">
         <Border Background="Transparent" CornerRadius="8">
           <!-- The favicon uses currentColor, allowing it to follow the dynamic primary role. -->
-          <svg:Svg Width="22" Height="22"
+          <svg:Svg Width="26" Height="26"
                    Path="avares://DaisyOS.Shell/Assets/Brand/favicon.svg"
                    CurrentColor="{DynamicResource AppPrimaryColor}"
                    Stretch="Uniform"/>
@@ -66,21 +66,21 @@
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="notes" ToolTip.Tip="Notes">
           <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/NotesIcon.png"
                  RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="24" Height="24" IsHitTestVisible="False">
+                 Width="26" Height="26" IsHitTestVisible="False">
           </Image>
         </Button>
 
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="settings" ToolTip.Tip="Settings">
           <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
                  RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="24" Height="24" IsHitTestVisible="False">
+                 Width="26" Height="26" IsHitTestVisible="False">
           </Image>
         </Button>
 
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="files" ToolTip.Tip="Files">
           <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
                  RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="24" Height="24" IsHitTestVisible="False">
+                 Width="26" Height="26" IsHitTestVisible="False">
           </Image>
         </Button>
       </Canvas>
