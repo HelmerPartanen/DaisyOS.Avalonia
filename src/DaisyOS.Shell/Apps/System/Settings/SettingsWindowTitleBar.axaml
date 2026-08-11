@@ -60,7 +60,7 @@
                RenderOptions.BitmapInterpolationMode="HighQuality"
                IsHitTestVisible="False" />
         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=local:SettingsWindowTitleBar}}"
-                   FontSize="13" FontWeight="Regular" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                   FontSize="13" FontWeight="Medium" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
       </StackPanel>
 
       <controls:SearchBar Grid.Column="1"

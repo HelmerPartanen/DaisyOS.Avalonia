@@ -10,7 +10,7 @@
   <UserControl.Styles>
     <Style Selector="Border.spectrumBar">
       <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}" />
-      <Setter Property="Opacity" Value="0.8" />
+      <Setter Property="Opacity" Value="0.6" />
     </Style>
   </UserControl.Styles>
   <Border x:Name="MediaFrame"

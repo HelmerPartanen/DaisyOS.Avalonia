@@ -58,7 +58,7 @@
                RenderOptions.BitmapInterpolationMode="HighQuality"
                Width="20" Height="20" IsHitTestVisible="False" />
         <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=local:NotesWindowTitleBar}}"
-                   FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                   FontSize="13" FontWeight="Medium" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
       </StackPanel>
 
       <StackPanel Grid.Column="2" Orientation="Horizontal">
