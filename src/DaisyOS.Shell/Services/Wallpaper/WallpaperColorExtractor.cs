@@ -238,10 +238,24 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         if (bestBucket != -1)
         {
             double totalWeight = bucketWeight[bestBucket];
-            primarySeed = Color.FromRgb(
-                (byte)Math.Clamp(bucketRed[bestBucket] / totalWeight, 0, 255),
-                (byte)Math.Clamp(bucketGreen[bestBucket] / totalWeight, 0, 255),
-                (byte)Math.Clamp(bucketBlue[bestBucket] / totalWeight, 0, 255));
+            byte r = (byte)Math.Clamp(bucketRed[bestBucket] / totalWeight, 0, 255);
+            byte g = (byte)Math.Clamp(bucketGreen[bestBucket] / totalWeight, 0, 255);
+            byte b = (byte)Math.Clamp(bucketBlue[bestBucket] / totalWeight, 0, 255);
+            
+            var skColor = new SKColor(r, g, b);
+            skColor.ToHsv(out float h, out float s, out float v);
+            
+            // Enforce a minimum brightness so active buttons don't become too dark
+            if (v < 50f)
+            {
+                v = 50f;
+                skColor = SKColor.FromHsv(h, s, v);
+                r = skColor.Red;
+                g = skColor.Green;
+                b = skColor.Blue;
+            }
+            
+            primarySeed = Color.FromRgb(r, g, b);
         }
         
         Color surfaceTint = FallbackPalette.SurfaceTint;
