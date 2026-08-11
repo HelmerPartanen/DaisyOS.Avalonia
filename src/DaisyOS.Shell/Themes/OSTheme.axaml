@@ -51,13 +51,13 @@
                        Color="#22000000"/>
 
       <SolidColorBrush x:Key="TextPrimaryBrush"
-                       Color="#FF1F2328"/>
+                       Color="#FF1C1C1C"/>
 
       <SolidColorBrush x:Key="TextSecondaryBrush"
-                       Color="#FF57606A"/>
+                       Color="#CC1C1C1C"/>
 
       <SolidColorBrush x:Key="TextTertiaryBrush"
-                       Color="#FF8C959F"/>
+                       Color="#991C1C1C"/>
 
       <!-- Inactive quick-setting tiles are OS chrome in Light mode -->
       <SolidColorBrush x:Key="QuickSettingBackgroundBrush"
@@ -82,7 +82,9 @@
                        Color="#F4F5F8"/>
 
       <SolidColorBrush x:Key="SearchBarBackgroundBrush"
-                       Color="#FFFFFF"/>
+                       Color="#0A000000"/>
+      <SolidColorBrush x:Key="SearchBarHoverBrush"
+                       Color="#12000000"/>
 
       <!-- Settings buttons theme brushes -->
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush"
@@ -150,6 +152,8 @@
 
       <SolidColorBrush x:Key="SearchBarBackgroundBrush"
                        Color="#0DFFFFFF"/>
+      <SolidColorBrush x:Key="SearchBarHoverBrush"
+                       Color="#1AFFFFFF"/>
 
       <!-- Settings buttons theme brushes -->
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush"

@@ -17,7 +17,7 @@
     PointerPressed="OnWindowPointerPressed">
   <Grid>
     <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
-    <Border Background="{DynamicResource TaskbarBorderBrush}"
+    <Border Background="{DynamicResource ShellSurfaceBorderBrush}"
             Padding="1"
             CornerRadius="12">
       <Border Background="{DynamicResource SystemBarMaterialBrush}"

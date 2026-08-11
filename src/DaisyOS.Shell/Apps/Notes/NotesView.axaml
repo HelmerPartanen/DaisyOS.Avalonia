@@ -146,7 +146,7 @@
                         <TextBlock Text="keep" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="14" Foreground="{DynamicResource AppPrimaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" IsVisible="{Binding IsPinned}" />
                       </Grid>
                     </Button>
-                    <Rectangle Height="1" Fill="{DynamicResource TaskbarBorderBrush}" Margin="12,4,12,4" IsVisible="{Binding ShowDivider}" />
+                    <Rectangle Height="1" Fill="{DynamicResource ShellSurfaceBorderBrush}" Margin="12,4,12,4" IsVisible="{Binding ShowDivider}" />
                   </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -161,7 +161,7 @@
                HorizontalAlignment="Right" 
                VerticalAlignment="Stretch"
                Width="1" 
-               Fill="{DynamicResource TaskbarBorderBrush}" 
+               Fill="{DynamicResource ShellSurfaceBorderBrush}" 
                Margin="0,0,0,44" />
 
     <!-- Main Content Area -->

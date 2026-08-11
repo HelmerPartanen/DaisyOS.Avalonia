@@ -4,11 +4,11 @@
              x:Class="DaisyOS.Shell.Controls.SearchBar">
   <UserControl.Styles>
     <Style Selector="Border#SearchFrame">
-      <Setter Property="Background" Value="{DynamicResource SettingsButtonBackgroundBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SearchBarBackgroundBrush}" />
       <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="UserControl:pointerover Border#SearchFrame">
-      <Setter Property="Background" Value="{DynamicResource SettingsButtonHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SearchBarHoverBrush}" />
     </Style>
   </UserControl.Styles>
   <Grid ClipToBounds="False">

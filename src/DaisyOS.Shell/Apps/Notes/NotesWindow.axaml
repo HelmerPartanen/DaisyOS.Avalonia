@@ -17,7 +17,7 @@
     PointerPressed="OnWindowPointerPressed">
   <Grid>
     <!-- Frame border and rounded clipping container -->
-    <Border Background="{DynamicResource TaskbarBorderBrush}"
+    <Border Background="{DynamicResource ShellSurfaceBorderBrush}"
             Padding="1"
             CornerRadius="12">
       <Border Background="{DynamicResource SystemBarMaterialBrush}"
