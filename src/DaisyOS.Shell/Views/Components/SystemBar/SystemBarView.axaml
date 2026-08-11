@@ -61,7 +61,7 @@
       <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
     <Style Selector="TextBlock.QuickSettingLabel.Active">
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton">
       <Setter Property="Width" Value="40"/>

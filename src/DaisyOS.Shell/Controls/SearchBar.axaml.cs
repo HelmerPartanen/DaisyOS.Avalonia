@@ -57,16 +57,7 @@ public partial class SearchBar : UserControl
 
         if (frame is not null)
         {
-            if (isFocused)
-            {
-                frame.BorderBrush = frame.FindResource("AppPrimaryContainerBrush") as IBrush;
-                frame.Background = frame.FindResource("SettingsButtonPressedBrush") as IBrush;
-            }
-            else
-            {
-                frame.ClearValue(Border.BorderBrushProperty);
-                frame.ClearValue(Border.BackgroundProperty);
-            }
+            // The inner frame keeps its default styling and no longer updates its border or background on focus.
         }
 
         if (outline is not null)
