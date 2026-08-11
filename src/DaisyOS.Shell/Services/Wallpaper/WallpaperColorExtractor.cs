@@ -12,21 +12,21 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
 {
     private const int MaxSampleEdge = 64;
 
-    public static readonly Color FallbackSeed = Color.Parse("#6750A4");
+    public static readonly WallpaperPalette FallbackPalette = new(Color.Parse("#6750A4"), Color.Parse("#6750A4"));
 
-    private static readonly ConcurrentDictionary<string, Color> s_assetSeedCache = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly ConcurrentDictionary<string, (DateTime lastWrite, long fileSize, Color seed)> s_fileSeedCache = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly ConcurrentDictionary<string, WallpaperPalette> s_assetSeedCache = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly ConcurrentDictionary<string, (DateTime lastWrite, long fileSize, WallpaperPalette palette)> s_fileSeedCache = new(StringComparer.OrdinalIgnoreCase);
 
-    public async Task<Color> ExtractSeedAsync(string wallpaperUri, CancellationToken cancellationToken = default)
+    public async Task<WallpaperPalette> ExtractPaletteAsync(string wallpaperUri, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(wallpaperUri))
         {
-            return FallbackSeed;
+            return FallbackPalette;
         }
 
-        if (TryGetCachedSeed(wallpaperUri, out var cachedSeed))
+        if (TryGetCachedPalette(wallpaperUri, out var cachedPalette))
         {
-            return cachedSeed;
+            return cachedPalette;
         }
 
         try
@@ -35,9 +35,9 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 using var stream = OpenWallpaper(wallpaperUri);
-                var seed = ExtractSeed(stream, cancellationToken);
-                CacheSeed(wallpaperUri, seed);
-                return seed;
+                var palette = ExtractPalette(stream, cancellationToken);
+                CachePalette(wallpaperUri, palette);
+                return palette;
             }, cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
@@ -46,16 +46,16 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         }
         catch
         {
-            return FallbackSeed;
+            return FallbackPalette;
         }
     }
 
     /// <summary>Applies the wallpaper sampler to arbitrary image data, including album artwork.</summary>
-    public async Task<Color> ExtractSeedAsync(Stream imageStream, CancellationToken cancellationToken = default)
+    public async Task<WallpaperPalette> ExtractPaletteAsync(Stream imageStream, CancellationToken cancellationToken = default)
     {
         try
         {
-            return await Task.Run(() => ExtractSeed(imageStream, cancellationToken), cancellationToken)
+            return await Task.Run(() => ExtractPalette(imageStream, cancellationToken), cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (OperationCanceledException)
@@ -64,15 +64,15 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         }
         catch
         {
-            return FallbackSeed;
+            return FallbackPalette;
         }
     }
 
-    private static bool TryGetCachedSeed(string wallpaperUri, out Color seed)
+    private static bool TryGetCachedPalette(string wallpaperUri, out WallpaperPalette palette)
     {
         if (wallpaperUri.StartsWith("avares://", StringComparison.OrdinalIgnoreCase))
         {
-            return s_assetSeedCache.TryGetValue(wallpaperUri, out seed);
+            return s_assetSeedCache.TryGetValue(wallpaperUri, out palette);
         }
 
         if (File.Exists(wallpaperUri))
@@ -84,7 +84,7 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
                     var fileInfo = new FileInfo(wallpaperUri);
                     if (fileInfo.Exists && fileInfo.LastWriteTimeUtc == cached.lastWrite && fileInfo.Length == cached.fileSize)
                     {
-                        seed = cached.seed;
+                        palette = cached.palette;
                         return true;
                     }
                 }
@@ -95,15 +95,15 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
             }
         }
 
-        seed = default;
+        palette = default;
         return false;
     }
 
-    private static void CacheSeed(string wallpaperUri, Color seed)
+    private static void CachePalette(string wallpaperUri, WallpaperPalette palette)
     {
         if (wallpaperUri.StartsWith("avares://", StringComparison.OrdinalIgnoreCase))
         {
-            s_assetSeedCache[wallpaperUri] = seed;
+            s_assetSeedCache[wallpaperUri] = palette;
             return;
         }
 
@@ -112,7 +112,7 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
             if (File.Exists(wallpaperUri))
             {
                 var fileInfo = new FileInfo(wallpaperUri);
-                s_fileSeedCache[wallpaperUri] = (fileInfo.LastWriteTimeUtc, fileInfo.Length, seed);
+                s_fileSeedCache[wallpaperUri] = (fileInfo.LastWriteTimeUtc, fileInfo.Length, palette);
             }
         }
         catch
@@ -121,7 +121,7 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         }
     }
 
-    private static Color ExtractSeed(Stream stream, CancellationToken cancellationToken)
+    private static WallpaperPalette ExtractPalette(Stream stream, CancellationToken cancellationToken)
     {
         if (stream.CanSeek)
         {
@@ -131,7 +131,7 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         using var bitmap = SKBitmap.Decode(stream);
         if (bitmap is null || bitmap.Width <= 0 || bitmap.Height <= 0)
         {
-            return FallbackSeed;
+            return FallbackPalette;
         }
 
         int width = bitmap.Width;
@@ -145,10 +145,35 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         var bucketGreen = new double[36];
         var bucketBlue = new double[36];
         var bucketWeight = new double[36];
+        
+        var dominantCounts = new int[32768];
+        var dominantR = new long[32768];
+        var dominantG = new long[32768];
+        var dominantB = new long[32768];
+        int maxDominantCount = -1;
+        int bestDominantIndex = -1;
 
         void ProcessPixel(SKColor color)
         {
             if (color.Alpha < 24) return;
+            
+            // --- Dominant color logic ---
+            int r5 = color.Red >> 3;
+            int g5 = color.Green >> 3;
+            int b5 = color.Blue >> 3;
+            int index = (r5 << 10) | (g5 << 5) | b5;
+            
+            dominantCounts[index]++;
+            dominantR[index] += color.Red;
+            dominantG[index] += color.Green;
+            dominantB[index] += color.Blue;
+            
+            if (dominantCounts[index] > maxDominantCount)
+            {
+                maxDominantCount = dominantCounts[index];
+                bestDominantIndex = index;
+            }
+            // ----------------------------
             
             color.ToHsv(out float h, out float s, out float v);
             
@@ -209,16 +234,26 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
             }
         }
 
-        if (bestBucket == -1)
+        Color primarySeed = FallbackPalette.PrimarySeed;
+        if (bestBucket != -1)
         {
-            return FallbackSeed;
+            double totalWeight = bucketWeight[bestBucket];
+            primarySeed = Color.FromRgb(
+                (byte)Math.Clamp(bucketRed[bestBucket] / totalWeight, 0, 255),
+                (byte)Math.Clamp(bucketGreen[bestBucket] / totalWeight, 0, 255),
+                (byte)Math.Clamp(bucketBlue[bestBucket] / totalWeight, 0, 255));
+        }
+        
+        Color surfaceTint = FallbackPalette.SurfaceTint;
+        if (bestDominantIndex != -1 && maxDominantCount > 0)
+        {
+            byte r = (byte)(dominantR[bestDominantIndex] / maxDominantCount);
+            byte g = (byte)(dominantG[bestDominantIndex] / maxDominantCount);
+            byte b = (byte)(dominantB[bestDominantIndex] / maxDominantCount);
+            surfaceTint = Color.FromRgb(r, g, b);
         }
 
-        double totalWeight = bucketWeight[bestBucket];
-        return Color.FromRgb(
-            (byte)Math.Clamp(bucketRed[bestBucket] / totalWeight, 0, 255),
-            (byte)Math.Clamp(bucketGreen[bestBucket] / totalWeight, 0, 255),
-            (byte)Math.Clamp(bucketBlue[bestBucket] / totalWeight, 0, 255));
+        return new WallpaperPalette(primarySeed, surfaceTint);
     }
 
     private static Stream OpenWallpaper(string wallpaperUri)

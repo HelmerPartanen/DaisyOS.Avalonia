@@ -31,7 +31,8 @@ public sealed class WallpaperColorExtractorTests : IDisposable
         var extractor = new WallpaperColorExtractor();
 
         var stopwatch = Stopwatch.StartNew();
-        var seed = await extractor.ExtractSeedAsync(_testImagePath);
+        var palette = await extractor.ExtractPaletteAsync(_testImagePath);
+        var seed = palette.PrimarySeed;
         stopwatch.Stop();
 
         // Must complete extraction on a 6K image within reasonable threshold (< 500ms even on slow virtual machines)
@@ -42,7 +43,8 @@ public sealed class WallpaperColorExtractorTests : IDisposable
 
         // Second call must hit the seed cache instantly (< 5ms)
         var cachedStopwatch = Stopwatch.StartNew();
-        var cachedSeed = await extractor.ExtractSeedAsync(_testImagePath);
+        var cachedPalette = await extractor.ExtractPaletteAsync(_testImagePath);
+        var cachedSeed = cachedPalette.PrimarySeed;
         cachedStopwatch.Stop();
 
         Assert.Equal(seed, cachedSeed);

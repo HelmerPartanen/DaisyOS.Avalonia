@@ -17,7 +17,7 @@ public sealed class DynamicThemeServiceTests
         var generator = new MaterialDynamicSchemeGenerator();
         var scheme = generator.Generate(Color.Parse("#6750A4"), isDark: false);
 
-        DynamicThemeService.Apply(resources, scheme, Colors.Black, Color.Parse("#6750A4"));
+        DynamicThemeService.Apply(resources, scheme, Colors.Black, new DaisyOS.Shell.Services.Wallpaper.WallpaperPalette(Color.Parse("#6750A4"), Color.Parse("#6750A4")));
 
         Assert.True(resources.ContainsKey("TaskbarBorderBrush"));
         Assert.Same(staticTaskbarBorderBrush, resources["TaskbarBorderBrush"]);
@@ -31,7 +31,7 @@ public sealed class DynamicThemeServiceTests
         var seedColor = Color.FromRgb(255, 0, 0); // Pure Red seed
         var scheme = generator.Generate(seedColor, isDark: true);
 
-        DynamicThemeService.Apply(resources, scheme, Colors.White, seedColor);
+        DynamicThemeService.Apply(resources, scheme, Colors.White, new DaisyOS.Shell.Services.Wallpaper.WallpaperPalette(seedColor, seedColor));
 
         var systemBarBrush = Assert.IsType<SolidColorBrush>(resources["SystemBarMaterialBrush"]);
         var taskbarMaterialBrush = Assert.IsType<SolidColorBrush>(resources["TaskbarMaterialBrush"]);
@@ -56,7 +56,7 @@ public sealed class DynamicThemeServiceTests
         var seedColor = Color.FromRgb(0, 0, 255); // Pure Blue seed
         var scheme = generator.Generate(seedColor, isDark: false);
 
-        DynamicThemeService.Apply(resources, scheme, Colors.Black, seedColor);
+        DynamicThemeService.Apply(resources, scheme, Colors.Black, new DaisyOS.Shell.Services.Wallpaper.WallpaperPalette(seedColor, seedColor));
 
         var systemBarBrush = Assert.IsType<SolidColorBrush>(resources["SystemBarMaterialBrush"]);
         var taskbarMaterialBrush = Assert.IsType<SolidColorBrush>(resources["TaskbarMaterialBrush"]);

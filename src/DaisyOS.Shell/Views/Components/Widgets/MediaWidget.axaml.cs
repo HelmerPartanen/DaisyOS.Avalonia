@@ -301,7 +301,8 @@ public partial class MediaWidget : UserControl
     private async Task<Color> ExtractArtworkTintAsync(byte[] bytes, CancellationToken cancellationToken)
     {
         await using var stream = new MemoryStream(bytes, writable: false);
-        return await _colorExtractor.ExtractSeedAsync(stream, cancellationToken);
+        var palette = await _colorExtractor.ExtractPaletteAsync(stream, cancellationToken);
+        return palette.PrimarySeed;
     }
 
     private Color GetResourceColor(string key, Color fallback) =>

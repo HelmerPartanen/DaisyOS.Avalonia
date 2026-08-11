@@ -27,16 +27,16 @@ public sealed class DynamicThemeService
         _refreshCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         var token = _refreshCancellation.Token;
-        var seed = await _extractor.ExtractSeedAsync(wallpaperUri, token).ConfigureAwait(false);
-        var scheme = _generator.Generate(seed, theme == ThemeVariant.Dark);
-        var desktopLabelColor = WallpaperLabelContrast.ForWallpaper(seed);
-        await ApplySchemeAsync(scheme, desktopLabelColor, seed, token).ConfigureAwait(false);
+        var palette = await _extractor.ExtractPaletteAsync(wallpaperUri, token).ConfigureAwait(false);
+        var scheme = _generator.Generate(palette.PrimarySeed, theme == ThemeVariant.Dark);
+        var desktopLabelColor = WallpaperLabelContrast.ForWallpaper(palette.PrimarySeed);
+        await ApplySchemeAsync(scheme, desktopLabelColor, palette, token).ConfigureAwait(false);
     }
 
     public Task ApplySchemeAsync(
         DynamicColorScheme scheme,
         Color desktopLabelColor,
-        Color seed = default,
+        WallpaperPalette palette = default,
         CancellationToken cancellationToken = default) =>
         Dispatcher.UIThread.InvokeAsync(() =>
         {
@@ -47,10 +47,10 @@ public sealed class DynamicThemeService
                 return;
             }
 
-            Apply(resources, scheme, desktopLabelColor, seed);
+            Apply(resources, scheme, desktopLabelColor, palette);
         }).GetTask();
 
-    internal static void Apply(IResourceDictionary resources, DynamicColorScheme scheme, Color desktopLabelColor, Color seed)
+    internal static void Apply(IResourceDictionary resources, DynamicColorScheme scheme, Color desktopLabelColor, WallpaperPalette palette)
     {
         var isDarkSurface = RelativeLuminance(scheme.Surface) < 0.5;
 
@@ -95,7 +95,7 @@ public sealed class DynamicThemeService
         Set(resources, "AppScrimBrush", scheme.Scrim);
         Set(resources, "AppShadowBrush", scheme.Shadow);
 
-        var tintSource = seed.A > 0 ? seed : scheme.Primary;
+        var tintSource = palette.SurfaceTint.A > 0 ? palette.SurfaceTint : scheme.Primary;
 
         // Shell chrome stays opaque until an actual acrylic material exists. It still
         // inherits the wallpaper palette, so launcher and system-bar surfaces feel

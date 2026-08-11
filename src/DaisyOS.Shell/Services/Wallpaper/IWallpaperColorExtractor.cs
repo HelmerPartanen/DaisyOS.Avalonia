@@ -2,9 +2,11 @@ using Avalonia.Media;
 
 namespace DaisyOS.Shell.Services.Wallpaper;
 
+public record struct WallpaperPalette(Color PrimarySeed, Color SurfaceTint);
+
 public interface IWallpaperColorExtractor
 {
-    Task<Color> ExtractSeedAsync(string wallpaperUri, CancellationToken cancellationToken = default);
+    Task<WallpaperPalette> ExtractPaletteAsync(string wallpaperUri, CancellationToken cancellationToken = default);
 
-    Task<Color> ExtractSeedAsync(Stream imageStream, CancellationToken cancellationToken = default);
+    Task<WallpaperPalette> ExtractPaletteAsync(Stream imageStream, CancellationToken cancellationToken = default);
 }
