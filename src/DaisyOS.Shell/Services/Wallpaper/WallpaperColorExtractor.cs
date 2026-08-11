@@ -12,7 +12,7 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
 {
     private const int MaxSampleEdge = 64;
 
-    public static readonly WallpaperPalette FallbackPalette = new(Color.Parse("#6750A4"), Color.Parse("#6750A4"));
+    public static readonly WallpaperPalette FallbackPalette = new(Color.Parse("#6750A4"), Color.Parse("#6750A4"), false);
 
     private static readonly ConcurrentDictionary<string, WallpaperPalette> s_assetSeedCache = new(StringComparer.OrdinalIgnoreCase);
     private static readonly ConcurrentDictionary<string, (DateTime lastWrite, long fileSize, WallpaperPalette palette)> s_fileSeedCache = new(StringComparer.OrdinalIgnoreCase);
@@ -153,6 +153,11 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         int maxDominantCount = -1;
         int bestDominantIndex = -1;
 
+        int maxLuma = -1;
+        byte brightestR = 0;
+        byte brightestG = 0;
+        byte brightestB = 0;
+
         void ProcessPixel(SKColor color)
         {
             if (color.Alpha < 24) return;
@@ -174,6 +179,15 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
                 bestDominantIndex = index;
             }
             // ----------------------------
+
+            int luma = (color.Red * 299 + color.Green * 587 + color.Blue * 114) / 1000;
+            if (luma > maxLuma)
+            {
+                maxLuma = luma;
+                brightestR = color.Red;
+                brightestG = color.Green;
+                brightestB = color.Blue;
+            }
             
             color.ToHsv(out float h, out float s, out float v);
             
@@ -235,6 +249,8 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         }
 
         Color primarySeed = FallbackPalette.PrimarySeed;
+        bool useGrayscaleFallback = true;
+
         if (bestBucket != -1)
         {
             double totalWeight = bucketWeight[bestBucket];
@@ -245,17 +261,45 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
             var skColor = new SKColor(r, g, b);
             skColor.ToHsv(out float h, out float s, out float v);
             
-            // Enforce a minimum brightness so active buttons don't become too dark
-            if (v < 50f)
+            // If the "vibrant" color is actually very desaturated (e.g. a cool grayscale tint)
+            // or there are too few vibrant pixels (maxScore < 2.0), reject it and use grayscale fallback.
+            if (s >= 25f && maxScore >= 2.0)
             {
-                v = 50f;
-                skColor = SKColor.FromHsv(h, s, v);
-                r = skColor.Red;
-                g = skColor.Green;
-                b = skColor.Blue;
+                useGrayscaleFallback = false;
+                
+                // Enforce a minimum brightness so active buttons don't become too dark
+                if (v < 50f)
+                {
+                    v = 50f;
+                    skColor = SKColor.FromHsv(h, s, v);
+                    r = skColor.Red;
+                    g = skColor.Green;
+                    b = skColor.Blue;
+                }
+                
+                primarySeed = Color.FromRgb(r, g, b);
             }
-            
-            primarySeed = Color.FromRgb(r, g, b);
+        }
+        
+        if (useGrayscaleFallback)
+        {
+            if (maxLuma != -1)
+            {
+                var skColor = new SKColor(brightestR, brightestG, brightestB);
+                skColor.ToHsv(out float h, out float s, out float v);
+                
+                if (v < 50f)
+                {
+                    v = 50f;
+                    skColor = SKColor.FromHsv(h, s, v);
+                }
+                
+                primarySeed = Color.FromRgb(skColor.Red, skColor.Green, skColor.Blue);
+            }
+            else
+            {
+                primarySeed = FallbackPalette.PrimarySeed;
+            }
         }
         
         Color surfaceTint = FallbackPalette.SurfaceTint;
@@ -267,7 +311,7 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
             surfaceTint = Color.FromRgb(r, g, b);
         }
 
-        return new WallpaperPalette(primarySeed, surfaceTint);
+        return new WallpaperPalette(primarySeed, surfaceTint, useGrayscaleFallback);
     }
 
     private static Stream OpenWallpaper(string wallpaperUri)

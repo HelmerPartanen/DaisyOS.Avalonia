@@ -28,7 +28,7 @@ public sealed class DynamicThemeService
 
         var token = _refreshCancellation.Token;
         var palette = await _extractor.ExtractPaletteAsync(wallpaperUri, token).ConfigureAwait(false);
-        var scheme = _generator.Generate(palette.PrimarySeed, theme == ThemeVariant.Dark);
+        var scheme = _generator.Generate(palette.PrimarySeed, theme == ThemeVariant.Dark, palette.IsGrayscale);
         var desktopLabelColor = WallpaperLabelContrast.ForWallpaper(palette.PrimarySeed);
         await ApplySchemeAsync(scheme, desktopLabelColor, palette, token).ConfigureAwait(false);
     }

@@ -7,7 +7,7 @@ namespace DaisyOS.Shell.Services.Theming;
 /// <summary>Maps Google's HCT TonalSpot palette to Material 3 semantic roles.</summary>
 public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
 {
-    public DynamicColorScheme Generate(Color seed, bool isDark)
+    public DynamicColorScheme Generate(Color seed, bool isDark, bool isGrayscale = false)
     {
         var palette = new CorePalette();
         palette.Fill(ToArgb(seed), Style.TonalSpot);
@@ -41,6 +41,16 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
             onError = Color.FromRgb(255, 255, 255);
             errorContainer = Color.FromRgb(252, 232, 230);
             onErrorContainer = Color.FromRgb(140, 29, 24);
+        }
+
+        if (isGrayscale)
+        {
+            // For a truly black & white wallpaper, force the primary accent to be a crisp neutral color (White/Black)
+            // instead of whatever faint hue was left over in the seed color.
+            primary = isDark ? Color.FromRgb(255, 255, 255) : Color.FromRgb(0, 0, 0);
+            onPrimary = isDark ? Color.FromRgb(0, 0, 0) : Color.FromRgb(255, 255, 255);
+            primaryContainer = isDark ? Color.FromRgb(50, 50, 50) : Color.FromRgb(220, 220, 220);
+            onPrimaryContainer = isDark ? Color.FromRgb(255, 255, 255) : Color.FromRgb(0, 0, 0);
         }
 
         return new DynamicColorScheme(

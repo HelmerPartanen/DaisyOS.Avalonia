@@ -2,7 +2,7 @@ using Avalonia.Media;
 
 namespace DaisyOS.Shell.Services.Wallpaper;
 
-public record struct WallpaperPalette(Color PrimarySeed, Color SurfaceTint);
+public record struct WallpaperPalette(Color PrimarySeed, Color SurfaceTint, bool IsGrayscale = false);
 
 public interface IWallpaperColorExtractor
 {

@@ -4,5 +4,5 @@ namespace DaisyOS.Shell.Services.Theming;
 
 public interface IDynamicSchemeGenerator
 {
-    DynamicColorScheme Generate(Color seed, bool isDark);
+    DynamicColorScheme Generate(Color seed, bool isDark, bool isGrayscale = false);
 }
