@@ -33,9 +33,8 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
         }
         else
         {
-            // Soft, refined light accent container with high contrast dark text/icons
-            primaryContainer = Blend(Color.FromRgb(234, 237, 241), primary, 0.20);
-            onPrimaryContainer = Color.FromRgb(31, 35, 40);
+            // Increase contrast of PrimaryContainer against light backgrounds
+            primaryContainer = Blend(primaryContainer, primary, 0.15);
 
             // Refine Light Mode danger/error roles for rich contrast
             error = Color.FromRgb(211, 47, 47);

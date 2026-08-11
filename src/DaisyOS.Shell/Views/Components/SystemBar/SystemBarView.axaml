@@ -60,6 +60,9 @@
       <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
+    <Style Selector="TextBlock.QuickSettingLabel.Active">
+      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}"/>
+    </Style>
     <Style Selector="Button.OutputDevicesButton">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
@@ -158,7 +161,7 @@
                         <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </Button>
                     </Grid>
-                    <TextBlock Classes="QuickSettingLabel" Text="Wi-Fi"/>
+                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=WifiToggle}" Text="Wi-Fi"/>
                   </StackPanel>
                   <StackPanel Grid.Row="0" Grid.Column="1" Width="96" Spacing="6">
                     <Grid Height="56" ColumnDefinitions="68,1,27">
@@ -173,31 +176,31 @@
                         <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                       </Button>
                     </Grid>
-                    <TextBlock Classes="QuickSettingLabel" Text="Bluetooth"/>
+                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=BluetoothToggle}" Text="Bluetooth"/>
                   </StackPanel>
                   <StackPanel Grid.Row="0" Grid.Column="2" Width="96" Spacing="6">
-                    <ToggleButton Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Do not disturb">
+                    <ToggleButton x:Name="FocusToggle" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Do not disturb">
                       <TextBlock Text="do_not_disturb_on" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                     </ToggleButton>
-                    <TextBlock Classes="QuickSettingLabel" Text="Focus"/>
+                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=FocusToggle}" Text="Focus"/>
                   </StackPanel>
                   <StackPanel Grid.Row="1" Grid.Column="0" Width="96" Spacing="6">
-                    <ToggleButton Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Night light">
-                      <TextBlock Text="nightlight" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+                    <ToggleButton x:Name="NightLightToggle" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Blue light filter">
+                      <TextBlock Text="dark_mode" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                     </ToggleButton>
-                    <TextBlock Classes="QuickSettingLabel" Text="Night light"/>
+                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=NightLightToggle}" Text="Night light"/>
                   </StackPanel>
                   <StackPanel Grid.Row="1" Grid.Column="1" Width="96" Spacing="6">
                     <ToggleButton x:Name="ThemeToggle" Classes="ShellButton QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Dark theme" Click="OnThemeToggleClicked">
                       <TextBlock Text="contrast" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                     </ToggleButton>
-                    <TextBlock Classes="QuickSettingLabel" Text="Theme"/>
+                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=ThemeToggle}" Text="Theme"/>
                   </StackPanel>
                   <StackPanel Grid.Row="1" Grid.Column="2" Width="96" Spacing="6">
-                    <ToggleButton Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Gaming mode">
+                    <ToggleButton x:Name="GamingToggle" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Gaming mode">
                       <TextBlock Text="sports_esports" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
                     </ToggleButton>
-                    <TextBlock Classes="QuickSettingLabel" Text="Gaming"/>
+                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=GamingToggle}" Text="Gaming"/>
                   </StackPanel>
                 </Grid>
                     <Grid ColumnDefinitions="*,1,40">
