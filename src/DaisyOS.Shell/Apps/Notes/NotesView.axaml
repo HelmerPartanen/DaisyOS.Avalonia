@@ -110,15 +110,40 @@
                             Classes.Active="{Binding IsSelected}"
                             Command="{Binding $parent[UserControl].DataContext.SelectNoteCommand}"
                             CommandParameter="{Binding}">
-                      <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
-                        <TextBlock Grid.Column="0" Text="{Binding Icon}" Classes="NavIcon" />
-                        <Grid Grid.Column="1" RowDefinitions="Auto,Auto" HorizontalAlignment="Stretch">
+                      <Button.ContextMenu>
+                        <ContextMenu>
+                          <MenuItem Header="Rename Note" Click="OnRenameNoteClicked">
+                            <MenuItem.Icon>
+                              <TextBlock Text="edit" Classes="MenuIcon"/>
+                            </MenuItem.Icon>
+                          </MenuItem>
+                          <MenuItem Header="Toggle Pin" Command="{Binding $parent[UserControl].DataContext.PinNoteCommand}" CommandParameter="{Binding}">
+                            <MenuItem.Icon>
+                              <TextBlock Text="keep" Classes="MenuIcon"/>
+                            </MenuItem.Icon>
+                          </MenuItem>
+                          <MenuItem Header="Duplicate" Command="{Binding $parent[UserControl].DataContext.DuplicateNoteCommand}" CommandParameter="{Binding}">
+                            <MenuItem.Icon>
+                              <TextBlock Text="file_copy" Classes="MenuIcon"/>
+                            </MenuItem.Icon>
+                          </MenuItem>
+                          <Separator/>
+                          <MenuItem Header="Delete Note" Command="{Binding $parent[UserControl].DataContext.DeleteNoteCommand}" CommandParameter="{Binding}">
+                            <MenuItem.Icon>
+                              <TextBlock Text="delete" Classes="MenuIcon"/>
+                            </MenuItem.Icon>
+                          </MenuItem>
+                        </ContextMenu>
+                      </Button.ContextMenu>
+                      <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                        <Grid RowDefinitions="Auto,Auto" HorizontalAlignment="Left" Margin="12,0,24,0">
                           <Panel Grid.Row="0">
-                            <TextBlock Text="New Note" Classes="NavLabel" FontStyle="{Binding FontStyle}" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
-                            <TextBlock Text="{Binding Title}" Classes="NavLabel" FontStyle="{Binding FontStyle}" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <TextBlock Text="New Note" Classes="NavLabel" Margin="0" FontStyle="{Binding FontStyle}" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+                            <TextBlock Text="{Binding Title}" Classes="NavLabel" Margin="0" FontStyle="{Binding FontStyle}" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static ObjectConverters.IsNotNull}}" />
                           </Panel>
-                          <TextBlock Grid.Row="1" Text="{Binding LastModifiedFormatted}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Opacity="0.8" HorizontalAlignment="Left" Margin="12,2,0,0" />
+                          <TextBlock Grid.Row="1" Text="{Binding LastModified, StringFormat='MMM d, yyyy  HH:mm'}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,0" />
                         </Grid>
+                        <TextBlock Text="keep" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="14" Foreground="{DynamicResource AppPrimaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" IsVisible="{Binding IsPinned}" />
                       </Grid>
                     </Button>
                     <Rectangle Height="1" Fill="{DynamicResource TaskbarBorderBrush}" Margin="12,4,12,4" IsVisible="{Binding ShowDivider}" />
@@ -173,7 +198,27 @@
                    FontSize="15"
                    AcceptsReturn="True"
                    TextWrapping="Wrap"
-                   MinHeight="400" />
+                   MinHeight="400">
+            <TextBox.ContextMenu>
+              <ContextMenu>
+                <MenuItem Header="Cut" Click="OnCutClicked">
+                  <MenuItem.Icon>
+                    <TextBlock Text="content_cut" Classes="MenuIcon"/>
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Copy" Click="OnCopyClicked">
+                  <MenuItem.Icon>
+                    <TextBlock Text="content_copy" Classes="MenuIcon"/>
+                  </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Paste" Click="OnPasteClicked">
+                  <MenuItem.Icon>
+                    <TextBlock Text="content_paste" Classes="MenuIcon"/>
+                  </MenuItem.Icon>
+                </MenuItem>
+              </ContextMenu>
+            </TextBox.ContextMenu>
+          </TextBox>
         </StackPanel>
       </ScrollViewer>
     </Grid>

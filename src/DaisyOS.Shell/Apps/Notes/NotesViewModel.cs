@@ -58,6 +58,8 @@ public class NotesViewModel : INotifyPropertyChanged
     public ICommand AddNoteCommand { get; }
     public ICommand DeleteNoteCommand { get; }
     public ICommand SelectNoteCommand { get; }
+    public ICommand PinNoteCommand { get; }
+    public ICommand DuplicateNoteCommand { get; }
     public ICommand SaveNoteCommand { get; }
 
     public NotesViewModel()
@@ -74,6 +76,29 @@ public class NotesViewModel : INotifyPropertyChanged
         SelectNoteCommand = new RelayCommand(param =>
         {
             if (param is NoteItem note) SelectNote(note);
+        });
+        PinNoteCommand = new RelayCommand(param =>
+        {
+            if (param is NoteItem note) 
+            {
+                note.IsPinned = !note.IsPinned;
+                FilterNotes();
+            }
+        });
+        DuplicateNoteCommand = new RelayCommand(param =>
+        {
+            if (param is NoteItem note) 
+            {
+                var copy = new NoteItem
+                {
+                    Content = note.Content,
+                    Icon = note.Icon,
+                    IsDirty = true
+                };
+                Notes.Add(copy);
+                SelectedNote = copy;
+                FilterNotes();
+            }
         });
         SaveNoteCommand = new RelayCommand(param =>
         {
@@ -153,14 +178,12 @@ public class NotesViewModel : INotifyPropertyChanged
 
     private void FilterNotes()
     {
-        var filtered = Notes.Where(note => 
-            string.IsNullOrWhiteSpace(SearchQuery) || 
-            note.Content.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) || 
-            note.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
-            
-        var sorted = filtered
-            .OrderByDescending(n => n.LastModified)
-            .ToList();
+        var sorted = Notes.Where(n => string.IsNullOrEmpty(SearchQuery) || 
+                                     n.Title.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
+                                     n.Content.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+                          .OrderByDescending(n => n.IsPinned)
+                          .ThenByDescending(n => n.LastModified)
+                          .ToList();
 
         // Check if order is identical to prevent UI thrashing
         bool identical = FilteredNotes.Count == sorted.Count;

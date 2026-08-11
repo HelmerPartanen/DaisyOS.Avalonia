@@ -61,4 +61,40 @@ public partial class NotesView : UserControl
             }
         }
     }
+
+    private void OnRenameNoteClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Avalonia.Controls.MenuItem menuItem && menuItem.DataContext is NoteItem note)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.SelectedNote = note;
+                var contentTextBox = this.FindControl<TextBox>("ContentTextBox");
+                if (contentTextBox != null)
+                {
+                    contentTextBox.Focus();
+                    contentTextBox.SelectionStart = 0;
+                    contentTextBox.SelectionEnd = 0;
+                }
+            }
+        }
+    }
+
+    private void OnCutClicked(object? sender, RoutedEventArgs e)
+    {
+        var contentTextBox = this.FindControl<TextBox>("ContentTextBox");
+        contentTextBox?.Cut();
+    }
+
+    private void OnCopyClicked(object? sender, RoutedEventArgs e)
+    {
+        var contentTextBox = this.FindControl<TextBox>("ContentTextBox");
+        contentTextBox?.Copy();
+    }
+
+    private void OnPasteClicked(object? sender, RoutedEventArgs e)
+    {
+        var contentTextBox = this.FindControl<TextBox>("ContentTextBox");
+        contentTextBox?.Paste();
+    }
 }

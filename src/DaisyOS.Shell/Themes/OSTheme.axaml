@@ -36,6 +36,8 @@
                        Color="#FFF4F5F7"/>
       <SolidColorBrush x:Key="SystemBarMaterialBrush"
                        Color="#FFF4F5F7"/>
+      <SolidColorBrush x:Key="ContextMenuMaterialBrush"
+                       Color="#FFFFFFFF"/>
       <SolidColorBrush x:Key="LauncherMaterialBrush"
                        Color="#FFF4F5F7"/>
 
@@ -101,6 +103,8 @@
                        Color="#FF1E1E1E"/>
       <SolidColorBrush x:Key="SystemBarMaterialBrush"
                        Color="#FF1E1E1E"/>
+      <SolidColorBrush x:Key="ContextMenuMaterialBrush"
+                       Color="#FF2A2A2A"/>
       <SolidColorBrush x:Key="LauncherMaterialBrush"
                        Color="#FF1E1E1E"/>
 

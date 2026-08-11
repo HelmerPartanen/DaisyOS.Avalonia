@@ -105,11 +105,13 @@ public sealed class DynamicThemeService
             // Base Dark surface #121212 with a strong 30% wallpaper tint to mimic a heavily blurred acrylic effect
             var baseDark = Color.FromRgb(18, 18, 18);
             var darkMaterial = Blend(baseDark, tintSource, 0.30);
+            var darkContextMenu = Blend(Color.FromRgb(32, 32, 32), tintSource, 0.35);
             var darkLauncher = Blend(baseDark, tintSource, 0.24);
             var darkFooter = Blend(Color.FromRgb(28, 28, 28), tintSource, 0.32);
 
             Set(resources, "LauncherMaterialBrush", darkLauncher);
             Set(resources, "SystemBarMaterialBrush", darkMaterial);
+            Set(resources, "ContextMenuMaterialBrush", darkContextMenu);
             Set(resources, "TaskbarMaterialBrush", darkMaterial);
             Set(resources, "TaskbarBackgroundBrush", darkMaterial);
             Set(resources, "LauncherFooterBrush", darkFooter);
@@ -120,11 +122,13 @@ public sealed class DynamicThemeService
             // Base Light surface #F4F5F7 with a rich 14% wallpaper tint: warm, vibrant, easy on the eyes
             var baseLight = Color.FromRgb(244, 245, 247);
             var lightMaterial = Blend(baseLight, tintSource, 0.14);
+            var lightContextMenu = Blend(Color.FromRgb(255, 255, 255), tintSource, 0.10);
             var lightLauncher = Blend(baseLight, tintSource, 0.12);
             var lightFooter = Blend(Color.FromRgb(233, 235, 239), tintSource, 0.16);
 
             Set(resources, "LauncherMaterialBrush", lightLauncher);
             Set(resources, "SystemBarMaterialBrush", lightMaterial);
+            Set(resources, "ContextMenuMaterialBrush", lightContextMenu);
             Set(resources, "TaskbarMaterialBrush", lightMaterial);
             Set(resources, "TaskbarBackgroundBrush", lightMaterial);
             Set(resources, "LauncherFooterBrush", lightFooter);

@@ -11,6 +11,7 @@ public class NoteItem : INotifyPropertyChanged
     private bool _isSelected;
     private string? _filePath;
     private bool _isDirty;
+    private bool _isPinned;
     private DateTime _lastModified = DateTime.Now;
 
     public string Id { get; set; } = Guid.NewGuid().ToString("N");
@@ -57,6 +58,19 @@ public class NoteItem : INotifyPropertyChanged
     }
 
     public string FontStyle => IsDirty ? "Italic" : "Normal";
+
+    public bool IsPinned
+    {
+        get => _isPinned;
+        set
+        {
+            if (_isPinned != value)
+            {
+                _isPinned = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     public DateTime LastModified
     {
