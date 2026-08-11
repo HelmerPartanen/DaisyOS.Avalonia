@@ -100,7 +100,7 @@
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
     </Style>
     <Style Selector="Button.Active TextBlock, ToggleButton.Active TextBlock, ToggleButton.QuickSetting:checked > TextBlock, Button.QuickSettingDetails.Active > TextBlock, Button.Active TextBlock.NavIcon, Button.Active TextBlock.NavLabel">
-      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryContainerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
     <Style Selector="Button.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerHoverBrush}" />

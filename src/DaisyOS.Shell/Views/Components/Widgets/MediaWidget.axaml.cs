@@ -219,7 +219,7 @@ public partial class MediaWidget : UserControl
         if (_artworkTint is { } color)
         {
             var isLightMode = ActualThemeVariant == Avalonia.Styling.ThemeVariant.Light;
-            byte alpha = isLightMode ? (byte)40 : (byte)128;
+            byte alpha = isLightMode ? (byte)76 : (byte)128;
             tintLayer.Background = new SolidColorBrush(Color.FromArgb(alpha, color.R, color.G, color.B));
         }
         else
