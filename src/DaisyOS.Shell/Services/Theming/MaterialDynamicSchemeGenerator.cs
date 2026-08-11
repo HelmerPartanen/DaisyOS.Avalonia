@@ -27,12 +27,9 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
 
         if (isDark)
         {
-            // Tonal Spot intentionally amplifies seed chroma. Desaturate its dark-theme
-            // accents so a small bright detail cannot turn a subdued scene into neon chrome.
-            primary = MuteAccent(primary);
-            onPrimary = MuteAccent(onPrimary);
-            primaryContainer = MuteAccent(primaryContainer);
-            onPrimaryContainer = MuteAccent(onPrimaryContainer);
+            // The default Material 3 HCT algorithm already adjusts saturation and luminance
+            // for dark mode readability. We no longer artificially mute the accents, 
+            // allowing vibrant wallpapers to truly shine.
         }
         else
         {

@@ -140,10 +140,38 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
         int stepX = Math.Max(1, width / MaxSampleEdge);
         int stepY = Math.Max(1, height / MaxSampleEdge);
 
-        long redTotal = 0;
-        long greenTotal = 0;
-        long blueTotal = 0;
-        long alphaTotal = 0;
+        var bucketScore = new double[36];
+        var bucketRed = new double[36];
+        var bucketGreen = new double[36];
+        var bucketBlue = new double[36];
+        var bucketWeight = new double[36];
+
+        void ProcessPixel(SKColor color)
+        {
+            if (color.Alpha < 24) return;
+            
+            color.ToHsv(out float h, out float s, out float v);
+            
+            double sat = s / 100.0;
+            double val = v / 100.0;
+            
+            // Score strongly prioritizes highly saturated and bright pixels.
+            double score = sat * val;
+            score = Math.Pow(score, 3); // Exponentially boost the most vibrant colors
+            
+            // Ignore completely dull or dark pixels to avoid muddying the bucket
+            if (score < 0.01) return;
+
+            int bucket = (int)(h / 10.0);
+            if (bucket >= 36) bucket = 35;
+            if (bucket < 0) bucket = 0;
+
+            bucketScore[bucket] += score;
+            bucketRed[bucket] += color.Red * score;
+            bucketGreen[bucket] += color.Green * score;
+            bucketBlue[bucket] += color.Blue * score;
+            bucketWeight[bucket] += score;
+        }
 
         var pixels = bitmap.Pixels;
         if (pixels is not null && pixels.Length == width * height)
@@ -154,16 +182,7 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
                 int rowOffset = y * width;
                 for (int x = 0; x < width; x += stepX)
                 {
-                    var color = pixels[rowOffset + x];
-                    if (color.Alpha < 24)
-                    {
-                        continue;
-                    }
-
-                    redTotal += (long)color.Red * color.Alpha;
-                    greenTotal += (long)color.Green * color.Alpha;
-                    blueTotal += (long)color.Blue * color.Alpha;
-                    alphaTotal += color.Alpha;
+                    ProcessPixel(pixels[rowOffset + x]);
                 }
             }
         }
@@ -174,29 +193,32 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
                 cancellationToken.ThrowIfCancellationRequested();
                 for (int x = 0; x < width; x += stepX)
                 {
-                    var color = bitmap.GetPixel(x, y);
-                    if (color.Alpha < 24)
-                    {
-                        continue;
-                    }
-
-                    redTotal += (long)color.Red * color.Alpha;
-                    greenTotal += (long)color.Green * color.Alpha;
-                    blueTotal += (long)color.Blue * color.Alpha;
-                    alphaTotal += color.Alpha;
+                    ProcessPixel(bitmap.GetPixel(x, y));
                 }
             }
         }
 
-        if (alphaTotal == 0)
+        int bestBucket = -1;
+        double maxScore = -1;
+        for (int i = 0; i < 36; i++)
+        {
+            if (bucketScore[i] > maxScore && bucketWeight[i] > 0)
+            {
+                maxScore = bucketScore[i];
+                bestBucket = i;
+            }
+        }
+
+        if (bestBucket == -1)
         {
             return FallbackSeed;
         }
 
+        double totalWeight = bucketWeight[bestBucket];
         return Color.FromRgb(
-            (byte)(redTotal / alphaTotal),
-            (byte)(greenTotal / alphaTotal),
-            (byte)(blueTotal / alphaTotal));
+            (byte)Math.Clamp(bucketRed[bestBucket] / totalWeight, 0, 255),
+            (byte)Math.Clamp(bucketGreen[bestBucket] / totalWeight, 0, 255),
+            (byte)Math.Clamp(bucketBlue[bestBucket] / totalWeight, 0, 255));
     }
 
     private static Stream OpenWallpaper(string wallpaperUri)
