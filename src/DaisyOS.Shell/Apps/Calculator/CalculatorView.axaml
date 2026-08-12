@@ -48,7 +48,7 @@
       <Setter Property="FontSize" Value="22" />
     </Style>
     <Style Selector="Button.EqualsTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
+      <Setter Property="Background" Value="{DynamicResource OrangeSwatchHover}" />
     </Style>
 
     <!-- Memory Bar Buttons -->

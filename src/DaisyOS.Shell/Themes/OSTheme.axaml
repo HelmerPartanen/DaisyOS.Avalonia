@@ -54,6 +54,7 @@
 
       <!-- Accent colors -->
       <SolidColorBrush x:Key="OrangeSwatch" Color="#FFFF8D28"/>
+      <SolidColorBrush x:Key="OrangeSwatchHover" Color="#FFFF9C45"/>
 
       <!-- Legacy / Component Brush Aliases (referencing unified semantic brushes) -->
       <StaticResource x:Key="TaskbarBackgroundBrush" ResourceKey="ShellSurfaceBrush"/>
@@ -106,6 +107,7 @@
 
       <!-- Accent colors -->
       <SolidColorBrush x:Key="OrangeSwatch" Color="#FFFF9230"/>
+      <SolidColorBrush x:Key="OrangeSwatchHover" Color="#FFFFA24D"/>
 
       
       <!-- Legacy / Component Brush Aliases (referencing unified semantic brushes) -->
