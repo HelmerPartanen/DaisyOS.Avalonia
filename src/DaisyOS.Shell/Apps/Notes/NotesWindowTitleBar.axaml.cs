@@ -52,6 +52,14 @@ public partial class NotesWindowTitleBar : UserControl
                source.GetVisualAncestors().Any(v => v is Button || v is TextBox || v is Controls.SearchBar);
     }
 
+    private void OnTogglePerformanceClicked(object? sender, RoutedEventArgs e)
+    {
+        if (HostWindow is NotesWindow notesWindow)
+        {
+            notesWindow.TogglePerformanceOverlay();
+        }
+    }
+
     private void OnMinimizeClicked(object? sender, RoutedEventArgs e)
     {
         if (HostWindow is { } window)

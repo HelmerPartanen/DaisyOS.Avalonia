@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:notes="clr-namespace:DaisyOS.Shell.Apps.Notes"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     Title="Notes"
     Width="960"
     Height="640"
@@ -29,6 +30,9 @@
         </Grid>
       </Border>
     </Border>
+
+    <!-- App Performance Overlay Layer -->
+    <controls:AppPerformanceOverlay x:Name="PerfOverlay" AppName="Notes" IsOverlayVisible="True" Margin="0,48,16,0" />
 
     <!-- Edge resize handles for custom frameless window -->
     <Border Name="ResizeTop" Height="6" VerticalAlignment="Top" Background="Transparent" Cursor="TopSide" PointerPressed="OnResizeTopPressed" />

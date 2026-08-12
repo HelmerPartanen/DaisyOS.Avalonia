@@ -14,6 +14,11 @@ public partial class NotesWindow : Window
         DataContext = new NotesViewModel();
     }
 
+    public void TogglePerformanceOverlay()
+    {
+        PerfOverlay.ToggleOverlayVisibility();
+    }
+
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);

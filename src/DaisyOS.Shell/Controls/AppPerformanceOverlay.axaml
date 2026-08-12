@@ -1,0 +1,156 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Controls.AppPerformanceOverlay"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    HorizontalAlignment="Right"
+    VerticalAlignment="Top"
+    Margin="0,10,14,0"
+    ZIndex="1000">
+
+  <UserControl.Styles>
+    <Style Selector="Border.OverlayCard">
+      <Setter Property="Background" Value="#E61A1C23" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ShellSurfaceBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="14" />
+      <Setter Property="BoxShadow" Value="0 8 24 #60000000" />
+    </Style>
+
+    <Style Selector="Border.MetricTile">
+      <Setter Property="Background" Value="#252833" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,8" />
+    </Style>
+
+    <Style Selector="TextBlock.MetricIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="0,0,6,0" />
+    </Style>
+
+    <Style Selector="Button.OverlayIconButton">
+      <Setter Property="Width" Value="26" />
+      <Setter Property="Height" Value="26" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="13" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.OverlayIconButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#33FFFFFF" />
+    </Style>
+
+    <Style Selector="TextBlock.ButtonIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid Name="RootContainer">
+    <!-- Detailed HUD View -->
+    <Border Name="DetailedPanel" Classes="OverlayCard" Width="260" IsVisible="True">
+      <StackPanel Spacing="10">
+        <!-- Header -->
+        <Grid ColumnDefinitions="*,Auto,Auto">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="6">
+            <TextBlock Text="analytics" Classes="MetricIcon" Foreground="{DynamicResource AppPrimaryBrush}" FontSize="18" />
+            <TextBlock Name="TxtAppName" Text="Performance" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <Border Background="#33808080" CornerRadius="4" Padding="4,1" VerticalAlignment="Center">
+              <TextBlock Name="TxtPid" Text="PID 0" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
+            </Border>
+          </StackPanel>
+
+          <StackPanel Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="2">
+            <Button Classes="OverlayIconButton" Click="OnMinimizeOverlayClicked" ToolTip.Tip="Collapse to compact mode">
+              <TextBlock Text="unfold_less" Classes="ButtonIcon" />
+            </Button>
+            <Button Classes="OverlayIconButton" Click="OnCloseOverlayClicked" ToolTip.Tip="Hide overlay">
+              <TextBlock Text="close" Classes="ButtonIcon" />
+            </Button>
+          </StackPanel>
+        </Grid>
+
+        <!-- Metric Grid -->
+        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,*">
+          <!-- CPU Metric -->
+          <Border Grid.Row="0" Grid.Column="0" Classes="MetricTile" Margin="0,0,4,4">
+            <StackPanel Spacing="2">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="speed" Classes="MetricIcon" Foreground="#4CAF50" Name="IconCpu" />
+                <TextBlock Text="App CPU" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+              </StackPanel>
+              <TextBlock Name="TxtCpu" Text="0.0%" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+          </Border>
+
+          <!-- RAM Metric -->
+          <Border Grid.Row="0" Grid.Column="1" Classes="MetricTile" Margin="4,0,0,4">
+            <StackPanel Spacing="2">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="memory" Classes="MetricIcon" Foreground="#2196F3" />
+                <TextBlock Text="App RAM" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+              </StackPanel>
+              <TextBlock Name="TxtRam" Text="0 MB" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+          </Border>
+
+          <!-- Threads Metric -->
+          <Border Grid.Row="1" Grid.Column="0" Classes="MetricTile" Margin="0,4,4,0">
+            <StackPanel Spacing="2">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="account_tree" Classes="MetricIcon" Foreground="#FF9800" />
+                <TextBlock Text="App Threads" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+              </StackPanel>
+              <TextBlock Name="TxtThreads" Text="0" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+          </Border>
+
+          <!-- GC / Alloc Metric -->
+          <Border Grid.Row="1" Grid.Column="1" Classes="MetricTile" Margin="4,4,0,0">
+            <StackPanel Spacing="2">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="developer_board" Classes="MetricIcon" Foreground="#9C27B0" />
+                <TextBlock Text="App Heap" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+              </StackPanel>
+              <TextBlock Name="TxtGc" Text="0 MB" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            </StackPanel>
+          </Border>
+        </Grid>
+
+        <!-- Footer / Uptime -->
+        <Border Background="#1C1E26" CornerRadius="6" Padding="8,4">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="App Runtime" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1" Name="TxtUptime" Text="00:00:00" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+          </Grid>
+        </Border>
+      </StackPanel>
+    </Border>
+
+    <!-- Compact Bar / Pill View -->
+    <Border Name="CompactPanel" Classes="OverlayCard" Padding="8,4" IsVisible="False" Cursor="Hand" PointerPressed="OnCompactPanelPressed">
+      <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Spacing="4">
+          <TextBlock Text="speed" Classes="MetricIcon" Foreground="#4CAF50" FontSize="14" />
+          <TextBlock Name="TxtCompactCpu" Text="0%" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <TextBlock Text="|" Foreground="#40FFFFFF" FontSize="12" VerticalAlignment="Center" />
+
+        <StackPanel Orientation="Horizontal" Spacing="4">
+          <TextBlock Text="memory" Classes="MetricIcon" Foreground="#2196F3" FontSize="14" />
+          <TextBlock Name="TxtCompactRam" Text="0MB" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <Button Classes="OverlayIconButton" Click="OnExpandOverlayClicked" ToolTip.Tip="Expand details" Margin="2,0,0,0">
+          <TextBlock Text="unfold_more" Classes="ButtonIcon" FontSize="14" />
+        </Button>
+      </StackPanel>
+    </Border>
+  </Grid>
+</UserControl>
