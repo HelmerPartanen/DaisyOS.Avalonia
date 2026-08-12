@@ -49,6 +49,9 @@
       <SolidColorBrush x:Key="SettingsButtonHoverBrush" Color="#FFF5F5F5"/>
       <SolidColorBrush x:Key="SettingsButtonPressedBrush" Color="#FFE8EAEF"/>
 
+      <!-- Hardcoded subtle button surface brush (not wallpaper-driven) -->
+      <SolidColorBrush x:Key="SubtleButtonBackgroundBrush" Color="#0A000000"/>
+
       <!-- Accent colors -->
       <SolidColorBrush x:Key="OrangeSwatch" Color="#FFFF8D28"/>
 
@@ -97,6 +100,9 @@
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush" Color="#0DFFFFFF"/>
       <SolidColorBrush x:Key="SettingsButtonHoverBrush" Color="#1AFFFFFF"/>
       <SolidColorBrush x:Key="SettingsButtonPressedBrush" Color="#26FFFFFF"/>
+
+      <!-- Hardcoded subtle button surface brush (not wallpaper-driven) -->
+      <SolidColorBrush x:Key="SubtleButtonBackgroundBrush" Color="#0DFFFFFF"/>
 
       <!-- Accent colors -->
       <SolidColorBrush x:Key="OrangeSwatch" Color="#FFFF9230"/>

@@ -80,7 +80,7 @@
       <Setter Property="Padding" Value="0" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active), Button.QuickSettingDetails:not(.Active)">
-      <Setter Property="Background" Value="{DynamicResource ShellSurfaceSubtleBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
