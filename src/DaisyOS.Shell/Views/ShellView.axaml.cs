@@ -48,6 +48,12 @@ namespace DaisyOS.Shell.Views
                 return;
             }
 
+            if (appId == "calculator" && Application.Current is App calculatorApp)
+            {
+                calculatorApp.ShowCalculator();
+                return;
+            }
+
             var matchingApp = appId switch
             {
                 "files" => FindInstalledApp("dolphin", "nautilus", "thunar", "files"),

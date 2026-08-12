@@ -70,6 +70,13 @@
           </Image>
         </Button>
 
+        <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="calculator" ToolTip.Tip="Calculator">
+          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/CalculatorIcon.png"
+                 RenderOptions.BitmapInterpolationMode="HighQuality"
+                 Width="26" Height="26" IsHitTestVisible="False">
+          </Image>
+        </Button>
+
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="settings" ToolTip.Tip="Settings">
           <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
                  RenderOptions.BitmapInterpolationMode="HighQuality"

@@ -12,6 +12,7 @@ using DaisyOS.Shell.Views;
 using System;
 
 using DaisyOS.Shell.Apps.Notes;
+using DaisyOS.Shell.Apps.Calculator;
 
 namespace DaisyOS.Shell;
 
@@ -21,6 +22,7 @@ public partial class App : Application
     private IWallpaperService? _wallpaperService;
     private SettingsWindow? _settingsWindow;
     private NotesWindow? _notesWindow;
+    private CalculatorWindow? _calculatorWindow;
 
     public event EventHandler<string>? WallpaperChanged;
 
@@ -115,6 +117,29 @@ public partial class App : Application
         else
         {
             _notesWindow.Show();
+        }
+    }
+
+    /// <summary>Opens one instance of the native DaisyOS Calculator app.</summary>
+    public void ShowCalculator()
+    {
+        if (_calculatorWindow is { IsVisible: true } calculatorWindow)
+        {
+            calculatorWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+            calculatorWindow.Activate();
+            return;
+        }
+
+        _calculatorWindow = new CalculatorWindow();
+        _calculatorWindow.Closed += (_, _) => _calculatorWindow = null;
+
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
+        {
+            _calculatorWindow.Show(mainWindow);
+        }
+        else
+        {
+            _calculatorWindow.Show();
         }
     }
 

@@ -49,6 +49,9 @@
       <SolidColorBrush x:Key="SettingsButtonHoverBrush" Color="#FFF5F5F5"/>
       <SolidColorBrush x:Key="SettingsButtonPressedBrush" Color="#FFE8EAEF"/>
 
+      <!-- Accent colors -->
+      <SolidColorBrush x:Key="OrangeSwatch" Color="#FFFF8D28"/>
+
       <!-- Legacy / Component Brush Aliases (referencing unified semantic brushes) -->
       <StaticResource x:Key="TaskbarBackgroundBrush" ResourceKey="ShellSurfaceBrush"/>
       <StaticResource x:Key="TaskbarMaterialBrush" ResourceKey="ShellSurfaceBrush"/>
@@ -95,6 +98,10 @@
       <SolidColorBrush x:Key="SettingsButtonHoverBrush" Color="#1AFFFFFF"/>
       <SolidColorBrush x:Key="SettingsButtonPressedBrush" Color="#26FFFFFF"/>
 
+      <!-- Accent colors -->
+      <SolidColorBrush x:Key="OrangeSwatch" Color="#FFFF9230"/>
+
+      
       <!-- Legacy / Component Brush Aliases (referencing unified semantic brushes) -->
       <StaticResource x:Key="TaskbarBackgroundBrush" ResourceKey="ShellSurfaceBrush"/>
       <StaticResource x:Key="TaskbarMaterialBrush" ResourceKey="ShellSurfaceBrush"/>
