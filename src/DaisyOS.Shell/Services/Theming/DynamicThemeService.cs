@@ -118,7 +118,6 @@ public sealed class DynamicThemeService
             Set(resources, "TaskbarMaterialBrush", darkMaterial);
             Set(resources, "TaskbarBackgroundBrush", darkMaterial);
             Set(resources, "LauncherFooterBrush", darkFooter);
-            Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 105));
         }
         else
         {
@@ -138,7 +137,6 @@ public sealed class DynamicThemeService
             Set(resources, "TaskbarMaterialBrush", lightMaterial);
             Set(resources, "TaskbarBackgroundBrush", lightMaterial);
             Set(resources, "LauncherFooterBrush", lightFooter);
-            Set(resources, "ShellSurfaceBorderBrush", WithAlpha(scheme.OutlineVariant, 64));
         }
     }
 
