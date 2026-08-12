@@ -110,12 +110,12 @@
             </StackPanel>
           </Border>
 
-          <!-- GC / Alloc Metric -->
+          <!-- Host Process WS Metric -->
           <Border Grid.Row="1" Grid.Column="1" Classes="MetricTile" Margin="4,4,0,0">
             <StackPanel Spacing="2">
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="developer_board" Classes="MetricIcon" Foreground="#9C27B0" />
-                <TextBlock Text="App Heap" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="Process WS" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" ToolTip.Tip="Total physical working set of host process" />
               </StackPanel>
               <TextBlock Name="TxtGc" Text="0 MB" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
             </StackPanel>

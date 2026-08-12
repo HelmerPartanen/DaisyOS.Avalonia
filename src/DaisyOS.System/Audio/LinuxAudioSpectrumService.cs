@@ -66,6 +66,10 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
                 }
 
                 await CaptureFromMonitorAsync(monitorName, cancellationToken);
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
+                }
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -74,7 +78,7 @@ public sealed class LinuxAudioSpectrumService : IAudioSpectrumService
             catch
             {
                 SetSpectrum(ReadOnlySpan<double>.Empty);
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(2), cancellationToken);
             }
         }
     }

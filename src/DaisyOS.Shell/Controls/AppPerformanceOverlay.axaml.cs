@@ -66,7 +66,7 @@ public partial class AppPerformanceOverlay : UserControl
         {
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(750)
+                Interval = TimeSpan.FromMilliseconds(1500)
             };
             _timer.Tick += (s, ev) => RefreshMetrics();
         }
@@ -136,13 +136,13 @@ public partial class AppPerformanceOverlay : UserControl
 
             if (txtPid != null) txtPid.Text = $"PID {metrics.ProcessId}";
             if (txtCpu != null) txtCpu.Text = $"{metrics.CpuUsagePercentage:F1}%";
-            if (txtRam != null) txtRam.Text = $"{metrics.WorkingSetMB:F1} MB";
+            if (txtRam != null) txtRam.Text = $"{metrics.GcMemoryMB:F1} MB";
             if (txtThreads != null) txtThreads.Text = $"{metrics.ThreadCount}";
-            if (txtGc != null) txtGc.Text = $"{metrics.GcMemoryMB:F1} MB";
+            if (txtGc != null) txtGc.Text = $"{metrics.WorkingSetMB:F1} MB";
             if (txtUptime != null) txtUptime.Text = $"{metrics.Uptime:hh\\:mm\\:ss}";
 
             if (txtCompactCpu != null) txtCompactCpu.Text = $"{metrics.CpuUsagePercentage:F0}%";
-            if (txtCompactRam != null) txtCompactRam.Text = $"{metrics.WorkingSetMB:F0}MB";
+            if (txtCompactRam != null) txtCompactRam.Text = $"{metrics.GcMemoryMB:F0}MB";
 
             // Dynamic CPU Color
             if (iconCpu != null)

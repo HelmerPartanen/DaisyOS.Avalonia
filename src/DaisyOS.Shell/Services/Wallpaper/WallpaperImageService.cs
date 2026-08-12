@@ -358,7 +358,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
             lock (s_sourceCacheOrder)
             {
                 s_sourceCacheOrder.Enqueue(path);
-                const int MaxCachedSources = 3;
+                const int MaxCachedSources = 1;
                 while (s_sourceCacheOrder.Count > MaxCachedSources)
                 {
                     var evictKey = s_sourceCacheOrder.Dequeue();

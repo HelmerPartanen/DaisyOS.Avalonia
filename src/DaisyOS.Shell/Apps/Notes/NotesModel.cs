@@ -88,6 +88,8 @@ public class NoteItem : INotifyPropertyChanged
 
     public string LastModifiedFormatted => LastModified.ToString("MMM d, yyyy  HH:mm");
 
+    private string? _cachedTitle;
+
     public string Content
     {
         get => _content;
@@ -96,6 +98,7 @@ public class NoteItem : INotifyPropertyChanged
             if (_content != value)
             {
                 _content = value;
+                _cachedTitle = null; // Invalidate cached title
                 IsDirty = true;
                 LastModified = DateTime.Now;
                 OnPropertyChanged();
@@ -108,15 +111,24 @@ public class NoteItem : INotifyPropertyChanged
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(_content)) return string.Empty;
-            
-            // Get the first non-empty line
+            if (_cachedTitle != null) return _cachedTitle;
+
+            if (string.IsNullOrWhiteSpace(_content))
+            {
+                _cachedTitle = string.Empty;
+                return _cachedTitle;
+            }
+
             var lines = _content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            if (lines.Length == 0) return string.Empty;
-            
+            if (lines.Length == 0)
+            {
+                _cachedTitle = string.Empty;
+                return _cachedTitle;
+            }
+
             var firstLine = lines[0].Trim();
-            // Truncate to a reasonable length for the sidebar
-            return firstLine.Length > 40 ? firstLine.Substring(0, 40) + "..." : firstLine;
+            _cachedTitle = firstLine.Length > 40 ? firstLine.Substring(0, 40) + "..." : firstLine;
+            return _cachedTitle;
         }
     }
 

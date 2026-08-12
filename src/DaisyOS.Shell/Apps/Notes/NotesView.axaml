@@ -99,7 +99,7 @@
             <ItemsControl ItemsSource="{Binding FilteredNotes}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <StackPanel />
+                  <VirtualizingStackPanel />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>

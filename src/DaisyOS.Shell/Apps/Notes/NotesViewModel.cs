@@ -108,19 +108,32 @@ public class NotesViewModel : INotifyPropertyChanged, IDisposable
 
         _autosaveTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromSeconds(5)
+            Interval = TimeSpan.FromSeconds(2)
         };
         _autosaveTimer.Tick += OnAutosaveTick;
-        _autosaveTimer.Start();
+        // Timer stays stopped by default and is only started when a note becomes dirty.
 
         LoadNotes();
     }
 
+    public void NotifyNoteDirty()
+    {
+        if (!_autosaveTimer.IsEnabled)
+        {
+            _autosaveTimer.Start();
+        }
+    }
+
     private void OnAutosaveTick(object? sender, EventArgs e)
     {
-        foreach (var note in Notes.Where(n => n.IsDirty))
+        foreach (var note in Notes.Where(n => n.IsDirty).ToList())
         {
             SaveNote(note);
+        }
+
+        if (!Notes.Any(n => n.IsDirty))
+        {
+            _autosaveTimer.Stop();
         }
     }
 

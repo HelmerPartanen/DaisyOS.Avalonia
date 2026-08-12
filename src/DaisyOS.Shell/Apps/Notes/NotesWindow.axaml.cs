@@ -4,6 +4,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 
+using Avalonia.Threading;
+
 namespace DaisyOS.Shell.Apps.Notes;
 
 public partial class NotesWindow : Window
@@ -12,6 +14,14 @@ public partial class NotesWindow : Window
     {
         InitializeComponent();
         DataContext = new NotesViewModel();
+
+        Loaded += (_, _) =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                GC.Collect(2, GCCollectionMode.Optimized, false);
+            }, DispatcherPriority.Background);
+        };
     }
 
     public void TogglePerformanceOverlay()

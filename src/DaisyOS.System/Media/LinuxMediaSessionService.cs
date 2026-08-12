@@ -519,7 +519,7 @@ public sealed class LinuxMediaSessionService : IMediaSessionService, IDisposable
 
             if (!cancellationToken.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
+                await Task.Delay(TimeSpan.FromMilliseconds(1500), cancellationToken);
             }
         }
     }
