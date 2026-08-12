@@ -94,7 +94,6 @@ public class DesktopViewModel : INotifyPropertyChanged
 
     private readonly Dictionary<DesktopItemId, DesktopItemViewModel> _itemMap = new();
     private readonly Dictionary<DesktopItemId, GridCell> _committedCells = new();
-    private readonly Dictionary<DesktopItemId, GridCell> _previewCells = new();
 
     public DesktopViewModel()
     {
@@ -126,7 +125,6 @@ public class DesktopViewModel : INotifyPropertyChanged
         Items.Add(item);
         var cell = new GridCell(item.State.Column, item.State.Row);
         _committedCells[item.Id] = cell;
-        _previewCells[item.Id] = cell;
     }
 
     public DesktopItemViewModel? GetItem(DesktopItemId id)
@@ -139,28 +137,16 @@ public class DesktopViewModel : INotifyPropertyChanged
         return _committedCells.TryGetValue(id, out var cell) ? cell : new GridCell(0, 0);
     }
 
-    public GridCell GetPreviewCell(DesktopItemId id)
-    {
-        return _previewCells.TryGetValue(id, out var cell) ? cell : GetCommittedCell(id);
-    }
-
     public void ClearItems()
     {
         Items.Clear();
         _itemMap.Clear();
         _committedCells.Clear();
-        _previewCells.Clear();
     }
 
     public int GetCommittedIndex(DesktopItemId id)
     {
         var keys = _committedCells.Keys.ToList();
-        return keys.IndexOf(id);
-    }
-
-    public int GetPreviewIndex(DesktopItemId id)
-    {
-        var keys = _previewCells.Keys.ToList();
         return keys.IndexOf(id);
     }
 
@@ -171,7 +157,6 @@ public class DesktopViewModel : INotifyPropertyChanged
         var newStates = map.AutoArrange(states);
 
         _committedCells.Clear();
-        _previewCells.Clear();
 
         foreach (var state in newStates)
         {
@@ -184,126 +169,10 @@ public class DesktopViewModel : INotifyPropertyChanged
 
                 var cell = new GridCell(state.Column, state.Row);
                 _committedCells[item.Id] = cell;
-                _previewCells[item.Id] = cell;
 
                 var cellOrigin = metrics.GetCellOrigin(cell);
                 item.X = cellOrigin.X;
                 item.Y = cellOrigin.Y;
-            }
-        }
-    }
-
-    public void BeginDrag(DesktopItemId sourceId)
-    {
-        _previewCells.Clear();
-        foreach (var kvp in _committedCells)
-        {
-            _previewCells[kvp.Key] = kvp.Value;
-        }
-
-        var item = GetItem(sourceId);
-        if (item != null)
-        {
-            item.IsHiddenPlaceholder = true;
-        }
-    }
-
-    public bool MovePreviewItemToCell(DesktopItemId sourceId, GridCell targetCell, DesktopGridMetrics metrics)
-    {
-        if (!metrics.IsValid(targetCell)) return false;
-
-        var sourceItem = GetItem(sourceId);
-        if (sourceItem == null) return false;
-
-        var currentCell = GetPreviewCell(sourceId);
-        if (currentCell.Equals(targetCell)) return false;
-
-        // 1. Get ordered list of all items based on their current preview cells (Top to Bottom, Left to Right)
-        var orderedIds = _previewCells
-            .OrderBy(kvp => kvp.Value.Column * metrics.RowCount + kvp.Value.Row)
-            .Select(kvp => kvp.Key)
-            .ToList();
-
-        int oldIndex = orderedIds.IndexOf(sourceId);
-        if (oldIndex < 0) return false;
-
-        // 2. Calculate the target index based on the target cell
-        int targetIndex = targetCell.Column * metrics.RowCount + targetCell.Row;
-
-        // Clamp targetIndex to valid bounds (can't place beyond the last item)
-        if (targetIndex >= orderedIds.Count)
-        {
-            targetIndex = orderedIds.Count - 1;
-        }
-
-        if (oldIndex == targetIndex) return false;
-
-        // 3. Move the item in the 1D list
-        orderedIds.RemoveAt(oldIndex);
-        orderedIds.Insert(targetIndex, sourceId);
-
-        // 4. Repack the preview cells densely
-        int col = 0;
-        int row = 0;
-        foreach (var id in orderedIds)
-        {
-            var cell = new GridCell(col, row);
-            _previewCells[id] = cell;
-
-            var item = GetItem(id);
-            if (item != null)
-            {
-                item.State.Column = col;
-                item.State.Row = row;
-            }
-
-            row++;
-            if (row >= metrics.RowCount)
-            {
-                row = 0;
-                col++;
-            }
-        }
-
-        return true;
-    }
-
-    public bool MovePreviewItem(DesktopItemId sourceId, int targetSlot)
-    {
-        // Keep compatibility helper
-        return false;
-    }
-
-    public void CommitReorder()
-    {
-        _committedCells.Clear();
-        foreach (var kvp in _previewCells)
-        {
-            _committedCells[kvp.Key] = kvp.Value;
-            var item = GetItem(kvp.Key);
-            if (item != null)
-            {
-                item.State.Column = kvp.Value.Column;
-                item.State.Row = kvp.Value.Row;
-                item.IsHiddenPlaceholder = false;
-                item.IsDragging = false;
-            }
-        }
-    }
-
-    public void CancelDrag()
-    {
-        _previewCells.Clear();
-        foreach (var kvp in _committedCells)
-        {
-            _previewCells[kvp.Key] = kvp.Value;
-            var item = GetItem(kvp.Key);
-            if (item != null)
-            {
-                item.State.Column = kvp.Value.Column;
-                item.State.Row = kvp.Value.Row;
-                item.IsHiddenPlaceholder = false;
-                item.IsDragging = false;
             }
         }
     }

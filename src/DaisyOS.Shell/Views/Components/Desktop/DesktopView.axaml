@@ -7,12 +7,7 @@
   <Grid
       x:Name="InteractionSurface"
       Focusable="True"
-      Background="Black"
-      PointerPressed="OnInteractionSurfacePointerPressed"
-      PointerMoved="OnInteractionSurfacePointerMoved"
-      PointerReleased="OnInteractionSurfacePointerReleased"
-      PointerCaptureLost="OnInteractionSurfacePointerCaptureLost"
-      KeyDown="OnInteractionSurfaceKeyDown">
+      Background="Black">
 
     <!-- Wallpaper -->
     <Image
@@ -41,20 +36,5 @@
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>
-
-    <!-- Overlay Layer for Drag Proxy -->
-    <Canvas
-        x:Name="OverlayLayer"
-        IsHitTestVisible="False">
-      <Panel
-          x:Name="DragProxyContainer"
-          IsVisible="False"
-          RenderTransformOrigin="50%,50%">
-        <Panel.RenderTransform>
-          <ScaleTransform ScaleX="1.04" ScaleY="1.04" />
-        </Panel.RenderTransform>
-        <controls:DesktopItemView x:Name="DragProxyView" IsDragProxy="True" />
-      </Panel>
-    </Canvas>
   </Grid>
 </UserControl>

@@ -2,9 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using DaisyOS.Core.Desktop;
-using DaisyOS.Shell.Services.Desktop;
 using DaisyOS.Shell.ViewModels;
-
 using Rect = Avalonia.Rect;
 
 namespace DaisyOS.Shell.Controls;
@@ -35,21 +33,11 @@ public class DesktopReorderPanel : Panel
         ViewModelProperty.Changed.AddClassHandler<DesktopReorderPanel>((x, _) => x.InvalidateArrange());
     }
 
-    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        base.OnAttachedToVisualTree(e);
-        foreach (var child in Children)
-        {
-            ItemMotionAnimator.Attach(child, DesktopMotionSettings.Default.ReorderAnimationDuration);
-        }
-    }
-
     protected override Size MeasureOverride(Size availableSize)
     {
         var childWidth = Metrics?.CellWidth ?? 74;
         var childHeight = Metrics?.CellHeight ?? 88;
         var childAvailableSize = new Size(childWidth, childHeight);
-
         foreach (var child in Children)
         {
             child.Measure(childAvailableSize);
@@ -75,12 +63,10 @@ public class DesktopReorderPanel : Panel
         {
             if (child.DataContext is DesktopItemViewModel item)
             {
-                var cell = ViewModel.GetPreviewCell(item.Id);
+                var cell = ViewModel.GetCommittedCell(item.Id);
                 var origin = Metrics.GetCellOrigin(cell);
-
                 item.X = origin.X;
                 item.Y = origin.Y;
-
                 child.Arrange(new Rect(origin.X, origin.Y, cellWidth, cellHeight));
             }
             else
@@ -88,7 +74,6 @@ public class DesktopReorderPanel : Panel
                 child.Arrange(new Rect(0, 0, cellWidth, cellHeight));
             }
         }
-
         return finalSize;
     }
 }

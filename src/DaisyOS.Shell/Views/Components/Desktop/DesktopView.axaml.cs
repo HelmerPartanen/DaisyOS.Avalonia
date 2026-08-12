@@ -2,14 +2,12 @@ using System;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DaisyOS.Core.Desktop;
 using DaisyOS.Shell.Controls;
-using DaisyOS.Shell.Services.Desktop;
 using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.ViewModels;
 using DaisyOS.System.Display;
@@ -34,7 +32,6 @@ namespace DaisyOS.Shell.Views.Components.Desktop
         public DesktopViewModel ViewModel => _viewModel;
 
         private readonly AvaloniaMetricsProvider _metricsProvider;
-        private readonly DesktopDragController _dragController;
         private App? _app;
 
         // Wallpaper service
@@ -48,12 +45,6 @@ namespace DaisyOS.Shell.Views.Components.Desktop
 
             _viewModel = new DesktopViewModel();
             _metricsProvider = new AvaloniaMetricsProvider();
-            _dragController = new DesktopDragController();
-
-            _dragController.SessionStarted += OnDragSessionStarted;
-            _dragController.SessionUpdated += OnDragSessionUpdated;
-            _dragController.SessionEnded += OnDragSessionEnded;
-            _dragController.ReorderReflowed += OnReorderReflowed;
 
             DataContext = _viewModel;
 
@@ -75,47 +66,10 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             SizeChanged += DesktopView_SizeChanged;
         }
 
-        private void OnDragSessionStarted(DragSession session)
-        {
-            var item = _viewModel.GetItem(session.SourceId);
-            if (item == null) return;
-
-            DragProxyView.DataContext = item;
-            DragProxyView.IsHiddenPlaceholder = false; // Drag proxy visual must ALWAYS remain visible!
-            DragProxyContainer.IsVisible = true;
-            UpdateProxyPosition(session);
-        }
-
-        private void OnDragSessionUpdated(DragSession session)
-        {
-            UpdateProxyPosition(session);
-        }
-
-        private void OnDragSessionEnded(DragSession session, bool isSuccess)
-        {
-            DragProxyContainer.IsVisible = false;
-            DragProxyView.DataContext = null;
-            InvalidateReorderPanel();
-        }
-
-        private void OnReorderReflowed()
-        {
-            InvalidateReorderPanel();
-        }
-
         private void InvalidateReorderPanel()
         {
             var panel = this.FindDescendantOfType<DesktopReorderPanel>();
             panel?.InvalidateArrange();
-        }
-
-        private void UpdateProxyPosition(DragSession session)
-        {
-            double posX = session.CurrentPointer.X - session.GrabOffset.X;
-            double posY = session.CurrentPointer.Y - session.GrabOffset.Y;
-
-            Canvas.SetLeft(DragProxyContainer, posX);
-            Canvas.SetTop(DragProxyContainer, posY);
         }
 
         private async void OnWallpaperChanged(object? sender, string wallpaperUri)
@@ -214,70 +168,6 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             CurrentMetrics = new DesktopGridMetrics("primary", workArea, dpi, cellW, cellH, edgeInsetX: 2, edgeInsetY: 2);
             _viewModel.CalculateLayout(CurrentMetrics);
             InvalidateReorderPanel();
-        }
-
-        private void OnInteractionSurfacePointerPressed(object? sender, PointerPressedEventArgs e)
-        {
-            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
-
-            var surfacePoint = e.GetPosition(InteractionSurface);
-
-            Control? sourceControl = e.Source as Control;
-            DesktopItemView? itemView = sourceControl as DesktopItemView ?? sourceControl?.FindAncestorOfType<DesktopItemView>();
-            DesktopItemViewModel? itemVm = itemView?.DataContext as DesktopItemViewModel;
-
-            if (itemView != null && itemVm != null)
-            {
-                var itemPoint = e.GetPosition(itemView);
-                var itemSize = itemView.Bounds.Size;
-                if (itemSize.Width <= 0 || itemSize.Height <= 0)
-                {
-                    itemSize = new Size(74, 88);
-                }
-
-                _dragController.OnPointerPressed(
-                    itemVm,
-                    surfacePoint,
-                    itemPoint,
-                    itemSize,
-                    e.Pointer,
-                    InteractionSurface);
-
-                e.Handled = true;
-            }
-        }
-
-        private void OnInteractionSurfacePointerMoved(object? sender, PointerEventArgs e)
-        {
-            if (_dragController.State == DragState.Idle || CurrentMetrics == null) return;
-
-            var surfacePoint = e.GetPosition(InteractionSurface);
-            _dragController.OnPointerMoved(surfacePoint, _viewModel, CurrentMetrics);
-        }
-
-        private void OnInteractionSurfacePointerReleased(object? sender, PointerReleasedEventArgs e)
-        {
-            if (_dragController.State == DragState.Idle) return;
-
-            _dragController.OnPointerReleased(e.Pointer, _viewModel);
-            e.Handled = true;
-        }
-
-        private void OnInteractionSurfacePointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
-        {
-            if (_dragController.State != DragState.Idle)
-            {
-                _dragController.OnPointerCaptureLost(_viewModel);
-            }
-        }
-
-        private void OnInteractionSurfaceKeyDown(object? sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Escape && _dragController.State != DragState.Idle)
-            {
-                _dragController.CancelDrag(_viewModel);
-                e.Handled = true;
-            }
         }
     }
 }
