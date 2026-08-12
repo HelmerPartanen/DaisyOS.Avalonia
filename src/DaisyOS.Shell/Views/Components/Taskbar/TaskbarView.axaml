@@ -35,7 +35,7 @@
   -->
   <Border Height="52"
           Padding="6"
-          Background="{DynamicResource SystemBarMaterialBrush}"
+          Background="{DynamicResource ShellSurfaceBrush}"
           BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
           BorderThickness="1"
           CornerRadius="12"

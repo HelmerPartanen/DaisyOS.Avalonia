@@ -13,6 +13,9 @@
   <SolidColorBrush x:Key="AppSurfaceContainerHighBrush" Color="#FF2B2930"/>
   <SolidColorBrush x:Key="AppSurfaceContainerHighestBrush" Color="#FF36343B"/>
   <!-- Opaque, wallpaper-derived shell materials. DynamicThemeService refreshes these on each wallpaper or theme change. -->
+  <SolidColorBrush x:Key="ShellSurfaceBrush" Color="#FF2B2930"/>
+  <SolidColorBrush x:Key="ShellSurfaceElevatedBrush" Color="#FF302E35"/>
+  <SolidColorBrush x:Key="ShellSurfaceSubtleBrush" Color="#FF36343B"/>
   <SolidColorBrush x:Key="LauncherMaterialBrush" Color="#FF2B2930"/>
   <SolidColorBrush x:Key="SystemBarMaterialBrush" Color="#FF2B2930"/>
   <SolidColorBrush x:Key="ContextMenuMaterialBrush" Color="#FF302E35"/>

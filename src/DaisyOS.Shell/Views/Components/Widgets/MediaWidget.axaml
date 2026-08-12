@@ -15,8 +15,8 @@
   </UserControl.Styles>
   <Border x:Name="MediaFrame"
           Height="52"
-          Background="{DynamicResource SystemBarMaterialBrush}"
-          BorderBrush="{DynamicResource TaskbarBorderBrush}"
+          Background="{DynamicResource ShellSurfaceBrush}"
+          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
           BorderThickness="1"
           CornerRadius="12"
           ClipToBounds="True"

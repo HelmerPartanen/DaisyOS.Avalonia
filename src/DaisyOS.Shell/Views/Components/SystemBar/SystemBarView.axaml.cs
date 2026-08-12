@@ -70,14 +70,14 @@ public partial class SystemBarView : UserControl
         }
     }
 
-    private async void OnThemeToggleClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void OnThemeTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (sender is not ToggleButton { IsChecked: { } isDark } || Application.Current is not App app)
+        if (sender is not QuickSettingTile tile || Application.Current is not App app)
         {
             return;
         }
 
-        await app.SetShellThemeAsync(isDark ? ThemeVariant.Dark : ThemeVariant.Light);
+        await app.SetShellThemeAsync(tile.IsChecked ? ThemeVariant.Dark : ThemeVariant.Light);
     }
 
     private async void OnOutputDevicesButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -88,12 +88,6 @@ public partial class SystemBarView : UserControl
 
     private void OnOutputDevicesBackClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         SetQuickSettingsPage(QuickSettingsPage.Main);
-
-    private void OnWifiToggleStateChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-        SetSplitPairActive("WifiDetailsButton", "WifiSplitDivider", sender is ToggleButton { IsChecked: true });
-
-    private void OnBluetoothToggleStateChanged(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
-        SetSplitPairActive("BluetoothDetailsButton", "BluetoothSplitDivider", sender is ToggleButton { IsChecked: true });
 
     private async void OnWifiNetworksButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
@@ -127,12 +121,6 @@ public partial class SystemBarView : UserControl
 
     private void SetFlyoutButtonActive(string buttonName, bool isActive) =>
         this.FindControl<Button>(buttonName)?.Classes.Set("ShellButtonActive", isActive);
-
-    private void SetSplitPairActive(string detailsButtonName, string dividerName, bool isActive)
-    {
-        this.FindControl<Button>(detailsButtonName)?.Classes.Set("Active", isActive);
-        this.FindControl<Border>(dividerName)?.Classes.Set("Active", isActive);
-    }
 
     private async Task LoadOutputDevicesAsync()
     {

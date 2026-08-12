@@ -109,6 +109,9 @@ public sealed class DynamicThemeService
             var darkLauncher = Blend(baseDark, tintSource, 0.24);
             var darkFooter = Blend(Color.FromRgb(28, 28, 28), tintSource, 0.32);
 
+            Set(resources, "ShellSurfaceBrush", darkMaterial);
+            Set(resources, "ShellSurfaceElevatedBrush", darkContextMenu);
+            Set(resources, "ShellSurfaceSubtleBrush", darkFooter);
             Set(resources, "LauncherMaterialBrush", darkLauncher);
             Set(resources, "SystemBarMaterialBrush", darkMaterial);
             Set(resources, "ContextMenuMaterialBrush", darkContextMenu);
@@ -126,6 +129,9 @@ public sealed class DynamicThemeService
             var lightLauncher = Blend(baseLight, tintSource, 0.12);
             var lightFooter = Blend(Color.FromRgb(233, 235, 239), tintSource, 0.16);
 
+            Set(resources, "ShellSurfaceBrush", lightMaterial);
+            Set(resources, "ShellSurfaceElevatedBrush", lightContextMenu);
+            Set(resources, "ShellSurfaceSubtleBrush", lightFooter);
             Set(resources, "LauncherMaterialBrush", lightLauncher);
             Set(resources, "SystemBarMaterialBrush", lightMaterial);
             Set(resources, "ContextMenuMaterialBrush", lightContextMenu);

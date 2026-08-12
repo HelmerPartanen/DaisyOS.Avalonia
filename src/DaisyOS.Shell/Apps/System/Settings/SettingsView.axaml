@@ -61,7 +61,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid ColumnDefinitions="240,*" Background="{DynamicResource SystemBarMaterialBrush}">
+  <Grid ColumnDefinitions="240,*" Background="{DynamicResource ShellSurfaceBrush}">
     <!-- Transparent Sidebar Container -->
     <Border Grid.Column="0" Background="Transparent" Padding="12,12,8,12">
       <ScrollViewer VerticalScrollBarVisibility="Auto">

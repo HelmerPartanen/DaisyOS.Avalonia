@@ -74,21 +74,22 @@
       <ScrollViewer Grid.Row="1" Padding="24,0,24,16" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Width="632" HorizontalAlignment="Center" Spacing="24">
           
-          <!-- Section 1: Pinned Apps (Spacious 6-Column Grid inside 632px) -->
+          <!-- Section 1: Pinned Apps -->
           <StackPanel Spacing="12">
-            <Grid ColumnDefinitions="*,Auto" Width="632">
-              <TextBlock Grid.Column="0" Text="Pinned" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
-              <Button Grid.Column="1" Classes="SubtleLink">
-                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                  <TextBlock Text="Show all" FontSize="12" VerticalAlignment="Center"/>
-                  <TextBlock Text="expand_more" 
-                             FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
-                             FontSize="18" 
-                             Foreground="{DynamicResource TextSecondaryBrush}" 
-                             VerticalAlignment="Center"/>
-                </StackPanel>
-              </Button>
-            </Grid>
+            <controls:SectionHeader Title="Pinned" Width="632">
+              <controls:SectionHeader.ActionContent>
+                <Button Classes="SubtleLink">
+                  <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="Show all" FontSize="12" VerticalAlignment="Center"/>
+                    <TextBlock Text="expand_more" 
+                               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                               FontSize="18" 
+                               Foreground="{DynamicResource TextSecondaryBrush}" 
+                               VerticalAlignment="Center"/>
+                  </StackPanel>
+                </Button>
+              </controls:SectionHeader.ActionContent>
+            </controls:SectionHeader>
             
             <!-- 6 Column Grid of Spacious Pinned Items -->
             <ItemsControl ItemsSource="{Binding PinnedApps}">
@@ -108,7 +109,7 @@
                                RenderOptions.BitmapInterpolationMode="HighQuality" 
                                Width="36" Height="36"/>
                         <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                                Background="{DynamicResource QuickSettingBackgroundBrush}" CornerRadius="8" Width="36" Height="36">
+                                Background="{DynamicResource ShellSurfaceSubtleBrush}" CornerRadius="8" Width="36" Height="36">
                           <TextBlock Text="{Binding Name[0]}" FontSize="16" FontWeight="Bold" 
                                      Foreground="{DynamicResource TextPrimaryBrush}" 
                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -122,43 +123,42 @@
             </ItemsControl>
           </StackPanel>
 
-          <!-- Section 2: All Applications (Strict 632px Boundary with Subtle View Menu Placeholder) -->
+          <!-- Section 2: All Applications -->
           <StackPanel Spacing="16" Width="632">
-            <Grid ColumnDefinitions="*,Auto" Width="632">
-              <TextBlock Grid.Column="0" Text="All Apps" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
-              
-              <!-- Native Subtle Menu Button Placeholder matching "Show all ˅" style -->
-              <Button Grid.Column="1" Classes="SubtleLink">
-                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                  <TextBlock Text="{Binding SelectedViewModeText}" FontSize="12" VerticalAlignment="Center"/>
-                  <TextBlock Text="expand_more" 
-                             FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
-                             FontSize="18" 
-                             Foreground="{DynamicResource TextSecondaryBrush}" 
-                             VerticalAlignment="Center"/>
-                </StackPanel>
-                <Button.Flyout>
-                  <MenuFlyout Placement="BottomEdgeAlignedRight">
-                    <MenuItem Click="OnSetViewAlphabetical">
-                      <MenuItem.Header>
-                        <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
-                          <TextBlock Grid.Column="0" Text="check" Classes="MenuIcon" IsVisible="{Binding IsAlphabeticalMode}"/>
-                          <TextBlock Grid.Column="1" Text="Alphabetical (A–Z)" FontSize="12" VerticalAlignment="Center"/>
-                        </Grid>
-                      </MenuItem.Header>
-                    </MenuItem>
-                    <MenuItem Click="OnSetViewCategory">
-                      <MenuItem.Header>
-                        <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
-                          <TextBlock Grid.Column="0" Text="check" Classes="MenuIcon" IsVisible="{Binding IsCategoryMode}"/>
-                          <TextBlock Grid.Column="1" Text="By Category" FontSize="12" VerticalAlignment="Center"/>
-                        </Grid>
-                      </MenuItem.Header>
-                    </MenuItem>
-                  </MenuFlyout>
-                </Button.Flyout>
-              </Button>
-            </Grid>
+            <controls:SectionHeader Title="All Apps" Width="632">
+              <controls:SectionHeader.ActionContent>
+                <Button Classes="SubtleLink">
+                  <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding SelectedViewModeText}" FontSize="12" VerticalAlignment="Center"/>
+                    <TextBlock Text="expand_more" 
+                               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                               FontSize="18" 
+                               Foreground="{DynamicResource TextSecondaryBrush}" 
+                               VerticalAlignment="Center"/>
+                  </StackPanel>
+                  <Button.Flyout>
+                    <MenuFlyout Placement="BottomEdgeAlignedRight">
+                      <MenuItem Click="OnSetViewAlphabetical">
+                        <MenuItem.Header>
+                          <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
+                            <TextBlock Grid.Column="0" Text="check" Classes="MenuIcon" IsVisible="{Binding IsAlphabeticalMode}"/>
+                            <TextBlock Grid.Column="1" Text="Alphabetical (A–Z)" FontSize="12" VerticalAlignment="Center"/>
+                          </Grid>
+                        </MenuItem.Header>
+                      </MenuItem>
+                      <MenuItem Click="OnSetViewCategory">
+                        <MenuItem.Header>
+                          <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
+                            <TextBlock Grid.Column="0" Text="check" Classes="MenuIcon" IsVisible="{Binding IsCategoryMode}"/>
+                            <TextBlock Grid.Column="1" Text="By Category" FontSize="12" VerticalAlignment="Center"/>
+                          </Grid>
+                        </MenuItem.Header>
+                      </MenuItem>
+                    </MenuFlyout>
+                  </Button.Flyout>
+                </Button>
+              </controls:SectionHeader.ActionContent>
+            </controls:SectionHeader>
 
             <!-- Grouped Applications (Alphabetical or By Category) -->
             <ItemsControl ItemsSource="{Binding ActiveGroups}" Width="632">

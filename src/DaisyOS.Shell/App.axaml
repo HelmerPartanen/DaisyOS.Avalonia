@@ -61,35 +61,35 @@
     </Style>
 
     <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
     </Style>
     <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ShellPressedBrush}" />
     </Style>
     <!-- Flyout triggers stay visibly active for the duration of their open surface. -->
     <Style Selector="Button.ShellButton.ShellButtonActive /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
     </Style>
 
     <!-- Reusable Material You Quick Settings container buttons. -->
     <Style Selector="ToggleButton.QuickSetting, Button.QuickSettingDetails">
-      <Setter Property="Foreground" Value="{DynamicResource QuickSettingForegroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Padding" Value="0" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active), Button.QuickSettingDetails:not(.Active)">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ShellSurfaceSubtleBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ShellPressedBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting > TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource QuickSettingForegroundBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:disabled">
       <Setter Property="Opacity" Value="0.48" />

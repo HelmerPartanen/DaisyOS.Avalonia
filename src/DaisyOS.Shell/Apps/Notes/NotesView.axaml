@@ -57,7 +57,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid ColumnDefinitions="240,*" Background="{DynamicResource SystemBarMaterialBrush}">
+  <Grid ColumnDefinitions="240,*" Background="{DynamicResource ShellSurfaceBrush}">
     <!-- Transparent Sidebar Container (matching Settings 240px sidebar) -->
     <Border Grid.Column="0" Background="Transparent" Padding="12,12,8,12">
       <Grid RowDefinitions="Auto,Auto,*">

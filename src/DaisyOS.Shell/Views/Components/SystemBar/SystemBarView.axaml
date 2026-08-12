@@ -18,59 +18,25 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <Style Selector="ToggleButton.QuickAction">
-      <!-- Labels sit below the interactive tile, so the hit target stays visually quiet. -->
-      <Setter Property="Width" Value="92"/>
-      <Setter Property="Height" Value="56"/>
-      <Setter Property="CornerRadius" Value="10"/>
-      <Setter Property="Padding" Value="0"/>
-      <Setter Property="HorizontalAlignment" Value="Center"/>
-      <Setter Property="HorizontalContentAlignment" Value="Center"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="Button.QuickSettingDetails">
-      <Setter Property="Width" Value="27"/>
-      <Setter Property="Height" Value="56"/>
-      <Setter Property="Padding" Value="0"/>
-      <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="0,10,10,0"/>
-      <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}"/>
-      <Setter Property="HorizontalContentAlignment" Value="Center"/>
-      <Setter Property="VerticalContentAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="Border.QuickSettingSplitDivider">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingInactiveDividerBrush}"/>
-    </Style>
-    <Style Selector="Border.QuickSettingSplitDivider.Active">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingActiveDividerBrush}"/>
-    </Style>
     <Style Selector="Button.VolumeOutputDetails">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ShellSurfaceSubtleBrush}"/>
       <Setter Property="CornerRadius" Value="0,10,10,0"/>
     </Style>
     <Style Selector="Button.VolumeOutputDetails:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}"/>
-    </Style>
-    <Style Selector="TextBlock.QuickSettingLabel">
-      <Setter Property="FontSize" Value="11"/>
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
-      <Setter Property="HorizontalAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="TextBlock.QuickSettingLabel.Active">
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
-      <Setter Property="Background" Value="{DynamicResource QuickSettingBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ShellSurfaceSubtleBrush}"/>
       <Setter Property="CornerRadius" Value="10"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem">
       <Setter Property="Height" Value="44"/>
@@ -80,7 +46,7 @@
       <Setter Property="Padding" Value="10,0"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
@@ -109,7 +75,7 @@
   <!-- Same material, height, padding, corner radius and shadow as TaskbarView. -->
   <Border Height="52"
           Padding="6"
-          Background="{DynamicResource SystemBarMaterialBrush}"
+          Background="{DynamicResource ShellSurfaceBrush}"
           BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
           BorderThickness="1"
           CornerRadius="12"
@@ -119,7 +85,6 @@
 
       <!-- Network and sound are one Quick Settings action, laid out on an even two-icon grid. -->
       <Button x:Name="QuickSettingsButton" Classes="ShellButton" Width="96" Height="40" ToolTip.Tip="Quick settings">
-        <!-- Matches TaskbarView's button content surface exactly; only the icons differ. -->
         <Border Width="96" Height="40" Background="Transparent" CornerRadius="8">
           <Grid ColumnDefinitions="*,*,*">
             <TextBlock Grid.Column="0" Text="wifi"
@@ -137,78 +102,42 @@
           <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-14" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}"
                   Opened="OnQuickSettingsFlyoutOpened" Closed="OnQuickSettingsFlyoutClosed">
             <Border Width="336" Height="304" Padding="16,16,16,0"
-                    Background="{DynamicResource SystemBarMaterialBrush}"
+                    Background="{DynamicResource ShellSurfaceBrush}"
                     BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
                     BorderThickness="1" CornerRadius="14"
                     BoxShadow="0 12 36 0 #60000000">
               <Grid>
                 <Grid x:Name="QuickSettingsMainPage" RowDefinitions="*,Auto">
                   <StackPanel Grid.Row="0" Spacing="12">
-                    <!-- Labels remain outside the controls; Wi-Fi and Bluetooth split into action + details. -->
+                    <!-- Reusable Quick Setting Tiles Grid -->
                     <Grid Width="304" HorizontalAlignment="Center"
                           ColumnDefinitions="96,96,96" ColumnSpacing="8"
                           RowDefinitions="Auto,Auto" RowSpacing="8">
-                  <StackPanel Grid.Row="0" Grid.Column="0" Width="96" Spacing="6">
-                    <Grid Height="56" ColumnDefinitions="68,1,27">
-                      <ToggleButton x:Name="WifiToggle" Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" IsChecked="True" Click="OnWifiToggleStateChanged" ToolTip.Tip="Toggle Wi-Fi">
-                        <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-                      </ToggleButton>
-                      <Border x:Name="WifiSplitDivider" Grid.Column="1" Classes="QuickSettingSplitDivider Active" IsHitTestVisible="False"/>
-                      <Button x:Name="WifiDetailsButton" Grid.Column="2" Classes="ShellButton QuickSettingDetails Active" Click="OnWifiNetworksButtonClicked">
-                        <ToolTip.Tip>
-                          <TextBlock Text="Wi-Fi networks" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        </ToolTip.Tip>
-                        <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-                      </Button>
+                      <controls:QuickSettingTile Grid.Row="0" Grid.Column="0" x:Name="WifiTile"
+                                                 Icon="wifi" Label="Wi-Fi" HasDetails="True" IsChecked="True"
+                                                 ToolTipText="Toggle Wi-Fi" DetailsToolTipText="Wi-Fi networks"
+                                                 DetailsClicked="OnWifiNetworksButtonClicked"/>
+                      <controls:QuickSettingTile Grid.Row="0" Grid.Column="1" x:Name="BluetoothTile"
+                                                 Icon="bluetooth" Label="Bluetooth" HasDetails="True"
+                                                 ToolTipText="Toggle Bluetooth" DetailsToolTipText="Bluetooth devices"
+                                                 DetailsClicked="OnBluetoothDevicesButtonClicked"/>
+                      <controls:QuickSettingTile Grid.Row="0" Grid.Column="2" x:Name="FocusTile"
+                                                 Icon="do_not_disturb_on" Label="Focus" ToolTipText="Do not disturb"/>
+                      <controls:QuickSettingTile Grid.Row="1" Grid.Column="0" x:Name="NightLightTile"
+                                                 Icon="dark_mode" Label="Night light" ToolTipText="Blue light filter"/>
+                      <controls:QuickSettingTile Grid.Row="1" Grid.Column="1" x:Name="ThemeTile"
+                                                 Icon="contrast" Label="Theme" IsChecked="True" ToolTipText="Dark theme"
+                                                 Toggled="OnThemeTileToggled"/>
+                      <controls:QuickSettingTile Grid.Row="1" Grid.Column="2" x:Name="GamingTile"
+                                                 Icon="sports_esports" Label="Gaming" ToolTipText="Gaming mode"/>
                     </Grid>
-                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=WifiToggle}" Text="Wi-Fi"/>
-                  </StackPanel>
-                  <StackPanel Grid.Row="0" Grid.Column="1" Width="96" Spacing="6">
-                    <Grid Height="56" ColumnDefinitions="68,1,27">
-                      <ToggleButton x:Name="BluetoothToggle" Grid.Column="0" Classes="ShellButton QuickAction QuickSetting" Width="68" CornerRadius="10,0,0,10" Click="OnBluetoothToggleStateChanged" ToolTip.Tip="Toggle Bluetooth">
-                        <TextBlock Text="bluetooth" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-                      </ToggleButton>
-                      <Border x:Name="BluetoothSplitDivider" Grid.Column="1" Classes="QuickSettingSplitDivider" IsHitTestVisible="False"/>
-                      <Button x:Name="BluetoothDetailsButton" Grid.Column="2" Classes="ShellButton QuickSettingDetails" Click="OnBluetoothDevicesButtonClicked">
-                        <ToolTip.Tip>
-                          <TextBlock Text="Bluetooth devices" Foreground="{DynamicResource TextPrimaryBrush}"/>
-                        </ToolTip.Tip>
-                        <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-                      </Button>
-                    </Grid>
-                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=BluetoothToggle}" Text="Bluetooth"/>
-                  </StackPanel>
-                  <StackPanel Grid.Row="0" Grid.Column="2" Width="96" Spacing="6">
-                    <ToggleButton x:Name="FocusToggle" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Do not disturb">
-                      <TextBlock Text="do_not_disturb_on" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-                    </ToggleButton>
-                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=FocusToggle}" Text="Focus"/>
-                  </StackPanel>
-                  <StackPanel Grid.Row="1" Grid.Column="0" Width="96" Spacing="6">
-                    <ToggleButton x:Name="NightLightToggle" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Blue light filter">
-                      <TextBlock Text="dark_mode" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-                    </ToggleButton>
-                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=NightLightToggle}" Text="Night light"/>
-                  </StackPanel>
-                  <StackPanel Grid.Row="1" Grid.Column="1" Width="96" Spacing="6">
-                    <ToggleButton x:Name="ThemeToggle" Classes="ShellButton QuickAction QuickSetting" IsChecked="True" ToolTip.Tip="Dark theme" Click="OnThemeToggleClicked">
-                      <TextBlock Text="contrast" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-                    </ToggleButton>
-                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=ThemeToggle}" Text="Theme"/>
-                  </StackPanel>
-                  <StackPanel Grid.Row="1" Grid.Column="2" Width="96" Spacing="6">
-                    <ToggleButton x:Name="GamingToggle" Classes="ShellButton QuickAction QuickSetting" ToolTip.Tip="Gaming mode">
-                      <TextBlock Text="sports_esports" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-                    </ToggleButton>
-                    <TextBlock Classes="QuickSettingLabel" Classes.Active="{Binding IsChecked, ElementName=GamingToggle}" Text="Gaming"/>
-                  </StackPanel>
-                </Grid>
+
                     <Grid ColumnDefinitions="*,1,40">
                       <controls:QuickSettingsSlider Grid.Column="0" Icon="volume_up"
                                                     Minimum="0"
                                                     Maximum="100"
                                                     Value="72" />
-                      <Border Grid.Column="1" Background="{DynamicResource QuickSettingInactiveDividerBrush}" IsHitTestVisible="False"/>
+                      <Border Grid.Column="1" Background="{DynamicResource ShellDividerBrush}" IsHitTestVisible="False"/>
                       <Button Grid.Column="2" Classes="ShellButton VolumeOutputDetails" ToolTip.Tip="Choose output device"
                               Click="OnOutputDevicesButtonClicked">
                         <TextBlock Text="chevron_right"
@@ -220,9 +149,9 @@
                     </Grid>
                   </StackPanel>
 
-                  <!-- Mock footer; its actions are intentionally not wired until their surfaces are available. -->
+                  <!-- Footer -->
                   <Grid Grid.Row="1" Height="52" RowDefinitions="1,*">
-                    <Border Grid.Row="0" Background="{DynamicResource TaskbarBorderBrush}" Opacity="0.7"/>
+                    <Border Grid.Row="0" Background="{DynamicResource ShellSurfaceBorderBrush}" Opacity="0.7"/>
                     <Grid Grid.Row="1" ColumnDefinitions="*,40,40">
                       <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                         <TextBlock Text="battery_full"
@@ -246,52 +175,23 @@
                   </Grid>
                 </Grid>
 
+                <!-- Sub Pages with FlyoutPageHeader -->
                 <StackPanel x:Name="OutputDevicesPage" IsVisible="False" Spacing="12">
-                  <Grid ColumnDefinitions="40,*,40">
-                    <Button Classes="ShellButton OutputDevicesButton"
-                            Click="OnOutputDevicesBackClicked" ToolTip.Tip="Back to quick settings">
-                      <TextBlock Text="chevron_left"
-                                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                 FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Button>
-                    <TextBlock Grid.Column="1" Text="Output devices" FontSize="15" FontWeight="Regular"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Border Grid.Column="2" Width="40" Height="40"/>
-                  </Grid>
+                  <controls:FlyoutPageHeader Title="Output devices" BackClicked="OnOutputDevicesBackClicked"/>
                   <StackPanel x:Name="OutputDevicesHost" Spacing="2">
                     <TextBlock Text="Loading devices…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/>
                   </StackPanel>
                 </StackPanel>
 
                 <StackPanel x:Name="WifiNetworksPage" IsVisible="False" Spacing="12">
-                  <Grid ColumnDefinitions="40,*,40">
-                    <Button Classes="ShellButton OutputDevicesButton"
-                            Click="OnWifiNetworksBackClicked" ToolTip.Tip="Back to quick settings">
-                      <TextBlock Text="chevron_left"
-                                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                 FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Button>
-                    <TextBlock Grid.Column="1" Text="Wi-Fi networks" FontSize="15" FontWeight="Regular"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Border Grid.Column="2" Width="40" Height="40"/>
-                  </Grid>
+                  <controls:FlyoutPageHeader Title="Wi-Fi networks" BackClicked="OnWifiNetworksBackClicked"/>
                   <StackPanel x:Name="WifiNetworksHost" Spacing="2">
                     <TextBlock Text="Loading networks…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/>
                   </StackPanel>
                 </StackPanel>
 
                 <StackPanel x:Name="BluetoothDevicesPage" IsVisible="False" Spacing="12">
-                  <Grid ColumnDefinitions="40,*,40">
-                    <Button Classes="ShellButton OutputDevicesButton"
-                            Click="OnBluetoothDevicesBackClicked" ToolTip.Tip="Back to quick settings">
-                      <TextBlock Text="chevron_left"
-                                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                 FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Button>
-                    <TextBlock Grid.Column="1" Text="Bluetooth devices" FontSize="15" FontWeight="Regular"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Border Grid.Column="2" Width="40" Height="40"/>
-                  </Grid>
+                  <controls:FlyoutPageHeader Title="Bluetooth devices" BackClicked="OnBluetoothDevicesBackClicked"/>
                   <StackPanel x:Name="BluetoothDevicesHost" Spacing="2">
                     <TextBlock Text="Loading devices…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/>
                   </StackPanel>
@@ -303,7 +203,6 @@
       </Button>
 
       <Button x:Name="CalendarButton" Classes="ShellButton" Height="40" MinWidth="140" Padding="10,0" ToolTip.Tip="Calendar and notifications">
-        <!-- Same taskbar button content surface, with the clock as its icon/content. -->
         <Border Background="Transparent" CornerRadius="8">
           <TextBlock x:Name="ClockText" FontSize="13" FontWeight="Regular" TextAlignment="Center"
                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -311,8 +210,8 @@
         <Button.Flyout>
           <Flyout Placement="TopEdgeAlignedRight" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}"
                   Opened="OnCalendarFlyoutOpened" Closed="OnCalendarFlyoutClosed">
-            <Border Padding="16" Background="{DynamicResource DropdownMenuBackgroundBrush}"
-                    BorderBrush="{DynamicResource TaskbarBorderBrush}" BorderThickness="1" CornerRadius="12">
+            <Border Padding="16" Background="{DynamicResource ShellSurfaceElevatedBrush}"
+                    BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="1" CornerRadius="12">
               <StackPanel Spacing="12">
                 <TextBlock x:Name="CalendarHeading" FontWeight="Regular"/>
                 <Calendar IsTodayHighlighted="True"/>

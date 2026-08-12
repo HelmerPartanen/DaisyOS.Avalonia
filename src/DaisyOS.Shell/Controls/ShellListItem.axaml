@@ -1,0 +1,39 @@
+<UserControl x:Class="DaisyOS.Shell.Controls.ShellListItem"
+             x:Name="Root"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Button Classes="ShellButton OutputDeviceItem"
+          Classes.SelectedOutputDevice="{Binding IsSelected, ElementName=Root}"
+          Classes.ConnectedWifiNetwork="{Binding IsSelected, ElementName=Root}"
+          Classes.ConnectedBluetoothDevice="{Binding IsSelected, ElementName=Root}"
+          Click="OnButtonClick">
+    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" VerticalAlignment="Center">
+      <!-- Left Icon / Glyph -->
+      <TextBlock Grid.Column="0"
+                 Text="{Binding IconGlyph, ElementName=Root}"
+                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                 FontSize="18"
+                 VerticalAlignment="Center"
+                 IsVisible="{Binding IconGlyph, ElementName=Root, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+      <!-- Text Header & Details -->
+      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+        <TextBlock Text="{Binding Title, ElementName=Root}"
+                   FontSize="13"
+                   FontWeight="Medium"
+                   TextTrimming="CharacterEllipsis"
+                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+        <TextBlock Text="{Binding Subtitle, ElementName=Root}"
+                   FontSize="11"
+                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   TextTrimming="CharacterEllipsis"
+                   IsVisible="{Binding Subtitle, ElementName=Root, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+      </StackPanel>
+
+      <!-- Optional Right Content -->
+      <ContentControl Grid.Column="2"
+                      Content="{Binding RightContent, ElementName=Root}"
+                      VerticalAlignment="Center"/>
+    </Grid>
+  </Button>
+</UserControl>
