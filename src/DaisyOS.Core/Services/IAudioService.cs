@@ -12,5 +12,6 @@ public interface IAudioService
 
     Task<IReadOnlyList<AudioDeviceInfo>> GetAudioDevicesAsync(CancellationToken cancellationToken = default);
 
-    Task SetDefaultAudioDeviceAsync(string deviceId, CancellationToken cancellationToken = default);
+    /// <summary>Returns false when PipeWire rejects the requested sink.</summary>
+    Task<bool> SetDefaultAudioDeviceAsync(string deviceId, CancellationToken cancellationToken = default);
 }

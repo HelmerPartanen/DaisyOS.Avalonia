@@ -113,7 +113,7 @@ namespace DaisyOS.Shell.Views.Components.Desktop
         {
             if (Bounds.Width <= 0 || Bounds.Height <= 0) return;
 
-            double scaling = 1.0;
+            var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
             int physicalWidth = (int)Math.Round(Bounds.Width * scaling);
             int physicalHeight = (int)Math.Round(Bounds.Height * scaling);
 
@@ -160,7 +160,7 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             if (Bounds.Width <= 0 || Bounds.Height <= 0) return;
 
             var workArea = new DaisyOS.Core.Desktop.Rect(0, 0, Bounds.Width, Bounds.Height - 48);
-            double dpi = 96.0;
+            var dpi = (TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0) * 96.0;
 
             double cellW = _metricsProvider.GetCellWidth(dpi);
             double cellH = _metricsProvider.GetCellHeight(dpi);

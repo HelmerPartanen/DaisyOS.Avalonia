@@ -1,0 +1,41 @@
+<Window x:Class="DaisyOS.Shell.Apps.Files.FilesWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Files" Width="980" Height="640" MinWidth="620" MinHeight="420"
+        Background="{DynamicResource ShellSurfaceBrush}">
+  <Grid RowDefinitions="Auto,*,Auto" Margin="20" RowSpacing="14">
+    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+      <Button Classes="ShellButton" Width="40" Height="40" ToolTip.Tip="Go back" Click="OnBackClicked">
+        <TextBlock Text="arrow_back" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+      </Button>
+      <TextBox x:Name="PathBox" Grid.Column="1" Height="40" VerticalContentAlignment="Center"
+               AutomationProperties.Name="Current folder path" KeyDown="OnPathKeyDown"/>
+      <Button Grid.Column="2" Classes="ShellButton" Width="40" Height="40" ToolTip.Tip="Refresh" Click="OnRefreshClicked">
+        <TextBlock Text="refresh" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+      </Button>
+    </Grid>
+    <Grid Grid.Row="1" ColumnDefinitions="210,*" ColumnSpacing="16">
+      <StackPanel Spacing="4">
+        <TextBlock Text="Locations" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,0,0,6"/>
+        <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnHomeClicked">Home</Button>
+        <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnDesktopClicked">Desktop</Button>
+        <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnDownloadsClicked">Downloads</Button>
+        <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnDocumentsClicked">Documents</Button>
+      </StackPanel>
+      <Border Grid.Column="1" BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
+        <ListBox x:Name="EntriesList" AutomationProperties.Name="Folder contents" DoubleTapped="OnEntryDoubleTapped">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid ColumnDefinitions="32,*,Auto" Margin="12,7" ColumnSpacing="10">
+                <TextBlock Text="{Binding Icon}" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="19"/>
+                <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Column="2" Text="{Binding Detail}" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"/>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Border>
+    </Grid>
+    <TextBlock x:Name="StatusText" Grid.Row="2" Foreground="{DynamicResource TextSecondaryBrush}"/>
+  </Grid>
+</Window>

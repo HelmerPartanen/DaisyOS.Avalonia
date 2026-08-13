@@ -16,6 +16,7 @@ public partial class QuickSettingsSlider : UserControl
     private double _lastProgressFillWidth = double.NaN;
     private readonly Border? _trackBackground;
     private readonly Border? _progressFill;
+    public event EventHandler? ValueChanged;
     public static readonly StyledProperty<string> IconProperty =
         AvaloniaProperty.Register<QuickSettingsSlider, string>(nameof(Icon), "volume_up");
 
@@ -30,7 +31,11 @@ public partial class QuickSettingsSlider : UserControl
 
     static QuickSettingsSlider()
     {
-        ValueProperty.Changed.AddClassHandler<QuickSettingsSlider>((slider, _) => slider.UpdateProgressFill());
+        ValueProperty.Changed.AddClassHandler<QuickSettingsSlider>((slider, _) =>
+        {
+            slider.UpdateProgressFill();
+            slider.ValueChanged?.Invoke(slider, EventArgs.Empty);
+        });
     }
 
     public QuickSettingsSlider()
@@ -43,6 +48,7 @@ public partial class QuickSettingsSlider : UserControl
         AddHandler(PointerMovedEvent, OnTrackPointerMoved, RoutingStrategies.Tunnel);
         AddHandler(PointerReleasedEvent, OnTrackPointerReleased, RoutingStrategies.Tunnel);
         AddHandler(PointerCaptureLostEvent, (_, _) => _isAdjustingFromTrack = false);
+        AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
     }
 
     public string Icon
@@ -134,5 +140,21 @@ public partial class QuickSettingsSlider : UserControl
         var position = e.GetPosition(_trackBackground).X;
         var progress = Math.Clamp(position / _trackBackground.Bounds.Width, 0d, 1d);
         SetCurrentValue(ValueProperty, Minimum + ((Maximum - Minimum) * progress));
+    }
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        var step = Math.Max(1, (Maximum - Minimum) / 20d);
+        var value = e.Key switch
+        {
+            Key.Left or Key.Down => Value - step,
+            Key.Right or Key.Up => Value + step,
+            Key.Home => Minimum,
+            Key.End => Maximum,
+            _ => double.NaN
+        };
+        if (double.IsNaN(value)) return;
+        SetCurrentValue(ValueProperty, Math.Clamp(value, Minimum, Maximum));
+        e.Handled = true;
     }
 }

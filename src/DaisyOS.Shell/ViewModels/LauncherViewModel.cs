@@ -186,16 +186,17 @@ public class LauncherViewModel : INotifyPropertyChanged
         }
     }
 
-    public void LaunchApp(LauncherItemViewModel? item)
+    public async Task<AppLaunchResult?> LaunchAppAsync(LauncherItemViewModel? item)
     {
-        if (item == null) return;
+        if (item == null) return null;
         try
         {
-            _launcherService.LaunchAsync(item.App);
+            return await _launcherService.LaunchAsync(item.App);
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Failed to launch app {item.Name}: {ex.Message}");
+            return new AppLaunchResult(false, $"{item.Name} could not be opened.");
         }
     }
 

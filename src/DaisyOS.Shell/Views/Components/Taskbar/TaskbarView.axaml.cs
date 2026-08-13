@@ -38,6 +38,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private double _pointerStartX;
         private double _dragStartLeft;
         private List<string>? _orderAtDragStart;
+        private IReadOnlyList<string>? _pendingOrder;
 
         public TaskbarView()
         {
@@ -71,8 +72,39 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                 WireUpIcon(child);
             }
 
+            if (_pendingOrder is { Count: > 0 })
+            {
+                ApplyOrderCore(_pendingOrder);
+            }
+
             LayoutAllInstant();
             UpdateCanvasWidth();
+        }
+
+        /// <summary>Restores a persisted order while retaining newly introduced dock items.</summary>
+        public void ApplyOrder(IReadOnlyList<string> order)
+        {
+            _pendingOrder = order;
+            if (_order.Count > 0)
+            {
+                ApplyOrderCore(order);
+                LayoutAllInstant();
+            }
+        }
+
+        private void ApplyOrderCore(IReadOnlyList<string> order)
+        {
+            var rank = order
+                .Select((id, index) => (id, index))
+                .ToDictionary(pair => pair.id, pair => pair.index, StringComparer.Ordinal);
+            _order.Sort((left, right) =>
+            {
+                var leftId = left.Tag as string ?? string.Empty;
+                var rightId = right.Tag as string ?? string.Empty;
+                var leftRank = rank.TryGetValue(leftId, out var l) ? l : int.MaxValue;
+                var rightRank = rank.TryGetValue(rightId, out var r) ? r : int.MaxValue;
+                return leftRank != rightRank ? leftRank.CompareTo(rightRank) : string.Compare(leftId, rightId, StringComparison.Ordinal);
+            });
         }
 
         private void WireUpIcon(Button icon)

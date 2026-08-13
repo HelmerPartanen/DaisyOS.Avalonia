@@ -79,7 +79,7 @@ public readonly record struct WallpaperRenderMetrics(
 /// </summary>
 public sealed class WallpaperImageService : IAsyncDisposable
 {
-    private readonly string _wallpaperPath;
+    private string _wallpaperPath;
     private readonly WallpaperDiagnostics _diagnostics;
 
     /// <summary>
@@ -183,6 +183,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
         }
         catch (OperationCanceledException)
         {
+            if (cancellationToken.IsCancellationRequested) throw;
             // If cancelled, return current cached bitmap if available
             lock (_swapLock)
             {
@@ -224,6 +225,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
         }
         catch (OperationCanceledException)
         {
+            if (cancellationToken.IsCancellationRequested) throw;
             lock (_swapLock)
             {
                 return _cachedBitmap;
@@ -238,7 +240,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
     private async ValueTask<Bitmap?> GenerateWallpaperAsync(WallpaperRenderMetrics metrics, CancellationToken cancellationToken)
     {
         // Step 1: Load and decode the source bitmap (once per path globally)
-        var sourceBitmap = await LoadSourceBitmapAsync(_wallpaperPath, cancellationToken).ConfigureAwait(false);
+        var sourceBitmap = await LoadSourceBitmapAsync(_wallpaperPath, _diagnostics, cancellationToken).ConfigureAwait(false);
         if (sourceBitmap is null || cancellationToken.IsCancellationRequested)
         {
             return null;
@@ -311,7 +313,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
     /// <summary>
     /// Loads the source bitmap from disk, using a global cache to avoid duplicate decodes.
     /// </summary>
-    private static async Task<Bitmap?> LoadSourceBitmapAsync(string path, CancellationToken cancellationToken)
+    private static async Task<Bitmap?> LoadSourceBitmapAsync(string path, WallpaperDiagnostics diagnostics, CancellationToken cancellationToken)
     {
         // Return early from cache without Task.Run allocation cost.
         if (s_sourceBitmapCache.TryGetValue(path, out var cached))
@@ -322,6 +324,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
         return await Task.Run(() =>
         {
             cancellationToken.ThrowIfCancellationRequested();
+            diagnostics.FileReadCount++;
 
             // Double-check inside Task.Run to avoid duplicate decode races.
             if (s_sourceBitmapCache.TryGetValue(path, out var existing))
@@ -337,10 +340,12 @@ public sealed class WallpaperImageService : IAsyncDisposable
                     var uri = new Uri(path);
                     using var stream = AssetLoader.Open(uri);
                     loaded = new Bitmap(stream);
+                    diagnostics.BitmapDecodeCount++;
                 }
                 else if (File.Exists(path))
                 {
                     loaded = new Bitmap(path);
+                    diagnostics.BitmapDecodeCount++;
                 }
                 else
                 {
@@ -358,7 +363,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
             lock (s_sourceCacheOrder)
             {
                 s_sourceCacheOrder.Enqueue(path);
-                const int MaxCachedSources = 1;
+                const int MaxCachedSources = 3;
                 while (s_sourceCacheOrder.Count > MaxCachedSources)
                 {
                     var evictKey = s_sourceCacheOrder.Dequeue();
@@ -472,7 +477,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
         try
         {
             // Load source for new path
-            var newSource = await LoadSourceBitmapAsync(newPath, linkedCts.Token).ConfigureAwait(false);
+            var newSource = await LoadSourceBitmapAsync(newPath, _diagnostics, linkedCts.Token).ConfigureAwait(false);
             if (newSource is null)
             {
                 return null;
@@ -504,6 +509,8 @@ public sealed class WallpaperImageService : IAsyncDisposable
                 _diagnostics.CacheReplacementCount++;
             }
 
+            _wallpaperPath = newPath;
+
             if (oldBitmap is not null && oldBitmap != resultBitmap)
             {
                 oldBitmap.Dispose();
@@ -514,6 +521,7 @@ public sealed class WallpaperImageService : IAsyncDisposable
         }
         catch (OperationCanceledException)
         {
+            if (cancellationToken.IsCancellationRequested) throw;
             lock (_swapLock)
             {
                 return _cachedBitmap;

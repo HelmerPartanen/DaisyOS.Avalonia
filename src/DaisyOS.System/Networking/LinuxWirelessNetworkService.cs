@@ -210,4 +210,14 @@ public sealed class LinuxWirelessNetworkService : IWirelessNetworkService
 
         return success;
     }
+
+    public async Task<bool> SetEnabledAsync(bool enabled, CancellationToken cancellationToken = default)
+    {
+        var result = await _commandRunner.RunAsync(
+            "nmcli",
+            ["radio", "wifi", enabled ? "on" : "off"],
+            CommandTimeout,
+            cancellationToken);
+        return result.Succeeded;
+    }
 }

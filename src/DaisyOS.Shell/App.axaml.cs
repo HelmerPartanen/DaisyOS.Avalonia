@@ -7,12 +7,14 @@ using Avalonia.Styling;
 using DaisyOS.Core.Models;
 using DaisyOS.Shell.Services.Theming;
 using DaisyOS.Shell.Services.Wallpaper;
+using DaisyOS.Shell.Services;
 using DaisyOS.Shell.Apps.System.Settings;
 using DaisyOS.Shell.Views;
 using System;
 
 using DaisyOS.Shell.Apps.Notes;
 using DaisyOS.Shell.Apps.Calculator;
+using DaisyOS.Shell.Apps.Files;
 
 namespace DaisyOS.Shell;
 
@@ -23,6 +25,10 @@ public partial class App : Application
     private SettingsWindow? _settingsWindow;
     private NotesWindow? _notesWindow;
     private CalculatorWindow? _calculatorWindow;
+    private FilesWindow? _filesWindow;
+
+    public ShellSessionState SessionState { get; } = new();
+    public ShellFeedbackService Feedback { get; } = new();
 
     public event EventHandler<string>? WallpaperChanged;
 
@@ -141,6 +147,21 @@ public partial class App : Application
         {
             _calculatorWindow.Show();
         }
+    }
+
+    public void ShowFiles()
+    {
+        if (_filesWindow is { IsVisible: true } filesWindow)
+        {
+            filesWindow.WindowState = Avalonia.Controls.WindowState.Normal;
+            filesWindow.Activate();
+            return;
+        }
+
+        _filesWindow = new FilesWindow();
+        _filesWindow.Closed += (_, _) => _filesWindow = null;
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow }) _filesWindow.Show(mainWindow);
+        else _filesWindow.Show();
     }
 
     public Task SetWallpaperAsync(string wallpaperUri) =>

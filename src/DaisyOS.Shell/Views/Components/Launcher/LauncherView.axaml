@@ -244,6 +244,13 @@
                        FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                        FontSize="20"
                        Foreground="{DynamicResource TextPrimaryBrush}"/>
+            <Button.Flyout>
+              <MenuFlyout Placement="TopEdgeAlignedRight">
+                <MenuItem Header="Sleep" Click="OnSuspendClicked"/>
+                <MenuItem Header="Restart" Click="OnRestartClicked"/>
+                <MenuItem Header="Shut down" Click="OnShutdownClicked"/>
+              </MenuFlyout>
+            </Button.Flyout>
           </Button>
 
         </Grid>

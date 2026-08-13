@@ -27,5 +27,12 @@
 
         <!-- System bar: right-edge status, tray, quick settings, notifications and calendar. -->
         <systembar:SystemBarView x:Name="SystemBar" ZIndex="20"/>
+
+        <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
+                HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"
+                Padding="16,10" Background="{DynamicResource ShellSurfaceElevatedBrush}"
+                BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="1" CornerRadius="10">
+            <TextBlock x:Name="FeedbackText" MaxWidth="440" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
+        </Border>
     </Grid>
 </UserControl>

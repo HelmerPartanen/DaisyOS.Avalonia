@@ -122,6 +122,17 @@ public sealed partial class LinuxBluetoothService : IBluetoothService
         return true;
     }
 
+    public async Task<bool> SetConnectedAsync(string address, bool connected, CancellationToken cancellationToken = default)
+    {
+        if (!DeviceAddressRegex().IsMatch(address)) return false;
+        var result = await _commandRunner.RunAsync(
+            "bluetoothctl",
+            [connected ? "connect" : "disconnect", address],
+            CommandTimeout,
+            cancellationToken);
+        return result.Succeeded;
+    }
+
     private static bool ParseShowOutput(string output)
     {
         return output.Contains("Powered: yes", StringComparison.OrdinalIgnoreCase);
@@ -160,4 +171,7 @@ public sealed partial class LinuxBluetoothService : IBluetoothService
 
     [GeneratedRegex(@"^Device\s+([0-9A-Fa-f:]{17})\s+(.+)$")]
     private static partial Regex DeviceLineRegex();
+
+    [GeneratedRegex(@"^[0-9A-Fa-f]{2}(:[0-9A-Fa-f]{2}){5}$")]
+    private static partial Regex DeviceAddressRegex();
 }

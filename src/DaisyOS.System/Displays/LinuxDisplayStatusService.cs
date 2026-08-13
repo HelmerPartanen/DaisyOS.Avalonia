@@ -17,6 +17,12 @@ public sealed partial class LinuxDisplayStatusService : IDisplayStatusService
 
     public async Task<DisplayStatus> GetStatusAsync(CancellationToken cancellationToken = default)
     {
+        if (string.Equals(Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"), "wayland", StringComparison.OrdinalIgnoreCase))
+        {
+            return new DisplayStatus(false, "Unavailable", "Unavailable", 0,
+                "Display details are not available through the active Wayland session yet.");
+        }
+
         var result = await _commandRunner.RunAsync("xrandr", ["--query"], CommandTimeout, cancellationToken);
         if (!result.Succeeded)
         {

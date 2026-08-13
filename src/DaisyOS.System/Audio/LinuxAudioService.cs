@@ -155,7 +155,8 @@ public sealed partial class LinuxAudioService : IAudioService
             }
         }
 
-        if (list.Count == 0)
+        if (list.Count == 0 &&
+            string.Equals(Environment.GetEnvironmentVariable("DAISYOS_MOCK_AUDIO"), "1", StringComparison.Ordinal))
         {
             list.Add(new AudioDeviceInfo("default", "Internal Speakers", "speaker", true));
             list.Add(new AudioDeviceInfo("hdmi", "HDMI / DisplayPort Output", "speaker", false));
@@ -173,13 +174,19 @@ public sealed partial class LinuxAudioService : IAudioService
         deviceName.Contains("hands-free", StringComparison.OrdinalIgnoreCase) ||
         deviceName.Contains("handsfree", StringComparison.OrdinalIgnoreCase);
 
-    public async Task SetDefaultAudioDeviceAsync(string deviceId, CancellationToken cancellationToken = default)
+    public async Task<bool> SetDefaultAudioDeviceAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        await _commandRunner.RunAsync(
+        if (string.IsNullOrWhiteSpace(deviceId) || !int.TryParse(deviceId, out _))
+        {
+            return false;
+        }
+
+        var result = await _commandRunner.RunAsync(
             "wpctl",
             ["set-default", deviceId],
             CommandTimeout,
             cancellationToken);
+        return result.Succeeded;
     }
 
     [GeneratedRegex(@"Volume:\s+(?<volume>[0-9]+(?:\.[0-9]+)?)", RegexOptions.IgnoreCase)]

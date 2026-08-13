@@ -4,16 +4,17 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using DaisyOS.System.Processes;
 using DaisyOS.Shell.Views.Components.Taskbar;
 using DaisyOS.Shell.Views.Components.Desktop;
 using DaisyOS.Shell.Views.Components.Launcher;
+using DaisyOS.Shell.Services;
 
 namespace DaisyOS.Shell.Views
 {
     public partial class ShellView : UserControl
     {
-        private readonly LinuxAppLauncherService _appLauncher = new();
+        private readonly ShellSessionState _sessionState = (Application.Current as App)?.SessionState ?? new ShellSessionState();
+        private readonly DispatcherTimer _feedbackTimer = new() { Interval = TimeSpan.FromSeconds(5) };
 
         public ShellView()
         {
@@ -24,12 +25,36 @@ namespace DaisyOS.Shell.Views
 
             if (taskbar != null && launcher != null)
             {
+                taskbar.ApplyOrder(_sessionState.DockOrder);
+                taskbar.OrderChanged += (_, order) => _sessionState.SetDockOrder(order);
                 taskbar.StartButtonClicked += (_, _) => SetLauncherOpen(launcher, taskbar, !launcher.IsVisible);
                 launcher.AppLaunchRequested += (_, _) => SetLauncherOpen(launcher, taskbar, false);
                 taskbar.AppIconClicked += async (_, appId) => await LaunchTaskbarAppAsync(appId, launcher, taskbar);
                 AddHandler(InputElement.PointerPressedEvent, (_, e) => DismissLauncherOnOutsidePress(e, launcher, taskbar), RoutingStrategies.Tunnel, handledEventsToo: true);
                 AddHandler(InputElement.KeyDownEvent, (_, e) => DismissLauncherOnEscape(e, launcher, taskbar), RoutingStrategies.Bubble, handledEventsToo: true);
             }
+
+            if (Application.Current is App app)
+            {
+                app.Feedback.MessageShown += OnFeedbackMessageShown;
+                Unloaded += (_, _) => app.Feedback.MessageShown -= OnFeedbackMessageShown;
+            }
+            _feedbackTimer.Tick += (_, _) =>
+            {
+                _feedbackTimer.Stop();
+                if (this.FindControl<Control>("FeedbackHost") is { } host) host.IsVisible = false;
+            };
+        }
+
+        private void OnFeedbackMessageShown(object? sender, string message)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (this.FindControl<TextBlock>("FeedbackText") is { } text) text.Text = message;
+                if (this.FindControl<Control>("FeedbackHost") is { } host) host.IsVisible = true;
+                _feedbackTimer.Stop();
+                _feedbackTimer.Start();
+            });
         }
 
         private async Task LaunchTaskbarAppAsync(string appId, LauncherView launcher, TaskbarView taskbar)
@@ -54,30 +79,13 @@ namespace DaisyOS.Shell.Views
                 return;
             }
 
-            var matchingApp = appId switch
+            if (appId == "files" && Application.Current is App filesApp)
             {
-                "files" => FindInstalledApp("dolphin", "nautilus", "thunar", "files"),
-                _ => null
-            };
-
-            if (matchingApp is not null)
-            {
-                await _appLauncher.LaunchAsync(matchingApp);
+                filesApp.ShowFiles();
                 return;
             }
 
-            if (appId == "files")
-            {
-                // xdg-open honors the user's preferred graphical file manager.
-                new SafeProcessLauncher().Launch("xdg-open", [Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)]);
-            }
         }
-
-        private DaisyOS.Core.Models.AppEntry? FindInstalledApp(params string[] candidates) =>
-            _appLauncher.GetAvailableApps().FirstOrDefault(app =>
-                candidates.Any(candidate =>
-                    app.Id.Contains(candidate, StringComparison.OrdinalIgnoreCase) ||
-                    app.Name.Equals(candidate, StringComparison.OrdinalIgnoreCase)));
 
         private static void SetLauncherOpen(LauncherView launcher, TaskbarView taskbar, bool isOpen)
         {

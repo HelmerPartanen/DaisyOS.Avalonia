@@ -16,6 +16,8 @@ using DaisyOS.System.Bluetooth;
 using DaisyOS.System.Networking;
 using DaisyOS.System.Processes;
 using DaisyOS.Shell.Controls;
+using DaisyOS.Shell.Services;
+using DaisyOS.System.Power;
 
 namespace DaisyOS.Shell.Views.Components.SystemBar;
 
@@ -25,6 +27,9 @@ public partial class SystemBarView : UserControl
     private readonly IAudioService _audioService = new LinuxAudioService(new SafeCommandRunner());
     private readonly IWirelessNetworkService _wirelessNetworkService = new LinuxWirelessNetworkService(new SafeCommandRunner());
     private readonly IBluetoothService _bluetoothService = new LinuxBluetoothService(new SafeCommandRunner());
+    private readonly IBatteryStatusService _batteryService = new LinuxBatteryStatusService();
+    private readonly ShellSessionState _sessionState = (Application.Current as App)?.SessionState ?? new ShellSessionState();
+    private CancellationTokenSource? _volumeUpdateCancellation;
     private TextBlock? _clockText;
     private TextBlock? _calendarHeading;
     private string? _lastClockValue;
@@ -41,21 +46,28 @@ public partial class SystemBarView : UserControl
         Unloaded += OnUnloaded;
     }
 
-    private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         _clockText ??= this.FindControl<TextBlock>("ClockText");
         _calendarHeading ??= this.FindControl<TextBlock>("CalendarHeading");
         UpdateClock();
         _clockTimer.Start();
+        await RefreshQuickSettingsStateAsync();
     }
 
-    private void OnUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e) => _clockTimer.Stop();
+    private void OnUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        _clockTimer.Stop();
+        _volumeUpdateCancellation?.Cancel();
+    }
 
     private void UpdateClock()
     {
         var now = DateTime.Now;
         var culture = CultureInfo.CurrentCulture;
-        var clockValue = $"{now:ddd MMM d}  {now:HH.mm}";
+        // System Bar uses the stable, compact 24-hour clock used throughout the shell.
+        // The calendar flyout retains the localized full-date heading.
+        var clockValue = now.ToString("HH.mm", CultureInfo.InvariantCulture);
         if (_clockText is not null && !string.Equals(clockValue, _lastClockValue, StringComparison.Ordinal))
         {
             _lastClockValue = clockValue;
@@ -78,6 +90,113 @@ public partial class SystemBarView : UserControl
         }
 
         await app.SetShellThemeAsync(tile.IsChecked ? ThemeVariant.Dark : ThemeVariant.Light);
+    }
+
+    private async void OnWifiTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is not QuickSettingTile tile) return;
+        if (!await _wirelessNetworkService.SetEnabledAsync(tile.IsChecked))
+        {
+            tile.IsChecked = !tile.IsChecked;
+            ReportFailure("DaisyOS could not change Wi-Fi. Check that NetworkManager is available.");
+        }
+        await RefreshQuickSettingsStateAsync();
+    }
+
+    private async void OnBluetoothTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is not QuickSettingTile tile) return;
+        if (!await _bluetoothService.SetEnabledAsync(tile.IsChecked))
+        {
+            tile.IsChecked = !tile.IsChecked;
+            ReportFailure("DaisyOS could not change Bluetooth. Check that Bluetooth is available.");
+        }
+        await RefreshQuickSettingsStateAsync();
+    }
+
+    private void OnFocusTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is QuickSettingTile tile) _sessionState.DoNotDisturb = tile.IsChecked;
+    }
+
+    private void OnGamingTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is QuickSettingTile tile) _sessionState.GamingMode = tile.IsChecked;
+    }
+
+    private async void OnVolumeChanged(object? sender, EventArgs e)
+    {
+        if (sender is not QuickSettingsSlider slider || !slider.IsLoaded) return;
+        _volumeUpdateCancellation?.Cancel();
+        _volumeUpdateCancellation?.Dispose();
+        _volumeUpdateCancellation = new CancellationTokenSource();
+        try
+        {
+            await Task.Delay(80, _volumeUpdateCancellation.Token);
+            await _audioService.SetVolumeAsync(slider.Value, _volumeUpdateCancellation.Token);
+            _sessionState.LastKnownVolume = slider.Value;
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch
+        {
+            ReportFailure("DaisyOS could not change the volume.");
+        }
+    }
+
+    private void OnSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+        (Application.Current as App)?.ShowSettings();
+
+    private async Task RefreshQuickSettingsStateAsync()
+    {
+        try
+        {
+            var wifiTask = _wirelessNetworkService.GetNetworksAsync();
+            var bluetoothTask = _bluetoothService.GetStatusAsync();
+            var batteryTask = _batteryService.GetStatusAsync();
+            var volumeTask = _audioService.GetVolumeAsync();
+            await Task.WhenAll(wifiTask, bluetoothTask, batteryTask, volumeTask);
+
+            var wifi = await wifiTask;
+            var bluetooth = await bluetoothTask;
+            var battery = await batteryTask;
+            var volume = await volumeTask;
+            if (this.FindControl<QuickSettingTile>("WifiTile") is { } wifiTile)
+            {
+                wifiTile.IsEnabled = wifi.IsAvailable;
+                wifiTile.IsChecked = wifi.Networks.Any(network => network.IsActive);
+                wifiTile.ToolTipText = wifi.IsAvailable ? "Toggle Wi-Fi" : wifi.Detail;
+            }
+            if (this.FindControl<QuickSettingTile>("BluetoothTile") is { } bluetoothTile)
+            {
+                bluetoothTile.IsEnabled = bluetooth.IsAvailable;
+                bluetoothTile.IsChecked = bluetooth.IsEnabled;
+                bluetoothTile.ToolTipText = bluetooth.IsAvailable ? "Toggle Bluetooth" : bluetooth.Detail;
+            }
+            if (this.FindControl<QuickSettingTile>("FocusTile") is { } focusTile) focusTile.IsChecked = _sessionState.DoNotDisturb;
+            if (this.FindControl<QuickSettingTile>("GamingTile") is { } gamingTile) gamingTile.IsChecked = _sessionState.GamingMode;
+            if (this.FindControl<QuickSettingTile>("ThemeTile") is { } themeTile)
+            {
+                themeTile.IsChecked = Application.Current?.ActualThemeVariant == ThemeVariant.Dark;
+                themeTile.ToolTipText = themeTile.IsChecked ? "Use light theme" : "Use dark theme";
+            }
+            if (this.FindControl<QuickSettingsSlider>("VolumeSlider") is { } volumeSlider)
+            {
+                volumeSlider.IsEnabled = volume is not null;
+                volumeSlider.Value = volume ?? _sessionState.LastKnownVolume ?? 0;
+            }
+            if (this.FindControl<TextBlock>("BatteryText") is { } batteryText)
+            {
+                batteryText.Text = battery.DisplayText;
+                ToolTip.SetTip(batteryText, battery.Detail);
+            }
+        }
+        catch
+        {
+            // Individual controls retain an explicit unavailable/disabled state rather than invented data.
+            if (this.FindControl<QuickSettingsSlider>("VolumeSlider") is { } volumeSlider) volumeSlider.IsEnabled = false;
+        }
     }
 
     private async void OnOutputDevicesButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -107,8 +226,11 @@ public partial class SystemBarView : UserControl
     private void OnBluetoothDevicesBackClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         SetQuickSettingsPage(QuickSettingsPage.Main);
 
-    private void OnQuickSettingsFlyoutOpened(object? sender, EventArgs e) =>
+    private void OnQuickSettingsFlyoutOpened(object? sender, EventArgs e)
+    {
         SetFlyoutButtonActive("QuickSettingsButton", true);
+        _ = RefreshQuickSettingsStateAsync();
+    }
 
     private void OnQuickSettingsFlyoutClosed(object? sender, EventArgs e) =>
         SetFlyoutButtonActive("QuickSettingsButton", false);
@@ -199,7 +321,11 @@ public partial class SystemBarView : UserControl
         }
         button.Click += async (_, _) =>
         {
-            await _audioService.SetDefaultAudioDeviceAsync(device.Id);
+            if (!await _audioService.SetDefaultAudioDeviceAsync(device.Id))
+            {
+                ToolTip.SetTip(button, "DaisyOS could not switch to this output.");
+                ReportFailure("DaisyOS could not switch to that audio output.");
+            }
             await RefreshOutputDevicesAsync();
         };
         return button;
@@ -438,6 +564,15 @@ public partial class SystemBarView : UserControl
 
         var button = CreateQuickSettingsListButton(content, false);
         button.Classes.Set("ConnectedBluetoothDevice", device.IsConnected);
+        button.Click += async (_, _) =>
+        {
+            if (!await _bluetoothService.SetConnectedAsync(device.Address, !device.IsConnected))
+            {
+                ToolTip.SetTip(button, "DaisyOS could not change this device connection.");
+                ReportFailure("DaisyOS could not change that Bluetooth connection.");
+            }
+            await LoadBluetoothDevicesAsync();
+        };
         return button;
     }
 
@@ -489,6 +624,8 @@ public partial class SystemBarView : UserControl
         Margin = new Avalonia.Thickness(10, 8),
         TextWrapping = TextWrapping.Wrap,
     };
+
+    private static void ReportFailure(string message) => (Application.Current as App)?.Feedback.Show(message);
 
     private enum QuickSettingsPage
     {

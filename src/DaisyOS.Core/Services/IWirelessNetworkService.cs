@@ -9,5 +9,6 @@ public interface IWirelessNetworkService
     Task<bool> ConnectToNetworkAsync(string ssid, string? password = null, CancellationToken cancellationToken = default);
 
     Task<bool> DisconnectFromNetworkAsync(CancellationToken cancellationToken = default);
-}
 
+    Task<bool> SetEnabledAsync(bool enabled, CancellationToken cancellationToken = default);
+}

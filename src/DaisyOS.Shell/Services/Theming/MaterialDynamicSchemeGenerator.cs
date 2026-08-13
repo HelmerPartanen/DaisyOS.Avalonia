@@ -27,9 +27,10 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
 
         if (isDark)
         {
-            // The default Material 3 HCT algorithm already adjusts saturation and luminance
-            // for dark mode readability. We no longer artificially mute the accents, 
-            // allowing vibrant wallpapers to truly shine.
+            // Keep wallpaper colour expressive without turning large dark-surface regions into
+            // neon panels. Text roles are muted together so the semantic pair stays coherent.
+            primaryContainer = Desaturate(primaryContainer, 0.62);
+            onPrimaryContainer = Desaturate(onPrimaryContainer, 0.62);
         }
         else
         {
@@ -110,5 +111,12 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
             Channel(baseColor.R, accentColor.R),
             Channel(baseColor.G, accentColor.G),
             Channel(baseColor.B, accentColor.B));
+    }
+
+    private static Color Desaturate(Color color, double amount)
+    {
+        var neutral = (byte)Math.Round((color.R + color.G + color.B) / 3d);
+        byte Channel(byte component) => (byte)Math.Round(component + ((neutral - component) * amount));
+        return Color.FromArgb(color.A, Channel(color.R), Channel(color.G), Channel(color.B));
     }
 }
