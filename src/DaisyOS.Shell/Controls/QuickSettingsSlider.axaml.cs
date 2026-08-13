@@ -8,7 +8,7 @@ using Avalonia.Interactivity;
 namespace DaisyOS.Shell.Controls;
 
 /// <summary>
-/// Shared quick-settings range control with an icon well and a high-visibility vertical thumb.
+/// Shared quick-settings range control with an icon well and an optional vertical thumb.
 /// </summary>
 public partial class QuickSettingsSlider : UserControl
 {
@@ -28,6 +28,12 @@ public partial class QuickSettingsSlider : UserControl
 
     public static readonly StyledProperty<double> ValueProperty =
         AvaloniaProperty.Register<QuickSettingsSlider, double>(nameof(Value), 0d, defaultBindingMode: BindingMode.TwoWay);
+
+    public static readonly StyledProperty<bool> ShowThumbProperty =
+        AvaloniaProperty.Register<QuickSettingsSlider, bool>(nameof(ShowThumb), true);
+
+    public static readonly StyledProperty<CornerRadius> TrackCornerRadiusProperty =
+        AvaloniaProperty.Register<QuickSettingsSlider, CornerRadius>(nameof(TrackCornerRadius), new CornerRadius(10, 0, 0, 10));
 
     static QuickSettingsSlider()
     {
@@ -73,6 +79,20 @@ public partial class QuickSettingsSlider : UserControl
     {
         get => GetValue(ValueProperty);
         set => SetValue(ValueProperty, value);
+    }
+
+    /// <summary>Controls the visual thumb without changing pointer or keyboard adjustment.</summary>
+    public bool ShowThumb
+    {
+        get => GetValue(ShowThumbProperty);
+        set => SetValue(ShowThumbProperty, value);
+    }
+
+    /// <summary>Defines the track silhouette for paired and standalone uses.</summary>
+    public CornerRadius TrackCornerRadius
+    {
+        get => GetValue(TrackCornerRadiusProperty);
+        set => SetValue(TrackCornerRadiusProperty, value);
     }
 
     private void UpdateProgressFill()

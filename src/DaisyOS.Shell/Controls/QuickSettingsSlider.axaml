@@ -1,5 +1,5 @@
 <UserControl x:Class="DaisyOS.Shell.Controls.QuickSettingsSlider"
-             x:Name="Root"
+            x:Name="Root"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Focusable="True"
@@ -25,7 +25,9 @@
               </RepeatButton>
             </Track.DecreaseButton>
             <Track.Thumb>
-              <Thumb Width="8" Height="40">
+              <Thumb Width="8"
+                     Height="40"
+                     IsVisible="{Binding ShowThumb, ElementName=Root}">
                 <Thumb.Template>
                   <ControlTemplate>
                     <Border Background="{DynamicResource AppPrimaryBrush}"
@@ -53,7 +55,7 @@
   <Grid x:Name="RangeSurface">
     <Border x:Name="TrackBackground"
             Background="{DynamicResource QuickSettingBackgroundBrush}"
-            CornerRadius="10,0,0,10"
+            CornerRadius="{Binding TrackCornerRadius, ElementName=Root}"
             ClipToBounds="True">
       <!-- The fill deliberately owns no corner geometry. The clipped track is
            the single rounded silhouette at every value, including 0 and 100. -->
@@ -74,4 +76,5 @@
             Value="{Binding Value, ElementName=Root, Mode=TwoWay}"
             Theme="{StaticResource QuickSettingsSliderTrackTheme}" />
   </Grid>
+
 </UserControl>

@@ -4,6 +4,10 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.VisualTree;
+using DaisyOS.Core.Services;
+using DaisyOS.System.Audio;
+using DaisyOS.System.Processes;
 
 namespace DaisyOS.Shell.Controls;
 
@@ -32,13 +36,16 @@ public partial class TopEdgeMetaball : UserControl
     private const double BodyCornerRadius = 12;
     private readonly TranslateTransform _positionTransform = new();
     private readonly ScaleTransform _revealTransform = new(1, 0);
+    private readonly IAudioService _audioService = new LinuxAudioService(new SafeCommandRunner());
     private IPointer? _dragPointer;
     private CancellationTokenSource? _revealCancellation;
+    private CancellationTokenSource? _volumeUpdateCancellation;
     private Visual? _dragCoordinateSpace;
     private Point _dragStart;
     private double _dragStartDistance;
     private double _dragStartHorizontalOffset;
     private double _horizontalOffset;
+    private bool _isSynchronizingVolume;
 
     public static readonly StyledProperty<double> EdgeDistanceProperty =
         AvaloniaProperty.Register<TopEdgeMetaball, double>(nameof(EdgeDistance), 4d);
@@ -66,7 +73,75 @@ public partial class TopEdgeMetaball : UserControl
         AddHandler(PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel);
         AddHandler(PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
         AddHandler(PointerCaptureLostEvent, OnPointerCaptureLost, RoutingStrategies.Tunnel);
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
         SetRevealProgress(0);
+    }
+
+    private async void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        await RefreshVolumeAsync();
+    }
+
+    private async Task RefreshVolumeAsync()
+    {
+        if (VolumeSlider is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var volume = await _audioService.GetVolumeAsync();
+            _isSynchronizingVolume = true;
+            try
+            {
+                VolumeSlider.IsEnabled = volume is not null;
+                if (volume is not null)
+                {
+                    VolumeSlider.Value = volume.Value;
+                }
+            }
+            finally
+            {
+                _isSynchronizingVolume = false;
+            }
+        }
+        catch
+        {
+            VolumeSlider.IsEnabled = false;
+        }
+    }
+
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        _volumeUpdateCancellation?.Cancel();
+        _volumeUpdateCancellation?.Dispose();
+        _volumeUpdateCancellation = null;
+    }
+
+    private async void OnVolumeChanged(object? sender, EventArgs e)
+    {
+        if (_isSynchronizingVolume || sender is not QuickSettingsSlider slider || !slider.IsLoaded)
+        {
+            return;
+        }
+
+        _volumeUpdateCancellation?.Cancel();
+        _volumeUpdateCancellation?.Dispose();
+        _volumeUpdateCancellation = new CancellationTokenSource();
+        try
+        {
+            await Task.Delay(80, _volumeUpdateCancellation.Token);
+            await _audioService.SetVolumeAsync(slider.Value, _volumeUpdateCancellation.Token);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch
+        {
+            slider.IsEnabled = false;
+        }
     }
 
     /// <summary>
@@ -76,6 +151,7 @@ public partial class TopEdgeMetaball : UserControl
     /// </summary>
     public async Task PlayKeyboardRevealAsync()
     {
+        _ = RefreshVolumeAsync();
         _revealCancellation?.Cancel();
         _revealCancellation?.Dispose();
 
@@ -280,7 +356,8 @@ public partial class TopEdgeMetaball : UserControl
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed ||
+            e.Source is Visual source && (source is QuickSettingsSlider || source.FindAncestorOfType<QuickSettingsSlider>() is not null))
         {
             return;
         }

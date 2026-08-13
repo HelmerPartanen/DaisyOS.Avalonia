@@ -1,18 +1,30 @@
 <UserControl x:Class="DaisyOS.Shell.Controls.TopEdgeMetaball"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Width="180"
+             xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+             Width="240"
              Height="52"
              UseLayoutRounding="True"
              ClipToBounds="False"
              Cursor="SizeAll">
-  <Canvas Width="180" Height="52" ClipToBounds="False">
+  <Canvas Width="240" Height="52" ClipToBounds="False">
     <!-- Drawn behind the body; it appears only inside the merge threshold. -->
     <Path x:Name="EdgeBridge" Fill="{DynamicResource ShellTopEdgePocketBrush}" />
     <Border x:Name="PocketBody"
-            Width="180"
+            Width="240"
             Height="52"
             Background="{DynamicResource ShellTopEdgePocketBrush}"
             CornerRadius="12" />
+    <controls:QuickSettingsSlider x:Name="VolumeSlider"
+                                  Canvas.Left="6"
+                                  Canvas.Top="6"
+                                  Width="228"
+                                  Height="40"
+                                  Icon="volume_up"
+                                  Minimum="0"
+                                  Maximum="100"
+                                  ShowThumb="False"
+                                  TrackCornerRadius="8"
+                                  ValueChanged="OnVolumeChanged" />
   </Canvas>
 </UserControl>
