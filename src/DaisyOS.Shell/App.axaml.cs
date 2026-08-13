@@ -7,6 +7,7 @@ using Avalonia.Styling;
 using DaisyOS.Core.Models;
 using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.Services;
+using DaisyOS.Shell.Services.Compositor;
 using DaisyOS.Shell.Apps.System.Settings;
 using DaisyOS.Shell.Views;
 using System;
@@ -19,6 +20,7 @@ namespace DaisyOS.Shell;
 
 public partial class App : Application
 {
+    private const int DefaultKWinBlurStrength = 3;
     private IWallpaperService? _wallpaperService;
     private SettingsWindow? _settingsWindow;
     private NotesWindow? _notesWindow;
@@ -44,7 +46,14 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow();
-            desktop.MainWindow.Opened += (_, _) => ShowBottomChrome(desktop.MainWindow);
+            desktop.MainWindow.Opened += async (_, _) =>
+            {
+                ShowBottomChrome(desktop.MainWindow);
+
+                // This is a compositor-level setting shared by all KWin blur
+                // regions. Do not delay first paint while KWin updates it.
+                await KWinBlur.SetStrengthAsync(DefaultKWinBlurStrength);
+            };
 
             try
             {

@@ -58,6 +58,16 @@ public static class KWinBlur
 
     public static void SetCornerRadius(Control visual, double value) => visual.SetValue(CornerRadiusProperty, value);
 
+    /// <summary>
+    /// Changes KWin's global blur-kernel strength. This affects every KWin blur
+    /// surface, not only the visual passed to <see cref="SetIsEnabled"/>.
+    /// </summary>
+    public static Task<KWinBlurStrengthResult> SetStrengthAsync(
+        int strength,
+        CancellationToken cancellationToken = default) =>
+        new KWinBlurSettingsService(new DaisyOS.System.Processes.SafeCommandRunner())
+            .SetStrengthAsync(strength, cancellationToken);
+
     private sealed class Registration
     {
         private readonly Control _visual;

@@ -3,27 +3,24 @@
 DaisyOS delegates all backdrop blur to KWin. The shell does not run blur
 shaders, allocate blur framebuffers, or sample the wallpaper for panel blur.
 
-## Global tuning file
+## Change strength from code
 
-[`src/DaisyOS.Shell/Themes/KWinBlurSettings.axaml`](../src/DaisyOS.Shell/Themes/KWinBlurSettings.axaml)
-is the single tuning contract for:
+KWin exposes the blur region per window, but its kernel strength is global to
+the running `blur` effect. Use the public convenience API:
 
-- KWin minimum, midpoint, and maximum blur strength;
-- KWin saturation and noise strength;
-- low/high material tint opacity;
-- light and dark material tint colors.
+```csharp
+var result = await KWinBlur.SetStrengthAsync(8);
+if (!result.Succeeded)
+{
+    // Keep the current material visible and surface result.FailureMessage in diagnostics.
+}
+```
 
-KWin accepts blur strength values from 1 through 15. DaisyOS clamps the three
-strength anchors to that native range before applying them, so hand-edited
-theme values cannot send an invalid value to the compositor.
-
-`KWinBlurConfiguration` reads these resources. `KWinBlurSettingsService` maps
-the Settings slider to KWin's native range, writes the compositor values, and
-reloads the already-running blur effect through KWin's effect-specific D-Bus
-endpoint. A general KWin configuration reload is not sufficient to update the
-active blur kernel on every KWin version.
-`AppearanceThemeManager` uses the same file to adjust the tint painted over
-KWin blur, so Settings and the compositor cannot drift onto separate curves.
+`KWinBlurSettingsService` clamps values to KWin's supported `1..15` range,
+writes `Effect-blur/BlurStrength` to `kwinrc`, then asks KWin to reconfigure
+the `blur` effect over D-Bus. Reloading the effect is required for a live
+change on KWin versions that keep the previous blur kernel after a general
+configuration reload.
 
 ## Surface model
 
