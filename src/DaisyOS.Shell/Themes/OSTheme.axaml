@@ -80,7 +80,7 @@
 
       <SolidColorBrush
         x:Key="ShellDividerBrush"
-        Color="#14000000"/>
+        Color="#33000000"/>
 
 
       <!-- ===================================================== -->
@@ -350,7 +350,7 @@
 
       <SolidColorBrush
         x:Key="ShellDividerBrush"
-        Color="#26FFFFFF"/>
+        Color="#33FFFFFF"/>
 
 
       <!-- ===================================================== -->
