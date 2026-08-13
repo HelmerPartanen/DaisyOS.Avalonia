@@ -104,7 +104,7 @@
             <Border Width="336" Height="304" Padding="16,16,16,0"
                     Background="{DynamicResource ShellSurfaceBrush}"
                     BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
-                    BorderThickness="1" CornerRadius="14"
+                    BorderThickness="1" CornerRadius="14" ClipToBounds="True"
                     BoxShadow="0 12 36 0 #60000000">
               <Grid>
                 <Grid x:Name="QuickSettingsMainPage" RowDefinitions="*,Auto">
@@ -157,8 +157,8 @@
                   <!-- Footer -->
                   <Grid Grid.Row="1" Height="52" RowDefinitions="1,*">
                     <Border Grid.Row="0" Background="{DynamicResource ShellSurfaceBorderBrush}" Opacity="0.7"/>
-                    <Grid Grid.Row="1" ColumnDefinitions="*,40,40">
-                      <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <Grid Grid.Row="1" ColumnDefinitions="*,40">
+                      <StackPanel x:Name="BatteryStatusHost" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" IsVisible="False">
                         <TextBlock Text="battery_full"
                                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                                    FontSize="18"
@@ -166,12 +166,7 @@
                         <TextBlock x:Name="BatteryText" Text="Battery unavailable" FontSize="13" VerticalAlignment="Center"
                                    Foreground="{DynamicResource TextPrimaryBrush}"/>
                       </StackPanel>
-                      <Button Grid.Column="1" Classes="ShellButton" Width="40" Height="40" VerticalAlignment="Center" ToolTip.Tip="Edit quick settings" IsEnabled="False">
-                        <TextBlock Text="edit"
-                                   FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                   FontSize="18"/>
-                      </Button>
-                      <Button Grid.Column="2" Classes="ShellButton" Width="40" Height="40" VerticalAlignment="Center" ToolTip.Tip="Settings" Click="OnSettingsClicked">
+                      <Button Grid.Column="1" Classes="ShellButton" Width="40" Height="40" VerticalAlignment="Center" ToolTip.Tip="Settings" Click="OnSettingsClicked">
                         <TextBlock Text="settings"
                                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                                    FontSize="18"/>

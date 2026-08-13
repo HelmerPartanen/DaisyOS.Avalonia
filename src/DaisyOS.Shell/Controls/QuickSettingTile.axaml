@@ -30,6 +30,15 @@
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
+    <!-- A split pair is one control. The chevron deliberately uses the exact same inactive
+         and disabled material as the toggle beside it, rather than the platform button state. -->
+    <Style Selector="Button.QuickSettingDetails:not(.Active)">
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}"/>
+    </Style>
+    <Style Selector="Button.QuickSettingDetails:disabled">
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}"/>
+      <Setter Property="Opacity" Value="0.48"/>
+    </Style>
     <Style Selector="Border.QuickSettingSplitDivider">
       <Setter Property="Background" Value="{DynamicResource ShellDividerBrush}"/>
     </Style>

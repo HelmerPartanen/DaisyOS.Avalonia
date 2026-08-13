@@ -191,6 +191,12 @@ public partial class SystemBarView : UserControl
                 batteryText.Text = battery.DisplayText;
                 ToolTip.SetTip(batteryText, battery.Detail);
             }
+            if (this.FindControl<StackPanel>("BatteryStatusHost") is { } batteryStatusHost)
+            {
+                // A desktop on mains power has no battery status to communicate. Keeping the
+                // footer quiet is clearer than presenting an unavailable hardware warning.
+                batteryStatusHost.IsVisible = battery.IsPresent;
+            }
         }
         catch
         {
