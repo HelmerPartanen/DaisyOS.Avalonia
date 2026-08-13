@@ -36,10 +36,6 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
-    <Style Selector="Button.SettingsNavItem.Active TextBlock.NavIcon, Button.SettingsNavItem.Active TextBlock.NavLabel">
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
-    </Style>
-
     <!-- Seamless Editor TextBoxes -->
     <Style Selector="TextBox.EditorTextBox">
       <Setter Property="Background" Value="Transparent" />

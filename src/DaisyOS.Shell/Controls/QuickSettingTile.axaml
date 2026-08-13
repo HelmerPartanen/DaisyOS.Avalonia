@@ -51,9 +51,6 @@
       <Setter Property="HorizontalAlignment" Value="Center"/>
       <Setter Property="TextAlignment" Value="Center"/>
     </Style>
-    <Style Selector="TextBlock.QuickSettingLabel.Active">
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
-    </Style>
   </UserControl.Styles>
 
   <StackPanel Spacing="6" Width="96" HorizontalAlignment="Center">
@@ -65,7 +62,8 @@
                   IsChecked="{Binding IsChecked, ElementName=Root, Mode=TwoWay}"
                   ToolTip.Tip="{Binding ToolTipText, ElementName=Root}"
                   Click="OnSingleToggleClick">
-      <TextBlock Text="{Binding Icon, ElementName=Root}"
+      <TextBlock Classes="QuickSettingIcon"
+                 Text="{Binding Icon, ElementName=Root}"
                  FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                  FontSize="18"/>
     </ToggleButton>
@@ -79,7 +77,8 @@
                     IsChecked="{Binding IsChecked, ElementName=Root, Mode=TwoWay}"
                     ToolTip.Tip="{Binding ToolTipText, ElementName=Root}"
                     Click="OnSplitToggleClick">
-        <TextBlock Text="{Binding Icon, ElementName=Root}"
+        <TextBlock Classes="QuickSettingIcon"
+                   Text="{Binding Icon, ElementName=Root}"
                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                    FontSize="18"/>
       </ToggleButton>
@@ -96,7 +95,8 @@
               Classes.Active="{Binding IsChecked, ElementName=Root}"
               Click="OnDetailsButtonClick"
               ToolTip.Tip="{Binding DetailsToolTipText, ElementName=Root}">
-        <TextBlock Text="chevron_right"
+        <TextBlock Classes="QuickSettingIcon"
+                   Text="chevron_right"
                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                    FontSize="18"/>
       </Button>

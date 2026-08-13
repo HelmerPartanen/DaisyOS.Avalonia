@@ -29,10 +29,6 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
-    <Style Selector="Button.SettingsNavItem.Active TextBlock.NavIcon, Button.SettingsNavItem.Active TextBlock.NavLabel">
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
-    </Style>
-
     <!-- List item button layout -->
     <Style Selector="Button.SettingsListItem">
       <Setter Property="MinHeight" Value="52" />

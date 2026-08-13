@@ -50,10 +50,9 @@
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
