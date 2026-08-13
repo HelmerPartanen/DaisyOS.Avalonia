@@ -46,7 +46,7 @@
 
       <SolidColorBrush
         x:Key="ShellSurfaceBrush"
-        Color="#99F5F5F5"/>
+        Color="#4DF5F5F5"/>
 
       <SolidColorBrush
         x:Key="ShellSurfaceElevatedBrush"
@@ -311,7 +311,7 @@
 
       <SolidColorBrush
         x:Key="ShellSurfaceBrush"
-        Color="#991C1C1C"/>
+        Color="#4D1C1C1C"/>
 
       <SolidColorBrush
         x:Key="ShellSurfaceElevatedBrush"
