@@ -17,24 +17,11 @@ public sealed partial class LinuxBluetoothService : IBluetoothService
 
     public async Task<BluetoothStatus> GetStatusAsync(CancellationToken cancellationToken = default)
     {
-        var resultShow = await _commandRunner.RunAsync(
-            "bluetoothctl",
-            ["show"],
-            CommandTimeout,
-            cancellationToken);
+        var adapter = await GetAdapterStatusAsync(cancellationToken);
+        if (!adapter.IsAvailable) return adapter;
 
-        if (!resultShow.Succeeded)
-        {
-            return new BluetoothStatus(
-                false,
-                false,
-                false,
-                Array.Empty<BluetoothDevice>(),
-                BuildFailureDetail(resultShow, "Bluetooth status query"));
-        }
-
-        var isEnabled = ParseShowOutput(resultShow.StandardOutput);
-        var isDiscovering = resultShow.StandardOutput.Contains("Discovering: yes", StringComparison.OrdinalIgnoreCase);
+        var isEnabled = adapter.IsEnabled;
+        var isDiscovering = adapter.IsDiscovering;
 
         var devices = new List<BluetoothDevice>();
         var deviceQueryFailed = false;
@@ -103,6 +90,25 @@ public sealed partial class LinuxBluetoothService : IBluetoothService
                     : $"{devices.Count} Bluetooth {(devices.Count == 1 ? "device" : "devices")} found.";
 
         return new BluetoothStatus(true, isEnabled, isDiscovering, devices, detailText);
+    }
+
+    public async Task<BluetoothStatus> GetAdapterStatusAsync(CancellationToken cancellationToken = default)
+    {
+        var resultShow = await _commandRunner.RunAsync(
+            "bluetoothctl",
+            ["show"],
+            TimeSpan.FromSeconds(3),
+            cancellationToken);
+        if (!resultShow.Succeeded)
+        {
+            return new BluetoothStatus(false, false, false, Array.Empty<BluetoothDevice>(),
+                BuildFailureDetail(resultShow, "Bluetooth status query"));
+        }
+
+        var isEnabled = ParseShowOutput(resultShow.StandardOutput);
+        var isDiscovering = resultShow.StandardOutput.Contains("Discovering: yes", StringComparison.OrdinalIgnoreCase);
+        return new BluetoothStatus(true, isEnabled, isDiscovering, Array.Empty<BluetoothDevice>(),
+            isEnabled ? "Toggle Bluetooth" : "Bluetooth is turned off.");
     }
 
     public async Task<bool> SetEnabledAsync(bool enabled, CancellationToken cancellationToken = default)

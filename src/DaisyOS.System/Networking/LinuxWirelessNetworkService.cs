@@ -78,6 +78,38 @@ public sealed class LinuxWirelessNetworkService : IWirelessNetworkService
         return new WirelessNetworkStatus(true, networks, detailText);
     }
 
+    public async Task<WirelessRadioStatus> GetRadioStatusAsync(CancellationToken cancellationToken = default)
+    {
+        var deviceResult = await _commandRunner.RunAsync(
+            "nmcli",
+            ["-t", "-f", "DEVICE,TYPE", "device", "status"],
+            TimeSpan.FromSeconds(3),
+            cancellationToken);
+        if (!deviceResult.Succeeded)
+        {
+            return new WirelessRadioStatus(false, false, BuildFailureDetail(deviceResult, "Wi-Fi status"));
+        }
+
+        var available = deviceResult.StandardOutput
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(SplitEscapedFields)
+            .Any(fields => fields.Count > 1 && fields[1].Equals("wifi", StringComparison.OrdinalIgnoreCase));
+        if (!available) return new WirelessRadioStatus(false, false, "Wi-Fi isn’t available on this device.");
+
+        var radioResult = await _commandRunner.RunAsync(
+            "nmcli",
+            ["-t", "-f", "WIFI", "general"],
+            TimeSpan.FromSeconds(3),
+            cancellationToken);
+        if (!radioResult.Succeeded)
+        {
+            return new WirelessRadioStatus(true, false, BuildFailureDetail(radioResult, "Wi-Fi radio status"));
+        }
+
+        var isEnabled = radioResult.StandardOutput.Trim().Equals("enabled", StringComparison.OrdinalIgnoreCase);
+        return new WirelessRadioStatus(true, isEnabled, isEnabled ? "Toggle Wi-Fi" : "Wi-Fi is turned off.");
+    }
+
     private static WirelessNetworkInfo? ParseNetworkLine(string line)
     {
         var fields = SplitEscapedFields(line);

@@ -35,6 +35,9 @@ public partial class SystemBarView : UserControl
     private string? _lastClockValue;
     private string? _lastCalendarHeading;
     private string? _demoConnectedWifi = "DottOS Guest";
+    private Task? _quickSettingsRefreshTask;
+    private DateTimeOffset _lastQuickSettingsRefresh = DateTimeOffset.MinValue;
+    private static readonly TimeSpan QuickSettingsRefreshInterval = TimeSpan.FromSeconds(15);
 
     public SystemBarView()
     {
@@ -46,13 +49,15 @@ public partial class SystemBarView : UserControl
         Unloaded += OnUnloaded;
     }
 
-    private async void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         _clockText ??= this.FindControl<TextBlock>("ClockText");
         _calendarHeading ??= this.FindControl<TextBlock>("CalendarHeading");
         UpdateClock();
         _clockTimer.Start();
-        await RefreshQuickSettingsStateAsync();
+        // Let first paint win. Fast adapter state preloads after the shell is interactive so
+        // opening Quick Settings never waits behind a Wi-Fi scan or paired-device enumeration.
+        Dispatcher.UIThread.Post(() => QueueQuickSettingsRefresh(), DispatcherPriority.Background);
     }
 
     private void OnUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -100,7 +105,7 @@ public partial class SystemBarView : UserControl
             tile.IsChecked = !tile.IsChecked;
             ReportFailure("DaisyOS could not change Wi-Fi. Check that NetworkManager is available.");
         }
-        await RefreshQuickSettingsStateAsync();
+        QueueQuickSettingsRefresh(force: true);
     }
 
     private async void OnBluetoothTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -111,7 +116,7 @@ public partial class SystemBarView : UserControl
             tile.IsChecked = !tile.IsChecked;
             ReportFailure("DaisyOS could not change Bluetooth. Check that Bluetooth is available.");
         }
-        await RefreshQuickSettingsStateAsync();
+        QueueQuickSettingsRefresh(force: true);
     }
 
     private void OnFocusTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -148,12 +153,21 @@ public partial class SystemBarView : UserControl
     private void OnSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         (Application.Current as App)?.ShowSettings();
 
+    private void QueueQuickSettingsRefresh(bool force = false)
+    {
+        if (_quickSettingsRefreshTask is { IsCompleted: false }) return;
+        if (!force && DateTimeOffset.UtcNow - _lastQuickSettingsRefresh < QuickSettingsRefreshInterval) return;
+        _quickSettingsRefreshTask = RefreshQuickSettingsStateAsync();
+    }
+
     private async Task RefreshQuickSettingsStateAsync()
     {
         try
         {
-            var wifiTask = _wirelessNetworkService.GetNetworksAsync();
-            var bluetoothTask = _bluetoothService.GetStatusAsync();
+            // Detail discovery is intentionally deferred to the chevrons. These calls are
+            // bounded adapter/radio probes and complete without network scanning.
+            var wifiTask = _wirelessNetworkService.GetRadioStatusAsync();
+            var bluetoothTask = _bluetoothService.GetAdapterStatusAsync();
             var batteryTask = _batteryService.GetStatusAsync();
             var volumeTask = _audioService.GetVolumeAsync();
             await Task.WhenAll(wifiTask, bluetoothTask, batteryTask, volumeTask);
@@ -165,14 +179,14 @@ public partial class SystemBarView : UserControl
             if (this.FindControl<QuickSettingTile>("WifiTile") is { } wifiTile)
             {
                 wifiTile.IsEnabled = wifi.IsAvailable;
-                wifiTile.IsChecked = wifi.Networks.Any(network => network.IsActive);
-                wifiTile.ToolTipText = wifi.IsAvailable ? "Toggle Wi-Fi" : wifi.Detail;
+                wifiTile.IsChecked = wifi.IsEnabled;
+                wifiTile.ToolTipText = wifi.Detail;
             }
             if (this.FindControl<QuickSettingTile>("BluetoothTile") is { } bluetoothTile)
             {
                 bluetoothTile.IsEnabled = bluetooth.IsAvailable;
                 bluetoothTile.IsChecked = bluetooth.IsEnabled;
-                bluetoothTile.ToolTipText = bluetooth.IsAvailable ? "Toggle Bluetooth" : bluetooth.Detail;
+                bluetoothTile.ToolTipText = bluetooth.Detail;
             }
             if (this.FindControl<QuickSettingTile>("FocusTile") is { } focusTile) focusTile.IsChecked = _sessionState.DoNotDisturb;
             if (this.FindControl<QuickSettingTile>("GamingTile") is { } gamingTile) gamingTile.IsChecked = _sessionState.GamingMode;
@@ -202,6 +216,10 @@ public partial class SystemBarView : UserControl
         {
             // Individual controls retain an explicit unavailable/disabled state rather than invented data.
             if (this.FindControl<QuickSettingsSlider>("VolumeSlider") is { } volumeSlider) volumeSlider.IsEnabled = false;
+        }
+        finally
+        {
+            _lastQuickSettingsRefresh = DateTimeOffset.UtcNow;
         }
     }
 
@@ -235,7 +253,9 @@ public partial class SystemBarView : UserControl
     private void OnQuickSettingsFlyoutOpened(object? sender, EventArgs e)
     {
         SetFlyoutButtonActive("QuickSettingsButton", true);
-        _ = RefreshQuickSettingsStateAsync();
+        // The cached/preloaded state is shown immediately. A stale refresh is queued after
+        // input/layout work instead of delaying the opening animation.
+        Dispatcher.UIThread.Post(() => QueueQuickSettingsRefresh(), DispatcherPriority.Background);
     }
 
     private void OnQuickSettingsFlyoutClosed(object? sender, EventArgs e) =>
