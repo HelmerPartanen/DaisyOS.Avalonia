@@ -83,11 +83,9 @@ public partial class TopEdgeMetaball : UserControl
         try
         {
             SetEdgeDistance(0);
-            await AnimateRevealAsync(1, reverseCurve: false, cancellation.Token);
-            await AnimatePositionAsync(RestingEdgeDistance, reverseCurve: false, cancellation.Token);
+            await AnimateOpenAsync(cancellation.Token);
             await Task.Delay(RevealHoldDuration, cancellation.Token);
-            await AnimatePositionAsync(0, reverseCurve: true, cancellation.Token);
-            await AnimateRevealAsync(0, reverseCurve: true, cancellation.Token);
+            await AnimateCloseAsync(cancellation.Token);
         }
         catch (OperationCanceledException)
         {
@@ -161,40 +159,36 @@ public partial class TopEdgeMetaball : UserControl
         EdgeBridge.Data = geometry;
     }
 
-    private async Task AnimateRevealAsync(double target, bool reverseCurve, CancellationToken cancellationToken)
-    {
-        await AnimateValueAsync(_revealTransform.ScaleY, target, RevealDuration, reverseCurve, SetRevealProgress, cancellationToken);
-    }
+    private Task AnimateOpenAsync(CancellationToken cancellationToken) =>
+        AnimatePhasesAsync(
+            cancellationToken,
+            new AnimationPhase(_revealTransform.ScaleY, 1, RevealDuration, ReverseCurve: false, SetRevealProgress),
+            new AnimationPhase(0, RestingEdgeDistance, PositionDuration, ReverseCurve: false, SetEdgeDistance));
 
-    private async Task AnimatePositionAsync(double target, bool reverseCurve, CancellationToken cancellationToken)
-    {
-        await AnimateValueAsync(EdgeDistance, target, PositionDuration, reverseCurve, SetEdgeDistance, cancellationToken);
-    }
+    private Task AnimateCloseAsync(CancellationToken cancellationToken) =>
+        AnimatePhasesAsync(
+            cancellationToken,
+            new AnimationPhase(EdgeDistance, 0, PositionDuration, ReverseCurve: true, SetEdgeDistance),
+            new AnimationPhase(_revealTransform.ScaleY, 0, RevealDuration, ReverseCurve: true, SetRevealProgress));
 
-    private async Task AnimateValueAsync(
-        double start,
-        double target,
-        TimeSpan duration,
-        bool reverseCurve,
-        Action<double> setValue,
-        CancellationToken cancellationToken)
+    private async Task AnimatePhasesAsync(CancellationToken cancellationToken, params AnimationPhase[] phases)
     {
         var topLevel = TopLevel.GetTopLevel(this);
         if (topLevel is null)
         {
-            setValue(target);
-            return;
-        }
+            foreach (var phase in phases)
+            {
+                phase.SetValue(phase.Target);
+            }
 
-        if (Math.Abs(target - start) < 0.001)
-        {
-            setValue(target);
             return;
         }
 
         var completion = new TaskCompletionSource();
         using var registration = cancellationToken.Register(() => completion.TrySetCanceled(cancellationToken));
         var stopwatch = Stopwatch.StartNew();
+        var phaseIndex = 0;
+        var completedPhaseDuration = TimeSpan.Zero;
 
         void RenderFrame(TimeSpan _)
         {
@@ -204,24 +198,40 @@ public partial class TopEdgeMetaball : UserControl
                 return;
             }
 
-            var progress = Math.Clamp(stopwatch.Elapsed.TotalMilliseconds / duration.TotalMilliseconds, 0, 1);
-            var easedProgress = reverseCurve
-                ? 1 - EvaluateRevealBezier(1 - progress)
-                : EvaluateRevealBezier(progress);
-            setValue(start + ((target - start) * easedProgress));
-
-            if (progress >= 1)
+            var elapsed = stopwatch.Elapsed - completedPhaseDuration;
+            while (phaseIndex < phases.Length)
             {
-                completion.TrySetResult();
-                return;
+                var phase = phases[phaseIndex];
+                if (elapsed < phase.Duration)
+                {
+                    var progress = elapsed.TotalMilliseconds / phase.Duration.TotalMilliseconds;
+                    var easedProgress = phase.ReverseCurve
+                        ? 1 - EvaluateRevealBezier(1 - progress)
+                        : EvaluateRevealBezier(progress);
+                    phase.SetValue(phase.Start + ((phase.Target - phase.Start) * easedProgress));
+                    topLevel.RequestAnimationFrame(RenderFrame);
+                    return;
+                }
+
+                phase.SetValue(phase.Target);
+                completedPhaseDuration += phase.Duration;
+                elapsed -= phase.Duration;
+                phaseIndex++;
             }
 
-            topLevel.RequestAnimationFrame(RenderFrame);
+            completion.TrySetResult();
         }
 
         topLevel.RequestAnimationFrame(RenderFrame);
         await completion.Task;
     }
+
+    private sealed record AnimationPhase(
+        double Start,
+        double Target,
+        TimeSpan Duration,
+        bool ReverseCurve,
+        Action<double> SetValue);
 
     private void SetRevealProgress(double progress)
     {
