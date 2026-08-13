@@ -22,8 +22,10 @@ public partial class TopEdgeMetaball : UserControl
     // Include the 1 px seam overlap so the rendered resting inset is 4 px.
     private const double RestingEdgeDistance = TopEdgeOverlap + RestingTopInset;
     private const double EdgeFlare = 18;
-    private static readonly TimeSpan RevealDuration = TimeSpan.FromMilliseconds(420);
-    private static readonly TimeSpan PositionDuration = TimeSpan.FromMilliseconds(180);
+    private static readonly TimeSpan RevealInDuration = TimeSpan.FromMilliseconds(320);
+    private static readonly TimeSpan PositionInDuration = TimeSpan.FromMilliseconds(130);
+    private static readonly TimeSpan PositionOutDuration = TimeSpan.FromMilliseconds(90);
+    private static readonly TimeSpan RevealOutDuration = TimeSpan.FromMilliseconds(160);
     private static readonly TimeSpan RevealHoldDuration = TimeSpan.FromSeconds(3);
     private const double DetachedBodyWidth = 240;
     private const double MergedBodyWidth = 240;
@@ -162,14 +164,14 @@ public partial class TopEdgeMetaball : UserControl
     private Task AnimateOpenAsync(CancellationToken cancellationToken) =>
         AnimatePhasesAsync(
             cancellationToken,
-            new AnimationPhase(_revealTransform.ScaleY, 1, RevealDuration, ReverseCurve: false, SetRevealProgress),
-            new AnimationPhase(0, RestingEdgeDistance, PositionDuration, ReverseCurve: false, SetEdgeDistance));
+            new AnimationPhase(_revealTransform.ScaleY, 1, RevealInDuration, ReverseCurve: false, SetRevealProgress),
+            new AnimationPhase(0, RestingEdgeDistance, PositionInDuration, ReverseCurve: false, SetEdgeDistance));
 
     private Task AnimateCloseAsync(CancellationToken cancellationToken) =>
         AnimatePhasesAsync(
             cancellationToken,
-            new AnimationPhase(EdgeDistance, 0, PositionDuration, ReverseCurve: true, SetEdgeDistance),
-            new AnimationPhase(_revealTransform.ScaleY, 0, RevealDuration, ReverseCurve: true, SetRevealProgress));
+            new AnimationPhase(EdgeDistance, 0, PositionOutDuration, ReverseCurve: true, SetEdgeDistance),
+            new AnimationPhase(_revealTransform.ScaleY, 0, RevealOutDuration, ReverseCurve: true, SetRevealProgress));
 
     private async Task AnimatePhasesAsync(CancellationToken cancellationToken, params AnimationPhase[] phases)
     {
