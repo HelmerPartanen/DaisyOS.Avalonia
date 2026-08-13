@@ -59,7 +59,7 @@
 
       <SolidColorBrush
         x:Key="ShellSurfaceSubtleBrush"
-        Color="#0A000000"/>
+        Color="#26000000"/>
 
       <SolidColorBrush
         x:Key="ShellSurfaceBorderBrush"
@@ -329,7 +329,7 @@
 
       <SolidColorBrush
         x:Key="ShellSurfaceSubtleBrush"
-        Color="#0DFFFFFF"/>
+        Color="#26FFFFFF"/>
 
       <SolidColorBrush
         x:Key="ShellSurfaceBorderBrush"
