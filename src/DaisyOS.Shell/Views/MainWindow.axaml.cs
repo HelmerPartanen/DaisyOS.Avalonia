@@ -1,4 +1,6 @@
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 
 namespace DaisyOS.Shell.Views
 {
@@ -7,6 +9,18 @@ namespace DaisyOS.Shell.Views
         public MainWindow()
         {
             InitializeComponent();
+            AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
+        }
+
+        private void OnKeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Space || (e.KeyModifiers & KeyModifiers.Control) == 0)
+            {
+                return;
+            }
+
+            _ = this.FindControl<ShellView>("Shell")?.PlayTopEdgeMetaballAsync();
+            e.Handled = true;
         }
     }
 }

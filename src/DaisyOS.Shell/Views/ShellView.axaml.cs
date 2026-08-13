@@ -24,6 +24,10 @@ namespace DaisyOS.Shell.Views
             };
         }
 
+        public Task PlayTopEdgeMetaballAsync() =>
+            this.FindControl<Controls.TopEdgeMetaball>("TopEdgeMetaball")?.PlayKeyboardRevealAsync()
+            ?? Task.CompletedTask;
+
         private void OnFeedbackMessageShown(object? sender, string message)
         {
             Dispatcher.UIThread.Post(() =>

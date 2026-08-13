@@ -8,6 +8,6 @@
     WindowDecorations="None"
     Background="Black">
     <Grid>
-        <views:ShellView />
+        <views:ShellView x:Name="Shell" />
     </Grid>
 </Window>
