@@ -31,8 +31,9 @@
     <ResourceDictionary x:Key="Light">
 
       <!-- Semantic Shell Brushes -->
-      <SolidColorBrush x:Key="ShellSurfaceBrush" Color="#FFF4F5F7"/>
-      <SolidColorBrush x:Key="ShellSurfaceElevatedBrush" Color="#FFFFFFFF"/>
+      <!-- KWin supplies the blur; DaisyOS supplies a stable translucent tint. -->
+      <SolidColorBrush x:Key="ShellSurfaceBrush" Color="#26F5F5F5"/>
+      <SolidColorBrush x:Key="ShellSurfaceElevatedBrush" Color="#C2FFFFFF"/>
       <SolidColorBrush x:Key="ShellSurfaceSubtleBrush" Color="#0A000000"/>
       <SolidColorBrush x:Key="ShellSurfaceBorderBrush" Color="#14000000"/>
 
@@ -43,6 +44,16 @@
       <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FF1C1C1C"/>
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CC1C1C1C"/>
       <SolidColorBrush x:Key="TextTertiaryBrush" Color="#991C1C1C"/>
+
+      <!-- Fixed shell accent; never derived from wallpaper colours. -->
+      <Color x:Key="AppPrimaryColor">#FF6750A4</Color>
+      <SolidColorBrush x:Key="AppPrimaryBrush" Color="#FF6750A4"/>
+      <SolidColorBrush x:Key="AppOnPrimaryBrush" Color="#FFFFFFFF"/>
+      <SolidColorBrush x:Key="AppPrimaryContainerBrush" Color="#FFE9DDFF"/>
+      <SolidColorBrush x:Key="AppPrimaryContainerHoverBrush" Color="#FFDFD1F6"/>
+      <SolidColorBrush x:Key="AppPrimaryContainerPressedBrush" Color="#FFD5C4EC"/>
+      <SolidColorBrush x:Key="AppOnPrimaryContainerBrush" Color="#FF21005D"/>
+      <SolidColorBrush x:Key="QuickSettingActiveDividerBrush" Color="#FFCBB5EF"/>
 
       <!-- Settings surface brushes -->
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush" Color="#FFFFFFFF"/>
@@ -84,8 +95,9 @@
     <ResourceDictionary x:Key="Dark">
 
       <!-- Semantic Shell Brushes -->
-      <SolidColorBrush x:Key="ShellSurfaceBrush" Color="#FF1E1E1E"/>
-      <SolidColorBrush x:Key="ShellSurfaceElevatedBrush" Color="#FF2A2A2A"/>
+      <!-- KWin supplies the blur; DaisyOS supplies a stable translucent tint. -->
+      <SolidColorBrush x:Key="ShellSurfaceBrush" Color="#26000000"/>
+      <SolidColorBrush x:Key="ShellSurfaceElevatedBrush" Color="#C22A2A2A"/>
       <SolidColorBrush x:Key="ShellSurfaceSubtleBrush" Color="#0DFFFFFF"/>
       <SolidColorBrush x:Key="ShellSurfaceBorderBrush" Color="#14FFFFFF"/>
 
@@ -96,6 +108,16 @@
       <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFF5F5F5"/>
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CCF5F5F5"/>
       <SolidColorBrush x:Key="TextTertiaryBrush" Color="#99F5F5F5"/>
+
+      <!-- Fixed shell accent; never derived from wallpaper colours. -->
+      <Color x:Key="AppPrimaryColor">#FFD0BCFF</Color>
+      <SolidColorBrush x:Key="AppPrimaryBrush" Color="#FFD0BCFF"/>
+      <SolidColorBrush x:Key="AppOnPrimaryBrush" Color="#FF381E72"/>
+      <SolidColorBrush x:Key="AppPrimaryContainerBrush" Color="#FF4F378B"/>
+      <SolidColorBrush x:Key="AppPrimaryContainerHoverBrush" Color="#FF594294"/>
+      <SolidColorBrush x:Key="AppPrimaryContainerPressedBrush" Color="#FF644C9E"/>
+      <SolidColorBrush x:Key="AppOnPrimaryContainerBrush" Color="#FFE9DDFF"/>
+      <SolidColorBrush x:Key="QuickSettingActiveDividerBrush" Color="#FF625093"/>
 
       <!-- Settings surface brushes -->
       <SolidColorBrush x:Key="SettingsButtonBackgroundBrush" Color="#0DFFFFFF"/>

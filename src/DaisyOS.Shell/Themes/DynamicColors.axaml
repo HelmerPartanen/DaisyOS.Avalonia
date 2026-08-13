@@ -1,55 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <!-- Fallback Material 3 roles. DynamicThemeService replaces all values atomically. -->
+  <!-- Wallpaper analysis may adjust only the desktop-label contrast.
+       All shell materials and accents live in OSTheme.axaml. -->
   <SolidColorBrush x:Key="DesktopItemLabelBrush" Color="#FFF5F5F5"/>
-  <SolidColorBrush x:Key="AppBackgroundBrush" Color="#FF1C1B1F"/>
-  <SolidColorBrush x:Key="AppOnBackgroundBrush" Color="#FFE6E1E5"/>
-  <SolidColorBrush x:Key="AppSurfaceBrush" Color="#FF1C1B1F"/>
-  <SolidColorBrush x:Key="AppSurfaceDimBrush" Color="#FF141218"/>
-  <SolidColorBrush x:Key="AppSurfaceBrightBrush" Color="#FF3B383E"/>
-  <SolidColorBrush x:Key="AppSurfaceContainerLowestBrush" Color="#FF0F0D13"/>
-  <SolidColorBrush x:Key="AppSurfaceContainerLowBrush" Color="#FF1D1B20"/>
-  <SolidColorBrush x:Key="AppSurfaceContainerBrush" Color="#FF211F26"/>
-  <SolidColorBrush x:Key="AppSurfaceContainerHighBrush" Color="#FF2B2930"/>
-  <SolidColorBrush x:Key="AppSurfaceContainerHighestBrush" Color="#FF36343B"/>
-  <!-- Opaque, wallpaper-derived shell materials. DynamicThemeService refreshes these on each wallpaper or theme change. -->
-  <SolidColorBrush x:Key="ShellSurfaceBrush" Color="#FF2B2930"/>
-  <SolidColorBrush x:Key="ShellSurfaceElevatedBrush" Color="#FF302E35"/>
-  <SolidColorBrush x:Key="ShellSurfaceSubtleBrush" Color="#FF36343B"/>
-  <SolidColorBrush x:Key="LauncherMaterialBrush" Color="#FF2B2930"/>
-  <SolidColorBrush x:Key="SystemBarMaterialBrush" Color="#FF2B2930"/>
-  <SolidColorBrush x:Key="ContextMenuMaterialBrush" Color="#FF302E35"/>
-  <SolidColorBrush x:Key="LauncherFooterBrush" Color="#FF36343B"/>
-  <SolidColorBrush x:Key="SearchBarBackgroundBrush" Color="#FF2B2930"/>
-  <SolidColorBrush x:Key="ShellSurfaceBorderBrush" Color="#69CAC4D0"/>
-  <SolidColorBrush x:Key="AppOnSurfaceBrush" Color="#FFE6E1E5"/>
-  <SolidColorBrush x:Key="AppOnSurfaceVariantBrush" Color="#FFCAC4D0"/>
-  <!-- Color companion for vector assets whose SVG fill uses currentColor. -->
-  <Color x:Key="AppPrimaryColor">#FFD0BCFF</Color>
-  <SolidColorBrush x:Key="AppPrimaryBrush" Color="#FFD0BCFF"/>
-  <SolidColorBrush x:Key="AppOnPrimaryBrush" Color="#FF381E72"/>
-  <SolidColorBrush x:Key="AppPrimaryContainerBrush" Color="#FF4F378B"/>
-  <SolidColorBrush x:Key="AppPrimaryContainerHoverBrush" Color="#FF594294"/>
-  <SolidColorBrush x:Key="AppPrimaryContainerPressedBrush" Color="#FF644C9E"/>
-  <SolidColorBrush x:Key="AppOnPrimaryContainerBrush" Color="#FFE9DDFF"/>
-  <SolidColorBrush x:Key="QuickSettingActiveDividerBrush" Color="#FF625093"/>
-  <SolidColorBrush x:Key="AppSecondaryBrush" Color="#FFCCC2DC"/>
-  <SolidColorBrush x:Key="AppOnSecondaryBrush" Color="#FF332D41"/>
-  <SolidColorBrush x:Key="AppSecondaryContainerBrush" Color="#FF4A4458"/>
-  <SolidColorBrush x:Key="AppOnSecondaryContainerBrush" Color="#FFE8DEF8"/>
-  <SolidColorBrush x:Key="AppTertiaryBrush" Color="#FFEFB8C8"/>
-  <SolidColorBrush x:Key="AppOnTertiaryBrush" Color="#FF492532"/>
-  <SolidColorBrush x:Key="AppTertiaryContainerBrush" Color="#FF633B48"/>
-  <SolidColorBrush x:Key="AppOnTertiaryContainerBrush" Color="#FFFFD9E3"/>
-  <SolidColorBrush x:Key="AppOutlineBrush" Color="#FF938F99"/>
-  <SolidColorBrush x:Key="AppOutlineVariantBrush" Color="#FF49454F"/>
-  <SolidColorBrush x:Key="AppErrorBrush" Color="#FFFFB4AB"/>
-  <SolidColorBrush x:Key="AppOnErrorBrush" Color="#FF690005"/>
-  <SolidColorBrush x:Key="AppErrorContainerBrush" Color="#FF93000A"/>
-  <SolidColorBrush x:Key="AppOnErrorContainerBrush" Color="#FFFFDAD6"/>
-  <SolidColorBrush x:Key="AppInverseSurfaceBrush" Color="#FFE6E1E5"/>
-  <SolidColorBrush x:Key="AppInverseOnSurfaceBrush" Color="#FF313033"/>
-  <SolidColorBrush x:Key="AppInversePrimaryBrush" Color="#FF6750A4"/>
-  <SolidColorBrush x:Key="AppScrimBrush" Color="#FF000000"/>
-  <SolidColorBrush x:Key="AppShadowBrush" Color="#FF000000"/>
 </ResourceDictionary>

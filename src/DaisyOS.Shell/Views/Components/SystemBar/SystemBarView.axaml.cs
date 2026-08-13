@@ -39,6 +39,9 @@ public partial class SystemBarView : UserControl
     private DateTimeOffset _lastQuickSettingsRefresh = DateTimeOffset.MinValue;
     private static readonly TimeSpan QuickSettingsRefreshInterval = TimeSpan.FromSeconds(15);
 
+    public event EventHandler? QuickSettingsRequested;
+    public event EventHandler? QuickSettingsDismissRequested;
+
     public SystemBarView()
     {
         InitializeComponent();
@@ -47,6 +50,16 @@ public partial class SystemBarView : UserControl
         _clockTimer.Tick += (_, _) => UpdateClock();
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
+    }
+
+    /// <summary>Uses this control as the content of the dedicated Quick Settings native surface.</summary>
+    public void ShowQuickSettingsPanelOnly()
+    {
+        this.FindControl<Control>("SystemBarFrame")!.IsVisible = false;
+        this.FindControl<Control>("QuickSettingsPanel")!.IsVisible = true;
+        Width = 336;
+        Height = 304;
+        Margin = default;
     }
 
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -150,8 +163,11 @@ public partial class SystemBarView : UserControl
         }
     }
 
-    private void OnSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+    private void OnSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        QuickSettingsDismissRequested?.Invoke(this, EventArgs.Empty);
         (Application.Current as App)?.ShowSettings();
+    }
 
     private void QueueQuickSettingsRefresh(bool force = false)
     {
@@ -250,16 +266,10 @@ public partial class SystemBarView : UserControl
     private void OnBluetoothDevicesBackClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
         SetQuickSettingsPage(QuickSettingsPage.Main);
 
-    private void OnQuickSettingsFlyoutOpened(object? sender, EventArgs e)
+    private void OnQuickSettingsRequested(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        SetFlyoutButtonActive("QuickSettingsButton", true);
-        // The cached/preloaded state is shown immediately. A stale refresh is queued after
-        // input/layout work instead of delaying the opening animation.
-        Dispatcher.UIThread.Post(() => QueueQuickSettingsRefresh(), DispatcherPriority.Background);
+        QuickSettingsRequested?.Invoke(this, EventArgs.Empty);
     }
-
-    private void OnQuickSettingsFlyoutClosed(object? sender, EventArgs e) =>
-        SetFlyoutButtonActive("QuickSettingsButton", false);
 
     private void OnCalendarFlyoutOpened(object? sender, EventArgs e) =>
         SetFlyoutButtonActive("CalendarButton", true);

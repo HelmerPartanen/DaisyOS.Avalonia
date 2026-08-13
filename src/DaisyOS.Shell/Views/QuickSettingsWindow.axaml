@@ -1,0 +1,19 @@
+<Window
+    x:Class="DaisyOS.Shell.Views.QuickSettingsWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
+    xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
+    Width="336"
+    Height="304"
+    CanResize="False"
+    ShowInTaskbar="False"
+    WindowStartupLocation="Manual"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    TransparencyLevelHint="Transparent"
+    Background="Transparent"
+    compositor:KWinBlur.IsEnabled="True"
+    compositor:KWinBlur.CornerRadius="14">
+  <systembar:SystemBarView x:Name="QuickSettingsContent" />
+</Window>

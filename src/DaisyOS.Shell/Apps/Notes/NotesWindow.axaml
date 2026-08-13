@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:notes="clr-namespace:DaisyOS.Shell.Apps.Notes"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+    xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
     Title="Notes"
     Width="960"
     Height="640"
@@ -23,7 +24,9 @@
             Margin="12"
             Background="{DynamicResource ShellSurfaceBorderBrush}"
             Padding="1"
-            CornerRadius="12">
+            CornerRadius="12"
+            compositor:KWinBlur.IsEnabled="True"
+            compositor:KWinBlur.CornerRadius="12">
       <Border Background="{DynamicResource SystemBarMaterialBrush}"
               CornerRadius="11"
               ClipToBounds="True">

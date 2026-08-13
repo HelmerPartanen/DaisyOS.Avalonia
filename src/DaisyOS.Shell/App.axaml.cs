@@ -5,7 +5,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Skia;
 using Avalonia.Styling;
 using DaisyOS.Core.Models;
-using DaisyOS.Shell.Services.Theming;
 using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.Services;
 using DaisyOS.Shell.Apps.System.Settings;
@@ -20,17 +19,20 @@ namespace DaisyOS.Shell;
 
 public partial class App : Application
 {
-    private DynamicThemeService? _dynamicThemeService;
     private IWallpaperService? _wallpaperService;
     private SettingsWindow? _settingsWindow;
     private NotesWindow? _notesWindow;
     private CalculatorWindow? _calculatorWindow;
     private FilesWindow? _filesWindow;
+    private LauncherWindow? _launcherWindow;
+    private BottomChromeWindow? _bottomChromeWindow;
+    private QuickSettingsWindow? _quickSettingsWindow;
 
     public ShellSessionState SessionState { get; } = new();
     public ShellFeedbackService Feedback { get; } = new();
 
     public event EventHandler<string>? WallpaperChanged;
+    public event EventHandler<bool>? LauncherVisibilityChanged;
 
     public override void Initialize()
     {
@@ -42,45 +44,168 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow();
+            desktop.MainWindow.Opened += (_, _) => ShowBottomChrome(desktop.MainWindow);
 
             try
             {
                 var wallpaperPath = ShellSettings.DefaultWallpaperUri;
-                _dynamicThemeService = new DynamicThemeService(
-                    new WallpaperColorExtractor(),
-                    new MaterialDynamicSchemeGenerator());
                 _wallpaperService = new WallpaperService(wallpaperPath);
                 _wallpaperService.WallpaperChanged += (_, changedWallpaperUri) =>
                 {
                     WallpaperChanged?.Invoke(this, changedWallpaperUri);
-                    _ = _dynamicThemeService.RefreshFromWallpaperAsync(changedWallpaperUri, ActualThemeVariant);
                 };
-                _ = _dynamicThemeService.RefreshFromWallpaperAsync(_wallpaperService.CurrentWallpaperUri, ActualThemeVariant);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to initialize dynamic shell colors: {ex.Message}");
+                Console.WriteLine($"Failed to initialize wallpaper state: {ex.Message}");
             }
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    /// <summary>Applies the requested appearance to the complete shell and refreshes its dynamic palette.</summary>
+    /// <summary>Applies the requested appearance without deriving surface materials from the wallpaper.</summary>
     public async Task SetShellThemeAsync(ThemeVariant theme)
     {
         RequestedThemeVariant = theme;
+        await Task.CompletedTask;
+    }
 
-        if (_dynamicThemeService is not null)
+    /// <summary>Shows or hides the launcher as its own native KWin-blurred surface.</summary>
+    public void ToggleLauncher()
+    {
+        if (_launcherWindow is { IsVisible: true })
         {
-            var wallpaperUri = _wallpaperService?.CurrentWallpaperUri ?? ShellSettings.DefaultWallpaperUri;
-            await _dynamicThemeService.RefreshFromWallpaperAsync(wallpaperUri, theme);
+            HideLauncher();
+        }
+        else
+        {
+            ShowLauncher();
+        }
+    }
+
+    public void HideLauncher()
+    {
+        if (_launcherWindow is not { IsVisible: true })
+        {
+            return;
+        }
+
+        _launcherWindow.Hide();
+        LauncherVisibilityChanged?.Invoke(this, false);
+    }
+
+    private void ShowLauncher()
+    {
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
+        {
+            return;
+        }
+
+        if (_launcherWindow is null)
+        {
+            _launcherWindow = new LauncherWindow();
+            _launcherWindow.CloseRequested += (_, _) => HideLauncher();
+            _launcherWindow.Deactivated += (_, _) => HideLauncher();
+            _launcherWindow.Closed += (_, _) =>
+            {
+                _launcherWindow = null;
+                LauncherVisibilityChanged?.Invoke(this, false);
+            };
+        }
+
+        _launcherWindow.PrepareForPresentation();
+        _launcherWindow.PositionAboveBottomChrome(mainWindow);
+        _launcherWindow.Show(mainWindow);
+        _launcherWindow.Activate();
+        LauncherVisibilityChanged?.Invoke(this, true);
+        if (_launcherWindow.Opacity > 0)
+        {
+            _launcherWindow.LauncherContent.FocusSearch();
+        }
+    }
+
+    private void ShowBottomChrome(Window mainWindow)
+    {
+        if (_bottomChromeWindow is { IsVisible: true })
+        {
+            return;
+        }
+
+        if (_bottomChromeWindow is null)
+        {
+            _bottomChromeWindow = new BottomChromeWindow();
+            _bottomChromeWindow.Taskbar.ApplyOrder(SessionState.DockOrder);
+            _bottomChromeWindow.Taskbar.OrderChanged += (_, order) => SessionState.SetDockOrder(order);
+            _bottomChromeWindow.Taskbar.StartButtonClicked += (_, _) => ToggleLauncher();
+            _bottomChromeWindow.Taskbar.AppIconClicked += (_, appId) => LaunchTaskbarApp(appId);
+            _bottomChromeWindow.SystemBar.QuickSettingsRequested += (_, _) => ToggleQuickSettings();
+            LauncherVisibilityChanged += (_, isVisible) => _bottomChromeWindow?.Taskbar.SetLauncherOpen(isVisible);
+        }
+
+        _bottomChromeWindow.PositionAtBottomOf(mainWindow);
+        _bottomChromeWindow.Show(mainWindow);
+    }
+
+    private void ToggleQuickSettings()
+    {
+        if (_quickSettingsWindow is { IsVisible: true })
+        {
+            HideQuickSettings();
+            return;
+        }
+
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
+        {
+            return;
+        }
+
+        HideLauncher();
+        if (_quickSettingsWindow is null)
+        {
+            _quickSettingsWindow = new QuickSettingsWindow();
+            _quickSettingsWindow.QuickSettings.QuickSettingsDismissRequested += (_, _) => HideQuickSettings();
+            _quickSettingsWindow.Deactivated += (_, _) => HideQuickSettings();
+            _quickSettingsWindow.Closed += (_, _) => _quickSettingsWindow = null;
+        }
+
+        _quickSettingsWindow.PositionAboveSystemBar(mainWindow);
+        _quickSettingsWindow.Show(mainWindow);
+        _quickSettingsWindow.Activate();
+    }
+
+    private void HideQuickSettings()
+    {
+        if (_quickSettingsWindow is { IsVisible: true })
+        {
+            _quickSettingsWindow.Hide();
+        }
+    }
+
+    private void LaunchTaskbarApp(string appId)
+    {
+        HideLauncher();
+        switch (appId)
+        {
+            case "settings":
+                ShowSettings();
+                break;
+            case "notes":
+                ShowNotes();
+                break;
+            case "calculator":
+                ShowCalculator();
+                break;
+            case "files":
+                ShowFiles();
+                break;
         }
     }
 
     /// <summary>Opens one normal, compositor-managed instance of the DottOS Settings app.</summary>
     public void ShowSettings()
     {
+        HideLauncher();
         if (_settingsWindow is { IsVisible: true } settingsWindow)
         {
             settingsWindow.WindowState = Avalonia.Controls.WindowState.Normal;
@@ -106,6 +231,7 @@ public partial class App : Application
     /// <summary>Opens one instance of the native DaisyOS Notes app.</summary>
     public void ShowNotes()
     {
+        HideLauncher();
         if (_notesWindow is { IsVisible: true } notesWindow)
         {
             notesWindow.WindowState = Avalonia.Controls.WindowState.Normal;
@@ -129,6 +255,7 @@ public partial class App : Application
     /// <summary>Opens one instance of the native DaisyOS Calculator app.</summary>
     public void ShowCalculator()
     {
+        HideLauncher();
         if (_calculatorWindow is { IsVisible: true } calculatorWindow)
         {
             calculatorWindow.WindowState = Avalonia.Controls.WindowState.Normal;
@@ -151,6 +278,7 @@ public partial class App : Application
 
     public void ShowFiles()
     {
+        HideLauncher();
         if (_filesWindow is { IsVisible: true } filesWindow)
         {
             filesWindow.WindowState = Avalonia.Controls.WindowState.Normal;

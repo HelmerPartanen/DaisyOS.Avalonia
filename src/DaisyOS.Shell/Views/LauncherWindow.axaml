@@ -1,0 +1,19 @@
+<Window
+    x:Class="DaisyOS.Shell.Views.LauncherWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:launcher="clr-namespace:DaisyOS.Shell.Views.Components.Launcher"
+    xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
+    Title="DaisyOS Launcher"
+    Width="680"
+    Height="640"
+    CanResize="False"
+    ShowInTaskbar="False"
+    WindowStartupLocation="Manual"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    TransparencyLevelHint="Transparent"
+    compositor:KWinBlur.CornerRadius="12"
+    Background="Transparent">
+  <launcher:LauncherView x:Name="LauncherContent" />
+</Window>

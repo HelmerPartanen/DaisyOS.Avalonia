@@ -3,30 +3,9 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:desktop="clr-namespace:DaisyOS.Shell.Views.Components.Desktop"
-    xmlns:widgets="clr-namespace:DaisyOS.Shell.Views.Components.Widgets"
-    xmlns:taskbar="clr-namespace:DaisyOS.Shell.Views.Components.Taskbar"
-    xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
-    xmlns:launcher="clr-namespace:DaisyOS.Shell.Views.Components.Launcher"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
         <desktop:DesktopView x:Name="Desktop" />
-
-        <!-- Widgets occupy the left edge of the shared bottom chrome row. -->
-        <widgets:MediaWidget x:Name="MediaWidget" ZIndex="20"/>
-        
-        <!-- Launcher -->
-        <launcher:LauncherView x:Name="Launcher"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Bottom"
-                               Margin="0,0,0,64"
-                               IsVisible="False"
-                               ZIndex="10"/>
-
-        <!-- Taskbar -->
-        <taskbar:TaskbarView x:Name="Taskbar" VerticalAlignment="Bottom" ZIndex="20"/>
-
-        <!-- System bar: right-edge status, tray, quick settings, notifications and calendar. -->
-        <systembar:SystemBarView x:Name="SystemBar" ZIndex="20"/>
 
         <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
                 HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"

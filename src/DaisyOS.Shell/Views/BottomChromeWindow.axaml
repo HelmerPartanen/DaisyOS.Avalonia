@@ -1,0 +1,26 @@
+<Window
+    x:Class="DaisyOS.Shell.Views.BottomChromeWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:widgets="clr-namespace:DaisyOS.Shell.Views.Components.Widgets"
+    xmlns:taskbar="clr-namespace:DaisyOS.Shell.Views.Components.Taskbar"
+    xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
+    xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
+    Height="64"
+    CanResize="False"
+    ShowActivated="False"
+    ShowInTaskbar="False"
+    WindowStartupLocation="Manual"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    TransparencyLevelHint="Transparent"
+    Background="Transparent">
+  <Grid Height="64">
+    <widgets:MediaWidget HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                         compositor:KWinBlur.IsEnabled="True" compositor:KWinBlur.CornerRadius="12" />
+    <taskbar:TaskbarView x:Name="TaskbarContent" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                         compositor:KWinBlur.IsEnabled="True" compositor:KWinBlur.CornerRadius="12" />
+    <systembar:SystemBarView x:Name="SystemBarContent" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                             compositor:KWinBlur.IsEnabled="True" compositor:KWinBlur.CornerRadius="12" />
+  </Grid>
+</Window>
