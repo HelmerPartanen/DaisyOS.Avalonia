@@ -10,6 +10,8 @@ public partial class SettingsWindow : Window
     public SettingsWindow()
     {
         InitializeComponent();
+        Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
+        Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
     }
 
     private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)

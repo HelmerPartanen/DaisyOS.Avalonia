@@ -11,7 +11,7 @@ namespace DaisyOS.Shell.Apps.Calculator;
 public partial class CalculatorWindow : Window
 {
     // Default calculator window size.
-    // 420 / 560 = 0.75, giving the window a 3:4 aspect ratio.
+    // 400 / 560 = 5:7, giving the window a comfortably portrait aspect ratio.
     private const double DefaultWidth = 400.0;
     private const double DefaultHeight = 560.0;
     private const double AspectRatio = DefaultWidth / DefaultHeight;
@@ -24,6 +24,8 @@ public partial class CalculatorWindow : Window
         InitializeComponent();
 
         DataContext = new CalculatorViewModel();
+        Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
+        Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
 
         // Initial window size.
         Width = DefaultWidth;
@@ -108,24 +110,12 @@ public partial class CalculatorWindow : Window
                 WindowEdge.North or
                 WindowEdge.South;
 
-        double targetWidth;
-        double targetHeight;
-
-        if (drivesFromHeight)
-        {
-            targetHeight = size.Height;
-            targetWidth = targetHeight * AspectRatio;
-        }
-        else
-        {
-            targetWidth = size.Width;
-            targetHeight = targetWidth / AspectRatio;
-        }
+        var targetSize = GetAspectConstrainedSize(size, drivesFromHeight);
 
         // Avoid tiny corrections / resize loops caused by
         // floating-point rounding.
-        if (Math.Abs(targetWidth - size.Width) < 0.5 &&
-            Math.Abs(targetHeight - size.Height) < 0.5)
+        if (Math.Abs(targetSize.Width - size.Width) < 0.5 &&
+            Math.Abs(targetSize.Height - size.Height) < 0.5)
         {
             return;
         }
@@ -134,15 +124,42 @@ public partial class CalculatorWindow : Window
 
         try
         {
-            ClientSize = new Size(
-                targetWidth,
-                targetHeight
-            );
+            ClientSize = targetSize;
         }
         finally
         {
             _isApplyingAspectRatio = false;
         }
+    }
+
+    /// <summary>
+    /// Projects a proposed client size onto the calculator's aspect ratio while
+    /// respecting the window's minimum and maximum dimensions as one pair.
+    /// This avoids the platform clamping one dimension independently and
+    /// leaving a stretched window behind.
+    /// </summary>
+    private Size GetAspectConstrainedSize(Size proposedSize, bool drivesFromHeight)
+    {
+        var minimumWidth = Math.Max(MinWidth, MinHeight * AspectRatio);
+        var minimumHeight = minimumWidth / AspectRatio;
+
+        var maximumWidth = MaxWidth;
+        if (!double.IsInfinity(MaxHeight))
+        {
+            maximumWidth = Math.Min(maximumWidth, MaxHeight * AspectRatio);
+        }
+
+        if (drivesFromHeight)
+        {
+            var height = Math.Clamp(
+                proposedSize.Height,
+                minimumHeight,
+                maximumWidth / AspectRatio);
+            return new Size(height * AspectRatio, height);
+        }
+
+        var width = Math.Clamp(proposedSize.Width, minimumWidth, maximumWidth);
+        return new Size(width, width / AspectRatio);
     }
 
     /// <summary>

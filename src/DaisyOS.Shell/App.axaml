@@ -95,6 +95,14 @@
       <Setter Property="Opacity" Value="0.48" />
     </Style>
 
+    <!-- Owned app windows reserve a transparent edge for this restrained elevation cue. -->
+    <Style Selector="Border.AppWindowFrame">
+      <Setter Property="BoxShadow" Value="0 1 5 0 #16000000" />
+    </Style>
+    <Style Selector="Border.AppWindowFrame.WindowFocused">
+      <Setter Property="BoxShadow" Value="0 2 8 0 #3D000000" />
+    </Style>
+
     <!-- Global Normalized Active / Accent Button states. -->
     <Style Selector="Button.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />

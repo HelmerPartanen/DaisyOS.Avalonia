@@ -14,6 +14,8 @@ public partial class NotesWindow : Window
     {
         InitializeComponent();
         DataContext = new NotesViewModel();
+        Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
+        Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
 
         Loaded += (_, _) =>
         {
