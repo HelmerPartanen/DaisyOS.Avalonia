@@ -58,7 +58,7 @@
 
       <SolidColorBrush
         x:Key="ShellSurfaceBorderBrush"
-        Color="#14000000"/>
+        Color="#1A000000"/>
 
 
       <!-- ===================================================== -->
@@ -555,5 +555,24 @@
     </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>
+
+  <!--
+    Shared perimeter treatment for the five primary shell surfaces. The cyan
+    hue remains constant; only alpha changes, with matching 0 and 1 stops to
+    keep the conic seam invisible.
+  -->
+<ConicGradientBrush x:Key="ShellDiagonalBorderBrush"
+                    Center="50%,50%"
+                    Angle="45">
+  <GradientStop Offset="0.00" Color="#1AFFFFFF"/>
+  <GradientStop Offset="0.12" Color="#26FFFFFF"/>
+  <GradientStop Offset="0.25" Color="#33FFFFFF"/>
+  <GradientStop Offset="0.38" Color="#26FFFFFF"/>
+  <GradientStop Offset="0.50" Color="#1AFFFFFF"/>
+  <GradientStop Offset="0.62" Color="#26FFFFFF"/>
+  <GradientStop Offset="0.75" Color="#33FFFFFF"/>
+  <GradientStop Offset="0.88" Color="#26FFFFFF"/>
+  <GradientStop Offset="1.00" Color="#1AFFFFFF"/>
+</ConicGradientBrush>
 
 </ResourceDictionary>

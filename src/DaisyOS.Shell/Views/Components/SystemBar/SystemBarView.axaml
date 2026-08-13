@@ -75,10 +75,9 @@
   <Grid>
   <!-- Same material, height, padding, corner radius and shadow as TaskbarView. -->
   <Border x:Name="SystemBarFrame" Height="52"
+          Classes="DiagonalShellBorder"
           Padding="6"
           Background="{DynamicResource ShellSurfaceBrush}"
-          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
-          BorderThickness="1"
           CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 8 32 0 #60000000">
@@ -126,9 +125,10 @@
   <Border x:Name="QuickSettingsPanel" IsVisible="False"
           Width="336" Height="304" Padding="16,16,16,0"
           HorizontalAlignment="Right" VerticalAlignment="Bottom"
+          Classes="DiagonalShellBorder"
           Background="{DynamicResource ShellSurfaceBrush}"
-          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
-          BorderThickness="1" CornerRadius="14" ClipToBounds="True"
+          CornerRadius="14"
+          ClipToBounds="True"
           BoxShadow="0 12 36 0 #60000000">
     <Grid>
       <Grid x:Name="QuickSettingsMainPage" RowDefinitions="*,Auto">

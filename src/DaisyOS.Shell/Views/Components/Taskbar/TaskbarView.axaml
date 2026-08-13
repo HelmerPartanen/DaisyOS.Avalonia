@@ -34,10 +34,9 @@
     The Width Transition animates smoothly as the Canvas inside resizes.
   -->
   <Border Height="52"
+          Classes="DiagonalShellBorder"
           Padding="6"
           Background="{DynamicResource ShellSurfaceBrush}"
-          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
-          BorderThickness="1"
           CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 8 32 0 #60000000">

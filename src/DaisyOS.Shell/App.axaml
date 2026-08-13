@@ -28,6 +28,16 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
+    <!--
+      Reusable conic perimeter for the selected shell surfaces. Keep this
+      opt-in: ordinary controls, flyouts, and owned app windows retain their
+      existing borders.
+    -->
+    <Style Selector="Border.DiagonalShellBorder">
+      <Setter Property="BorderBrush" Value="{DynamicResource ShellDiagonalBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
     <Style Selector="TextBox">
       <Setter Property="FontFamily" Value="Inter" />
       <Setter Property="FontWeight" Value="Regular" />

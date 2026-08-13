@@ -7,9 +7,8 @@
              Width="680" Height="640">
   
   
-  <Border Background="{DynamicResource LauncherMaterialBrush}"
-          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
-          BorderThickness="1"
+  <Border Classes="DiagonalShellBorder"
+          Background="{DynamicResource LauncherMaterialBrush}"
           CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 16 48 0 #60000000">

@@ -15,9 +15,8 @@
   </UserControl.Styles>
   <Border x:Name="MediaFrame"
           Height="52"
+          Classes="DiagonalShellBorder"
           Background="{DynamicResource ShellSurfaceBrush}"
-          BorderBrush="{DynamicResource ShellSurfaceBorderBrush}"
-          BorderThickness="1"
           CornerRadius="12"
           ClipToBounds="True"
           BoxShadow="0 8 32 0 #60000000">
