@@ -20,7 +20,7 @@ namespace DaisyOS.Shell;
 
 public partial class App : Application
 {
-    private const int DefaultKWinBlurStrength = 4;
+    private const int DefaultKWinBlurStrength = 8;
     private IWallpaperService? _wallpaperService;
     private SettingsWindow? _settingsWindow;
     private NotesWindow? _notesWindow;

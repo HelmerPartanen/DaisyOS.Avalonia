@@ -13,6 +13,7 @@
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
     TransparencyLevelHint="Transparent"
+    TextOptions.TextRenderingMode="Antialias"
     compositor:KWinBlur.CornerRadius="12"
     Background="Transparent">
   <launcher:LauncherView x:Name="LauncherContent" />

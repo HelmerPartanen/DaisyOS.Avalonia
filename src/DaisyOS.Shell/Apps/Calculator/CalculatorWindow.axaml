@@ -13,6 +13,7 @@
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
     ExtendClientAreaTitleBarHeightHint="44"
+    TextOptions.TextRenderingMode="Antialias"
     Background="Transparent"
     PointerPressed="OnWindowPointerPressed">
   <Grid>

@@ -53,11 +53,14 @@
   <Grid x:Name="RangeSurface">
     <Border x:Name="TrackBackground"
             Background="{DynamicResource QuickSettingBackgroundBrush}"
-            CornerRadius="10,0,0,10" />
-    <Border x:Name="ProgressFill"
-            Background="{DynamicResource AppPrimaryContainerBrush}"
             CornerRadius="10,0,0,10"
-            HorizontalAlignment="Left" />
+            ClipToBounds="True">
+      <!-- The fill deliberately owns no corner geometry. The clipped track is
+           the single rounded silhouette at every value, including 0 and 100. -->
+      <Border x:Name="ProgressFill"
+              Background="{DynamicResource AppPrimaryContainerBrush}"
+              HorizontalAlignment="Left" />
+    </Border>
     <TextBlock Text="{Binding Icon, ElementName=Root}"
                FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                FontSize="20"

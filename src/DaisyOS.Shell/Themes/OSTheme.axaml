@@ -46,7 +46,7 @@
 
       <SolidColorBrush
         x:Key="ShellSurfaceBrush"
-        Color="#4DF5F5F5"/>
+        Color="#80F5F5F5"/>
 
       <SolidColorBrush
         x:Key="ShellSurfaceElevatedBrush"
@@ -107,11 +107,11 @@
         No purple / violet hue.
       -->
 
-      <Color x:Key="AppPrimaryColor">#6E6E73</Color>
+      <Color x:Key="AppPrimaryColor">#4B4D55</Color>
 
       <SolidColorBrush
         x:Key="AppPrimaryBrush"
-        Color="#6E6E73"/>
+        Color="#4B4D55"/>
 
       <SolidColorBrush
         x:Key="AppOnPrimaryBrush"
@@ -124,19 +124,19 @@
 
       <SolidColorBrush
         x:Key="AppPrimaryContainerBrush"
-        Color="#E5E5E7"/>
+        Color="#E2E3E6"/>
 
       <SolidColorBrush
         x:Key="AppPrimaryContainerHoverBrush"
-        Color="#DADADD"/>
+        Color="#D7D8DC"/>
 
       <SolidColorBrush
         x:Key="AppPrimaryContainerPressedBrush"
-        Color="#CECED2"/>
+        Color="#CBCCD1"/>
 
       <SolidColorBrush
         x:Key="AppOnPrimaryContainerBrush"
-        Color="#242426"/>
+        Color="#26272C"/>
 
 
       <!-- ===================================================== -->
@@ -145,7 +145,7 @@
 
       <SolidColorBrush
         x:Key="QuickSettingActiveDividerBrush"
-        Color="#A8A8AE"/>
+        Color="#A5A7AF"/>
 
 
       <!-- ===================================================== -->
@@ -311,7 +311,7 @@
 
       <SolidColorBrush
         x:Key="ShellSurfaceBrush"
-        Color="#4D1C1C1C"/>
+        Color="#801C1C1C"/>
 
       <SolidColorBrush
         x:Key="ShellSurfaceElevatedBrush"
@@ -365,19 +365,19 @@
       <!-- ===================================================== -->
 
       <!--
-        Lighter neutral gray in dark mode so active controls
-        remain clearly distinguishable from dark surfaces.
+        Silver graphite keeps the same neutral character in dark mode while
+        retaining enough contrast for small active glyphs.
       -->
 
-      <Color x:Key="AppPrimaryColor">#B8B8BE</Color>
+      <Color x:Key="AppPrimaryColor">#C9CAD0</Color>
 
       <SolidColorBrush
         x:Key="AppPrimaryBrush"
-        Color="#B8B8BE"/>
+        Color="#C9CAD0"/>
 
       <SolidColorBrush
         x:Key="AppOnPrimaryBrush"
-        Color="#1C1C1E"/>
+        Color="#17181B"/>
 
 
       <!-- ===================================================== -->
@@ -386,19 +386,19 @@
 
       <SolidColorBrush
         x:Key="AppPrimaryContainerBrush"
-        Color="#48484D"/>
+        Color="#45474E"/>
 
       <SolidColorBrush
         x:Key="AppPrimaryContainerHoverBrush"
-        Color="#55555B"/>
+        Color="#52545C"/>
 
       <SolidColorBrush
         x:Key="AppPrimaryContainerPressedBrush"
-        Color="#626268"/>
+        Color="#5E6069"/>
 
       <SolidColorBrush
         x:Key="AppOnPrimaryContainerBrush"
-        Color="#F2F2F4"/>
+        Color="#F4F4F6"/>
 
 
       <!-- ===================================================== -->
@@ -407,7 +407,7 @@
 
       <SolidColorBrush
         x:Key="QuickSettingActiveDividerBrush"
-        Color="#85858B"/>
+        Color="#84868F"/>
 
 
       <!-- ===================================================== -->

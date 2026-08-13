@@ -14,6 +14,7 @@
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
     TransparencyLevelHint="Transparent"
+    TextOptions.TextRenderingMode="Antialias"
     Background="Transparent">
   <Grid Height="64">
     <widgets:MediaWidget HorizontalAlignment="Left" VerticalAlignment="Bottom"

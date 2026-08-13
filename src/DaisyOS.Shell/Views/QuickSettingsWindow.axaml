@@ -12,6 +12,7 @@
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
     TransparencyLevelHint="Transparent"
+    TextOptions.TextRenderingMode="Antialias"
     Background="Transparent"
     compositor:KWinBlur.IsEnabled="True"
     compositor:KWinBlur.CornerRadius="14">
