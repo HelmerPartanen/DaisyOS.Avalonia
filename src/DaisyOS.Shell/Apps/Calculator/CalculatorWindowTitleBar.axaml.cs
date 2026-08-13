@@ -36,16 +36,6 @@ public partial class CalculatorWindowTitleBar : UserControl
         HostWindow?.BeginMoveDrag(e);
     }
 
-    private void OnTitleBarDoubleTapped(object? sender, TappedEventArgs e)
-    {
-        if (e.Source is Visual source && IsInteractiveControl(source))
-        {
-            return;
-        }
-
-        ToggleMaximizeRestore();
-    }
-
     private static bool IsInteractiveControl(Visual source)
     {
         return source is Button || source is TextBox || source is Controls.SearchBar ||
@@ -68,19 +58,5 @@ public partial class CalculatorWindowTitleBar : UserControl
         }
     }
 
-    private void OnMaximizeRestoreClicked(object? sender, RoutedEventArgs e) => ToggleMaximizeRestore();
-
     private void OnCloseClicked(object? sender, RoutedEventArgs e) => HostWindow?.Close();
-
-    private void ToggleMaximizeRestore()
-    {
-        if (HostWindow is not { } window)
-        {
-            return;
-        }
-
-        window.WindowState = window.WindowState == WindowState.Maximized
-            ? WindowState.Normal
-            : WindowState.Maximized;
-    }
 }

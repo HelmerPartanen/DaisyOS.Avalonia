@@ -7,9 +7,7 @@
     Title="Calculator"
     Width="400"
     Height="560"
-    MinWidth="320"
-    MinHeight="448"
-    CanResize="True"
+    CanResize="False"
     WindowStartupLocation="CenterScreen"
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
@@ -37,15 +35,5 @@
     <!-- App Performance Overlay Layer -->
     <controls:AppPerformanceOverlay x:Name="PerfOverlay" AppName="Calculator" IsOverlayVisible="True" Margin="0,48,16,0" />
 
-    <!-- Edge resize handles for custom frameless window -->
-    <Border Name="ResizeTop" Height="8" Margin="10,10,10,0" VerticalAlignment="Top" Background="Transparent" Cursor="TopSide" PointerPressed="OnResizeTopPressed" />
-    <Border Name="ResizeBottom" Height="8" Margin="10,0,10,10" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomSide" PointerPressed="OnResizeBottomPressed" />
-    <Border Name="ResizeLeft" Width="8" Margin="10,10,0,10" HorizontalAlignment="Left" Background="Transparent" Cursor="LeftSide" PointerPressed="OnResizeLeftPressed" />
-    <Border Name="ResizeRight" Width="8" Margin="0,10,10,10" HorizontalAlignment="Right" Background="Transparent" Cursor="RightSide" PointerPressed="OnResizeRightPressed" />
-
-    <Border Name="ResizeTopLeft" Width="10" Height="10" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Cursor="TopLeftCorner" PointerPressed="OnResizeTopLeftPressed" />
-    <Border Name="ResizeTopRight" Width="10" Height="10" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" Cursor="TopRightCorner" PointerPressed="OnResizeTopRightPressed" />
-    <Border Name="ResizeBottomLeft" Width="10" Height="10" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomLeftCorner" PointerPressed="OnResizeBottomLeftPressed" />
-    <Border Name="ResizeBottomRight" Width="10" Height="10" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomRightCorner" PointerPressed="OnResizeBottomRightPressed" />
   </Grid>
 </Window>
