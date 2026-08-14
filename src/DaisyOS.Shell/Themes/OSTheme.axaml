@@ -23,6 +23,8 @@
       <!-- Overwritten by DynamicThemeService when a wallpaper accent is available. -->
       <Color x:Key="AccentColor">#FF56565B</Color>
       <SolidColorBrush x:Key="AccentBrush" Color="#FF56565B" />
+      <SolidColorBrush x:Key="AccentHoverBrush" Color="#FF646469" />
+      <SolidColorBrush x:Key="AccentPressedBrush" Color="#FF717176" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFFFF" />
       <SolidColorBrush x:Key="AccentSurfaceBrush" Color="#FFDCDCE0" />
       <SolidColorBrush x:Key="AccentSurfaceHoverBrush" Color="#FFD0D0D5" />
@@ -65,6 +67,8 @@
 
       <Color x:Key="AccentColor">#FFC8C8CC</Color>
       <SolidColorBrush x:Key="AccentBrush" Color="#FFC8C8CC" />
+      <SolidColorBrush x:Key="AccentHoverBrush" Color="#FFBABABE" />
+      <SolidColorBrush x:Key="AccentPressedBrush" Color="#FFACACB0" />
       <SolidColorBrush x:Key="OnAccentBrush" Color="#FF161618" />
       <SolidColorBrush x:Key="AccentSurfaceBrush" Color="#FF3D3D42" />
       <SolidColorBrush x:Key="AccentSurfaceHoverBrush" Color="#FF4A4A50" />

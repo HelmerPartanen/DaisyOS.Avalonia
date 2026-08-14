@@ -29,16 +29,15 @@
       <Setter Property="FontSize" Value="21" />
     </Style>
     <Style Selector="Button.CalcTile.Operator">
-      <!-- Operators are exactly five opacity points above digit keys. -->
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
       <Setter Property="FontSize" Value="24" />
     </Style>
     <Style Selector="Button.CalcTile.Operator:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
     </Style>
     <Style Selector="Button.CalcTile.Operator:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
     </Style>
     <!-- Scientific keys are deliberately quieter than the arithmetic keypad. -->
     <Style Selector="Button.CalcTile.ScientificFunction">
@@ -52,7 +51,7 @@
       <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
     </Style>
     <Style Selector="Button.EqualsTile">
-      <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedLG}" />
@@ -65,10 +64,10 @@
       <Setter Property="Margin" Value="3" />
     </Style>
     <Style Selector="Button.EqualsTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource WarningHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
     </Style>
     <Style Selector="Button.EqualsTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource WarningPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
     </Style>
     <Style Selector="Button.HeaderIconButton">
       <Setter Property="Background" Value="Transparent" />

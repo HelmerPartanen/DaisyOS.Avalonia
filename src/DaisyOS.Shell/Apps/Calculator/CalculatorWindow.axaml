@@ -6,7 +6,7 @@
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
     Title="Calculator"
-    Width="400"
+    Width="360"
     Height="560"
     CanResize="False"
     WindowStartupLocation="CenterScreen"
