@@ -19,10 +19,10 @@
       <Setter Property="Padding" Value="0" />
     </Style>
     <Style Selector="Button.CalcTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
     </Style>
     <Style Selector="Button.CalcTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
     </Style>
     <Style Selector="Button.CalcTile.Digit">
       <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
@@ -37,6 +37,9 @@
     <Style Selector="Button.CalcTile.Operator:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
     </Style>
+    <Style Selector="Button.CalcTile.Operator:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}" />
+    </Style>
     <!-- Scientific keys are deliberately quieter than the arithmetic keypad. -->
     <Style Selector="Button.CalcTile.ScientificFunction">
       <Setter Property="Background" Value="Transparent" />
@@ -44,6 +47,9 @@
     </Style>
     <Style Selector="Button.CalcTile.ScientificFunction:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+    </Style>
+    <Style Selector="Button.CalcTile.ScientificFunction:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
     </Style>
     <Style Selector="Button.EqualsTile">
       <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
@@ -60,6 +66,9 @@
     </Style>
     <Style Selector="Button.EqualsTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource WarningHoverBrush}" />
+    </Style>
+    <Style Selector="Button.EqualsTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource WarningPressedBrush}" />
     </Style>
     <Style Selector="Button.HeaderIconButton">
       <Setter Property="Background" Value="Transparent" />
@@ -79,6 +88,9 @@
     </Style>
     <Style Selector="Button.HeaderIconButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+    </Style>
+    <Style Selector="Button.HeaderIconButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
     </Style>
     <Style Selector="TextBlock.IconSymbol">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
