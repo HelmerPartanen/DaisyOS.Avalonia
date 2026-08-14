@@ -46,7 +46,7 @@
             VerticalAlignment="Center"
             Padding="6"
             Background="{DynamicResource BottomChromeSurfaceBrush}"
-            CornerRadius="16"
+            CornerRadius="{StaticResource ShellFrameCornerRadius}"
             ClipToBounds="True">
       <Border.Transitions>
         <Transitions>
@@ -59,7 +59,7 @@
 
       <!-- Start Button -->
       <Button x:Name="StartButton" Classes="ShellButton TaskbarApp" ToolTip.Tip="Start Menu">
-        <Border Background="Transparent" CornerRadius="8">
+        <Border Background="Transparent" CornerRadius="{StaticResource ShellCompactCornerRadius}">
           <!-- Match the fill color used by active Quick Settings controls. -->
           <svg:Svg Width="26" Height="26"
                    Path="avares://DaisyOS.Shell/Assets/Brand/favicon.svg"

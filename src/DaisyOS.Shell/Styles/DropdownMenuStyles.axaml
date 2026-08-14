@@ -6,7 +6,7 @@
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="Padding" Value="0" />
-    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="CornerRadius" Value="{StaticResource ShellSurfaceCornerRadius}" />
     <Setter Property="Template">
       <ControlTemplate>
         <Border Margin="16"
@@ -14,7 +14,7 @@
                 Background="{DynamicResource ContextMenuMaterialBrush}"
                 BorderBrush="{DynamicResource TaskbarBorderBrush}"
                 BorderThickness="1"
-                CornerRadius="12"
+                CornerRadius="{StaticResource ShellSurfaceCornerRadius}"
                 Padding="4"
                 BoxShadow="0 4 16 0 #30000000">
           <ScrollViewer>
@@ -32,7 +32,7 @@
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="Padding" Value="0" />
-    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="CornerRadius" Value="{StaticResource ShellSurfaceCornerRadius}" />
     <Setter Property="Template">
       <ControlTemplate>
         <Border Margin="16"
@@ -40,7 +40,7 @@
                 Background="{DynamicResource ContextMenuMaterialBrush}"
                 BorderBrush="{DynamicResource TaskbarBorderBrush}"
                 BorderThickness="1"
-                CornerRadius="12"
+                CornerRadius="{StaticResource ShellSurfaceCornerRadius}"
                 Padding="4"
                 BoxShadow="0 4 16 0 #30000000">
           <ScrollViewer>
@@ -58,7 +58,7 @@
     <Setter Property="FontFamily" Value="Inter" />
     <Setter Property="FontWeight" Value="Regular" />
     <Setter Property="FontSize" Value="12" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="CornerRadius" Value="{StaticResource ShellCompactCornerRadius}" />
     <Setter Property="Padding" Value="6,4,8,4" />
     <Setter Property="MinHeight" Value="28" />
     <Setter Property="Margin" Value="4,1" />
@@ -88,15 +88,15 @@
   <Style Selector="Button.SubtleLink">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="CornerRadius" Value="{StaticResource ShellCompactCornerRadius}" />
     <Setter Property="Padding" Value="6,4" />
     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
   </Style>
   <Style Selector="Button.SubtleLink:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:flyout-open /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource GhostButtonHoverBrush}" />
   </Style>
   <Style Selector="Button.SubtleLink:pressed /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource ShellPressedBrush}" />
+    <Setter Property="Background" Value="{DynamicResource GhostButtonPressedBrush}" />
   </Style>
 
   <!-- Reusable Material Symbol Icon Class for MenuItems -->

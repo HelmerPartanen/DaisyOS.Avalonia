@@ -40,7 +40,7 @@
     <Style Selector="TextBox.EditorTextBox">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellSquareCornerRadius}" />
       <Setter Property="Padding" Value="0" />
     </Style>
     <Style Selector="TextBox.EditorTextBox:focus /template/ Border#PART_BorderElement">
@@ -63,7 +63,7 @@
                             Height="40"
                             Margin="0,0,0,12"
                             HorizontalAlignment="Stretch"
-                            CornerRadius="6"
+                            CornerRadius="{StaticResource ShellCompactCornerRadius}"
                             PlaceholderText="Search notes..." />
 
         <!-- Action Buttons -->

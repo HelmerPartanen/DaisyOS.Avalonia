@@ -7,7 +7,7 @@
     <Style Selector="ToggleButton.QuickActionSingle">
       <Setter Property="Width" Value="96"/>
       <Setter Property="Height" Value="56"/>
-      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -17,7 +17,7 @@
     <Style Selector="ToggleButton.QuickActionSplit">
       <Setter Property="Width" Value="68"/>
       <Setter Property="Height" Value="56"/>
-      <Setter Property="CornerRadius" Value="10,0,0,10"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlLeftCornerRadius}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -28,7 +28,7 @@
       <Setter Property="Height" Value="56"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="0,10,10,0"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlRightCornerRadius}"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>

@@ -9,6 +9,21 @@
         <ResourceInclude Source="avares://DaisyOS.Shell/Themes/DynamicColors.axaml" />
         <ResourceInclude Source="avares://DaisyOS.Shell/Themes/OSTheme.axaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <!-- Shared geometry scale: shell frames, surfaces, controls, and compact details. -->
+      <CornerRadius x:Key="ShellFrameCornerRadius">16</CornerRadius>
+      <CornerRadius x:Key="ShellSurfaceCornerRadius">12</CornerRadius>
+      <CornerRadius x:Key="ShellSurfaceInsetCornerRadius">11</CornerRadius>
+      <CornerRadius x:Key="ShellControlCornerRadius">10</CornerRadius>
+      <CornerRadius x:Key="ShellControlLeftCornerRadius">10,0,0,10</CornerRadius>
+      <CornerRadius x:Key="ShellControlRightCornerRadius">0,10,10,0</CornerRadius>
+      <CornerRadius x:Key="ShellCompactCornerRadius">8</CornerRadius>
+      <CornerRadius x:Key="ShellInsetCornerRadius">6</CornerRadius>
+      <CornerRadius x:Key="ShellMicroCornerRadius">4</CornerRadius>
+      <CornerRadius x:Key="ShellTrackCornerRadius">5</CornerRadius>
+      <CornerRadius x:Key="ShellSquareCornerRadius">0</CornerRadius>
+      <CornerRadius x:Key="ShellRoundIconCornerRadius">13</CornerRadius>
+      <x:Double x:Key="ShellSurfaceCornerRadiusValue">12</x:Double>
     </ResourceDictionary>
   </Application.Resources>
 
@@ -42,23 +57,42 @@
       <Setter Property="FontFamily" Value="Inter" />
       <Setter Property="FontWeight" Value="Regular" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}" />
     </Style>
 
-    <!-- Global Normalized Subtle / Ghost Buttons (Shell, Nav, Back, Subtle links) -->
+    <!-- Baseline geometry for every ordinary button; specialized controls can opt out locally. -->
+    <Style Selector="Button, ToggleButton">
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}" />
+    </Style>
+
+    <!-- Ghost buttons are transparent at rest; their state colors come from the theme. -->
     <Style Selector="Button.ShellButton:not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails), ToggleButton.ShellButton:not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails), Button.SettingsNavItem, Button.BackButton, Button.SubtleLink">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- Subtle buttons reserve a visible resting surface, unlike transparent ghost buttons. -->
+    <Style Selector="Button.SubtleButton, ToggleButton.SubtleButton">
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}" />
+    </Style>
+    <Style Selector="Button.SubtleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.SubtleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonHoverBrush}" />
+    </Style>
+    <Style Selector="Button.SubtleButton:pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.SubtleButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonPressedBrush}" />
     </Style>
 
     <!-- Settings List Items (Main panel subcategory cards) -->
     <Style Selector="Button.SettingsListItem">
       <Setter Property="Background" Value="{DynamicResource SettingsButtonBackgroundBrush}" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}" />
       <Setter Property="Padding" Value="12,8" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -71,14 +105,14 @@
     </Style>
 
     <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostButtonHoverBrush}" />
     </Style>
     <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostButtonPressedBrush}" />
     </Style>
     <!-- Flyout triggers stay visibly active for the duration of their open surface. -->
     <Style Selector="Button.ShellButton.ShellButtonActive /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostButtonHoverBrush}" />
     </Style>
 
     <!-- Reusable Material You Quick Settings container buttons. -->
@@ -93,10 +127,10 @@
       <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonHoverBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonPressedBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting > TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />

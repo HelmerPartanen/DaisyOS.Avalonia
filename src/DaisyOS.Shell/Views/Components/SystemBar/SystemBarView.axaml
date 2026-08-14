@@ -13,7 +13,7 @@
       <Setter Property="Background" Value="Transparent"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
-      <Setter Property="CornerRadius" Value="0"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ShellSquareCornerRadius}"/>
     </ControlTheme>
   </UserControl.Resources>
 
@@ -23,20 +23,26 @@
       <Setter Property="Height" Value="40"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Background" Value="{DynamicResource ShellSurfaceSubtleBrush}"/>
-      <Setter Property="CornerRadius" Value="0,10,10,0"/>
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlRightCornerRadius}"/>
     </Style>
     <Style Selector="Button.VolumeOutputDetails:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.VolumeOutputDetails:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonPressedBrush}"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
-      <Setter Property="Background" Value="{DynamicResource ShellSurfaceSubtleBrush}"/>
-      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}"/>
+      <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonHoverBrush}"/>
+    </Style>
+    <Style Selector="Button.OutputDevicesButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SubtleButtonPressedBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem">
       <Setter Property="Height" Value="44"/>
@@ -78,14 +84,14 @@
           VerticalAlignment="Bottom"
           Padding="6"
           Background="{DynamicResource BottomChromeSurfaceBrush}"
-          CornerRadius="12"
+          CornerRadius="{StaticResource ShellFrameCornerRadius}"
           ClipToBounds="True">
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="0">
 
       <!-- Network and sound are one Quick Settings action, laid out on an even two-icon grid. -->
       <Button x:Name="QuickSettingsButton" Classes="ShellButton" Width="96" Height="40" ToolTip.Tip="Quick settings"
               Click="OnQuickSettingsRequested">
-        <Border Width="96" Height="40" Background="Transparent" CornerRadius="8">
+        <Border Width="96" Height="40" Background="Transparent" CornerRadius="{StaticResource ShellCompactCornerRadius}">
           <Grid ColumnDefinitions="*,*,*">
             <TextBlock Grid.Column="0" Text="wifi"
                        FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
@@ -100,7 +106,7 @@
         </Border>
       </Button>
       <Button x:Name="CalendarButton" Classes="ShellButton" Height="40" Padding="10,0" ToolTip.Tip="Calendar and notifications">
-        <Border Background="Transparent" CornerRadius="8">
+        <Border Background="Transparent" CornerRadius="{StaticResource ShellCompactCornerRadius}">
           <TextBlock x:Name="ClockText" FontSize="13" FontWeight="Regular" TextAlignment="Center"
                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Border>
@@ -108,7 +114,7 @@
           <Flyout Placement="TopEdgeAlignedRight" FlyoutPresenterTheme="{StaticResource SystemBarFlyoutPresenter}"
                   Opened="OnCalendarFlyoutOpened" Closed="OnCalendarFlyoutClosed">
             <Border Padding="16" Background="{DynamicResource ShellSurfaceElevatedBrush}"
-                    BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="1" CornerRadius="12">
+                    BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="1" CornerRadius="{StaticResource ShellSurfaceCornerRadius}">
               <StackPanel Spacing="12">
                 <TextBlock x:Name="CalendarHeading" FontWeight="Regular"/>
                 <Calendar IsTodayHighlighted="True"/>
@@ -125,7 +131,7 @@
           Width="336" Height="304" Padding="16,16,16,0"
           HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,64"
           Background="{DynamicResource BottomChromeSurfaceBrush}"
-          CornerRadius="14"
+          CornerRadius="{StaticResource ShellFrameCornerRadius}"
           ClipToBounds="True">
     <Grid>
       <Grid x:Name="QuickSettingsMainPage" RowDefinitions="*,Auto">

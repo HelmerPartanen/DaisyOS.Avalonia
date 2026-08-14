@@ -12,14 +12,14 @@
       <Setter Property="Background" Value="#E61A1C23" />
       <Setter Property="BorderBrush" Value="{DynamicResource ShellSurfaceBorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellSurfaceCornerRadius}" />
       <Setter Property="Padding" Value="14" />
       <Setter Property="BoxShadow" Value="0 8 24 #60000000" />
     </Style>
 
     <Style Selector="Border.MetricTile">
       <Setter Property="Background" Value="#252833" />
-      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellCompactCornerRadius}" />
       <Setter Property="Padding" Value="10,8" />
     </Style>
 
@@ -36,12 +36,15 @@
       <Setter Property="Padding" Value="0" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="13" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellRoundIconCornerRadius}" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.OverlayIconButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#33FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource GhostButtonHoverBrush}" />
+    </Style>
+    <Style Selector="Button.OverlayIconButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostButtonPressedBrush}" />
     </Style>
 
     <Style Selector="TextBlock.ButtonIcon">
@@ -60,7 +63,7 @@
           <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="6">
             <TextBlock Text="analytics" Classes="MetricIcon" Foreground="{DynamicResource AppPrimaryBrush}" FontSize="18" />
             <TextBlock Name="TxtAppName" Text="Performance" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-            <Border Background="#33808080" CornerRadius="4" Padding="4,1" VerticalAlignment="Center">
+            <Border Background="#33808080" CornerRadius="{StaticResource ShellMicroCornerRadius}" Padding="4,1" VerticalAlignment="Center">
               <TextBlock Name="TxtPid" Text="PID 0" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
             </Border>
           </StackPanel>
@@ -123,7 +126,7 @@
         </Grid>
 
         <!-- Footer / Uptime -->
-        <Border Background="#1C1E26" CornerRadius="6" Padding="8,4">
+        <Border Background="#1C1E26" CornerRadius="{StaticResource ShellInsetCornerRadius}" Padding="8,4">
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="App Runtime" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
             <TextBlock Grid.Column="1" Name="TxtUptime" Text="00:00:00" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />

@@ -69,11 +69,19 @@
 
       <SolidColorBrush
         x:Key="ShellHoverBrush"
-        Color="#12000000"/>
+        Color="#33000000"/>
 
       <SolidColorBrush
         x:Key="ShellPressedBrush"
-        Color="#22000000"/>
+        Color="#40000000"/>
+
+      <SolidColorBrush
+        x:Key="GhostButtonHoverBrush"
+        Color="#33000000"/>
+
+      <SolidColorBrush
+        x:Key="GhostButtonPressedBrush"
+        Color="#40000000"/>
 
       <SolidColorBrush
         x:Key="ShellDividerBrush"
@@ -173,7 +181,15 @@
 
       <SolidColorBrush
         x:Key="SubtleButtonBackgroundBrush"
-        Color="#0A000000"/>
+        Color="#33000000"/>
+
+      <SolidColorBrush
+        x:Key="SubtleButtonHoverBrush"
+        Color="#40000000"/>
+
+      <SolidColorBrush
+        x:Key="SubtleButtonPressedBrush"
+        Color="#4D000000"/>
 
 
       <!-- ===================================================== -->
@@ -339,11 +355,19 @@
 
       <SolidColorBrush
         x:Key="ShellHoverBrush"
-        Color="#1AFFFFFF"/>
+        Color="#33FFFFFF"/>
 
       <SolidColorBrush
         x:Key="ShellPressedBrush"
-        Color="#26FFFFFF"/>
+        Color="#40FFFFFF"/>
+
+      <SolidColorBrush
+        x:Key="GhostButtonHoverBrush"
+        Color="#33FFFFFF"/>
+
+      <SolidColorBrush
+        x:Key="GhostButtonPressedBrush"
+        Color="#40FFFFFF"/>
 
       <SolidColorBrush
         x:Key="ShellDividerBrush"
@@ -440,7 +464,15 @@
 
       <SolidColorBrush
         x:Key="SubtleButtonBackgroundBrush"
-        Color="#0DFFFFFF"/>
+        Color="#33FFFFFF"/>
+
+      <SolidColorBrush
+        x:Key="SubtleButtonHoverBrush"
+        Color="#40FFFFFF"/>
+
+      <SolidColorBrush
+        x:Key="SubtleButtonPressedBrush"
+        Color="#4DFFFFFF"/>
 
 
       <!-- ===================================================== -->
@@ -558,28 +590,6 @@
       <StaticResource
         x:Key="QuickSettingForegroundBrush"
         ResourceKey="TextPrimaryBrush"/>
-
     </ResourceDictionary>
-
   </ResourceDictionary.ThemeDictionaries>
-
-  <!--
-    Shared perimeter treatment for the five primary shell surfaces. The cyan
-    hue remains constant; only alpha changes, with matching 0 and 1 stops to
-    keep the conic seam invisible.
-  -->
-<ConicGradientBrush x:Key="ShellDiagonalBorderBrush"
-                    Center="50%,50%"
-                    Angle="45">
-  <GradientStop Offset="0.00" Color="#08FFFFFF"/>
-  <GradientStop Offset="0.12" Color="#18FFFFFF"/>
-  <GradientStop Offset="0.25" Color="#26FFFFFF"/>
-  <GradientStop Offset="0.38" Color="#18FFFFFF"/>
-  <GradientStop Offset="0.50" Color="#08FFFFFF"/>
-  <GradientStop Offset="0.62" Color="#18FFFFFF"/>
-  <GradientStop Offset="0.75" Color="#26FFFFFF"/>
-  <GradientStop Offset="0.88" Color="#18FFFFFF"/>
-  <GradientStop Offset="1.00" Color="#08FFFFFF"/>
-</ConicGradientBrush>
-
 </ResourceDictionary>

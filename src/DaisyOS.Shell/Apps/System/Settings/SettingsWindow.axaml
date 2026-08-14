@@ -24,11 +24,11 @@
             Margin="12"
             Background="{DynamicResource ShellSurfaceBorderBrush}"
             Padding="1"
-            CornerRadius="12"
+            CornerRadius="{StaticResource ShellSurfaceCornerRadius}"
             compositor:KWinBlur.IsEnabled="True"
-            compositor:KWinBlur.CornerRadius="12">
+            compositor:KWinBlur.CornerRadius="{StaticResource ShellSurfaceCornerRadiusValue}">
       <Border Background="{DynamicResource SystemBarMaterialBrush}"
-              CornerRadius="11"
+              CornerRadius="{StaticResource ShellSurfaceInsetCornerRadius}"
               ClipToBounds="True">
         <Grid RowDefinitions="44,*">
           <settings:SettingsWindowTitleBar Title="Settings" />

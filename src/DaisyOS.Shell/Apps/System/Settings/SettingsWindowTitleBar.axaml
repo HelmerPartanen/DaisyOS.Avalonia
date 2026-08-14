@@ -12,7 +12,7 @@
       <Setter Property="Padding" Value="0" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="CornerRadius" Value="{StaticResource ShellSquareCornerRadius}" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -69,7 +69,7 @@
                           Margin="12,0"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center"
-                          CornerRadius="8"
+                          CornerRadius="{StaticResource ShellCompactCornerRadius}"
                           PlaceholderText="Search settings..." />
 
       <StackPanel Grid.Column="2" Orientation="Horizontal">

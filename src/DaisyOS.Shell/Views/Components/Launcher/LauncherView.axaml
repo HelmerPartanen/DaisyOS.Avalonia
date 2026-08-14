@@ -7,14 +7,14 @@
              Width="740" Height="620">
 
   <Border Background="{DynamicResource BottomChromeSurfaceBrush}"
-          CornerRadius="14"
+          CornerRadius="{StaticResource ShellFrameCornerRadius}"
           ClipToBounds="True">
     <Grid RowDefinitions="Auto,*">
       <Grid.Styles>
         <Style Selector="Button.LauncherUtility">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="9"/>
+          <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}"/>
           <Setter Property="Padding" Value="8"/>
         </Style>
         <Style Selector="Button.LauncherUtility:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -24,7 +24,7 @@
         <Style Selector="ToggleButton.LauncherNav">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="9"/>
+          <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}"/>
           <Setter Property="Padding" Value="10,8"/>
           <Setter Property="Width" Value="168"/>
           <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -40,7 +40,7 @@
         <Style Selector="Button.LauncherFavorite">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="9"/>
+          <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}"/>
           <Setter Property="Padding" Value="8,7"/>
           <Setter Property="Width" Value="168"/>
           <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -56,7 +56,7 @@
         <Style Selector="Button.LauncherLibraryItem">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="10"/>
+          <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}"/>
           <Setter Property="Width" Value="232"/>
           <Setter Property="HorizontalAlignment" Value="Left"/>
           <Setter Property="Padding" Value="10"/>
@@ -69,7 +69,7 @@
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <controls:SearchBar x:Name="LauncherSearchBar"
                                 Height="40"
-                                CornerRadius="8"
+                                CornerRadius="{StaticResource ShellCompactCornerRadius}"
                                 Text="{Binding SearchText, Mode=TwoWay}"
                                 PlaceholderText="Search apps" />
             <Button Grid.Column="1" Classes="LauncherUtility" Width="40" Height="40" Padding="0" ToolTip.Tip="Power">
@@ -119,7 +119,7 @@
                             <Image Source="{Binding IconBitmap}" IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
                                    RenderOptions.BitmapInterpolationMode="HighQuality" Width="28" Height="28"/>
                             <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                                    Background="{DynamicResource ShellSurfaceElevatedBrush}" CornerRadius="7" Width="28" Height="28">
+                                    Background="{DynamicResource ShellSurfaceElevatedBrush}" CornerRadius="{StaticResource ShellCompactCornerRadius}" Width="28" Height="28">
                               <TextBlock Text="{Binding Name[0]}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                           </Panel>
@@ -172,7 +172,7 @@
                                     <Image Source="{Binding IconBitmap}" IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
                                            RenderOptions.BitmapInterpolationMode="HighQuality" Width="34" Height="34"/>
                                     <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                                            Background="{DynamicResource ShellSurfaceElevatedBrush}" CornerRadius="9" Width="34" Height="34">
+                                            Background="{DynamicResource ShellSurfaceElevatedBrush}" CornerRadius="{StaticResource ShellControlCornerRadius}" Width="34" Height="34">
                                       <TextBlock Text="{Binding Name[0]}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                   </Panel>

@@ -16,13 +16,13 @@
   <Border x:Name="MediaFrame"
           Height="48"
           Background="{DynamicResource BottomChromeSurfaceBrush}"
-          CornerRadius="16"
+          CornerRadius="{StaticResource ShellFrameCornerRadius}"
           ClipToBounds="True">
     <Grid>
       <!-- The adaptive artwork color sits above the shared System Bar material. -->
       <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False"/>
       <Grid Margin="4" ColumnDefinitions="40,*,120,28">
-      <Border Width="40" Height="40" CornerRadius="12" ClipToBounds="True">
+      <Border Width="40" Height="40" CornerRadius="{StaticResource ShellSurfaceCornerRadius}" ClipToBounds="True">
         <Grid>
         <Image x:Name="Artwork" Stretch="UniformToFill" IsVisible="False"
                RenderOptions.BitmapInterpolationMode="HighQuality"/>

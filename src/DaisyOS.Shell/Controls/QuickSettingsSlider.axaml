@@ -31,7 +31,7 @@
                 <Thumb.Template>
                   <ControlTemplate>
                     <Border Background="{DynamicResource AppOnPrimaryBrush}"
-                            CornerRadius="5" />
+                            CornerRadius="{StaticResource ShellTrackCornerRadius}" />
                   </ControlTemplate>
                 </Thumb.Template>
               </Thumb>
