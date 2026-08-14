@@ -14,11 +14,11 @@
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="#B31C1C1E" />
       <SolidColorBrush x:Key="TextTertiaryBrush" Color="#801C1C1E" />
 
-      <SolidColorBrush x:Key="GhostHoverBrush" Color="#33000000" />
-      <SolidColorBrush x:Key="GhostPressedBrush" Color="#40000000" />
-      <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="#33000000" />
-      <SolidColorBrush x:Key="SubtleHoverBrush" Color="#40000000" />
-      <SolidColorBrush x:Key="SubtlePressedBrush" Color="#4D000000" />
+      <SolidColorBrush x:Key="GhostHoverBrush" Color="#26000000" />
+      <SolidColorBrush x:Key="GhostPressedBrush" Color="#33000000" />
+      <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="#26000000" />
+      <SolidColorBrush x:Key="SubtleHoverBrush" Color="#33000000" />
+      <SolidColorBrush x:Key="SubtlePressedBrush" Color="#40000000" />
 
       <!-- Overwritten by DynamicThemeService when a wallpaper accent is available. -->
       <Color x:Key="AccentColor">#FF56565B</Color>
@@ -56,11 +56,11 @@
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="#B3F5F5F7" />
       <SolidColorBrush x:Key="TextTertiaryBrush" Color="#80F5F5F7" />
 
-      <SolidColorBrush x:Key="GhostHoverBrush" Color="#33FFFFFF" />
-      <SolidColorBrush x:Key="GhostPressedBrush" Color="#40FFFFFF" />
-      <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="#33FFFFFF" />
-      <SolidColorBrush x:Key="SubtleHoverBrush" Color="#40FFFFFF" />
-      <SolidColorBrush x:Key="SubtlePressedBrush" Color="#4DFFFFFF" />
+      <SolidColorBrush x:Key="GhostHoverBrush" Color="#26FFFFFF" />
+      <SolidColorBrush x:Key="GhostPressedBrush" Color="#33FFFFFF" />
+      <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="#26FFFFFF" />
+      <SolidColorBrush x:Key="SubtleHoverBrush" Color="#33FFFFFF" />
+      <SolidColorBrush x:Key="SubtlePressedBrush" Color="#40FFFFFF" />
 
       <Color x:Key="AccentColor">#FFC8C8CC</Color>
       <SolidColorBrush x:Key="AccentBrush" Color="#FFC8C8CC" />

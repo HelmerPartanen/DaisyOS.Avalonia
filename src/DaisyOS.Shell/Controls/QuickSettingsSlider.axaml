@@ -5,65 +5,27 @@
              Focusable="True"
              AutomationProperties.Name="Volume"
              Height="40">
-  <UserControl.Resources>
-    <ControlTheme x:Key="QuickSettingsSliderTrackTheme" TargetType="Slider">
-      <Setter Property="Template">
-        <ControlTemplate>
-          <Track Name="PART_Track"
-                 Orientation="Horizontal"
-                 Minimum="{TemplateBinding Minimum}"
-                 Maximum="{TemplateBinding Maximum}"
-                 Value="{TemplateBinding Value}"
-                 IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
-            <Track.DecreaseButton>
-              <RepeatButton BorderThickness="0">
-                <RepeatButton.Template>
-                  <ControlTemplate>
-                    <Border Background="Transparent" />
-                  </ControlTemplate>
-                </RepeatButton.Template>
-              </RepeatButton>
-            </Track.DecreaseButton>
-            <Track.Thumb>
-              <Thumb Width="8"
-                     Height="40"
-                     IsVisible="{Binding ShowThumb, ElementName=Root}">
-                <Thumb.Template>
-                  <ControlTemplate>
-                    <Border Background="{DynamicResource OnAccentBrush}"
-                            CornerRadius="{DynamicResource RoundedXS}" />
-                  </ControlTemplate>
-                </Thumb.Template>
-              </Thumb>
-            </Track.Thumb>
-            <Track.IncreaseButton>
-              <RepeatButton BorderThickness="0">
-                <RepeatButton.Template>
-                  <ControlTemplate>
-                    <Border Background="Transparent" />
-                  </ControlTemplate>
-                </RepeatButton.Template>
-              </RepeatButton>
-            </Track.IncreaseButton>
-          </Track>
-        </ControlTemplate>
-      </Setter>
-    </ControlTheme>
-  </UserControl.Resources>
-
   <!-- The glyph overlays the track and never creates a false minimum fill. -->
   <Grid x:Name="RangeSurface">
     <Border x:Name="TrackBackground"
-            Background="{DynamicResource TertiarySurfaceBrush}"
+            Background="{DynamicResource SubtleSurfaceBrush}"
             BorderBrush="{Binding TrackBorderBrush, ElementName=Root}"
             BorderThickness="{Binding TrackBorderThickness, ElementName=Root}"
             CornerRadius="{Binding TrackCornerRadius, ElementName=Root}"
             ClipToBounds="True">
-      <!-- The fill deliberately owns no corner geometry. The clipped track is
-           the single rounded silhouette at every value, including 0 and 100. -->
-      <Border x:Name="ProgressFill"
-              Background="{DynamicResource AccentBrush}"
-              HorizontalAlignment="Left" />
+      <Grid>
+        <!-- The fill deliberately owns no corner geometry. The clipped track is
+             the single rounded silhouette at every value, including 0 and 100. -->
+        <Border x:Name="ProgressFill"
+                Background="{DynamicResource AccentBrush}"
+                HorizontalAlignment="Left" />
+        <Border x:Name="ProgressThumb"
+                Width="8"
+                Background="{DynamicResource OnAccentBrush}"
+                CornerRadius="{DynamicResource RoundedXS}"
+                HorizontalAlignment="Left"
+                IsVisible="{Binding ShowThumb, ElementName=Root}" />
+      </Grid>
     </Border>
     <TextBlock Text="{Binding Icon, ElementName=Root}"
                FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
@@ -73,10 +35,6 @@
                HorizontalAlignment="Left"
                VerticalAlignment="Center"
                IsHitTestVisible="False" />
-    <Slider Minimum="{Binding Minimum, ElementName=Root}"
-            Maximum="{Binding Maximum, ElementName=Root}"
-            Value="{Binding Value, ElementName=Root, Mode=TwoWay}"
-            Theme="{DynamicResource QuickSettingsSliderTrackTheme}" />
   </Grid>
 
 </UserControl>

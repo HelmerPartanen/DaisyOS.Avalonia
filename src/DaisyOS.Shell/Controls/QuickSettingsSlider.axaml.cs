@@ -17,6 +17,7 @@ public partial class QuickSettingsSlider : UserControl
     private double _lastProgressFillWidth = double.NaN;
     private readonly Border? _trackBackground;
     private readonly Border? _progressFill;
+    private readonly Border? _progressThumb;
     public event EventHandler? ValueChanged;
     public static readonly StyledProperty<string> IconProperty =
         AvaloniaProperty.Register<QuickSettingsSlider, string>(nameof(Icon), "volume_up");
@@ -56,6 +57,7 @@ public partial class QuickSettingsSlider : UserControl
         InitializeComponent();
         _trackBackground = this.FindControl<Border>("TrackBackground");
         _progressFill = this.FindControl<Border>("ProgressFill");
+        _progressThumb = this.FindControl<Border>("ProgressThumb");
         SizeChanged += (_, _) => UpdateProgressFill();
         AddHandler(PointerPressedEvent, OnTrackPointerPressed, RoutingStrategies.Tunnel);
         AddHandler(PointerMovedEvent, OnTrackPointerMoved, RoutingStrategies.Tunnel);
@@ -131,6 +133,13 @@ public partial class QuickSettingsSlider : UserControl
 
         _lastProgressFillWidth = width;
         _progressFill.Width = width;
+
+        if (_progressThumb is not null)
+        {
+            var thumbWidth = Math.Min(_progressThumb.Width, _trackBackground.Bounds.Width);
+            var thumbOffset = Math.Clamp(width - (thumbWidth / 2d), 0d, _trackBackground.Bounds.Width - thumbWidth);
+            _progressThumb.Margin = new Thickness(thumbOffset, 0d, 0d, 0d);
+        }
     }
 
     private void OnTrackPointerPressed(object? sender, PointerPressedEventArgs e)
