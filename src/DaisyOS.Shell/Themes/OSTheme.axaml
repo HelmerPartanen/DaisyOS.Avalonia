@@ -50,11 +50,6 @@
         x:Key="BottomChromeSurfaceBrush"
         Color="#FFF5F5F5"/>
 
-      <!-- Opaque top-edge pocket so it remains legible over every wallpaper. -->
-      <SolidColorBrush
-        x:Key="ShellTopEdgePocketBrush"
-        Color="#FF000000"/>
-
       <SolidColorBrush
         x:Key="ShellSurfaceElevatedBrush"
         Color="#C2FFFFFF"/>
@@ -324,11 +319,6 @@
       <SolidColorBrush
         x:Key="ShellSurfaceBrush"
         Color="#801C1C1C"/>
-
-      <!-- Opaque top-edge pocket so it remains legible over every wallpaper. -->
-      <SolidColorBrush
-        x:Key="ShellTopEdgePocketBrush"
-        Color="#FF000000"/>
 
       <SolidColorBrush
         x:Key="ShellSurfaceElevatedBrush"

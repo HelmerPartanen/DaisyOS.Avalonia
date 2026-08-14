@@ -5,7 +5,8 @@
     xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
     HorizontalAlignment="Center"
     VerticalAlignment="Bottom"
-    Margin="0,0,0,4">
+    Margin="0"
+    ClipToBounds="False">
 
   <UserControl.Styles>
     <Style Selector="Button.TaskbarApp">
@@ -33,19 +34,28 @@
     guaranteeing perfectly symmetric edge spacing on both sides.
     The Width Transition animates smoothly as the Canvas inside resizes.
   -->
-  <Border Height="52"
-          Padding="6"
-          Background="{DynamicResource BottomChromeSurfaceBrush}"
-          CornerRadius="12"
-          ClipToBounds="True">
-    <Border.Transitions>
-      <Transitions>
-        <DoubleTransition Property="Width" Duration="0:0:0.35" Easing="CubicEaseOut"/>
-      </Transitions>
-    </Border.Transitions>
+  <Grid HorizontalAlignment="Center" ClipToBounds="False">
+    <!-- Canvas does not participate in desired-size measurement; the dock body remains dynamic-width. -->
+    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="False" IsHitTestVisible="False">
+      <Path x:Name="BottomEdgeBridge"
+            Fill="{DynamicResource BottomChromeSurfaceBrush}" />
+    </Canvas>
+    <Border x:Name="TaskbarBody"
+            Height="52"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Padding="6"
+            Background="{DynamicResource BottomChromeSurfaceBrush}"
+            CornerRadius="16"
+            ClipToBounds="True">
+      <Border.Transitions>
+        <Transitions>
+          <DoubleTransition Property="Width" Duration="0:0:0.35" Easing="CubicEaseOut"/>
+        </Transitions>
+      </Border.Transitions>
 
-    <!-- StackPanel is the direct child - Border wraps it tightly via Padding -->
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+      <!-- StackPanel is the direct child - Border wraps it tightly via Padding -->
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
 
       <!-- Start Button -->
       <Button x:Name="StartButton" Classes="ShellButton TaskbarApp" ToolTip.Tip="Start Menu">
@@ -89,6 +99,7 @@
         </Button>
       </Canvas>
 
-    </StackPanel>
-  </Border>
+      </StackPanel>
+    </Border>
+  </Grid>
 </UserControl>

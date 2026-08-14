@@ -30,7 +30,6 @@ public partial class App : Application
     private NotesWindow? _notesWindow;
     private CalculatorWindow? _calculatorWindow;
     private FilesWindow? _filesWindow;
-    private TopEdgeWindow? _topEdgeWindow;
     private ShellView? _shellView;
 
     public ShellSessionState SessionState { get; } = new();
@@ -53,7 +52,6 @@ public partial class App : Application
             mainWindow.Opened += async (_, _) =>
             {
                 ConfigureShellOverlays(mainWindow.ShellContent);
-                ShowTopEdgeChrome(mainWindow);
 
                 // This is a compositor-level setting shared by all KWin blur
                 // regions. Do not delay first paint while KWin updates it.
@@ -154,18 +152,6 @@ public partial class App : Application
         shell.SystemBar.QuickSettingsDismissRequested += (_, _) => HideQuickSettings();
         shell.Launcher.AppLaunchRequested += (_, _) => HideLauncher();
         LauncherVisibilityChanged += (_, isVisible) => shell.Taskbar.SetLauncherOpen(isVisible);
-    }
-
-    private void ShowTopEdgeChrome(Window mainWindow)
-    {
-        if (_topEdgeWindow is { IsVisible: true })
-        {
-            return;
-        }
-
-        _topEdgeWindow ??= new TopEdgeWindow();
-        _topEdgeWindow.PositionAtTopOf(mainWindow);
-        _topEdgeWindow.Show(mainWindow);
     }
 
     private void ToggleQuickSettings()
