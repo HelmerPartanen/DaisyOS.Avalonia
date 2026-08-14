@@ -49,25 +49,25 @@
       <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.ConnectedWifiNetwork">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.ConnectedWifiNetwork:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.ConnectedBluetoothDevice">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.ConnectedBluetoothDevice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}"/>
     </Style>
   </UserControl.Styles>
 

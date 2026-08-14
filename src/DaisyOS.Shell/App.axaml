@@ -115,21 +115,21 @@
 
     <!-- Global Normalized Active / Accent Button states. -->
     <Style Selector="Button.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
     <!--
       Active buttons communicate state through their container color, never by
       recoloring labels. Quick Settings is the sole exception: its glyphs are
-      status indicators, so only explicitly marked icons receive the accent.
+      status indicators, so only explicitly marked icons receive the on-primary color.
     -->
     <Style Selector="ToggleButton.QuickSetting:checked > TextBlock.QuickSettingIcon, Button.QuickSettingDetails.Active > TextBlock.QuickSettingIcon">
-      <Setter Property="Foreground" Value="{DynamicResource AppPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryBrush}" />
     </Style>
     <Style Selector="Button.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
     <Style Selector="Button.Active:pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pressed /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AppPrimaryContainerPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}" />
     </Style>
   </Application.Styles>
 </Application>

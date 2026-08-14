@@ -28,6 +28,7 @@ public partial class App : Application
     private FilesWindow? _filesWindow;
     private LauncherWindow? _launcherWindow;
     private BottomChromeWindow? _bottomChromeWindow;
+    private TopEdgeWindow? _topEdgeWindow;
     private QuickSettingsWindow? _quickSettingsWindow;
 
     public ShellSessionState SessionState { get; } = new();
@@ -49,6 +50,7 @@ public partial class App : Application
             desktop.MainWindow.Opened += async (_, _) =>
             {
                 ShowBottomChrome(desktop.MainWindow);
+                ShowTopEdgeChrome(desktop.MainWindow);
 
                 // This is a compositor-level setting shared by all KWin blur
                 // regions. Do not delay first paint while KWin updates it.
@@ -154,6 +156,20 @@ public partial class App : Application
 
         _bottomChromeWindow.PositionAtBottomOf(mainWindow);
         _bottomChromeWindow.Show(mainWindow);
+    }
+
+    public Task PlayTopEdgeMetaballAsync() => _topEdgeWindow?.PlayVolumePanelAsync() ?? Task.CompletedTask;
+
+    private void ShowTopEdgeChrome(Window mainWindow)
+    {
+        if (_topEdgeWindow is { IsVisible: true })
+        {
+            return;
+        }
+
+        _topEdgeWindow ??= new TopEdgeWindow();
+        _topEdgeWindow.PositionAtTopOf(mainWindow);
+        _topEdgeWindow.Show(mainWindow);
     }
 
     private void ToggleQuickSettings()

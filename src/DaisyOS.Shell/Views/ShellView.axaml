@@ -3,15 +3,9 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:desktop="clr-namespace:DaisyOS.Shell.Views.Components.Desktop"
-    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
         <desktop:DesktopView x:Name="Desktop" />
-
-        <controls:TopEdgeMetaball x:Name="TopEdgeMetaball" ZIndex="10"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Top"
-              EdgeDistance="0" />
 
         <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
                 HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"

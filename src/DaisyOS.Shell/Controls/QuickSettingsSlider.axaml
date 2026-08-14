@@ -62,7 +62,7 @@
       <!-- The fill deliberately owns no corner geometry. The clipped track is
            the single rounded silhouette at every value, including 0 and 100. -->
       <Border x:Name="ProgressFill"
-              Background="{DynamicResource AppPrimaryContainerBrush}"
+              Background="{DynamicResource AppPrimaryBrush}"
               HorizontalAlignment="Left" />
     </Border>
     <TextBlock Text="{Binding Icon, ElementName=Root}"

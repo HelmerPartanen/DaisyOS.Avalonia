@@ -2,29 +2,35 @@
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+             xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
              Width="263"
              Height="40"
              UseLayoutRounding="True"
              ClipToBounds="False"
+             IsVisible="False"
+             compositor:KWinBlur.IsEnabled="True"
+             compositor:KWinBlur.CornerRadius="12"
              Cursor="SizeAll">
   <Canvas Width="263" Height="40" ClipToBounds="False">
     <Border x:Name="PocketBody"
             Width="263"
             Height="40"
-            Background="{DynamicResource ShellTopEdgePocketBrush}"
-            CornerRadius="12" />
-    <controls:QuickSettingsSlider x:Name="VolumeSlider"
-                                  Canvas.Left="0"
-                                  Canvas.Top="0"
-                                  Width="263"
-                                  Height="40"
-                                  Icon=""
-                                  Minimum="0"
-                                  Maximum="100"
-                                  ShowThumb="False"
-                                  TrackCornerRadius="6"
-                                  TrackBorderBrush="{DynamicResource TaskbarBorderBrush}"
-                                  TrackBorderThickness="1"
-                                  ValueChanged="OnVolumeChanged" />
+            Classes="DiagonalShellBorder"
+            Background="{DynamicResource ShellSurfaceBrush}"
+            CornerRadius="12"
+            ClipToBounds="True"
+            BoxShadow="0 8 32 0 #60000000">
+      <controls:QuickSettingsSlider x:Name="VolumeSlider"
+                                    Width="263"
+                                    Height="40"
+                                    Icon=""
+                                    Minimum="0"
+                                    Maximum="100"
+                                    ShowThumb="False"
+                                    TrackCornerRadius="6"
+                                    TrackBorderBrush="{DynamicResource ShellDiagonalBorderBrush}"
+                                    TrackBorderThickness="1"
+                                    ValueChanged="OnVolumeChanged" />
+    </Border>
   </Canvas>
 </UserControl>

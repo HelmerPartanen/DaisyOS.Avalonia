@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using DaisyOS.Core.Services;
+using DaisyOS.Shell.Services.Compositor;
 using DaisyOS.System.Audio;
 using DaisyOS.System.Processes;
 
@@ -17,18 +18,16 @@ namespace DaisyOS.Shell.Controls;
 /// </summary>
 public partial class TopEdgeMetaball : UserControl
 {
-    private const double TopEdgeOverlap = 1;
+    private const double ContainerHeight = 40;
     private const double RestingTopInset = 4;
-    // Include the 1 px seam overlap so the rendered resting inset is 4 px.
-    private const double RestingEdgeDistance = TopEdgeOverlap + RestingTopInset;
-    private static readonly TimeSpan RevealInDuration = TimeSpan.FromMilliseconds(320);
-    private static readonly TimeSpan PositionInDuration = TimeSpan.FromMilliseconds(130);
-    private static readonly TimeSpan PositionOutDuration = TimeSpan.FromMilliseconds(90);
-    private static readonly TimeSpan RevealOutDuration = TimeSpan.FromMilliseconds(160);
+    private const double RestingEdgeDistance = RestingTopInset;
+    private const double HiddenEdgeDistance = -ContainerHeight;
+    private const double MinimumDragEdgeDistance = -(ContainerHeight / 2);
+    private static readonly TimeSpan PositionInDuration = TimeSpan.FromMilliseconds(260);
+    private static readonly TimeSpan PositionOutDuration = TimeSpan.FromMilliseconds(160);
     private static readonly TimeSpan RevealHoldDuration = TimeSpan.FromSeconds(3);
     private const double DetachedBodyWidth = 263;
     private readonly TranslateTransform _positionTransform = new();
-    private readonly ScaleTransform _revealTransform = new(1, 0);
     private readonly IAudioService _audioService = new LinuxAudioService(new SafeCommandRunner());
     private IPointer? _dragPointer;
     private CancellationTokenSource? _revealCancellation;
@@ -41,7 +40,7 @@ public partial class TopEdgeMetaball : UserControl
     private bool _isSynchronizingVolume;
 
     public static readonly StyledProperty<double> EdgeDistanceProperty =
-        AvaloniaProperty.Register<TopEdgeMetaball, double>(nameof(EdgeDistance), 4d);
+        AvaloniaProperty.Register<TopEdgeMetaball, double>(nameof(EdgeDistance), HiddenEdgeDistance);
 
     public double EdgeDistance
     {
@@ -57,18 +56,14 @@ public partial class TopEdgeMetaball : UserControl
     public TopEdgeMetaball()
     {
         InitializeComponent();
-        RenderTransform = new TransformGroup
-        {
-            Children = { _revealTransform, _positionTransform }
-        };
-        RenderTransformOrigin = new RelativePoint(0.5, 0, RelativeUnit.Relative);
+        RenderTransform = _positionTransform;
         AddHandler(PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
         AddHandler(PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel);
         AddHandler(PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
         AddHandler(PointerCaptureLostEvent, OnPointerCaptureLost, RoutingStrategies.Tunnel);
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        SetRevealProgress(0);
+        SetEdgeDistance(HiddenEdgeDistance);
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
@@ -137,11 +132,7 @@ public partial class TopEdgeMetaball : UserControl
         }
     }
 
-    /// <summary>
-    /// Scales at the top edge, then moves to its resting inset. The return
-    /// reverses position before scale, so the two properties never animate
-    /// together. Repeated requests restart from the current frame.
-    /// </summary>
+    /// <summary>Slides the panel in from above the screen edge, then reverses that path.</summary>
     public async Task PlayKeyboardRevealAsync()
     {
         _ = RefreshVolumeAsync();
@@ -153,10 +144,18 @@ public partial class TopEdgeMetaball : UserControl
 
         try
         {
-            SetEdgeDistance(0);
+            if (!IsVisible)
+            {
+                IsVisible = true;
+                SetEdgeDistance(HiddenEdgeDistance);
+            }
+
             await AnimateOpenAsync(cancellation.Token);
             await Task.Delay(RevealHoldDuration, cancellation.Token);
             await AnimateCloseAsync(cancellation.Token);
+            IsVisible = false;
+            IsHitTestVisible = false;
+            KWinBlur.Invalidate(this);
         }
         catch (OperationCanceledException)
         {
@@ -175,22 +174,21 @@ public partial class TopEdgeMetaball : UserControl
 
     private void UpdateGeometry()
     {
-        var distance = Math.Max(0, EdgeDistance);
         _positionTransform.X = _horizontalOffset;
-        _positionTransform.Y = distance - TopEdgeOverlap;
+        _positionTransform.Y = EdgeDistance;
+        IsHitTestVisible = IsVisible && EdgeDistance >= 0;
+        KWinBlur.Invalidate(this);
     }
 
     private Task AnimateOpenAsync(CancellationToken cancellationToken) =>
         AnimatePhasesAsync(
             cancellationToken,
-            new AnimationPhase(_revealTransform.ScaleY, 1, RevealInDuration, ReverseCurve: false, SetRevealProgress),
-            new AnimationPhase(0, RestingEdgeDistance, PositionInDuration, ReverseCurve: false, SetEdgeDistance));
+            new AnimationPhase(EdgeDistance, RestingEdgeDistance, PositionInDuration, ReverseCurve: false, SetEdgeDistance));
 
     private Task AnimateCloseAsync(CancellationToken cancellationToken) =>
         AnimatePhasesAsync(
             cancellationToken,
-            new AnimationPhase(EdgeDistance, 0, PositionOutDuration, ReverseCurve: true, SetEdgeDistance),
-            new AnimationPhase(_revealTransform.ScaleY, 0, RevealOutDuration, ReverseCurve: true, SetRevealProgress));
+            new AnimationPhase(EdgeDistance, HiddenEdgeDistance, PositionOutDuration, ReverseCurve: true, SetEdgeDistance));
 
     private async Task AnimatePhasesAsync(CancellationToken cancellationToken, params AnimationPhase[] phases)
     {
@@ -254,17 +252,17 @@ public partial class TopEdgeMetaball : UserControl
         bool ReverseCurve,
         Action<double> SetValue);
 
-    private void SetRevealProgress(double progress)
+    private void SetEdgeDistance(double distance)
     {
-        var clampedProgress = Math.Clamp(progress, 0, 1);
-        _revealTransform.ScaleY = clampedProgress;
-        IsHitTestVisible = clampedProgress > 0;
-        // The top transform origin keeps this boundary fixed to the screen
-        // edge; reveal progress changes only the component's height.
-        EdgeDistance = 0;
-    }
+        var clampedDistance = Math.Clamp(distance, HiddenEdgeDistance, RestingEdgeDistance);
+        if (Math.Abs(EdgeDistance - clampedDistance) < 0.001)
+        {
+            UpdateGeometry();
+            return;
+        }
 
-    private void SetEdgeDistance(double distance) => EdgeDistance = Math.Clamp(distance, 0, RestingEdgeDistance);
+        EdgeDistance = clampedDistance;
+    }
 
     // Cubic-bezier(0.22, 1, 0.36, 1): soft approach, with the return using
     // the mathematically reversed curve so it retraces the reveal exactly.
@@ -324,7 +322,7 @@ public partial class TopEdgeMetaball : UserControl
         var current = e.GetPosition(_dragCoordinateSpace);
         var delta = current - _dragStart;
         _horizontalOffset = ClampHorizontalOffset(_dragStartHorizontalOffset + delta.X);
-        EdgeDistance = Math.Max(0, _dragStartDistance + delta.Y);
+        EdgeDistance = Math.Clamp(_dragStartDistance + delta.Y, MinimumDragEdgeDistance, RestingEdgeDistance);
         e.Handled = true;
     }
 

@@ -59,6 +59,18 @@ public static class KWinBlur
     public static void SetCornerRadius(Control visual, double value) => visual.SetValue(CornerRadiusProperty, value);
 
     /// <summary>
+    /// Republishes a material region after a render-transform change. Layout updates
+    /// do not fire for translations or scales, but KWin's native region must follow them.
+    /// </summary>
+    public static void Invalidate(Control visual)
+    {
+        if (Registrations.TryGetValue(visual, out var registration))
+        {
+            registration.Invalidate();
+        }
+    }
+
+    /// <summary>
     /// Changes KWin's global blur-kernel strength. This affects every KWin blur
     /// surface, not only the visual passed to <see cref="SetIsEnabled"/>.
     /// </summary>
@@ -214,16 +226,36 @@ internal sealed class KWinBlurController
                 continue;
             }
 
-            var origin = visual.TranslatePoint(default, _topLevel);
-            if (origin is null)
+            if (!TryGetTransformedBounds(visual, out var origin, out var size))
             {
                 continue;
             }
 
-            regions.AddRange(KWinBlurRectangle.FromLogicalBounds(origin.Value, visual.Bounds.Size, scale, KWinBlur.GetCornerRadius(visual)));
+            regions.AddRange(KWinBlurRectangle.FromLogicalBounds(origin, size, scale, KWinBlur.GetCornerRadius(visual)));
         }
 
         KWinNativeBlurRegion.TrySet(_topLevel, regions);
+    }
+
+    private bool TryGetTransformedBounds(Control visual, out Point origin, out Size size)
+    {
+        origin = default;
+        size = default;
+
+        var topLeft = visual.TranslatePoint(default, _topLevel);
+        var bottomRight = visual.TranslatePoint(new Point(visual.Bounds.Width, visual.Bounds.Height), _topLevel);
+        if (topLeft is null || bottomRight is null)
+        {
+            return false;
+        }
+
+        origin = new Point(
+            Math.Min(topLeft.Value.X, bottomRight.Value.X),
+            Math.Min(topLeft.Value.Y, bottomRight.Value.Y));
+        size = new Size(
+            Math.Abs(bottomRight.Value.X - topLeft.Value.X),
+            Math.Abs(bottomRight.Value.Y - topLeft.Value.Y));
+        return size.Width > 0 && size.Height > 0;
     }
 
     private void OnClosed(object? sender, EventArgs e)

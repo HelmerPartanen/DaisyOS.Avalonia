@@ -1,0 +1,21 @@
+<Window
+    x:Class="DaisyOS.Shell.Views.TopEdgeWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+    Height="44"
+    CanResize="False"
+    ShowActivated="False"
+    ShowInTaskbar="False"
+    WindowStartupLocation="Manual"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    TransparencyLevelHint="Transparent"
+    TextOptions.TextRenderingMode="Antialias"
+    Background="Transparent">
+  <Grid Height="44">
+    <controls:TopEdgeMetaball x:Name="TopEdgeContent"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Top" />
+  </Grid>
+</Window>

@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using DaisyOS.Shell;
 
 namespace DaisyOS.Shell.Views
 {
@@ -19,7 +21,7 @@ namespace DaisyOS.Shell.Views
                 return;
             }
 
-            _ = this.FindControl<ShellView>("Shell")?.PlayTopEdgeMetaballAsync();
+            _ = (Application.Current as App)?.PlayTopEdgeMetaballAsync();
             e.Handled = true;
         }
     }

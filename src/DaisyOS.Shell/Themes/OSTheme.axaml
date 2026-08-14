@@ -116,7 +116,7 @@
 
       <SolidColorBrush
         x:Key="AppPrimaryBrush"
-        Color="White"/>
+        Color="#8C8C8C"/>
 
       <SolidColorBrush
         x:Key="AppOnPrimaryBrush"
@@ -383,7 +383,7 @@
 
       <SolidColorBrush
         x:Key="AppPrimaryBrush"
-        Color="#C9CAD0"/>
+        Color="#797979"/>
 
       <SolidColorBrush
         x:Key="AppOnPrimaryBrush"
