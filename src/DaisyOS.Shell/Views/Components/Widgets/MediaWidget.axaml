@@ -3,10 +3,10 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Width="380"
-    Height="52"
+    Height="48"
     HorizontalAlignment="Left"
     VerticalAlignment="Bottom"
-    Margin="4,0,0,0">
+    Margin="2,0,0,2">
   <UserControl.Styles>
     <Style Selector="Border.spectrumBar">
       <Setter Property="Background" Value="{DynamicResource TextPrimaryBrush}" />
@@ -14,15 +14,15 @@
     </Style>
   </UserControl.Styles>
   <Border x:Name="MediaFrame"
-          Height="52"
+          Height="48"
           Background="{DynamicResource BottomChromeSurfaceBrush}"
-          CornerRadius="12"
+          CornerRadius="16"
           ClipToBounds="True">
     <Grid>
       <!-- The adaptive artwork color sits above the shared System Bar material. -->
       <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False"/>
-      <Grid Margin="4" ColumnDefinitions="44,*,120,28">
-      <Border Width="44" Height="44" CornerRadius="8" ClipToBounds="True">
+      <Grid Margin="4" ColumnDefinitions="40,*,120,28">
+      <Border Width="40" Height="40" CornerRadius="12" ClipToBounds="True">
         <Grid>
         <Image x:Name="Artwork" Stretch="UniformToFill" IsVisible="False"
                RenderOptions.BitmapInterpolationMode="HighQuality"/>
