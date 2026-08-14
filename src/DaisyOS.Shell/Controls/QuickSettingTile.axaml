@@ -69,7 +69,6 @@
                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                    FontSize="18"/>
       </ToggleButton>
-      <Border CornerRadius="10" BorderBrush="{DynamicResource ShellDiagonalBorderBrush}" BorderThickness="1" IsHitTestVisible="False"/>
     </Grid>
 
     <!-- Split Tile (Action + Divider + Details Chevron) -->
@@ -104,7 +103,6 @@
                      FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                      FontSize="18"/>
         </Button>
-      <Border Grid.ColumnSpan="3" CornerRadius="10" BorderBrush="{DynamicResource ShellDiagonalBorderBrush}" BorderThickness="1" IsHitTestVisible="False"/>
     </Grid>
 
     <!-- Subtitle Label -->

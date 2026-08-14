@@ -574,15 +574,15 @@
 <ConicGradientBrush x:Key="ShellDiagonalBorderBrush"
                     Center="50%,50%"
                     Angle="45">
-  <GradientStop Offset="0.00" Color="#0DFFFFFF"/>
-  <GradientStop Offset="0.12" Color="#22FFFFFF"/>
-  <GradientStop Offset="0.25" Color="#33FFFFFF"/>
-  <GradientStop Offset="0.38" Color="#22FFFFFF"/>
-  <GradientStop Offset="0.50" Color="#0DFFFFFF"/>
-  <GradientStop Offset="0.62" Color="#22FFFFFF"/>
-  <GradientStop Offset="0.75" Color="#33FFFFFF"/>
-  <GradientStop Offset="0.88" Color="#22FFFFFF"/>
-  <GradientStop Offset="1.00" Color="#0DFFFFFF"/>
+  <GradientStop Offset="0.00" Color="#08FFFFFF"/>
+  <GradientStop Offset="0.12" Color="#18FFFFFF"/>
+  <GradientStop Offset="0.25" Color="#26FFFFFF"/>
+  <GradientStop Offset="0.38" Color="#18FFFFFF"/>
+  <GradientStop Offset="0.50" Color="#08FFFFFF"/>
+  <GradientStop Offset="0.62" Color="#18FFFFFF"/>
+  <GradientStop Offset="0.75" Color="#26FFFFFF"/>
+  <GradientStop Offset="0.88" Color="#18FFFFFF"/>
+  <GradientStop Offset="1.00" Color="#08FFFFFF"/>
 </ConicGradientBrush>
 
 </ResourceDictionary>

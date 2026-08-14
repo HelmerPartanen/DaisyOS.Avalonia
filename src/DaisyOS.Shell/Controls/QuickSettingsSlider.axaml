@@ -30,7 +30,7 @@
                      IsVisible="{Binding ShowThumb, ElementName=Root}">
                 <Thumb.Template>
                   <ControlTemplate>
-                    <Border Background="{DynamicResource AppPrimaryBrush}"
+                    <Border Background="{DynamicResource AppOnPrimaryBrush}"
                             CornerRadius="5" />
                   </ControlTemplate>
                 </Thumb.Template>
@@ -68,7 +68,7 @@
     <TextBlock Text="{Binding Icon, ElementName=Root}"
                FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                FontSize="20"
-               Foreground="{DynamicResource AppPrimaryBrush}"
+               Foreground="{DynamicResource AppOnPrimaryBrush}"
                Margin="14,0,0,0"
                HorizontalAlignment="Left"
                VerticalAlignment="Center"
