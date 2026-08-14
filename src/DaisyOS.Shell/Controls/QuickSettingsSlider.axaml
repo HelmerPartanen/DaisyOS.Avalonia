@@ -55,6 +55,8 @@
   <Grid x:Name="RangeSurface">
     <Border x:Name="TrackBackground"
             Background="{DynamicResource QuickSettingBackgroundBrush}"
+            BorderBrush="{Binding TrackBorderBrush, ElementName=Root}"
+            BorderThickness="{Binding TrackBorderThickness, ElementName=Root}"
             CornerRadius="{Binding TrackCornerRadius, ElementName=Root}"
             ClipToBounds="True">
       <!-- The fill deliberately owns no corner geometry. The clipped track is

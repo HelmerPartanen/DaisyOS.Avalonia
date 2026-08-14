@@ -2,29 +2,29 @@
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
-             Width="240"
-             Height="52"
+             Width="263"
+             Height="40"
              UseLayoutRounding="True"
              ClipToBounds="False"
              Cursor="SizeAll">
-  <Canvas Width="240" Height="52" ClipToBounds="False">
-    <!-- Drawn behind the body; it appears only inside the merge threshold. -->
-    <Path x:Name="EdgeBridge" Fill="{DynamicResource ShellTopEdgePocketBrush}" />
+  <Canvas Width="263" Height="40" ClipToBounds="False">
     <Border x:Name="PocketBody"
-            Width="240"
-            Height="52"
+            Width="263"
+            Height="40"
             Background="{DynamicResource ShellTopEdgePocketBrush}"
             CornerRadius="12" />
     <controls:QuickSettingsSlider x:Name="VolumeSlider"
-                                  Canvas.Left="16"
-                                  Canvas.Top="16"
-                                  Width="208"
-                                  Height="20"
+                                  Canvas.Left="0"
+                                  Canvas.Top="0"
+                                  Width="263"
+                                  Height="40"
                                   Icon=""
                                   Minimum="0"
                                   Maximum="100"
                                   ShowThumb="False"
                                   TrackCornerRadius="6"
+                                  TrackBorderBrush="{DynamicResource TaskbarBorderBrush}"
+                                  TrackBorderThickness="1"
                                   ValueChanged="OnVolumeChanged" />
   </Canvas>
 </UserControl>

@@ -12,28 +12,21 @@ using DaisyOS.System.Processes;
 namespace DaisyOS.Shell.Controls;
 
 /// <summary>
-/// A normal rounded shell pocket that grows a smooth bridge into the top screen
-/// edge when it comes within <see cref="MergeThreshold"/> pixels. Animate
-/// <see cref="EdgeDistance"/> to move between the detached and merged states.
+/// A rounded top-edge volume pocket that remains a stable rectangle while it
+/// reveals, moves, and can be dragged across the display.
 /// </summary>
 public partial class TopEdgeMetaball : UserControl
 {
     private const double TopEdgeOverlap = 1;
     private const double RestingTopInset = 4;
-    // Keep the flare local to the edge; it has fully resolved before the
-    // component reaches its separate 4 px resting inset.
-    public const double MergeThreshold = 1;
     // Include the 1 px seam overlap so the rendered resting inset is 4 px.
     private const double RestingEdgeDistance = TopEdgeOverlap + RestingTopInset;
-    private const double EdgeFlare = 18;
     private static readonly TimeSpan RevealInDuration = TimeSpan.FromMilliseconds(320);
     private static readonly TimeSpan PositionInDuration = TimeSpan.FromMilliseconds(130);
     private static readonly TimeSpan PositionOutDuration = TimeSpan.FromMilliseconds(90);
     private static readonly TimeSpan RevealOutDuration = TimeSpan.FromMilliseconds(160);
     private static readonly TimeSpan RevealHoldDuration = TimeSpan.FromSeconds(3);
-    private const double DetachedBodyWidth = 240;
-    private const double MergedBodyWidth = 240;
-    private const double BodyCornerRadius = 12;
+    private const double DetachedBodyWidth = 263;
     private readonly TranslateTransform _positionTransform = new();
     private readonly ScaleTransform _revealTransform = new(1, 0);
     private readonly IAudioService _audioService = new LinuxAudioService(new SafeCommandRunner());
@@ -185,56 +178,6 @@ public partial class TopEdgeMetaball : UserControl
         var distance = Math.Max(0, EdgeDistance);
         _positionTransform.X = _horizontalOffset;
         _positionTransform.Y = distance - TopEdgeOverlap;
-
-        var proximity = Math.Clamp(1 - (distance / MergeThreshold), 0, 1);
-
-        // The body stays full width while detached, then contracts as it joins
-        // the screen edge. Smoothstep keeps the transition calm at both ends.
-        var widthMorph = proximity * proximity * (3 - (2 * proximity));
-        var bodyWidth = DetachedBodyWidth - ((DetachedBodyWidth - MergedBodyWidth) * widthMorph);
-        PocketBody.Width = bodyWidth;
-        Canvas.SetLeft(PocketBody, (DetachedBodyWidth - bodyWidth) / 2);
-
-        EdgeBridge.IsVisible = proximity > 0;
-        if (proximity <= 0)
-        {
-            EdgeBridge.Data = null;
-            return;
-        }
-
-        // Near the edge, the bridge is a slightly wider top cap rather than a
-        // narrow neck. Its shoulders then resolve into the fixed-height,
-        // radius-12 body, producing the requested flared-edge morph.
-        var center = DetachedBodyWidth / 2;
-        var morph = Math.Sqrt(proximity);
-        var edgeHalfWidth = (bodyWidth / 2 + EdgeFlare) * morph;
-        var bodyHalfWidth = bodyWidth / 2;
-        // The bridge is drawn above the body's local bounds. The translation
-        // puts its upper edge at the physical screen edge while keeping the
-        // rounded 180 x 52 body itself fully draggable and hit-testable.
-        var edgeY = -distance;
-        var joinY = BodyCornerRadius;
-
-        var geometry = new StreamGeometry();
-        using (var context = geometry.Open())
-        {
-            context.BeginFigure(new Point(center - edgeHalfWidth, edgeY), isFilled: true);
-            context.LineTo(new Point(center + edgeHalfWidth, edgeY), isStroked: false);
-            context.CubicBezierTo(
-                new Point(center + edgeHalfWidth, edgeY + distance * 0.18),
-                new Point(center + bodyHalfWidth, edgeY + distance * 0.75),
-                new Point(center + bodyHalfWidth, joinY),
-                isStroked: false);
-            context.LineTo(new Point(center - bodyHalfWidth, joinY), isStroked: false);
-            context.CubicBezierTo(
-                new Point(center - bodyHalfWidth, edgeY + distance * 0.75),
-                new Point(center - edgeHalfWidth, edgeY + distance * 0.18),
-                new Point(center - edgeHalfWidth, edgeY),
-                isStroked: false);
-            context.EndFigure(isClosed: true);
-        }
-
-        EdgeBridge.Data = geometry;
     }
 
     private Task AnimateOpenAsync(CancellationToken cancellationToken) =>

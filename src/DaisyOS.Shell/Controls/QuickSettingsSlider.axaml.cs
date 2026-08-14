@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 
 namespace DaisyOS.Shell.Controls;
 
@@ -34,6 +35,12 @@ public partial class QuickSettingsSlider : UserControl
 
     public static readonly StyledProperty<CornerRadius> TrackCornerRadiusProperty =
         AvaloniaProperty.Register<QuickSettingsSlider, CornerRadius>(nameof(TrackCornerRadius), new CornerRadius(10, 0, 0, 10));
+
+    public static readonly StyledProperty<IBrush?> TrackBorderBrushProperty =
+        AvaloniaProperty.Register<QuickSettingsSlider, IBrush?>(nameof(TrackBorderBrush));
+
+    public static readonly StyledProperty<Thickness> TrackBorderThicknessProperty =
+        AvaloniaProperty.Register<QuickSettingsSlider, Thickness>(nameof(TrackBorderThickness), new Thickness(0));
 
     static QuickSettingsSlider()
     {
@@ -93,6 +100,19 @@ public partial class QuickSettingsSlider : UserControl
     {
         get => GetValue(TrackCornerRadiusProperty);
         set => SetValue(TrackCornerRadiusProperty, value);
+    }
+
+    /// <summary>Optional border treatment for standalone range surfaces.</summary>
+    public IBrush? TrackBorderBrush
+    {
+        get => GetValue(TrackBorderBrushProperty);
+        set => SetValue(TrackBorderBrushProperty, value);
+    }
+
+    public Thickness TrackBorderThickness
+    {
+        get => GetValue(TrackBorderThicknessProperty);
+        set => SetValue(TrackBorderThicknessProperty, value);
     }
 
     private void UpdateProgressFill()
