@@ -59,13 +59,13 @@ public sealed class DynamicThemeService
             return;
         }
 
-        resources["AppPrimaryColor"] = scheme.Primary;
-        Set(resources, "AppPrimaryBrush", scheme.Primary);
-        Set(resources, "AppOnPrimaryBrush", scheme.OnPrimary);
-        Set(resources, "AppPrimaryContainerBrush", scheme.PrimaryContainer);
-        Set(resources, "AppPrimaryContainerHoverBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.08));
-        Set(resources, "AppPrimaryContainerPressedBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.16));
-        Set(resources, "AppOnPrimaryContainerBrush", scheme.OnPrimaryContainer);
+        resources["AccentColor"] = scheme.Primary;
+        Set(resources, "AccentBrush", scheme.Primary);
+        Set(resources, "OnAccentBrush", scheme.OnPrimary);
+        Set(resources, "AccentSurfaceBrush", scheme.PrimaryContainer);
+        Set(resources, "AccentSurfaceHoverBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.08));
+        Set(resources, "AccentSurfacePressedBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.16));
+        Set(resources, "OnAccentSurfaceBrush", scheme.OnPrimaryContainer);
     }
 
     private static void Set(IResourceDictionary resources, string key, Color color) =>

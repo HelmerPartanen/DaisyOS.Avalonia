@@ -30,8 +30,8 @@
                      IsVisible="{Binding ShowThumb, ElementName=Root}">
                 <Thumb.Template>
                   <ControlTemplate>
-                    <Border Background="{DynamicResource AppOnPrimaryBrush}"
-                            CornerRadius="{StaticResource ShellTrackCornerRadius}" />
+                    <Border Background="{DynamicResource OnAccentBrush}"
+                            CornerRadius="{DynamicResource RoundedXS}" />
                   </ControlTemplate>
                 </Thumb.Template>
               </Thumb>
@@ -54,7 +54,7 @@
   <!-- The glyph overlays the track and never creates a false minimum fill. -->
   <Grid x:Name="RangeSurface">
     <Border x:Name="TrackBackground"
-            Background="{DynamicResource QuickSettingBackgroundBrush}"
+            Background="{DynamicResource TertiarySurfaceBrush}"
             BorderBrush="{Binding TrackBorderBrush, ElementName=Root}"
             BorderThickness="{Binding TrackBorderThickness, ElementName=Root}"
             CornerRadius="{Binding TrackCornerRadius, ElementName=Root}"
@@ -62,13 +62,13 @@
       <!-- The fill deliberately owns no corner geometry. The clipped track is
            the single rounded silhouette at every value, including 0 and 100. -->
       <Border x:Name="ProgressFill"
-              Background="{DynamicResource AppPrimaryBrush}"
+              Background="{DynamicResource AccentBrush}"
               HorizontalAlignment="Left" />
     </Border>
     <TextBlock Text="{Binding Icon, ElementName=Root}"
                FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                FontSize="20"
-               Foreground="{DynamicResource AppOnPrimaryBrush}"
+               Foreground="{DynamicResource OnAccentBrush}"
                Margin="14,0,0,0"
                HorizontalAlignment="Left"
                VerticalAlignment="Center"
@@ -76,7 +76,7 @@
     <Slider Minimum="{Binding Minimum, ElementName=Root}"
             Maximum="{Binding Maximum, ElementName=Root}"
             Value="{Binding Value, ElementName=Root, Mode=TwoWay}"
-            Theme="{StaticResource QuickSettingsSliderTrackTheme}" />
+            Theme="{DynamicResource QuickSettingsSliderTrackTheme}" />
   </Grid>
 
 </UserControl>

@@ -9,47 +9,47 @@
       <Setter Property="VerticalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
-      <Setter Property="Background" Value="#26FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="{StaticResource ShellSurfaceCornerRadius}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedLG}" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="FontSize" Value="16" />
       <Setter Property="Margin" Value="3" />
       <Setter Property="Padding" Value="0" />
     </Style>
     <Style Selector="Button.CalcTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
     <Style Selector="Button.CalcTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
     </Style>
     <Style Selector="Button.CalcTile.Digit">
-      <Setter Property="Background" Value="#14FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
       <Setter Property="FontSize" Value="21" />
     </Style>
     <Style Selector="Button.CalcTile.Operator">
       <!-- Operators are exactly five opacity points above digit keys. -->
-      <Setter Property="Background" Value="#21FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="FontSize" Value="24" />
     </Style>
     <Style Selector="Button.CalcTile.Operator:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#2EFFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
     </Style>
     <!-- Scientific keys are deliberately quieter than the arithmetic keypad. -->
     <Style Selector="Button.CalcTile.ScientificFunction">
-      <Setter Property="Background" Value="#0DFFFFFF" />
+      <Setter Property="Background" Value="Transparent" />
       <Setter Property="FontSize" Value="14" />
     </Style>
     <Style Selector="Button.CalcTile.ScientificFunction:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#1AFFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
     <Style Selector="Button.EqualsTile">
-      <Setter Property="Background" Value="{DynamicResource OrangeSwatch}" />
-      <Setter Property="Foreground" Value="{DynamicResource AppOnPrimaryBrush}" />
+      <Setter Property="Background" Value="{DynamicResource WarningBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="{StaticResource ShellSurfaceCornerRadius}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedLG}" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="VerticalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -59,7 +59,7 @@
       <Setter Property="Margin" Value="3" />
     </Style>
     <Style Selector="Button.EqualsTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource OrangeSwatchHover}" />
+      <Setter Property="Background" Value="{DynamicResource WarningHoverBrush}" />
     </Style>
     <Style Selector="Button.HeaderIconButton">
       <Setter Property="Background" Value="Transparent" />
@@ -67,7 +67,7 @@
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="Width" Value="34" />
       <Setter Property="Height" Value="34" />
-      <Setter Property="CornerRadius" Value="{StaticResource ShellCompactCornerRadius}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -78,7 +78,7 @@
       </Setter>
     </Style>
     <Style Selector="Button.HeaderIconButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
     <Style Selector="TextBlock.IconSymbol">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
@@ -86,7 +86,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid Background="{DynamicResource ShellSurfaceBrush}" RowDefinitions="Auto,Auto,*">
+  <Grid Background="{DynamicResource SecondarySurfaceBrush}" RowDefinitions="Auto,Auto,*">
     <Grid Grid.Row="0" Margin="12,10,12,0" ColumnDefinitions="Auto,Auto,*,Auto">
       <Button x:Name="ModeToggleButton" Grid.Column="0" Classes="HeaderIconButton" Click="OnToggleModeClicked" ToolTip.Tip="{Binding ModeToggleTip}">
         <TextBlock Text="{Binding ModeToggleIcon}" Classes="IconSymbol" />

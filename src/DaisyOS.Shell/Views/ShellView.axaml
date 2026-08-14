@@ -30,8 +30,8 @@
 
         <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
                 HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"
-                Padding="16,10" Background="{DynamicResource ShellSurfaceElevatedBrush}"
-                BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="1" CornerRadius="{StaticResource ShellControlCornerRadius}">
+                Padding="16,10" Background="{DynamicResource ElevatedSurfaceBrush}"
+                BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedMD}">
             <TextBlock x:Name="FeedbackText" MaxWidth="440" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
         </Border>
     </Grid>

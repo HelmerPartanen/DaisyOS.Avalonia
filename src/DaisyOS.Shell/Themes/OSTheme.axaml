@@ -1,595 +1,88 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
+  <!-- Semantic theme roles only. Components choose a role, never a component-specific colour. -->
   <ResourceDictionary.ThemeDictionaries>
-
-    <!--
-      OPACITY VALUES
-      100% — FF
-      95%  — F2
-      90%  — E6
-      85%  — D9
-      80%  — CC
-      75%  — BF
-      70%  — B3
-      65%  — A6
-      60%  — 99
-      55%  — 8C
-      50%  — 80
-      45%  — 73
-      40%  — 66
-      35%  — 59
-      30%  — 4D
-      25%  — 40
-      20%  — 33
-      15%  — 26
-      10%  — 1A
-      5%   — 0D
-      0%   — 00
-    -->
-
-
-    <!-- ========================================================= -->
-    <!-- LIGHT THEME                                               -->
-    <!-- ========================================================= -->
-
     <ResourceDictionary x:Key="Light">
-
-      <!-- ===================================================== -->
-      <!-- Shell Surfaces                                        -->
-      <!-- ===================================================== -->
-
-      <!-- Translucent material roles remain available for surfaces that opt in. -->
-
-      <SolidColorBrush
-        x:Key="ShellSurfaceBrush"
-        Color="#80F5F5F5"/>
-
-      <!-- Opaque in-window chrome: taskbar, media widget, and System Bar. -->
-      <SolidColorBrush
-        x:Key="BottomChromeSurfaceBrush"
-        Color="#FFF5F5F5"/>
-
-      <SolidColorBrush
-        x:Key="ShellSurfaceElevatedBrush"
-        Color="#C2FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="ShellSurfaceSubtleBrush"
-        Color="#26000000"/>
-
-      <SolidColorBrush
-        x:Key="ShellSurfaceBorderBrush"
-        Color="#1A000000"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Interaction States                                    -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="ShellHoverBrush"
-        Color="#33000000"/>
-
-      <SolidColorBrush
-        x:Key="ShellPressedBrush"
-        Color="#40000000"/>
-
-      <SolidColorBrush
-        x:Key="GhostButtonHoverBrush"
-        Color="#33000000"/>
-
-      <SolidColorBrush
-        x:Key="GhostButtonPressedBrush"
-        Color="#40000000"/>
-
-      <SolidColorBrush
-        x:Key="ShellDividerBrush"
-        Color="#33000000"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Text                                                  -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="TextPrimaryBrush"
-        Color="#1C1C1E"/>
-
-      <SolidColorBrush
-        x:Key="TextSecondaryBrush"
-        Color="#CC1C1C1E"/>
-
-      <SolidColorBrush
-        x:Key="TextTertiaryBrush"
-        Color="#991C1C1E"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Primary Color                                         -->
-      <!-- ===================================================== -->
-
-      <!--
-        DaisyOS primary color.
-
-        Neutral graphite gray.
-        Never wallpaper-driven.
-        No purple / violet hue.
-      -->
-
-      <Color x:Key="AppPrimaryColor">#8C8C8C</Color>
-
-      <SolidColorBrush
-        x:Key="AppPrimaryBrush"
-        Color="#8C8C8C"/>
-
-      <SolidColorBrush
-        x:Key="AppOnPrimaryBrush"
-        Color="#FFFFFF"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Primary Container                                     -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="AppPrimaryContainerBrush"
-        Color="#E2E3E6"/>
-
-      <SolidColorBrush
-        x:Key="AppPrimaryContainerHoverBrush"
-        Color="#D7D8DC"/>
-
-      <SolidColorBrush
-        x:Key="AppPrimaryContainerPressedBrush"
-        Color="#CBCCD1"/>
-
-      <SolidColorBrush
-        x:Key="AppOnPrimaryContainerBrush"
-        Color="#26272C"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Active / Selected Indicators                          -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="QuickSettingActiveDividerBrush"
-        Color="#A5A7AF"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Settings Surfaces                                     -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="SettingsButtonBackgroundBrush"
-        Color="#FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="SettingsButtonHoverBrush"
-        Color="#F5F5F5"/>
-
-      <SolidColorBrush
-        x:Key="SettingsButtonPressedBrush"
-        Color="#E8E8EA"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Subtle Buttons                                        -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="SubtleButtonBackgroundBrush"
-        Color="#33000000"/>
-
-      <SolidColorBrush
-        x:Key="SubtleButtonHoverBrush"
-        Color="#40000000"/>
-
-      <SolidColorBrush
-        x:Key="SubtleButtonPressedBrush"
-        Color="#4D000000"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Accent Swatches                                       -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="OrangeSwatch"
-        Color="#FF8D28"/>
-
-      <SolidColorBrush
-        x:Key="OrangeSwatchHover"
-        Color="#FF9C45"/>
-
-      <SolidColorBrush
-        x:Key="GraySwatch"
-        Color="#6E6E73"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Legacy / Component Aliases                            -->
-      <!-- ===================================================== -->
-
-      <StaticResource
-        x:Key="TaskbarBackgroundBrush"
-        ResourceKey="ShellSurfaceBrush"/>
-
-      <StaticResource
-        x:Key="TaskbarMaterialBrush"
-        ResourceKey="ShellSurfaceBrush"/>
-
-      <StaticResource
-        x:Key="SystemBarMaterialBrush"
-        ResourceKey="ShellSurfaceBrush"/>
-
-      <StaticResource
-        x:Key="LauncherMaterialBrush"
-        ResourceKey="ShellSurfaceBrush"/>
-
-      <StaticResource
-        x:Key="ContextMenuMaterialBrush"
-        ResourceKey="ShellSurfaceElevatedBrush"/>
-
-      <StaticResource
-        x:Key="DropdownMenuBackgroundBrush"
-        ResourceKey="ShellSurfaceElevatedBrush"/>
-
-      <StaticResource
-        x:Key="TaskbarBorderBrush"
-        ResourceKey="ShellSurfaceBorderBrush"/>
-
-
-      <!-- Hover aliases -->
-
-      <StaticResource
-        x:Key="TaskbarHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-      <StaticResource
-        x:Key="QuickSettingHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-      <StaticResource
-        x:Key="LauncherItemHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-      <StaticResource
-        x:Key="SearchBarHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-      <StaticResource
-        x:Key="DropdownMenuItemHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-
-      <!-- Pressed aliases -->
-
-      <StaticResource
-        x:Key="TaskbarPressedBrush"
-        ResourceKey="ShellPressedBrush"/>
-
-      <StaticResource
-        x:Key="QuickSettingPressedBrush"
-        ResourceKey="ShellPressedBrush"/>
-
-      <StaticResource
-        x:Key="LauncherItemPressedBrush"
-        ResourceKey="ShellPressedBrush"/>
-
-
-      <!-- Surface aliases -->
-
-      <StaticResource
-        x:Key="QuickSettingBackgroundBrush"
-        ResourceKey="ShellSurfaceSubtleBrush"/>
-
-      <StaticResource
-        x:Key="SearchBarBackgroundBrush"
-        ResourceKey="ShellSurfaceSubtleBrush"/>
-
-      <StaticResource
-        x:Key="LauncherFooterBrush"
-        ResourceKey="ShellSurfaceSubtleBrush"/>
-
-
-      <!-- Divider aliases -->
-
-      <StaticResource
-        x:Key="QuickSettingInactiveDividerBrush"
-        ResourceKey="ShellDividerBrush"/>
-
-
-      <!-- Foreground aliases -->
-
-      <StaticResource
-        x:Key="QuickSettingForegroundBrush"
-        ResourceKey="TextPrimaryBrush"/>
-
+      <!-- Primary is the app background, then increasing elevation. -->
+      <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="#FFF5F5F5" />
+      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#D9FFFFFF" />
+      <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#F2FFFFFF" />
+      <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1A000000" />
+      <SolidColorBrush x:Key="DividerBrush" Color="#26000000" />
+
+      <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FF1C1C1E" />
+      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#B31C1C1E" />
+      <SolidColorBrush x:Key="TextTertiaryBrush" Color="#801C1C1E" />
+
+      <SolidColorBrush x:Key="GhostHoverBrush" Color="#33000000" />
+      <SolidColorBrush x:Key="GhostPressedBrush" Color="#40000000" />
+      <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="#33000000" />
+      <SolidColorBrush x:Key="SubtleHoverBrush" Color="#40000000" />
+      <SolidColorBrush x:Key="SubtlePressedBrush" Color="#4D000000" />
+
+      <!-- Overwritten by DynamicThemeService when a wallpaper accent is available. -->
+      <Color x:Key="AccentColor">#FF56565B</Color>
+      <SolidColorBrush x:Key="AccentBrush" Color="#FF56565B" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="AccentSurfaceBrush" Color="#FFDCDCE0" />
+      <SolidColorBrush x:Key="AccentSurfaceHoverBrush" Color="#FFD0D0D5" />
+      <SolidColorBrush x:Key="AccentSurfacePressedBrush" Color="#FFC4C4CA" />
+      <SolidColorBrush x:Key="OnAccentSurfaceBrush" Color="#FF26262B" />
+      <SolidColorBrush x:Key="AccentDividerBrush" Color="#FF7A7A80" />
+
+      <SolidColorBrush x:Key="WarningBrush" Color="#FFFF8D28" />
+      <SolidColorBrush x:Key="WarningHoverBrush" Color="#FFFF9C45" />
+      <SolidColorBrush x:Key="NeutralBrush" Color="#FF6E6E73" />
+      <SolidColorBrush x:Key="DangerBrush" Color="#FFC42B1C" />
+      <SolidColorBrush x:Key="DangerHoverBrush" Color="#FFE81123" />
+      <SolidColorBrush x:Key="DangerPressedBrush" Color="#FFA32116" />
+      <SolidColorBrush x:Key="OnDangerBrush" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="SuccessBrush" Color="#FF237A43" />
+      <SolidColorBrush x:Key="InfoBrush" Color="#FF236DB5" />
+      <SolidColorBrush x:Key="DiagnosticBrush" Color="#FF7951A8" />
+      <SolidColorBrush x:Key="OverlaySurfaceBrush" Color="#F2FFFFFF" />
+      <SolidColorBrush x:Key="OverlaySurfaceSubtleBrush" Color="#1A000000" />
     </ResourceDictionary>
 
-
-
-    <!-- ========================================================= -->
-    <!-- DARK THEME                                                -->
-    <!-- ========================================================= -->
-
     <ResourceDictionary x:Key="Dark">
-
-      <!-- ===================================================== -->
-      <!-- Shell Surfaces                                        -->
-      <!-- ===================================================== -->
-
-      <!-- Opaque in-window chrome: taskbar, media widget, and System Bar. -->
-      <SolidColorBrush
-        x:Key="BottomChromeSurfaceBrush"
-        Color="#FF000000"/>
-
-      <!--
-        KWin supplies the blur.
-        DaisyOS supplies a stable neutral dark tint.
-      -->
-
-      <SolidColorBrush
-        x:Key="ShellSurfaceBrush"
-        Color="#801C1C1C"/>
-
-      <SolidColorBrush
-        x:Key="ShellSurfaceElevatedBrush"
-        Color="#C22A2A2C"/>
-
-      <SolidColorBrush
-        x:Key="ShellSurfaceSubtleBrush"
-        Color="#26FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="ShellSurfaceBorderBrush"
-        Color="#14FFFFFF"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Interaction States                                    -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="ShellHoverBrush"
-        Color="#33FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="ShellPressedBrush"
-        Color="#40FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="GhostButtonHoverBrush"
-        Color="#33FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="GhostButtonPressedBrush"
-        Color="#40FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="ShellDividerBrush"
-        Color="#33FFFFFF"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Text                                                  -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="TextPrimaryBrush"
-        Color="#F5F5F7"/>
-
-      <SolidColorBrush
-        x:Key="TextSecondaryBrush"
-        Color="#CCF5F5F7"/>
-
-      <SolidColorBrush
-        x:Key="TextTertiaryBrush"
-        Color="#99F5F5F7"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Primary Color                                         -->
-      <!-- ===================================================== -->
-
-      <!--
-        Silver graphite keeps the same neutral character in dark mode while
-        retaining enough contrast for small active glyphs.
-      -->
-
-      <Color x:Key="AppPrimaryColor">#797979</Color>
-
-      <SolidColorBrush
-        x:Key="AppPrimaryBrush"
-        Color="#797979"/>
-
-      <SolidColorBrush
-        x:Key="AppOnPrimaryBrush"
-        Color="#17181B"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Primary Container                                     -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="AppPrimaryContainerBrush"
-        Color="#45474E"/>
-
-      <SolidColorBrush
-        x:Key="AppPrimaryContainerHoverBrush"
-        Color="#52545C"/>
-
-      <SolidColorBrush
-        x:Key="AppPrimaryContainerPressedBrush"
-        Color="#5E6069"/>
-
-      <SolidColorBrush
-        x:Key="AppOnPrimaryContainerBrush"
-        Color="#F4F4F6"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Active / Selected Indicators                          -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="QuickSettingActiveDividerBrush"
-        Color="#84868F"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Settings Surfaces                                     -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="SettingsButtonBackgroundBrush"
-        Color="#0DFFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="SettingsButtonHoverBrush"
-        Color="#1AFFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="SettingsButtonPressedBrush"
-        Color="#26FFFFFF"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Subtle Buttons                                        -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="SubtleButtonBackgroundBrush"
-        Color="#33FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="SubtleButtonHoverBrush"
-        Color="#40FFFFFF"/>
-
-      <SolidColorBrush
-        x:Key="SubtleButtonPressedBrush"
-        Color="#4DFFFFFF"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Accent Swatches                                       -->
-      <!-- ===================================================== -->
-
-      <SolidColorBrush
-        x:Key="OrangeSwatch"
-        Color="#FF9230"/>
-
-      <SolidColorBrush
-        x:Key="OrangeSwatchHover"
-        Color="#FFA24D"/>
-
-      <SolidColorBrush
-        x:Key="GraySwatch"
-        Color="#B8B8BE"/>
-
-
-      <!-- ===================================================== -->
-      <!-- Legacy / Component Aliases                            -->
-      <!-- ===================================================== -->
-
-      <StaticResource
-        x:Key="TaskbarBackgroundBrush"
-        ResourceKey="ShellSurfaceBrush"/>
-
-      <StaticResource
-        x:Key="TaskbarMaterialBrush"
-        ResourceKey="ShellSurfaceBrush"/>
-
-      <StaticResource
-        x:Key="SystemBarMaterialBrush"
-        ResourceKey="ShellSurfaceBrush"/>
-
-      <StaticResource
-        x:Key="LauncherMaterialBrush"
-        ResourceKey="ShellSurfaceBrush"/>
-
-      <StaticResource
-        x:Key="ContextMenuMaterialBrush"
-        ResourceKey="ShellSurfaceElevatedBrush"/>
-
-      <StaticResource
-        x:Key="DropdownMenuBackgroundBrush"
-        ResourceKey="ShellSurfaceElevatedBrush"/>
-
-      <StaticResource
-        x:Key="TaskbarBorderBrush"
-        ResourceKey="ShellSurfaceBorderBrush"/>
-
-
-      <!-- Hover aliases -->
-
-      <StaticResource
-        x:Key="TaskbarHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-      <StaticResource
-        x:Key="QuickSettingHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-      <StaticResource
-        x:Key="LauncherItemHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-      <StaticResource
-        x:Key="SearchBarHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-      <StaticResource
-        x:Key="DropdownMenuItemHoverBrush"
-        ResourceKey="ShellHoverBrush"/>
-
-
-      <!-- Pressed aliases -->
-
-      <StaticResource
-        x:Key="TaskbarPressedBrush"
-        ResourceKey="ShellPressedBrush"/>
-
-      <StaticResource
-        x:Key="QuickSettingPressedBrush"
-        ResourceKey="ShellPressedBrush"/>
-
-      <StaticResource
-        x:Key="LauncherItemPressedBrush"
-        ResourceKey="ShellPressedBrush"/>
-
-
-      <!-- Surface aliases -->
-
-      <StaticResource
-        x:Key="QuickSettingBackgroundBrush"
-        ResourceKey="ShellSurfaceSubtleBrush"/>
-
-      <StaticResource
-        x:Key="SearchBarBackgroundBrush"
-        ResourceKey="ShellSurfaceSubtleBrush"/>
-
-      <StaticResource
-        x:Key="LauncherFooterBrush"
-        ResourceKey="ShellSurfaceSubtleBrush"/>
-
-
-      <!-- Divider aliases -->
-
-      <StaticResource
-        x:Key="QuickSettingInactiveDividerBrush"
-        ResourceKey="ShellDividerBrush"/>
-
-
-      <!-- Foreground aliases -->
-
-      <StaticResource
-        x:Key="QuickSettingForegroundBrush"
-        ResourceKey="TextPrimaryBrush"/>
+      <!-- Surface roles retain contrast over the #FF000000 base without a grey washout. -->
+      <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="#FF000000" />
+      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#D91C1C1C" />
+      <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#F2262628" />
+      <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1AFFFFFF" />
+      <SolidColorBrush x:Key="DividerBrush" Color="#26FFFFFF" />
+
+      <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFF5F5F7" />
+      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#B3F5F5F7" />
+      <SolidColorBrush x:Key="TextTertiaryBrush" Color="#80F5F5F7" />
+
+      <SolidColorBrush x:Key="GhostHoverBrush" Color="#33FFFFFF" />
+      <SolidColorBrush x:Key="GhostPressedBrush" Color="#40FFFFFF" />
+      <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="#33FFFFFF" />
+      <SolidColorBrush x:Key="SubtleHoverBrush" Color="#40FFFFFF" />
+      <SolidColorBrush x:Key="SubtlePressedBrush" Color="#4DFFFFFF" />
+
+      <Color x:Key="AccentColor">#FFC8C8CC</Color>
+      <SolidColorBrush x:Key="AccentBrush" Color="#FFC8C8CC" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="#FF161618" />
+      <SolidColorBrush x:Key="AccentSurfaceBrush" Color="#FF3D3D42" />
+      <SolidColorBrush x:Key="AccentSurfaceHoverBrush" Color="#FF4A4A50" />
+      <SolidColorBrush x:Key="AccentSurfacePressedBrush" Color="#FF56565D" />
+      <SolidColorBrush x:Key="OnAccentSurfaceBrush" Color="#FFF5F5F7" />
+      <SolidColorBrush x:Key="AccentDividerBrush" Color="#FFAFAFB5" />
+
+      <SolidColorBrush x:Key="WarningBrush" Color="#FFFF9230" />
+      <SolidColorBrush x:Key="WarningHoverBrush" Color="#FFFFA24D" />
+      <SolidColorBrush x:Key="NeutralBrush" Color="#FFB8B8BE" />
+      <SolidColorBrush x:Key="DangerBrush" Color="#FFE34234" />
+      <SolidColorBrush x:Key="DangerHoverBrush" Color="#FFFF5A4D" />
+      <SolidColorBrush x:Key="DangerPressedBrush" Color="#FFC93328" />
+      <SolidColorBrush x:Key="OnDangerBrush" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="SuccessBrush" Color="#FF62C783" />
+      <SolidColorBrush x:Key="InfoBrush" Color="#FF6BAEF0" />
+      <SolidColorBrush x:Key="DiagnosticBrush" Color="#FFC69BF2" />
+      <SolidColorBrush x:Key="OverlaySurfaceBrush" Color="#E61A1C23" />
+      <SolidColorBrush x:Key="OverlaySurfaceSubtleBrush" Color="#1AFFFFFF" />
     </ResourceDictionary>
   </ResourceDictionary.ThemeDictionaries>
 </ResourceDictionary>

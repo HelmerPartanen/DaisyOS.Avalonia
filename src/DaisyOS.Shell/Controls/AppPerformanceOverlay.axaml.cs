@@ -144,15 +144,15 @@ public partial class AppPerformanceOverlay : UserControl
             if (txtCompactCpu != null) txtCompactCpu.Text = $"{metrics.CpuUsagePercentage:F0}%";
             if (txtCompactRam != null) txtCompactRam.Text = $"{metrics.GcMemoryMB:F0}MB";
 
-            // Dynamic CPU Color
+            // Dynamic CPU color always resolves through the active semantic theme.
             if (iconCpu != null)
             {
-                if (metrics.CpuUsagePercentage > 60.0)
-                    iconCpu.Foreground = new SolidColorBrush(Color.Parse("#F44336")); // Red
-                else if (metrics.CpuUsagePercentage > 25.0)
-                    iconCpu.Foreground = new SolidColorBrush(Color.Parse("#FF9800")); // Amber
-                else
-                    iconCpu.Foreground = new SolidColorBrush(Color.Parse("#4CAF50")); // Green
+                var resourceKey = metrics.CpuUsagePercentage > 60.0
+                    ? "DangerBrush"
+                    : metrics.CpuUsagePercentage > 25.0
+                        ? "WarningBrush"
+                        : "SuccessBrush";
+                iconCpu.Foreground = this.FindResource(resourceKey) as IBrush;
             }
         }
         catch

@@ -4,17 +4,17 @@
              x:Class="DaisyOS.Shell.Controls.SearchBar">
   <UserControl.Styles>
     <Style Selector="Border#SearchFrame">
-      <Setter Property="Background" Value="{DynamicResource SearchBarBackgroundBrush}" />
+      <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
       <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="UserControl:pointerover Border#SearchFrame">
-      <Setter Property="Background" Value="{DynamicResource SearchBarHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
   </UserControl.Styles>
   <Grid ClipToBounds="False">
     <!-- The 2 px inset reserves a 1 px gap after the 1 px outline without overflow or clipping. -->
     <Border x:Name="FocusOutline"
-            BorderBrush="{DynamicResource AppPrimaryContainerBrush}"
+            BorderBrush="{DynamicResource AccentSurfaceBrush}"
             BorderThickness="2"
             CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=controls:SearchBar}}"
             Opacity="0"

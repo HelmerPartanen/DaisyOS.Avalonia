@@ -1,0 +1,17 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- A compact geometry scale. Use the nearest role instead of literal radii. -->
+  <CornerRadius x:Key="RoundedXS">4</CornerRadius>
+  <CornerRadius x:Key="RoundedSM">8</CornerRadius>
+  <CornerRadius x:Key="RoundedMD">10</CornerRadius>
+  <CornerRadius x:Key="RoundedLG">12</CornerRadius>
+  <CornerRadius x:Key="RoundedXL">16</CornerRadius>
+
+  <!-- Purposeful variants for split controls, inner clips, and non-rounded edges. -->
+  <CornerRadius x:Key="RoundedMDLeft">10,0,0,10</CornerRadius>
+  <CornerRadius x:Key="RoundedMDRight">0,10,10,0</CornerRadius>
+  <CornerRadius x:Key="RoundedLGInset">11</CornerRadius>
+  <CornerRadius x:Key="RoundedNone">0</CornerRadius>
+  <CornerRadius x:Key="RoundedPill">13</CornerRadius>
+  <x:Double x:Key="RoundedLGValue">12</x:Double>
+</ResourceDictionary>

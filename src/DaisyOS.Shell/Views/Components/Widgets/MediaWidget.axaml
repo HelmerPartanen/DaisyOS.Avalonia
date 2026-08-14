@@ -15,18 +15,18 @@
   </UserControl.Styles>
   <Border x:Name="MediaFrame"
           Height="48"
-          Background="{DynamicResource BottomChromeSurfaceBrush}"
-          CornerRadius="{StaticResource ShellFrameCornerRadius}"
+          Background="{DynamicResource PrimarySurfaceBrush}"
+          CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
     <Grid>
       <!-- The adaptive artwork color sits above the shared System Bar material. -->
       <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False"/>
       <Grid Margin="4" ColumnDefinitions="40,*,120,28">
-      <Border Width="40" Height="40" CornerRadius="{StaticResource ShellSurfaceCornerRadius}" ClipToBounds="True">
+      <Border Width="40" Height="40" CornerRadius="{DynamicResource RoundedLG}" ClipToBounds="True">
         <Grid>
         <Image x:Name="Artwork" Stretch="UniformToFill" IsVisible="False"
                RenderOptions.BitmapInterpolationMode="HighQuality"/>
-        <Border x:Name="SourceFallback" Background="#26000000">
+        <Border x:Name="SourceFallback" Background="{DynamicResource TertiarySurfaceBrush}">
           <Grid>
             <Image x:Name="SourceIcon" Width="24" Height="24" IsVisible="False"
                    RenderOptions.BitmapInterpolationMode="HighQuality"/>

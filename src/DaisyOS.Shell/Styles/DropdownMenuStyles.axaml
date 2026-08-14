@@ -6,15 +6,15 @@
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="Padding" Value="0" />
-    <Setter Property="CornerRadius" Value="{StaticResource ShellSurfaceCornerRadius}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RoundedLG}" />
     <Setter Property="Template">
       <ControlTemplate>
         <Border Margin="16"
                 MinWidth="180"
-                Background="{DynamicResource ContextMenuMaterialBrush}"
-                BorderBrush="{DynamicResource TaskbarBorderBrush}"
+                Background="{DynamicResource ElevatedSurfaceBrush}"
+                BorderBrush="{DynamicResource DividerBrush}"
                 BorderThickness="1"
-                CornerRadius="{StaticResource ShellSurfaceCornerRadius}"
+                CornerRadius="{DynamicResource RoundedLG}"
                 Padding="4"
                 BoxShadow="0 4 16 0 #30000000">
           <ScrollViewer>
@@ -32,15 +32,15 @@
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
     <Setter Property="Padding" Value="0" />
-    <Setter Property="CornerRadius" Value="{StaticResource ShellSurfaceCornerRadius}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RoundedLG}" />
     <Setter Property="Template">
       <ControlTemplate>
         <Border Margin="16"
                 MinWidth="180"
-                Background="{DynamicResource ContextMenuMaterialBrush}"
-                BorderBrush="{DynamicResource TaskbarBorderBrush}"
+                Background="{DynamicResource ElevatedSurfaceBrush}"
+                BorderBrush="{DynamicResource DividerBrush}"
                 BorderThickness="1"
-                CornerRadius="{StaticResource ShellSurfaceCornerRadius}"
+                CornerRadius="{DynamicResource RoundedLG}"
                 Padding="4"
                 BoxShadow="0 4 16 0 #30000000">
           <ScrollViewer>
@@ -58,7 +58,7 @@
     <Setter Property="FontFamily" Value="Inter" />
     <Setter Property="FontWeight" Value="Regular" />
     <Setter Property="FontSize" Value="12" />
-    <Setter Property="CornerRadius" Value="{StaticResource ShellCompactCornerRadius}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
     <Setter Property="Padding" Value="6,4,8,4" />
     <Setter Property="MinHeight" Value="28" />
     <Setter Property="Margin" Value="4,1" />
@@ -66,11 +66,11 @@
   </Style>
 
   <Style Selector="MenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
   </Style>
 
   <Style Selector="MenuItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource ShellHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
   </Style>
 
   <Style Selector="MenuItem:disabled">
@@ -79,7 +79,7 @@
 
   <!-- Reusable Menu Separator / Divider Style -->
   <Style Selector="Separator">
-    <Setter Property="Background" Value="{DynamicResource ShellSurfaceBorderBrush}" />
+    <Setter Property="Background" Value="{DynamicResource DividerBrush}" />
     <Setter Property="Height" Value="1" />
     <Setter Property="Margin" Value="4,4" />
   </Style>
@@ -88,15 +88,15 @@
   <Style Selector="Button.SubtleLink">
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="CornerRadius" Value="{StaticResource ShellCompactCornerRadius}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
     <Setter Property="Padding" Value="6,4" />
     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
   </Style>
   <Style Selector="Button.SubtleLink:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:flyout-open /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource GhostButtonHoverBrush}" />
+    <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
   </Style>
   <Style Selector="Button.SubtleLink:pressed /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource GhostButtonPressedBrush}" />
+    <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
   </Style>
 
   <!-- Reusable Material Symbol Icon Class for MenuItems -->

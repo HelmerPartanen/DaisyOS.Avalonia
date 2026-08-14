@@ -4,9 +4,9 @@
         xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
         Title="Files" Width="980" Height="640" MinWidth="620" MinHeight="420"
         compositor:KWinBlur.IsEnabled="True"
-        compositor:KWinBlur.CornerRadius="{StaticResource ShellSurfaceCornerRadiusValue}"
+        compositor:KWinBlur.CornerRadius="{DynamicResource RoundedLGValue}"
         TextOptions.TextRenderingMode="Antialias"
-        Background="{DynamicResource ShellSurfaceBrush}">
+        Background="{DynamicResource SecondarySurfaceBrush}">
   <Grid RowDefinitions="Auto,*,Auto" Margin="20" RowSpacing="14">
     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
       <Button Classes="ShellButton" Width="40" Height="40" ToolTip.Tip="Go back" Click="OnBackClicked">
@@ -26,7 +26,7 @@
         <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnDownloadsClicked">Downloads</Button>
         <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnDocumentsClicked">Documents</Button>
       </StackPanel>
-      <Border Grid.Column="1" BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="1" CornerRadius="{StaticResource ShellSurfaceCornerRadius}" ClipToBounds="True">
+      <Border Grid.Column="1" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedLG}" ClipToBounds="True">
         <ListBox x:Name="EntriesList" AutomationProperties.Name="Folder contents" DoubleTapped="OnEntryDoubleTapped">
           <ListBox.ItemTemplate>
             <DataTemplate>

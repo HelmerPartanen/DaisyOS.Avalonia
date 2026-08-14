@@ -7,7 +7,7 @@
     <Style Selector="ToggleButton.QuickActionSingle">
       <Setter Property="Width" Value="96"/>
       <Setter Property="Height" Value="56"/>
-      <Setter Property="CornerRadius" Value="{StaticResource ShellControlCornerRadius}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -17,7 +17,7 @@
     <Style Selector="ToggleButton.QuickActionSplit">
       <Setter Property="Width" Value="68"/>
       <Setter Property="Height" Value="56"/>
-      <Setter Property="CornerRadius" Value="{StaticResource ShellControlLeftCornerRadius}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMDLeft}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -28,24 +28,24 @@
       <Setter Property="Height" Value="56"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="CornerRadius" Value="{StaticResource ShellControlRightCornerRadius}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMDRight}"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
     <!-- A split pair is one control. The chevron deliberately uses the exact same inactive
          and disabled material as the toggle beside it, rather than the platform button state. -->
     <Style Selector="Button.QuickSettingDetails:not(.Active)">
-      <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}"/>
     </Style>
     <Style Selector="Button.QuickSettingDetails:disabled">
-      <Setter Property="Background" Value="{DynamicResource SubtleButtonBackgroundBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}"/>
       <Setter Property="Opacity" Value="0.48"/>
     </Style>
     <Style Selector="Border.QuickSettingSplitDivider">
-      <Setter Property="Background" Value="{DynamicResource ShellDividerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource DividerBrush}"/>
     </Style>
     <Style Selector="Border.QuickSettingSplitDivider.Active">
-      <Setter Property="Background" Value="{DynamicResource QuickSettingActiveDividerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource AccentDividerBrush}"/>
     </Style>
     <Style Selector="TextBlock.QuickSettingLabel">
       <Setter Property="FontSize" Value="11"/>

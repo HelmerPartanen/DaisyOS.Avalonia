@@ -14,7 +14,7 @@
       <Setter Property="Height" Value="40"/>
     </Style>
     <Style Selector="Button.TaskbarApp.LauncherActive /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}"/>
     </Style>
 
     <!-- Reorderable app icon. Positioned absolutely inside AppIconsCanvas via Canvas.Left,
@@ -24,7 +24,7 @@
       <Setter Property="Height" Value="40"/>
     </Style>
     <Style Selector="Button.TaskbarAppIcon.dragging /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource TaskbarPressedBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -38,15 +38,15 @@
     <!-- Canvas does not participate in desired-size measurement; the dock body remains dynamic-width. -->
     <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="False" IsHitTestVisible="False">
       <Path x:Name="BottomEdgeBridge"
-            Fill="{DynamicResource BottomChromeSurfaceBrush}" />
+            Fill="{DynamicResource PrimarySurfaceBrush}" />
     </Canvas>
     <Border x:Name="TaskbarBody"
             Height="52"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Padding="6"
-            Background="{DynamicResource BottomChromeSurfaceBrush}"
-            CornerRadius="{StaticResource ShellFrameCornerRadius}"
+            Background="{DynamicResource PrimarySurfaceBrush}"
+            CornerRadius="{DynamicResource RoundedXL}"
             ClipToBounds="True">
       <Border.Transitions>
         <Transitions>
@@ -59,11 +59,11 @@
 
       <!-- Start Button -->
       <Button x:Name="StartButton" Classes="ShellButton TaskbarApp" ToolTip.Tip="Start Menu">
-        <Border Background="Transparent" CornerRadius="{StaticResource ShellCompactCornerRadius}">
+        <Border Background="Transparent" CornerRadius="{DynamicResource RoundedSM}">
           <!-- Match the fill color used by active Quick Settings controls. -->
           <svg:Svg Width="26" Height="26"
                    Path="avares://DaisyOS.Shell/Assets/Brand/favicon.svg"
-                   CurrentColor="{DynamicResource AppPrimaryColor}"
+                   CurrentColor="{DynamicResource AccentColor}"
                    Stretch="Uniform"/>
         </Border>
       </Button>

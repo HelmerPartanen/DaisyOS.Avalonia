@@ -9,17 +9,17 @@
 
   <UserControl.Styles>
     <Style Selector="Border.OverlayCard">
-      <Setter Property="Background" Value="#E61A1C23" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ShellSurfaceBorderBrush}" />
+      <Setter Property="Background" Value="{DynamicResource OverlaySurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="{StaticResource ShellSurfaceCornerRadius}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedLG}" />
       <Setter Property="Padding" Value="14" />
       <Setter Property="BoxShadow" Value="0 8 24 #60000000" />
     </Style>
 
     <Style Selector="Border.MetricTile">
-      <Setter Property="Background" Value="#252833" />
-      <Setter Property="CornerRadius" Value="{StaticResource ShellCompactCornerRadius}" />
+      <Setter Property="Background" Value="{DynamicResource OverlaySurfaceSubtleBrush}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
       <Setter Property="Padding" Value="10,8" />
     </Style>
 
@@ -36,15 +36,15 @@
       <Setter Property="Padding" Value="0" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="{StaticResource ShellRoundIconCornerRadius}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedPill}" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.OverlayIconButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostButtonHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
     <Style Selector="Button.OverlayIconButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostButtonPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
     </Style>
 
     <Style Selector="TextBlock.ButtonIcon">
@@ -61,9 +61,9 @@
         <!-- Header -->
         <Grid ColumnDefinitions="*,Auto,Auto">
           <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="6">
-            <TextBlock Text="analytics" Classes="MetricIcon" Foreground="{DynamicResource AppPrimaryBrush}" FontSize="18" />
+            <TextBlock Text="analytics" Classes="MetricIcon" Foreground="{DynamicResource AccentBrush}" FontSize="18" />
             <TextBlock Name="TxtAppName" Text="Performance" FontWeight="SemiBold" FontSize="13" Foreground="{DynamicResource TextPrimaryBrush}" />
-            <Border Background="#33808080" CornerRadius="{StaticResource ShellMicroCornerRadius}" Padding="4,1" VerticalAlignment="Center">
+            <Border Background="{DynamicResource TertiarySurfaceBrush}" CornerRadius="{DynamicResource RoundedXS}" Padding="4,1" VerticalAlignment="Center">
               <TextBlock Name="TxtPid" Text="PID 0" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
             </Border>
           </StackPanel>
@@ -84,7 +84,7 @@
           <Border Grid.Row="0" Grid.Column="0" Classes="MetricTile" Margin="0,0,4,4">
             <StackPanel Spacing="2">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="speed" Classes="MetricIcon" Foreground="#4CAF50" Name="IconCpu" />
+                <TextBlock Text="speed" Classes="MetricIcon" Foreground="{DynamicResource SuccessBrush}" Name="IconCpu" />
                 <TextBlock Text="App CPU" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
               </StackPanel>
               <TextBlock Name="TxtCpu" Text="0.0%" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -95,7 +95,7 @@
           <Border Grid.Row="0" Grid.Column="1" Classes="MetricTile" Margin="4,0,0,4">
             <StackPanel Spacing="2">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="memory" Classes="MetricIcon" Foreground="#2196F3" />
+                <TextBlock Text="memory" Classes="MetricIcon" Foreground="{DynamicResource InfoBrush}" />
                 <TextBlock Text="App RAM" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
               </StackPanel>
               <TextBlock Name="TxtRam" Text="0 MB" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -106,7 +106,7 @@
           <Border Grid.Row="1" Grid.Column="0" Classes="MetricTile" Margin="0,4,4,0">
             <StackPanel Spacing="2">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="account_tree" Classes="MetricIcon" Foreground="#FF9800" />
+                <TextBlock Text="account_tree" Classes="MetricIcon" Foreground="{DynamicResource WarningBrush}" />
                 <TextBlock Text="App Threads" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
               </StackPanel>
               <TextBlock Name="TxtThreads" Text="0" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -117,7 +117,7 @@
           <Border Grid.Row="1" Grid.Column="1" Classes="MetricTile" Margin="4,4,0,0">
             <StackPanel Spacing="2">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="developer_board" Classes="MetricIcon" Foreground="#9C27B0" />
+                <TextBlock Text="developer_board" Classes="MetricIcon" Foreground="{DynamicResource DiagnosticBrush}" />
                 <TextBlock Text="Process WS" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" ToolTip.Tip="Total physical working set of host process" />
               </StackPanel>
               <TextBlock Name="TxtGc" Text="0 MB" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
@@ -126,7 +126,7 @@
         </Grid>
 
         <!-- Footer / Uptime -->
-        <Border Background="#1C1E26" CornerRadius="{StaticResource ShellInsetCornerRadius}" Padding="8,4">
+        <Border Background="{DynamicResource TertiarySurfaceBrush}" CornerRadius="{DynamicResource RoundedSM}" Padding="8,4">
           <Grid ColumnDefinitions="*,Auto">
             <TextBlock Text="App Runtime" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
             <TextBlock Grid.Column="1" Name="TxtUptime" Text="00:00:00" FontSize="11" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
@@ -139,14 +139,14 @@
     <Border Name="CompactPanel" Classes="OverlayCard" Padding="8,4" IsVisible="False" Cursor="Hand" PointerPressed="OnCompactPanelPressed">
       <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
         <StackPanel Orientation="Horizontal" Spacing="4">
-          <TextBlock Text="speed" Classes="MetricIcon" Foreground="#4CAF50" FontSize="14" />
+          <TextBlock Text="speed" Classes="MetricIcon" Foreground="{DynamicResource SuccessBrush}" FontSize="14" />
           <TextBlock Name="TxtCompactCpu" Text="0%" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
         </StackPanel>
 
-        <TextBlock Text="|" Foreground="#40FFFFFF" FontSize="12" VerticalAlignment="Center" />
+        <TextBlock Text="|" Foreground="{DynamicResource TextTertiaryBrush}" FontSize="12" VerticalAlignment="Center" />
 
         <StackPanel Orientation="Horizontal" Spacing="4">
-          <TextBlock Text="memory" Classes="MetricIcon" Foreground="#2196F3" FontSize="14" />
+          <TextBlock Text="memory" Classes="MetricIcon" Foreground="{DynamicResource InfoBrush}" FontSize="14" />
           <TextBlock Name="TxtCompactRam" Text="0MB" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
         </StackPanel>
 
