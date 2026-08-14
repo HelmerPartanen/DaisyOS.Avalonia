@@ -156,8 +156,6 @@ public partial class App : Application
         LauncherVisibilityChanged += (_, isVisible) => shell.Taskbar.SetLauncherOpen(isVisible);
     }
 
-    public Task PlayTopEdgeMetaballAsync() => _topEdgeWindow?.PlayVolumePanelAsync() ?? Task.CompletedTask;
-
     private void ShowTopEdgeChrome(Window mainWindow)
     {
         if (_topEdgeWindow is { IsVisible: true })

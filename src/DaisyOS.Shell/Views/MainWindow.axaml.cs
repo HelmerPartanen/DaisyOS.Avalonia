@@ -21,16 +21,7 @@ namespace DaisyOS.Shell.Views
             if (e.Key == Key.Escape && (Application.Current as App)?.DismissTransientShellSurfaces() == true)
             {
                 e.Handled = true;
-                return;
             }
-
-            if (e.Key != Key.Space || (e.KeyModifiers & KeyModifiers.Control) == 0)
-            {
-                return;
-            }
-
-            _ = (Application.Current as App)?.PlayTopEdgeMetaballAsync();
-            e.Handled = true;
         }
     }
 }

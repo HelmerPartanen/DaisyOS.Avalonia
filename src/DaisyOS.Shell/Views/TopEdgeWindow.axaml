@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
-    Height="44"
+    Height="52"
     CanResize="False"
     ShowActivated="False"
     ShowInTaskbar="False"
@@ -13,7 +13,7 @@
     TransparencyLevelHint="Transparent"
     TextOptions.TextRenderingMode="Antialias"
     Background="Transparent">
-  <Grid Height="44">
+  <Grid Height="52">
     <controls:TopEdgeMetaball x:Name="TopEdgeContent"
                               HorizontalAlignment="Center"
                               VerticalAlignment="Top" />

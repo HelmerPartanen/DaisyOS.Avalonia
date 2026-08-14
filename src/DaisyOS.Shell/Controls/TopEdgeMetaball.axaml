@@ -4,10 +4,9 @@
              Width="180"
              Height="52"
              UseLayoutRounding="True"
-             ClipToBounds="False"
-             Cursor="SizeAll">
+             ClipToBounds="False">
   <Canvas Width="180" Height="52" ClipToBounds="False">
-    <!-- Drawn behind the body; it appears only inside the merge threshold. -->
+    <!-- Fixed merged bridge: the pocket touches and flares into the top edge. -->
     <Path x:Name="EdgeBridge" Fill="{DynamicResource ShellTopEdgePocketBrush}" />
     <Border x:Name="PocketBody"
             Width="180"
