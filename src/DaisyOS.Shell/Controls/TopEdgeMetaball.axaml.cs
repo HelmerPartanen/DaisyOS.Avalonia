@@ -73,7 +73,8 @@ public partial class TopEdgeMetaball : UserControl
 
     private async Task RefreshVolumeAsync()
     {
-        if (VolumeSlider is null)
+        var volumeSlider = this.FindControl<QuickSettingsSlider>("VolumeSlider");
+        if (volumeSlider is null)
         {
             return;
         }
@@ -84,10 +85,10 @@ public partial class TopEdgeMetaball : UserControl
             _isSynchronizingVolume = true;
             try
             {
-                VolumeSlider.IsEnabled = volume is not null;
+                volumeSlider.IsEnabled = volume is not null;
                 if (volume is not null)
                 {
-                    VolumeSlider.Value = volume.Value;
+                    volumeSlider.Value = volume.Value;
                 }
             }
             finally
@@ -97,7 +98,7 @@ public partial class TopEdgeMetaball : UserControl
         }
         catch
         {
-            VolumeSlider.IsEnabled = false;
+            volumeSlider.IsEnabled = false;
         }
     }
 
