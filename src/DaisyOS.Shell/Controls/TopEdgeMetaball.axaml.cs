@@ -4,43 +4,42 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
-using Avalonia.VisualTree;
-using DaisyOS.Core.Services;
-using DaisyOS.Shell.Services.Compositor;
-using DaisyOS.System.Audio;
-using DaisyOS.System.Processes;
 
 namespace DaisyOS.Shell.Controls;
 
 /// <summary>
-/// A rounded top-edge volume pocket that remains a stable rectangle while it
-/// reveals, moves, and can be dragged across the display.
+/// A normal rounded shell pocket that grows a smooth bridge into the top screen
+/// edge when it comes within <see cref="MergeThreshold"/> pixels. Animate
+/// <see cref="EdgeDistance"/> to move between the detached and merged states.
 /// </summary>
 public partial class TopEdgeMetaball : UserControl
 {
-    private const double ContainerHeight = 40;
+    private const double TopEdgeOverlap = 1;
     private const double RestingTopInset = 4;
-    private const double RestingEdgeDistance = RestingTopInset;
-    private const double HiddenEdgeDistance = -ContainerHeight;
-    private const double MinimumDragEdgeDistance = -(ContainerHeight / 2);
-    private static readonly TimeSpan PositionInDuration = TimeSpan.FromMilliseconds(260);
-    private static readonly TimeSpan PositionOutDuration = TimeSpan.FromMilliseconds(160);
+    // Keep the flare local to the edge; it has fully resolved before the
+    // component reaches its separate 4 px resting inset.
+    public const double MergeThreshold = 1;
+    // Include the 1 px seam overlap so the rendered resting inset is 4 px.
+    private const double RestingEdgeDistance = TopEdgeOverlap + RestingTopInset;
+    private const double EdgeFlare = 18;
+    private static readonly TimeSpan RevealDuration = TimeSpan.FromMilliseconds(420);
+    private static readonly TimeSpan PositionDuration = TimeSpan.FromMilliseconds(180);
     private static readonly TimeSpan RevealHoldDuration = TimeSpan.FromSeconds(3);
-    private const double DetachedBodyWidth = 263;
+    private const double DetachedBodyWidth = 240;
+    private const double MergedBodyWidth = 240;
+    private const double BodyCornerRadius = 12;
     private readonly TranslateTransform _positionTransform = new();
-    private readonly IAudioService _audioService = new LinuxAudioService(new SafeCommandRunner());
+    private readonly ScaleTransform _revealTransform = new(1, 0);
     private IPointer? _dragPointer;
     private CancellationTokenSource? _revealCancellation;
-    private CancellationTokenSource? _volumeUpdateCancellation;
     private Visual? _dragCoordinateSpace;
     private Point _dragStart;
     private double _dragStartDistance;
     private double _dragStartHorizontalOffset;
     private double _horizontalOffset;
-    private bool _isSynchronizingVolume;
 
     public static readonly StyledProperty<double> EdgeDistanceProperty =
-        AvaloniaProperty.Register<TopEdgeMetaball, double>(nameof(EdgeDistance), HiddenEdgeDistance);
+        AvaloniaProperty.Register<TopEdgeMetaball, double>(nameof(EdgeDistance), 4d);
 
     public double EdgeDistance
     {
@@ -56,87 +55,25 @@ public partial class TopEdgeMetaball : UserControl
     public TopEdgeMetaball()
     {
         InitializeComponent();
-        RenderTransform = _positionTransform;
+        RenderTransform = new TransformGroup
+        {
+            Children = { _revealTransform, _positionTransform }
+        };
+        RenderTransformOrigin = new RelativePoint(0.5, 0, RelativeUnit.Relative);
         AddHandler(PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
         AddHandler(PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel);
         AddHandler(PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
         AddHandler(PointerCaptureLostEvent, OnPointerCaptureLost, RoutingStrategies.Tunnel);
-        Loaded += OnLoaded;
-        Unloaded += OnUnloaded;
-        SetEdgeDistance(HiddenEdgeDistance);
+        SetRevealProgress(0);
     }
 
-    private async void OnLoaded(object? sender, RoutedEventArgs e)
-    {
-        await RefreshVolumeAsync();
-    }
-
-    private async Task RefreshVolumeAsync()
-    {
-        var volumeSlider = this.FindControl<QuickSettingsSlider>("VolumeSlider");
-        if (volumeSlider is null)
-        {
-            return;
-        }
-
-        try
-        {
-            var volume = await _audioService.GetVolumeAsync();
-            _isSynchronizingVolume = true;
-            try
-            {
-                volumeSlider.IsEnabled = volume is not null;
-                if (volume is not null)
-                {
-                    volumeSlider.Value = volume.Value;
-                }
-            }
-            finally
-            {
-                _isSynchronizingVolume = false;
-            }
-        }
-        catch
-        {
-            volumeSlider.IsEnabled = false;
-        }
-    }
-
-    private void OnUnloaded(object? sender, RoutedEventArgs e)
-    {
-        _volumeUpdateCancellation?.Cancel();
-        _volumeUpdateCancellation?.Dispose();
-        _volumeUpdateCancellation = null;
-    }
-
-    private async void OnVolumeChanged(object? sender, EventArgs e)
-    {
-        if (_isSynchronizingVolume || sender is not QuickSettingsSlider slider || !slider.IsLoaded)
-        {
-            return;
-        }
-
-        _volumeUpdateCancellation?.Cancel();
-        _volumeUpdateCancellation?.Dispose();
-        _volumeUpdateCancellation = new CancellationTokenSource();
-        try
-        {
-            await Task.Delay(80, _volumeUpdateCancellation.Token);
-            await _audioService.SetVolumeAsync(slider.Value, _volumeUpdateCancellation.Token);
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        catch
-        {
-            slider.IsEnabled = false;
-        }
-    }
-
-    /// <summary>Slides the panel in from above the screen edge, then reverses that path.</summary>
+    /// <summary>
+    /// Scales at the top edge, then moves to its resting inset. The return
+    /// reverses position before scale, so the two properties never animate
+    /// together. Repeated requests restart from the current frame.
+    /// </summary>
     public async Task PlayKeyboardRevealAsync()
     {
-        _ = RefreshVolumeAsync();
         _revealCancellation?.Cancel();
         _revealCancellation?.Dispose();
 
@@ -145,18 +82,10 @@ public partial class TopEdgeMetaball : UserControl
 
         try
         {
-            if (!IsVisible)
-            {
-                IsVisible = true;
-                SetEdgeDistance(HiddenEdgeDistance);
-            }
-
+            SetEdgeDistance(0);
             await AnimateOpenAsync(cancellation.Token);
             await Task.Delay(RevealHoldDuration, cancellation.Token);
             await AnimateCloseAsync(cancellation.Token);
-            IsVisible = false;
-            IsHitTestVisible = false;
-            KWinBlur.Invalidate(this);
         }
         catch (OperationCanceledException)
         {
@@ -175,21 +104,72 @@ public partial class TopEdgeMetaball : UserControl
 
     private void UpdateGeometry()
     {
+        var distance = Math.Max(0, EdgeDistance);
         _positionTransform.X = _horizontalOffset;
-        _positionTransform.Y = EdgeDistance;
-        IsHitTestVisible = IsVisible && EdgeDistance >= 0;
-        KWinBlur.Invalidate(this);
+        _positionTransform.Y = distance - TopEdgeOverlap;
+
+        var proximity = Math.Clamp(1 - (distance / MergeThreshold), 0, 1);
+
+        // The body stays full width while detached, then contracts as it joins
+        // the screen edge. Smoothstep keeps the transition calm at both ends.
+        var widthMorph = proximity * proximity * (3 - (2 * proximity));
+        var bodyWidth = DetachedBodyWidth - ((DetachedBodyWidth - MergedBodyWidth) * widthMorph);
+        PocketBody.Width = bodyWidth;
+        Canvas.SetLeft(PocketBody, (DetachedBodyWidth - bodyWidth) / 2);
+
+        EdgeBridge.IsVisible = proximity > 0;
+        if (proximity <= 0)
+        {
+            EdgeBridge.Data = null;
+            return;
+        }
+
+        // Near the edge, the bridge is a slightly wider top cap rather than a
+        // narrow neck. Its shoulders then resolve into the fixed-height,
+        // radius-12 body, producing the requested flared-edge morph.
+        var center = DetachedBodyWidth / 2;
+        var morph = Math.Sqrt(proximity);
+        var edgeHalfWidth = (bodyWidth / 2 + EdgeFlare) * morph;
+        var bodyHalfWidth = bodyWidth / 2;
+        // The bridge is drawn above the body's local bounds. The translation
+        // puts its upper edge at the physical screen edge while keeping the
+        // rounded 180 x 52 body itself fully draggable and hit-testable.
+        var edgeY = -distance;
+        var joinY = BodyCornerRadius;
+
+        var geometry = new StreamGeometry();
+        using (var context = geometry.Open())
+        {
+            context.BeginFigure(new Point(center - edgeHalfWidth, edgeY), isFilled: true);
+            context.LineTo(new Point(center + edgeHalfWidth, edgeY), isStroked: false);
+            context.CubicBezierTo(
+                new Point(center + edgeHalfWidth, edgeY + distance * 0.18),
+                new Point(center + bodyHalfWidth, edgeY + distance * 0.75),
+                new Point(center + bodyHalfWidth, joinY),
+                isStroked: false);
+            context.LineTo(new Point(center - bodyHalfWidth, joinY), isStroked: false);
+            context.CubicBezierTo(
+                new Point(center - bodyHalfWidth, edgeY + distance * 0.75),
+                new Point(center - edgeHalfWidth, edgeY + distance * 0.18),
+                new Point(center - edgeHalfWidth, edgeY),
+                isStroked: false);
+            context.EndFigure(isClosed: true);
+        }
+
+        EdgeBridge.Data = geometry;
     }
 
     private Task AnimateOpenAsync(CancellationToken cancellationToken) =>
         AnimatePhasesAsync(
             cancellationToken,
-            new AnimationPhase(EdgeDistance, RestingEdgeDistance, PositionInDuration, ReverseCurve: false, SetEdgeDistance));
+            new AnimationPhase(_revealTransform.ScaleY, 1, RevealDuration, ReverseCurve: false, SetRevealProgress),
+            new AnimationPhase(0, RestingEdgeDistance, PositionDuration, ReverseCurve: false, SetEdgeDistance));
 
     private Task AnimateCloseAsync(CancellationToken cancellationToken) =>
         AnimatePhasesAsync(
             cancellationToken,
-            new AnimationPhase(EdgeDistance, HiddenEdgeDistance, PositionOutDuration, ReverseCurve: true, SetEdgeDistance));
+            new AnimationPhase(EdgeDistance, 0, PositionDuration, ReverseCurve: true, SetEdgeDistance),
+            new AnimationPhase(_revealTransform.ScaleY, 0, RevealDuration, ReverseCurve: true, SetRevealProgress));
 
     private async Task AnimatePhasesAsync(CancellationToken cancellationToken, params AnimationPhase[] phases)
     {
@@ -253,17 +233,17 @@ public partial class TopEdgeMetaball : UserControl
         bool ReverseCurve,
         Action<double> SetValue);
 
-    private void SetEdgeDistance(double distance)
+    private void SetRevealProgress(double progress)
     {
-        var clampedDistance = Math.Clamp(distance, HiddenEdgeDistance, RestingEdgeDistance);
-        if (Math.Abs(EdgeDistance - clampedDistance) < 0.001)
-        {
-            UpdateGeometry();
-            return;
-        }
-
-        EdgeDistance = clampedDistance;
+        var clampedProgress = Math.Clamp(progress, 0, 1);
+        _revealTransform.ScaleY = clampedProgress;
+        IsHitTestVisible = clampedProgress > 0;
+        // The top transform origin keeps this boundary fixed to the screen
+        // edge; reveal progress changes only the component's height.
+        EdgeDistance = 0;
     }
+
+    private void SetEdgeDistance(double distance) => EdgeDistance = Math.Clamp(distance, 0, RestingEdgeDistance);
 
     // Cubic-bezier(0.22, 1, 0.36, 1): soft approach, with the return using
     // the mathematically reversed curve so it retraces the reveal exactly.
@@ -298,8 +278,7 @@ public partial class TopEdgeMetaball : UserControl
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed ||
-            e.Source is Visual source && (source is QuickSettingsSlider || source.FindAncestorOfType<QuickSettingsSlider>() is not null))
+        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
         {
             return;
         }
@@ -323,7 +302,7 @@ public partial class TopEdgeMetaball : UserControl
         var current = e.GetPosition(_dragCoordinateSpace);
         var delta = current - _dragStart;
         _horizontalOffset = ClampHorizontalOffset(_dragStartHorizontalOffset + delta.X);
-        EdgeDistance = Math.Clamp(_dragStartDistance + delta.Y, MinimumDragEdgeDistance, RestingEdgeDistance);
+        EdgeDistance = Math.Max(0, _dragStartDistance + delta.Y);
         e.Handled = true;
     }
 
