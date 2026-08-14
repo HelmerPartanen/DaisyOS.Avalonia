@@ -52,15 +52,18 @@ public partial class SystemBarView : UserControl
         Unloaded += OnUnloaded;
     }
 
-    /// <summary>Uses this control as the content of the dedicated Quick Settings native surface.</summary>
-    public void ShowQuickSettingsPanelOnly()
+    public bool IsQuickSettingsVisible => this.FindControl<Control>("QuickSettingsPanel")?.IsVisible == true;
+
+    /// <summary>Shows Quick Settings as an overlay within the shell window.</summary>
+    public void ShowQuickSettingsPanel()
     {
-        this.FindControl<Control>("SystemBarFrame")!.IsVisible = false;
         this.FindControl<Control>("QuickSettingsPanel")!.IsVisible = true;
-        Width = 336;
-        Height = 304;
-        Margin = default;
+        SetQuickSettingsPage(QuickSettingsPage.Main);
+        QueueQuickSettingsRefresh(force: true);
     }
+
+    public void HideQuickSettingsPanel() =>
+        this.FindControl<Control>("QuickSettingsPanel")!.IsVisible = false;
 
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {

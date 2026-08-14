@@ -30,9 +30,8 @@ public partial class App : Application
     private NotesWindow? _notesWindow;
     private CalculatorWindow? _calculatorWindow;
     private FilesWindow? _filesWindow;
-    private LauncherWindow? _launcherWindow;
     private TopEdgeWindow? _topEdgeWindow;
-    private QuickSettingsWindow? _quickSettingsWindow;
+    private ShellView? _shellView;
 
     public ShellSessionState SessionState { get; } = new();
     public ShellFeedbackService Feedback { get; } = new();
@@ -53,7 +52,7 @@ public partial class App : Application
             desktop.MainWindow = mainWindow;
             mainWindow.Opened += async (_, _) =>
             {
-                ConfigureBottomChrome(mainWindow.ShellContent);
+                ConfigureShellOverlays(mainWindow.ShellContent);
                 ShowTopEdgeChrome(mainWindow);
 
                 // This is a compositor-level setting shared by all KWin blur
@@ -108,10 +107,10 @@ public partial class App : Application
         }
     }
 
-    /// <summary>Shows or hides the launcher as its own native KWin-blurred surface.</summary>
+    /// <summary>Shows or hides the launcher within the shell window.</summary>
     public void ToggleLauncher()
     {
-        if (_launcherWindow is { IsVisible: true })
+        if (_shellView?.IsLauncherVisible == true)
         {
             HideLauncher();
         }
@@ -123,52 +122,37 @@ public partial class App : Application
 
     public void HideLauncher()
     {
-        if (_launcherWindow is not { IsVisible: true })
+        if (_shellView?.IsLauncherVisible != true)
         {
             return;
         }
 
-        _launcherWindow.Hide();
+        _shellView.HideLauncher();
         LauncherVisibilityChanged?.Invoke(this, false);
     }
 
     private void ShowLauncher()
     {
-        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
+        if (_shellView is null)
         {
             return;
         }
 
-        if (_launcherWindow is null)
-        {
-            _launcherWindow = new LauncherWindow();
-            _launcherWindow.CloseRequested += (_, _) => HideLauncher();
-            _launcherWindow.Deactivated += (_, _) => HideLauncher();
-            _launcherWindow.Closed += (_, _) =>
-            {
-                _launcherWindow = null;
-                LauncherVisibilityChanged?.Invoke(this, false);
-            };
-        }
-
-        _launcherWindow.PrepareForPresentation();
-        _launcherWindow.PositionAboveBottomChrome(mainWindow);
-        _launcherWindow.Show(mainWindow);
-        _launcherWindow.Activate();
+        HideQuickSettings();
+        _shellView.ShowLauncher();
         LauncherVisibilityChanged?.Invoke(this, true);
-        if (_launcherWindow.Opacity > 0)
-        {
-            _launcherWindow.LauncherContent.FocusSearch();
-        }
     }
 
-    private void ConfigureBottomChrome(ShellView shell)
+    private void ConfigureShellOverlays(ShellView shell)
     {
+        _shellView = shell;
         shell.Taskbar.ApplyOrder(SessionState.DockOrder);
         shell.Taskbar.OrderChanged += (_, order) => SessionState.SetDockOrder(order);
         shell.Taskbar.StartButtonClicked += (_, _) => ToggleLauncher();
         shell.Taskbar.AppIconClicked += (_, appId) => LaunchTaskbarApp(appId);
         shell.SystemBar.QuickSettingsRequested += (_, _) => ToggleQuickSettings();
+        shell.SystemBar.QuickSettingsDismissRequested += (_, _) => HideQuickSettings();
+        shell.Launcher.AppLaunchRequested += (_, _) => HideLauncher();
         LauncherVisibilityChanged += (_, isVisible) => shell.Taskbar.SetLauncherOpen(isVisible);
     }
 
@@ -188,37 +172,41 @@ public partial class App : Application
 
     private void ToggleQuickSettings()
     {
-        if (_quickSettingsWindow is { IsVisible: true })
+        if (_shellView?.SystemBar.IsQuickSettingsVisible == true)
         {
             HideQuickSettings();
             return;
         }
 
-        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
+        if (_shellView is null)
         {
             return;
         }
 
         HideLauncher();
-        if (_quickSettingsWindow is null)
-        {
-            _quickSettingsWindow = new QuickSettingsWindow();
-            _quickSettingsWindow.QuickSettings.QuickSettingsDismissRequested += (_, _) => HideQuickSettings();
-            _quickSettingsWindow.Deactivated += (_, _) => HideQuickSettings();
-            _quickSettingsWindow.Closed += (_, _) => _quickSettingsWindow = null;
-        }
-
-        _quickSettingsWindow.PositionAboveSystemBar(mainWindow);
-        _quickSettingsWindow.Show(mainWindow);
-        _quickSettingsWindow.Activate();
+        _shellView.SystemBar.ShowQuickSettingsPanel();
     }
 
     private void HideQuickSettings()
     {
-        if (_quickSettingsWindow is { IsVisible: true })
+        _shellView?.SystemBar.HideQuickSettingsPanel();
+    }
+
+    public bool DismissTransientShellSurfaces()
+    {
+        if (_shellView?.SystemBar.IsQuickSettingsVisible == true)
         {
-            _quickSettingsWindow.Hide();
+            HideQuickSettings();
+            return true;
         }
+
+        if (_shellView?.IsLauncherVisible == true)
+        {
+            HideLauncher();
+            return true;
+        }
+
+        return false;
     }
 
     private void LaunchTaskbarApp(string appId)

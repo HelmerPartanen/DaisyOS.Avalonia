@@ -18,6 +18,12 @@ namespace DaisyOS.Shell.Views
 
         private void OnKeyDown(object? sender, KeyEventArgs e)
         {
+            if (e.Key == Key.Escape && (Application.Current as App)?.DismissTransientShellSurfaces() == true)
+            {
+                e.Handled = true;
+                return;
+            }
+
             if (e.Key != Key.Space || (e.KeyModifiers & KeyModifiers.Control) == 0)
             {
                 return;

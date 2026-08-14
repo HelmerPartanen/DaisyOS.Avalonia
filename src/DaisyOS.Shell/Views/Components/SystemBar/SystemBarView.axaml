@@ -74,6 +74,8 @@
   <Grid>
   <!-- Same opaque in-window surface, height, padding, and radius as TaskbarView. -->
   <Border x:Name="SystemBarFrame" Height="52"
+          HorizontalAlignment="Right"
+          VerticalAlignment="Bottom"
           Padding="6"
           Background="{DynamicResource BottomChromeSurfaceBrush}"
           CornerRadius="12"
@@ -118,15 +120,13 @@
     </StackPanel>
   </Border>
 
-  <!-- This panel is hosted by QuickSettingsWindow, never by the 52px System Bar surface. -->
+  <!-- In-window overlay anchored 12px above the System Bar. -->
   <Border x:Name="QuickSettingsPanel" IsVisible="False"
           Width="336" Height="304" Padding="16,16,16,0"
-          HorizontalAlignment="Right" VerticalAlignment="Bottom"
-          Classes="DiagonalShellBorder"
-          Background="{DynamicResource ShellSurfaceBrush}"
+          HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,64"
+          Background="{DynamicResource BottomChromeSurfaceBrush}"
           CornerRadius="14"
-          ClipToBounds="True"
-          BoxShadow="0 12 36 0 #60000000">
+          ClipToBounds="True">
     <Grid>
       <Grid x:Name="QuickSettingsMainPage" RowDefinitions="*,Auto">
         <StackPanel Grid.Row="0" Spacing="12">

@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:desktop="clr-namespace:DaisyOS.Shell.Views.Components.Desktop"
+    xmlns:launcher="clr-namespace:DaisyOS.Shell.Views.Components.Launcher"
     xmlns:widgets="clr-namespace:DaisyOS.Shell.Views.Components.Widgets"
     xmlns:taskbar="clr-namespace:DaisyOS.Shell.Views.Components.Taskbar"
     xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
@@ -20,6 +21,12 @@
         <systembar:SystemBarView x:Name="SystemBarContent"
                                  HorizontalAlignment="Right"
                                  VerticalAlignment="Bottom" />
+        <launcher:LauncherView x:Name="LauncherContent"
+                               IsVisible="False"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Bottom"
+                               Margin="0,0,0,64"
+                               ZIndex="20" />
 
         <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
                 HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"

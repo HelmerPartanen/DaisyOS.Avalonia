@@ -6,11 +6,9 @@
              x:DataType="vm:LauncherViewModel"
              Width="740" Height="620">
 
-  <Border Classes="DiagonalShellBorder"
-          Background="{DynamicResource LauncherMaterialBrush}"
+  <Border Background="{DynamicResource BottomChromeSurfaceBrush}"
           CornerRadius="14"
-          ClipToBounds="True"
-          BoxShadow="0 16 48 0 #60000000">
+          ClipToBounds="True">
     <Grid RowDefinitions="Auto,*">
       <Grid.Styles>
         <Style Selector="Button.LauncherUtility">
