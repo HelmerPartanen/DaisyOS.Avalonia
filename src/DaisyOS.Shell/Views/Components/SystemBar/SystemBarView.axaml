@@ -72,14 +72,12 @@
   </UserControl.Styles>
 
   <Grid>
-  <!-- Same material, height, padding, corner radius and shadow as TaskbarView. -->
+  <!-- Same opaque in-window surface, height, padding, and radius as TaskbarView. -->
   <Border x:Name="SystemBarFrame" Height="52"
-          Classes="DiagonalShellBorder"
           Padding="6"
-          Background="{DynamicResource ShellSurfaceBrush}"
+          Background="{DynamicResource BottomChromeSurfaceBrush}"
           CornerRadius="12"
-          ClipToBounds="True"
-          BoxShadow="0 8 32 0 #60000000">
+          ClipToBounds="True">
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="0">
 
       <!-- Network and sound are one Quick Settings action, laid out on an even two-icon grid. -->

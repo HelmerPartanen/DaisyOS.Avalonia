@@ -27,10 +27,13 @@ public sealed class MaterialDynamicSchemeGenerator : IDynamicSchemeGenerator
 
         if (isDark)
         {
-            // Keep wallpaper colour expressive without turning large dark-surface regions into
-            // neon panels. Text roles are muted together so the semantic pair stays coherent.
+            // Material's dark primary is deliberately high-tone, which turns quiet wallpaper
+            // hues into pastel or lime fills. DaisyOS active controls use the restrained
+            // container pair instead: it keeps a forest green feeling like forest green.
             primaryContainer = Desaturate(primaryContainer, 0.62);
             onPrimaryContainer = Desaturate(onPrimaryContainer, 0.62);
+            primary = primaryContainer;
+            onPrimary = onPrimaryContainer;
         }
         else
         {

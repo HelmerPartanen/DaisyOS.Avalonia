@@ -36,6 +36,8 @@ public sealed class MaterialDynamicSchemeGeneratorTests
 
         Assert.InRange(ChannelSpread(scheme.PrimaryContainer), 0, 32);
         Assert.InRange(ChannelSpread(scheme.OnPrimaryContainer), 0, 32);
+        Assert.Equal(scheme.PrimaryContainer, scheme.Primary);
+        Assert.Equal(scheme.OnPrimaryContainer, scheme.OnPrimary);
         Assert.True(Contrast(scheme.PrimaryContainer, scheme.OnPrimaryContainer) >= 4.5);
     }
 

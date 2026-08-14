@@ -14,6 +14,8 @@ namespace DaisyOS.Shell.Views
             AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Tunnel);
         }
 
+        public ShellView ShellContent => Shell;
+
         private void OnKeyDown(object? sender, KeyEventArgs e)
         {
             if (e.Key != Key.Space || (e.KeyModifiers & KeyModifiers.Control) == 0)

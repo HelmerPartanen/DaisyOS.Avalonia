@@ -34,12 +34,10 @@
     The Width Transition animates smoothly as the Canvas inside resizes.
   -->
   <Border Height="52"
-          Classes="DiagonalShellBorder"
           Padding="6"
-          Background="{DynamicResource ShellSurfaceBrush}"
+          Background="{DynamicResource BottomChromeSurfaceBrush}"
           CornerRadius="12"
-          ClipToBounds="True"
-          BoxShadow="0 8 32 0 #60000000">
+          ClipToBounds="True">
     <Border.Transitions>
       <Transitions>
         <DoubleTransition Property="Width" Duration="0:0:0.35" Easing="CubicEaseOut"/>
@@ -52,7 +50,7 @@
       <!-- Start Button -->
       <Button x:Name="StartButton" Classes="ShellButton TaskbarApp" ToolTip.Tip="Start Menu">
         <Border Background="Transparent" CornerRadius="8">
-          <!-- The favicon uses currentColor, allowing it to follow the dynamic primary role. -->
+          <!-- Match the fill color used by active Quick Settings controls. -->
           <svg:Svg Width="26" Height="26"
                    Path="avares://DaisyOS.Shell/Assets/Brand/favicon.svg"
                    CurrentColor="{DynamicResource AppPrimaryColor}"

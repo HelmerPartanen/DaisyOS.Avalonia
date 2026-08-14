@@ -194,12 +194,14 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
             double sat = s / 100.0;
             double val = v / 100.0;
             
-            // Score strongly prioritizes highly saturated and bright pixels.
-            double score = sat * val;
-            score = Math.Pow(score, 3); // Exponentially boost the most vibrant colors
-            
-            // Ignore completely dull or dark pixels to avoid muddying the bucket
-            if (score < 0.01) return;
+            // Preserve a wallpaper's hue even when it is intentionally dark. A forest at dusk
+            // can have rich green chroma with a low value; brightness is raised only after its
+            // hue wins, rather than discarding it and incorrectly treating the image as grayscale.
+            double score = sat * (0.25 + (0.75 * val));
+            score *= score;
+
+            // Ignore genuinely neutral pixels, while retaining low-light coloured pixels.
+            if (score < 0.0025) return;
 
             int bucket = (int)(h / 10.0);
             if (bucket >= 36) bucket = 35;
@@ -261,9 +263,9 @@ public sealed class WallpaperColorExtractor : IWallpaperColorExtractor
             var skColor = new SKColor(r, g, b);
             skColor.ToHsv(out float h, out float s, out float v);
             
-            // If the "vibrant" color is actually very desaturated (e.g. a cool grayscale tint)
-            // or there are too few vibrant pixels (maxScore < 2.0), reject it and use grayscale fallback.
-            if (s >= 25f && maxScore >= 2.0)
+            // A hue that is present across the sampled image should remain an accent even when
+            // the wallpaper is dark. True grayscale imagery stays below this chroma threshold.
+            if (s >= 12f && maxScore >= 0.5)
             {
                 useGrayscaleFallback = false;
                 

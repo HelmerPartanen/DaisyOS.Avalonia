@@ -39,14 +39,16 @@
       <!-- Shell Surfaces                                        -->
       <!-- ===================================================== -->
 
-      <!--
-        KWin supplies the blur.
-        DaisyOS supplies a stable neutral translucent tint.
-      -->
+      <!-- Translucent material roles remain available for surfaces that opt in. -->
 
       <SolidColorBrush
         x:Key="ShellSurfaceBrush"
         Color="#80F5F5F5"/>
+
+      <!-- Opaque in-window chrome: taskbar, media widget, and System Bar. -->
+      <SolidColorBrush
+        x:Key="BottomChromeSurfaceBrush"
+        Color="#FFF5F5F5"/>
 
       <!-- Opaque top-edge pocket so it remains legible over every wallpaper. -->
       <SolidColorBrush
@@ -112,7 +114,7 @@
         No purple / violet hue.
       -->
 
-      <Color x:Key="AppPrimaryColor">#4B4D55</Color>
+      <Color x:Key="AppPrimaryColor">#8C8C8C</Color>
 
       <SolidColorBrush
         x:Key="AppPrimaryBrush"
@@ -309,6 +311,11 @@
       <!-- Shell Surfaces                                        -->
       <!-- ===================================================== -->
 
+      <!-- Opaque in-window chrome: taskbar, media widget, and System Bar. -->
+      <SolidColorBrush
+        x:Key="BottomChromeSurfaceBrush"
+        Color="#FF000000"/>
+
       <!--
         KWin supplies the blur.
         DaisyOS supplies a stable neutral dark tint.
@@ -379,7 +386,7 @@
         retaining enough contrast for small active glyphs.
       -->
 
-      <Color x:Key="AppPrimaryColor">#C9CAD0</Color>
+      <Color x:Key="AppPrimaryColor">#797979</Color>
 
       <SolidColorBrush
         x:Key="AppPrimaryBrush"

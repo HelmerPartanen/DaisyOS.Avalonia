@@ -51,6 +51,29 @@ public sealed class WallpaperColorExtractorTests : IDisposable
         Assert.True(cachedStopwatch.ElapsedMilliseconds < 20, $"Cached seed lookup took {cachedStopwatch.ElapsedMilliseconds}ms, expected < 20ms");
     }
 
+    [Fact]
+    public async Task ExtractSeedAsync_DarkGreenWallpaperRetainsItsHue()
+    {
+        var darkForestPath = Path.Combine(Path.GetTempPath(), $"test_dark_forest_{Guid.NewGuid()}.png");
+        try
+        {
+            Create6KTestBitmap(darkForestPath, 1024, 768, new SKColor(18, 49, 31));
+
+            var palette = await new WallpaperColorExtractor().ExtractPaletteAsync(darkForestPath);
+
+            Assert.False(palette.IsGrayscale);
+            Assert.True(palette.PrimarySeed.G > palette.PrimarySeed.R);
+            Assert.True(palette.PrimarySeed.G > palette.PrimarySeed.B);
+        }
+        finally
+        {
+            if (File.Exists(darkForestPath))
+            {
+                try { File.Delete(darkForestPath); } catch { }
+            }
+        }
+    }
+
     private static void Create6KTestBitmap(string path, int width, int height, SKColor color)
     {
         using var bitmap = new SKBitmap(width, height);

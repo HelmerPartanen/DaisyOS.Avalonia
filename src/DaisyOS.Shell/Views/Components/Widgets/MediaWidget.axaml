@@ -15,11 +15,9 @@
   </UserControl.Styles>
   <Border x:Name="MediaFrame"
           Height="52"
-          Classes="DiagonalShellBorder"
-          Background="{DynamicResource ShellSurfaceBrush}"
+          Background="{DynamicResource BottomChromeSurfaceBrush}"
           CornerRadius="12"
-          ClipToBounds="True"
-          BoxShadow="0 8 32 0 #60000000">
+          ClipToBounds="True">
     <Grid>
       <!-- The adaptive artwork color sits above the shared System Bar material. -->
       <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False"/>

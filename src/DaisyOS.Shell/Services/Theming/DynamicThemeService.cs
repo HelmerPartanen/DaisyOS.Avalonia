@@ -7,16 +7,17 @@ using DaisyOS.Shell.Services.Wallpaper;
 
 namespace DaisyOS.Shell.Services.Theming;
 
-/// <summary>Applies wallpaper-aware desktop-label contrast; OSTheme owns all shell colours.</summary>
+/// <summary>Applies wallpaper-derived accent roles while keeping shell surface materials stable.</summary>
 public sealed class DynamicThemeService
 {
     private readonly IWallpaperColorExtractor _extractor;
+    private readonly IDynamicSchemeGenerator _generator;
     private CancellationTokenSource? _refreshCancellation;
 
     public DynamicThemeService(IWallpaperColorExtractor extractor, IDynamicSchemeGenerator generator)
     {
         _extractor = extractor;
-        _ = generator; // Kept for constructor compatibility while wallpaper accents are disabled.
+        _generator = generator;
     }
 
     public async Task RefreshFromWallpaperAsync(string wallpaperUri, ThemeVariant theme, CancellationToken cancellationToken = default)
@@ -28,7 +29,8 @@ public sealed class DynamicThemeService
         var token = _refreshCancellation.Token;
         var palette = await _extractor.ExtractPaletteAsync(wallpaperUri, token).ConfigureAwait(false);
         var desktopLabelColor = WallpaperLabelContrast.ForWallpaper(palette.PrimarySeed);
-        await ApplySchemeAsync(default, desktopLabelColor, palette, token).ConfigureAwait(false);
+        var scheme = _generator.Generate(palette.PrimarySeed, theme == ThemeVariant.Dark, palette.IsGrayscale);
+        await ApplySchemeAsync(scheme, desktopLabelColor, palette, token).ConfigureAwait(false);
     }
 
     public Task ApplySchemeAsync(
@@ -51,9 +53,29 @@ public sealed class DynamicThemeService
     internal static void Apply(IResourceDictionary resources, DynamicColorScheme? scheme, Color desktopLabelColor, WallpaperPalette palette)
     {
         Set(resources, "DesktopItemLabelBrush", desktopLabelColor);
+
+        if (scheme is null)
+        {
+            return;
+        }
+
+        resources["AppPrimaryColor"] = scheme.Primary;
+        Set(resources, "AppPrimaryBrush", scheme.Primary);
+        Set(resources, "AppOnPrimaryBrush", scheme.OnPrimary);
+        Set(resources, "AppPrimaryContainerBrush", scheme.PrimaryContainer);
+        Set(resources, "AppPrimaryContainerHoverBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.08));
+        Set(resources, "AppPrimaryContainerPressedBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.16));
+        Set(resources, "AppOnPrimaryContainerBrush", scheme.OnPrimaryContainer);
     }
 
     private static void Set(IResourceDictionary resources, string key, Color color) =>
         resources[key] = new SolidColorBrush(color);
+
+    private static Color Blend(Color from, Color to, double amount) =>
+        Color.FromArgb(
+            (byte)Math.Round(from.A + ((to.A - from.A) * amount)),
+            (byte)Math.Round(from.R + ((to.R - from.R) * amount)),
+            (byte)Math.Round(from.G + ((to.G - from.G) * amount)),
+            (byte)Math.Round(from.B + ((to.B - from.B) * amount)));
 
 }

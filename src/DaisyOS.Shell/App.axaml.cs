@@ -8,6 +8,7 @@ using DaisyOS.Core.Models;
 using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.Services;
 using DaisyOS.Shell.Services.Compositor;
+using DaisyOS.Shell.Services.Theming;
 using DaisyOS.Shell.Apps.System.Settings;
 using DaisyOS.Shell.Views;
 using System;
@@ -22,12 +23,14 @@ public partial class App : Application
 {
     private const int DefaultKWinBlurStrength = 8;
     private IWallpaperService? _wallpaperService;
+    private readonly DynamicThemeService _dynamicThemeService = new(
+        new WallpaperColorExtractor(),
+        new MaterialDynamicSchemeGenerator());
     private SettingsWindow? _settingsWindow;
     private NotesWindow? _notesWindow;
     private CalculatorWindow? _calculatorWindow;
     private FilesWindow? _filesWindow;
     private LauncherWindow? _launcherWindow;
-    private BottomChromeWindow? _bottomChromeWindow;
     private TopEdgeWindow? _topEdgeWindow;
     private QuickSettingsWindow? _quickSettingsWindow;
 
@@ -46,11 +49,12 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow();
-            desktop.MainWindow.Opened += async (_, _) =>
+            var mainWindow = new MainWindow();
+            desktop.MainWindow = mainWindow;
+            mainWindow.Opened += async (_, _) =>
             {
-                ShowBottomChrome(desktop.MainWindow);
-                ShowTopEdgeChrome(desktop.MainWindow);
+                ConfigureBottomChrome(mainWindow.ShellContent);
+                ShowTopEdgeChrome(mainWindow);
 
                 // This is a compositor-level setting shared by all KWin blur
                 // regions. Do not delay first paint while KWin updates it.
@@ -61,10 +65,12 @@ public partial class App : Application
             {
                 var wallpaperPath = ShellSettings.DefaultWallpaperUri;
                 _wallpaperService = new WallpaperService(wallpaperPath);
-                _wallpaperService.WallpaperChanged += (_, changedWallpaperUri) =>
+                _wallpaperService.WallpaperChanged += async (_, changedWallpaperUri) =>
                 {
                     WallpaperChanged?.Invoke(this, changedWallpaperUri);
+                    await RefreshWallpaperAccentAsync(changedWallpaperUri, ActualThemeVariant);
                 };
+                _ = RefreshWallpaperAccentAsync(wallpaperPath, ActualThemeVariant);
             }
             catch (Exception ex)
             {
@@ -75,11 +81,31 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    /// <summary>Applies the requested appearance without deriving surface materials from the wallpaper.</summary>
+    /// <summary>Applies the requested appearance and regenerates its wallpaper-derived accent roles.</summary>
     public async Task SetShellThemeAsync(ThemeVariant theme)
     {
         RequestedThemeVariant = theme;
-        await Task.CompletedTask;
+        if (_wallpaperService is not null)
+        {
+            await RefreshWallpaperAccentAsync(_wallpaperService.CurrentWallpaperUri, theme);
+        }
+    }
+
+    private async Task RefreshWallpaperAccentAsync(string wallpaperUri, ThemeVariant theme)
+    {
+        try
+        {
+            await _dynamicThemeService.RefreshFromWallpaperAsync(wallpaperUri, theme);
+        }
+        catch (OperationCanceledException)
+        {
+            // A newer wallpaper or theme refresh superseded this one.
+        }
+        catch (Exception ex)
+        {
+            // Accent extraction is cosmetic; retain the last known safe palette on failure.
+            Console.WriteLine($"Failed to refresh wallpaper accent: {ex.Message}");
+        }
     }
 
     /// <summary>Shows or hides the launcher as its own native KWin-blurred surface.</summary>
@@ -136,26 +162,14 @@ public partial class App : Application
         }
     }
 
-    private void ShowBottomChrome(Window mainWindow)
+    private void ConfigureBottomChrome(ShellView shell)
     {
-        if (_bottomChromeWindow is { IsVisible: true })
-        {
-            return;
-        }
-
-        if (_bottomChromeWindow is null)
-        {
-            _bottomChromeWindow = new BottomChromeWindow();
-            _bottomChromeWindow.Taskbar.ApplyOrder(SessionState.DockOrder);
-            _bottomChromeWindow.Taskbar.OrderChanged += (_, order) => SessionState.SetDockOrder(order);
-            _bottomChromeWindow.Taskbar.StartButtonClicked += (_, _) => ToggleLauncher();
-            _bottomChromeWindow.Taskbar.AppIconClicked += (_, appId) => LaunchTaskbarApp(appId);
-            _bottomChromeWindow.SystemBar.QuickSettingsRequested += (_, _) => ToggleQuickSettings();
-            LauncherVisibilityChanged += (_, isVisible) => _bottomChromeWindow?.Taskbar.SetLauncherOpen(isVisible);
-        }
-
-        _bottomChromeWindow.PositionAtBottomOf(mainWindow);
-        _bottomChromeWindow.Show(mainWindow);
+        shell.Taskbar.ApplyOrder(SessionState.DockOrder);
+        shell.Taskbar.OrderChanged += (_, order) => SessionState.SetDockOrder(order);
+        shell.Taskbar.StartButtonClicked += (_, _) => ToggleLauncher();
+        shell.Taskbar.AppIconClicked += (_, appId) => LaunchTaskbarApp(appId);
+        shell.SystemBar.QuickSettingsRequested += (_, _) => ToggleQuickSettings();
+        LauncherVisibilityChanged += (_, isVisible) => shell.Taskbar.SetLauncherOpen(isVisible);
     }
 
     public Task PlayTopEdgeMetaballAsync() => _topEdgeWindow?.PlayVolumePanelAsync() ?? Task.CompletedTask;

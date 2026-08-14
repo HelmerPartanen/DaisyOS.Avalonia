@@ -45,7 +45,7 @@ public sealed class DynamicThemeServiceTests
     }
 
     [Fact]
-    public void ApplyDoesNotChangeTheOsThemeAccent()
+    public void ApplyUpdatesTheOsThemeAccentWithoutReplacingSurfaceMaterial()
     {
         var resources = new ResourceDictionary();
         var systemBarMaterial = new SolidColorBrush(Color.Parse("#D9F4F5F7"));
@@ -59,11 +59,13 @@ public sealed class DynamicThemeServiceTests
         DynamicThemeService.Apply(resources, scheme, Colors.Black, new DaisyOS.Shell.Services.Wallpaper.WallpaperPalette(seedColor, seedColor));
 
         Assert.Same(systemBarMaterial, resources["SystemBarMaterialBrush"]);
-        Assert.Same(primaryAccent, resources["AppPrimaryBrush"]);
+        Assert.NotSame(primaryAccent, resources["AppPrimaryBrush"]);
+        Assert.Equal(scheme.Primary, Assert.IsType<SolidColorBrush>(resources["AppPrimaryBrush"]).Color);
+        Assert.Equal(scheme.OnPrimary, Assert.IsType<SolidColorBrush>(resources["AppOnPrimaryBrush"]).Color);
     }
 
     [Fact]
-    public void ApplyDoesNotCreateSurfaceMaterialResources()
+    public void ApplyCreatesAccentRolesButNotSurfaceMaterialResources()
     {
         var resources = new ResourceDictionary();
         var scheme = new MaterialDynamicSchemeGenerator().Generate(Color.Parse("#6750A4"), isDark: true);
@@ -74,6 +76,7 @@ public sealed class DynamicThemeServiceTests
         Assert.False(resources.ContainsKey("AppSurfaceBrush"));
         Assert.False(resources.ContainsKey("LauncherMaterialBrush"));
         Assert.False(resources.ContainsKey("SystemBarMaterialBrush"));
-        Assert.False(resources.ContainsKey("AppPrimaryBrush"));
+        Assert.True(resources.ContainsKey("AppPrimaryBrush"));
+        Assert.True(resources.ContainsKey("AppPrimaryContainerBrush"));
     }
 }

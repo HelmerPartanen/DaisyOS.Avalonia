@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using DaisyOS.Shell.Views.Components.SystemBar;
+using DaisyOS.Shell.Views.Components.Taskbar;
 
 namespace DaisyOS.Shell.Views
 {
@@ -23,6 +25,9 @@ namespace DaisyOS.Shell.Views
                 if (this.FindControl<Control>("FeedbackHost") is { } host) host.IsVisible = false;
             };
         }
+
+        public TaskbarView Taskbar => TaskbarContent;
+        public SystemBarView SystemBar => SystemBarContent;
 
         private void OnFeedbackMessageShown(object? sender, string message)
         {

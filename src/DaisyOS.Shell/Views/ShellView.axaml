@@ -3,9 +3,23 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:desktop="clr-namespace:DaisyOS.Shell.Views.Components.Desktop"
+    xmlns:widgets="clr-namespace:DaisyOS.Shell.Views.Components.Widgets"
+    xmlns:taskbar="clr-namespace:DaisyOS.Shell.Views.Components.Taskbar"
+    xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
         <desktop:DesktopView x:Name="Desktop" />
+
+        <!-- In-window bottom chrome: no native surface or compositor blur region. -->
+        <widgets:MediaWidget x:Name="MediaWidgetContent"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Bottom" />
+        <taskbar:TaskbarView x:Name="TaskbarContent"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Bottom" />
+        <systembar:SystemBarView x:Name="SystemBarContent"
+                                 HorizontalAlignment="Right"
+                                 VerticalAlignment="Bottom" />
 
         <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
                 HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"
