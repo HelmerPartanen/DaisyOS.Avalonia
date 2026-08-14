@@ -25,7 +25,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private const double ItemWidth = 40;
         private const double Spacing = 4;
         private const double DragThreshold = 4; // px of movement before a press becomes a drag
-        private const double BottomEdgeFlare = 18;
+        private const double BottomEdgeFlare = 16;
 
         private Canvas? _canvas;
         private Button? _startButton;
