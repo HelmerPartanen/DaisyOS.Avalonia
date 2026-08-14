@@ -8,6 +8,7 @@
       <Setter Property="Width" Value="96"/>
       <Setter Property="Height" Value="56"/>
       <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -17,6 +18,7 @@
       <Setter Property="Width" Value="68"/>
       <Setter Property="Height" Value="56"/>
       <Setter Property="CornerRadius" Value="10,0,0,10"/>
+      <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="HorizontalContentAlignment" Value="Center"/>
       <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -55,51 +57,54 @@
 
   <StackPanel Spacing="6" Width="96" HorizontalAlignment="Center">
     <!-- Single Action Tile -->
-    <ToggleButton x:Name="SingleToggle"
-                  Classes="ShellButton QuickActionSingle QuickSetting"
-                  Classes.Active="{Binding IsChecked, ElementName=Root}"
-                  IsVisible="{Binding !HasDetails, ElementName=Root}"
-                  IsChecked="{Binding IsChecked, ElementName=Root, Mode=TwoWay}"
-                  ToolTip.Tip="{Binding ToolTipText, ElementName=Root}"
-                  Click="OnSingleToggleClick">
-      <TextBlock Classes="QuickSettingIcon"
-                 Text="{Binding Icon, ElementName=Root}"
-                 FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                 FontSize="18"/>
-    </ToggleButton>
-
-    <!-- Split Tile (Action + Divider + Details Chevron) -->
-    <Grid IsVisible="{Binding HasDetails, ElementName=Root}" Height="56" Width="96" ColumnDefinitions="68,1,27">
-      <ToggleButton x:Name="SplitToggle"
-                    Grid.Column="0"
-                    Classes="ShellButton QuickActionSplit QuickSetting"
+    <Grid IsVisible="{Binding !HasDetails, ElementName=Root}" Width="96" Height="56">
+      <ToggleButton x:Name="SingleToggle"
+                    Classes="ShellButton QuickActionSingle QuickSetting"
                     Classes.Active="{Binding IsChecked, ElementName=Root}"
                     IsChecked="{Binding IsChecked, ElementName=Root, Mode=TwoWay}"
                     ToolTip.Tip="{Binding ToolTipText, ElementName=Root}"
-                    Click="OnSplitToggleClick">
+                    Click="OnSingleToggleClick">
         <TextBlock Classes="QuickSettingIcon"
                    Text="{Binding Icon, ElementName=Root}"
                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                    FontSize="18"/>
       </ToggleButton>
+      <Border CornerRadius="10" BorderBrush="{DynamicResource ShellDiagonalBorderBrush}" BorderThickness="1" IsHitTestVisible="False"/>
+    </Grid>
 
-      <Border x:Name="SplitDivider"
-              Grid.Column="1"
-              Classes="QuickSettingSplitDivider"
-              Classes.Active="{Binding IsChecked, ElementName=Root}"
-              IsHitTestVisible="False"/>
+    <!-- Split Tile (Action + Divider + Details Chevron) -->
+    <Grid IsVisible="{Binding HasDetails, ElementName=Root}" Height="56" Width="96" ColumnDefinitions="68,1,27">
+        <ToggleButton x:Name="SplitToggle"
+                      Grid.Column="0"
+                      Classes="ShellButton QuickActionSplit QuickSetting"
+                      Classes.Active="{Binding IsChecked, ElementName=Root}"
+                      IsChecked="{Binding IsChecked, ElementName=Root, Mode=TwoWay}"
+                      ToolTip.Tip="{Binding ToolTipText, ElementName=Root}"
+                      Click="OnSplitToggleClick">
+          <TextBlock Classes="QuickSettingIcon"
+                     Text="{Binding Icon, ElementName=Root}"
+                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                     FontSize="18"/>
+        </ToggleButton>
 
-      <Button x:Name="DetailsButton"
-              Grid.Column="2"
-              Classes="ShellButton QuickSettingDetails"
-              Classes.Active="{Binding IsChecked, ElementName=Root}"
-              Click="OnDetailsButtonClick"
-              ToolTip.Tip="{Binding DetailsToolTipText, ElementName=Root}">
-        <TextBlock Classes="QuickSettingIcon"
-                   Text="chevron_right"
-                   FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                   FontSize="18"/>
-      </Button>
+        <Border x:Name="SplitDivider"
+                Grid.Column="1"
+                Classes="QuickSettingSplitDivider"
+                Classes.Active="{Binding IsChecked, ElementName=Root}"
+                IsHitTestVisible="False"/>
+
+        <Button x:Name="DetailsButton"
+                Grid.Column="2"
+                Classes="ShellButton QuickSettingDetails"
+                Classes.Active="{Binding IsChecked, ElementName=Root}"
+                Click="OnDetailsButtonClick"
+                ToolTip.Tip="{Binding DetailsToolTipText, ElementName=Root}">
+          <TextBlock Classes="QuickSettingIcon"
+                     Text="chevron_right"
+                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                     FontSize="18"/>
+        </Button>
+      <Border Grid.ColumnSpan="3" CornerRadius="10" BorderBrush="{DynamicResource ShellDiagonalBorderBrush}" BorderThickness="1" IsHitTestVisible="False"/>
     </Grid>
 
     <!-- Subtitle Label -->

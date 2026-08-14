@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DaisyOS.Core.Models;
+using DaisyOS.Shell.Services;
 using DaisyOS.System.Processes;
 
 namespace DaisyOS.Shell.ViewModels;
@@ -49,19 +50,31 @@ public class LauncherViewModel : INotifyPropertyChanged
     };
 
     private readonly LinuxAppLauncherService _launcherService;
+    private readonly ShellSessionState _sessionState;
     private LauncherAllAppsViewMode _selectedViewMode = LauncherAllAppsViewMode.Alphabetical;
+    private string _searchText = string.Empty;
     
     private List<AppGroupViewModel>? _alphabeticalGroupsCache;
     private List<AppGroupViewModel>? _categoryGroupsCache;
 
-    public string Username { get; }
-    public string UserInitials { get; }
-    public ObservableCollection<LauncherItemViewModel> PinnedApps { get; } = new();
+    public ObservableCollection<LauncherItemViewModel> MostUsedApps { get; } = new();
     public ObservableCollection<LauncherItemViewModel> AllApps { get; } = new();
     public ObservableCollection<AppGroupViewModel> ActiveGroups { get; } = new();
 
     public bool IsAlphabeticalMode => _selectedViewMode == LauncherAllAppsViewMode.Alphabetical;
     public bool IsCategoryMode => _selectedViewMode == LauncherAllAppsViewMode.ByCategory;
+    public bool HasSearchQuery => !string.IsNullOrWhiteSpace(SearchText);
+    public bool ShowNoResults => HasSearchQuery && ActiveGroups.Count == 0;
+    public bool HasMostUsedApps => MostUsedApps.Count > 0;
+    public bool ShowMostUsedPlaceholder => !HasMostUsedApps;
+
+    public string LibraryTitle => HasSearchQuery
+        ? "Search results"
+        : IsCategoryMode ? "Browse by category" : "All applications";
+
+    public string LibrarySubtitle => HasSearchQuery
+        ? $"Matches for \u201c{SearchText.Trim()}\u201d"
+        : "Everything installed on this device";
 
     public string SelectedViewModeText => _selectedViewMode == LauncherAllAppsViewMode.Alphabetical 
         ? "View: Alphabetical" 
@@ -79,23 +92,38 @@ public class LauncherViewModel : INotifyPropertyChanged
                 OnPropertyChanged(nameof(SelectedViewModeText));
                 OnPropertyChanged(nameof(IsAlphabeticalMode));
                 OnPropertyChanged(nameof(IsCategoryMode));
+                OnPropertyChanged(nameof(LibraryTitle));
+                OnPropertyChanged(nameof(LibrarySubtitle));
                 UpdateActiveGroups();
             }
         }
     }
 
-    public LauncherViewModel()
+    public string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            var normalized = value ?? string.Empty;
+            if (string.Equals(_searchText, normalized, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            _searchText = normalized;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HasSearchQuery));
+            OnPropertyChanged(nameof(ShowNoResults));
+            OnPropertyChanged(nameof(LibraryTitle));
+            OnPropertyChanged(nameof(LibrarySubtitle));
+            UpdateActiveGroups();
+        }
+    }
+
+    public LauncherViewModel(ShellSessionState? sessionState = null)
     {
         _launcherService = new LinuxAppLauncherService();
-
-        var rawUser = Environment.UserName;
-        if (string.IsNullOrWhiteSpace(rawUser))
-        {
-            rawUser = Environment.GetEnvironmentVariable("USER") ?? "User";
-        }
-
-        Username = FormatUsername(rawUser);
-        UserInitials = GetInitials(Username);
+        _sessionState = sessionState ?? new ShellSessionState();
 
         _ = LoadApplicationsAsync();
     }
@@ -138,20 +166,7 @@ public class LauncherViewModel : INotifyPropertyChanged
             AllApps.Add(new LauncherItemViewModel(app, iconBitmap));
         }
 
-        var pinnedList = AllApps
-            .Where(item => item.IconBitmap != null)
-            .Take(12)
-            .ToList();
-
-        if (pinnedList.Count < 6)
-        {
-            pinnedList = AllApps.Take(12).ToList();
-        }
-
-        foreach (var item in pinnedList)
-        {
-            PinnedApps.Add(item);
-        }
+        RefreshMostUsedApps();
 
         // Build group caches once upon loading
         _alphabeticalGroupsCache = AllApps
@@ -181,9 +196,28 @@ public class LauncherViewModel : INotifyPropertyChanged
         {
             foreach (var group in sourceCache)
             {
-                ActiveGroups.Add(group);
+                var items = group.Items.Where(MatchesSearch).ToList();
+                if (items.Count > 0)
+                {
+                    ActiveGroups.Add(new AppGroupViewModel(group.Header, items));
+                }
             }
         }
+
+        OnPropertyChanged(nameof(ShowNoResults));
+    }
+
+    private bool MatchesSearch(LauncherItemViewModel item)
+    {
+        if (!HasSearchQuery)
+        {
+            return true;
+        }
+
+        var query = SearchText.Trim();
+        return item.Name.Contains(query, StringComparison.CurrentCultureIgnoreCase)
+            || item.Description.Contains(query, StringComparison.CurrentCultureIgnoreCase)
+            || item.App.Categories?.Any(category => category.Contains(query, StringComparison.CurrentCultureIgnoreCase)) == true;
     }
 
     public async Task<AppLaunchResult?> LaunchAppAsync(LauncherItemViewModel? item)
@@ -198,6 +232,29 @@ public class LauncherViewModel : INotifyPropertyChanged
             Debug.WriteLine($"Failed to launch app {item.Name}: {ex.Message}");
             return new AppLaunchResult(false, $"{item.Name} could not be opened.");
         }
+    }
+
+    public void RecordSuccessfulLaunch(LauncherItemViewModel item)
+    {
+        _sessionState.RecordApplicationLaunch(item.App.Id);
+        RefreshMostUsedApps();
+    }
+
+    private void RefreshMostUsedApps()
+    {
+        MostUsedApps.Clear();
+        var appsById = AllApps.ToDictionary(item => item.App.Id, StringComparer.Ordinal);
+
+        foreach (var applicationId in _sessionState.GetMostUsedApplicationIds(10))
+        {
+            if (appsById.TryGetValue(applicationId, out var item))
+            {
+                MostUsedApps.Add(item);
+            }
+        }
+
+        OnPropertyChanged(nameof(HasMostUsedApps));
+        OnPropertyChanged(nameof(ShowMostUsedPlaceholder));
     }
 
     private static string GetGroupLetter(string name)
@@ -240,23 +297,6 @@ public class LauncherViewModel : INotifyPropertyChanged
         "Utilities & Tools" => 8,
         _ => 9
     };
-
-    private static string FormatUsername(string user)
-    {
-        if (string.IsNullOrWhiteSpace(user)) return "User";
-        return char.ToUpperInvariant(user[0]) + user[1..];
-    }
-
-    private static string GetInitials(string name)
-    {
-        if (string.IsNullOrWhiteSpace(name)) return "U";
-        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length >= 2)
-        {
-            return $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[1][0])}";
-        }
-        return name.Length >= 2 ? name[..2].ToUpperInvariant() : name[..1].ToUpperInvariant();
-    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

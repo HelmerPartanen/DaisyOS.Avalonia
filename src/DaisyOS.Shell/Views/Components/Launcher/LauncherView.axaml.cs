@@ -19,7 +19,7 @@ public partial class LauncherView : UserControl
         InitializeComponent();
         Focusable = true;
         AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
-        ViewModel = new LauncherViewModel();
+        ViewModel = new LauncherViewModel((Application.Current as App)?.SessionState);
         DataContext = ViewModel;
     }
 
@@ -30,7 +30,14 @@ public partial class LauncherView : UserControl
             // Launcher activation dismisses immediately, matching established desktop launchers.
             AppLaunchRequested?.Invoke(this, EventArgs.Empty);
             var result = await ViewModel.LaunchAppAsync(item);
-            if (result is { Succeeded: false }) (Application.Current as App)?.Feedback.Show(result.Message);
+            if (result is { Succeeded: true })
+            {
+                ViewModel.RecordSuccessfulLaunch(item);
+            }
+            else if (result is { Succeeded: false })
+            {
+                (Application.Current as App)?.Feedback.Show(result.Message);
+            }
         }
     }
 

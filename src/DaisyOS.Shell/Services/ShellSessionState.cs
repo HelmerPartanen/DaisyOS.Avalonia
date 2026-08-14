@@ -33,6 +33,47 @@ public sealed class ShellSessionState
 
     public void SetDockOrder(IEnumerable<string> order) => Update(s => s.DockOrder = order.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList());
 
+    /// <summary>Returns application ids ordered by real launch frequency, then most recent use.</summary>
+    public IReadOnlyList<string> GetMostUsedApplicationIds(int maximumCount)
+    {
+        if (maximumCount <= 0)
+        {
+            return [];
+        }
+
+        lock (_sync)
+        {
+            return _state.ApplicationUsage
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.Key) && entry.Value.LaunchCount > 0)
+                .OrderByDescending(entry => entry.Value.LaunchCount)
+                .ThenByDescending(entry => entry.Value.LastLaunchedUtc)
+                .Take(maximumCount)
+                .Select(entry => entry.Key)
+                .ToArray();
+        }
+    }
+
+    /// <summary>Records a launch only after the system launcher accepted it.</summary>
+    public void RecordApplicationLaunch(string applicationId)
+    {
+        if (string.IsNullOrWhiteSpace(applicationId))
+        {
+            return;
+        }
+
+        Update(state =>
+        {
+            if (!state.ApplicationUsage.TryGetValue(applicationId, out var usage))
+            {
+                usage = new ApplicationUsageState();
+                state.ApplicationUsage[applicationId] = usage;
+            }
+
+            usage.LaunchCount++;
+            usage.LastLaunchedUtc = DateTimeOffset.UtcNow;
+        });
+    }
+
     private void Update(Action<PersistedShellState> update)
     {
         lock (_sync)
@@ -90,5 +131,12 @@ public sealed class ShellSessionState
         public bool ShowDateInSystemBar { get; set; }
         public double? LastKnownVolume { get; set; }
         public List<string> DockOrder { get; set; } = [];
+        public Dictionary<string, ApplicationUsageState> ApplicationUsage { get; set; } = new(StringComparer.Ordinal);
+    }
+
+    private sealed class ApplicationUsageState
+    {
+        public int LaunchCount { get; set; }
+        public DateTimeOffset LastLaunchedUtc { get; set; }
     }
 }

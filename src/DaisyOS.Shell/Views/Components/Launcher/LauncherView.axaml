@@ -4,257 +4,205 @@
              xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
              x:Class="DaisyOS.Shell.Views.Components.Launcher.LauncherView"
              x:DataType="vm:LauncherViewModel"
-             Width="680" Height="640">
-  
-  
+             Width="740" Height="620">
+
   <Border Classes="DiagonalShellBorder"
           Background="{DynamicResource LauncherMaterialBrush}"
-          CornerRadius="12"
+          CornerRadius="14"
           ClipToBounds="True"
           BoxShadow="0 16 48 0 #60000000">
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid RowDefinitions="Auto,*">
       <Grid.Styles>
-        <!-- Spacious Square Pinned App Item Style (6 Columns) -->
-        <Style Selector="Button.LauncherApp">
+        <Style Selector="Button.LauncherUtility">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="8"/>
-          <Setter Property="Padding" Value="6"/>
-          <Setter Property="Width" Value="88"/>
-          <Setter Property="Height" Value="88"/>
-          <Setter Property="Margin" Value="4"/>
-          <Setter Property="HorizontalContentAlignment" Value="Center"/>
-          <Setter Property="VerticalContentAlignment" Value="Center"/>
+          <Setter Property="CornerRadius" Value="9"/>
+          <Setter Property="Padding" Value="8"/>
         </Style>
-        <Style Selector="Button.LauncherApp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Style Selector="Button.LauncherUtility:pointerover /template/ ContentPresenter#PART_ContentPresenter">
           <Setter Property="Background" Value="{DynamicResource LauncherItemHoverBrush}"/>
         </Style>
-        <Style Selector="Button.LauncherApp:pressed /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource LauncherItemPressedBrush}"/>
-        </Style>
 
-        <!-- 2-Column Precise Bounded App Card Style (308px exact width fit) -->
-        <Style Selector="Button.RecItem">
+        <Style Selector="ToggleButton.LauncherNav">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="8"/>
+          <Setter Property="CornerRadius" Value="9"/>
           <Setter Property="Padding" Value="10,8"/>
-          <Setter Property="Width" Value="308"/>
-          <Setter Property="Margin" Value="0,2,8,2"/>
+          <Setter Property="Width" Value="168"/>
           <Setter Property="HorizontalAlignment" Value="Left"/>
           <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
-        <Style Selector="Button.RecItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Style Selector="ToggleButton.LauncherNav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
           <Setter Property="Background" Value="{DynamicResource LauncherItemHoverBrush}"/>
         </Style>
-        <Style Selector="Button.RecItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Style Selector="ToggleButton.LauncherNav:checked /template/ ContentPresenter#PART_ContentPresenter">
+          <Setter Property="Background" Value="{DynamicResource AppPrimaryBrush}"/>
+        </Style>
+
+        <Style Selector="Button.LauncherFavorite">
+          <Setter Property="Background" Value="Transparent"/>
+          <Setter Property="BorderThickness" Value="0"/>
+          <Setter Property="CornerRadius" Value="9"/>
+          <Setter Property="Padding" Value="8,7"/>
+          <Setter Property="Width" Value="168"/>
+          <Setter Property="HorizontalAlignment" Value="Left"/>
+          <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="Button.LauncherFavorite:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.LauncherLibraryItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+          <Setter Property="Background" Value="{DynamicResource LauncherItemHoverBrush}"/>
+        </Style>
+        <Style Selector="Button.LauncherFavorite:pressed /template/ ContentPresenter#PART_ContentPresenter, Button.LauncherLibraryItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
           <Setter Property="Background" Value="{DynamicResource LauncherItemPressedBrush}"/>
         </Style>
 
-        <!-- Subtle Header Links & Menu Placeholders -->
-        <Style Selector="Button.SubtleLink">
+        <Style Selector="Button.LauncherLibraryItem">
           <Setter Property="Background" Value="Transparent"/>
           <Setter Property="BorderThickness" Value="0"/>
-          <Setter Property="CornerRadius" Value="8"/>
-          <Setter Property="Padding" Value="6,4"/>
-          <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
-        </Style>
-        <Style Selector="Button.SubtleLink:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource LauncherItemHoverBrush}"/>
+          <Setter Property="CornerRadius" Value="10"/>
+          <Setter Property="Width" Value="232"/>
+          <Setter Property="HorizontalAlignment" Value="Left"/>
+          <Setter Property="Padding" Value="10"/>
+          <Setter Property="Margin" Value="0,0,8,8"/>
+          <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
       </Grid.Styles>
-      
-      <!-- Top Search Bar Area -->
-      <Border Grid.Row="0" Padding="24,16,24,12">
-        <controls:SearchBar x:Name="LauncherSearchBar" Height="44" CornerRadius="20" PlaceholderText="Search for apps, settings, and documents" />
+
+      <Border Grid.Row="0" Padding="22,12" BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="0,0,0,1">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <controls:SearchBar x:Name="LauncherSearchBar"
+                                Height="40"
+                                CornerRadius="8"
+                                Text="{Binding SearchText, Mode=TwoWay}"
+                                PlaceholderText="Search apps" />
+            <Button Grid.Column="1" Classes="LauncherUtility" Width="40" Height="40" Padding="0" ToolTip.Tip="Power">
+              <TextBlock Text="power_settings_new"
+                         FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                         FontSize="20" Foreground="{DynamicResource TextPrimaryBrush}"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              <Button.Flyout>
+                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                  <MenuItem Header="Sleep" Click="OnSuspendClicked"/>
+                  <MenuItem Header="Restart" Click="OnRestartClicked"/>
+                  <MenuItem Header="Shut down" Click="OnShutdownClicked"/>
+                </MenuFlyout>
+              </Button.Flyout>
+            </Button>
+          </Grid>
       </Border>
-      
-      <!-- Scrollable Main Content (Strict 632px Content Boundary) -->
-      <ScrollViewer Grid.Row="1" Padding="24,0,24,16" HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Width="632" HorizontalAlignment="Center" Spacing="24">
-          
-          <!-- Section 1: Pinned Apps -->
-          <StackPanel Spacing="12">
-            <controls:SectionHeader Title="Pinned" Width="632">
-              <controls:SectionHeader.ActionContent>
-                <Button Classes="SubtleLink">
-                  <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                    <TextBlock Text="Show all" FontSize="12" VerticalAlignment="Center"/>
-                    <TextBlock Text="expand_more" 
-                               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
-                               FontSize="18" 
-                               Foreground="{DynamicResource TextSecondaryBrush}" 
-                               VerticalAlignment="Center"/>
-                  </StackPanel>
-                </Button>
-              </controls:SectionHeader.ActionContent>
-            </controls:SectionHeader>
-            
-            <!-- 6 Column Grid of Spacious Pinned Items -->
-            <ItemsControl ItemsSource="{Binding PinnedApps}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <UniformGrid Columns="6" Width="632" HorizontalAlignment="Center"/>
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="vm:LauncherItemViewModel">
-                  <Button Classes="LauncherApp" Click="OnAppItemClick" ToolTip.Tip="{Binding Name}">
-                    <StackPanel Spacing="6" HorizontalAlignment="Center" VerticalAlignment="Center">
-                      <!-- Real Icon or Fallback Letter Badge -->
-                      <Panel Width="36" Height="36">
-                        <Image Source="{Binding IconBitmap}" 
-                               IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
-                               RenderOptions.BitmapInterpolationMode="HighQuality" 
-                               Width="36" Height="36"/>
-                        <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                                Background="{DynamicResource ShellSurfaceSubtleBrush}" CornerRadius="8" Width="36" Height="36">
-                          <TextBlock Text="{Binding Name[0]}" FontSize="16" FontWeight="Bold" 
-                                     Foreground="{DynamicResource TextPrimaryBrush}" 
-                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                      </Panel>
-                      <TextBlock Text="{Binding Name}" TextAlignment="Center" FontSize="11" TextTrimming="CharacterEllipsis" MaxWidth="76"/>
-                    </StackPanel>
-                  </Button>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </StackPanel>
 
-          <!-- Section 2: All Applications -->
-          <StackPanel Spacing="16" Width="632">
-            <controls:SectionHeader Title="All Apps" Width="632">
-              <controls:SectionHeader.ActionContent>
-                <Button Classes="SubtleLink">
-                  <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding SelectedViewModeText}" FontSize="12" VerticalAlignment="Center"/>
-                    <TextBlock Text="expand_more" 
-                               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
-                               FontSize="18" 
-                               Foreground="{DynamicResource TextSecondaryBrush}" 
-                               VerticalAlignment="Center"/>
-                  </StackPanel>
-                  <Button.Flyout>
-                    <MenuFlyout Placement="BottomEdgeAlignedRight">
-                      <MenuItem Click="OnSetViewAlphabetical">
-                        <MenuItem.Header>
-                          <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
-                            <TextBlock Grid.Column="0" Text="check" Classes="MenuIcon" IsVisible="{Binding IsAlphabeticalMode}"/>
-                            <TextBlock Grid.Column="1" Text="Alphabetical (A–Z)" FontSize="12" VerticalAlignment="Center"/>
-                          </Grid>
-                        </MenuItem.Header>
-                      </MenuItem>
-                      <MenuItem Click="OnSetViewCategory">
-                        <MenuItem.Header>
-                          <Grid ColumnDefinitions="18,*" ColumnSpacing="4" VerticalAlignment="Center">
-                            <TextBlock Grid.Column="0" Text="check" Classes="MenuIcon" IsVisible="{Binding IsCategoryMode}"/>
-                            <TextBlock Grid.Column="1" Text="By Category" FontSize="12" VerticalAlignment="Center"/>
-                          </Grid>
-                        </MenuItem.Header>
-                      </MenuItem>
-                    </MenuFlyout>
-                  </Button.Flyout>
-                </Button>
-              </controls:SectionHeader.ActionContent>
-            </controls:SectionHeader>
-
-            <!-- Grouped Applications (Alphabetical or By Category) -->
-            <ItemsControl ItemsSource="{Binding ActiveGroups}" Width="632">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="vm:AppGroupViewModel">
-                  <StackPanel Spacing="8" Margin="0,0,0,16" Width="632">
-                    <!-- Group Header with subtle line -->
-                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" Margin="0,0,0,4" Width="632">
-                      <TextBlock Grid.Column="0" Text="{Binding Header}" 
-                                 FontWeight="Bold" FontSize="13" 
-                                 Foreground="{DynamicResource TextPrimaryBrush}" 
-                                 VerticalAlignment="Center"/>
-                      <Border Grid.Column="1" Height="1" 
-                              Background="{DynamicResource TaskbarBorderBrush}" 
-                              VerticalAlignment="Center" Opacity="0.5"/>
-                    </Grid>
-
-                    <!-- 2-Column Exact Fit Item Grid (308px per item, fits in 632px with 0px overflow) -->
-                    <ItemsControl ItemsSource="{Binding Items}" Width="632">
-                      <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                          <UniformGrid Columns="2" Width="632"/>
-                        </ItemsPanelTemplate>
-                      </ItemsControl.ItemsPanel>
-                      <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="vm:LauncherItemViewModel">
-                          <Button Classes="RecItem" Click="OnAppItemClick" ToolTip.Tip="{Binding Description}">
-                            <Grid ColumnDefinitions="32,*" ColumnSpacing="12" Width="288" ClipToBounds="True">
-                              <!-- App Icon -->
-                              <Panel Grid.Column="0" Width="32" Height="32" VerticalAlignment="Center">
-                                <Image Source="{Binding IconBitmap}" 
-                                       IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                       RenderOptions.BitmapInterpolationMode="HighQuality" 
-                                       Width="32" Height="32"/>
-                                <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                                        Background="#2B0078D4" CornerRadius="8" Width="32" Height="32">
-                                  <TextBlock Text="{Binding Name[0]}" FontSize="14" FontWeight="Bold" 
-                                             Foreground="#0078D4" 
-                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                              </Panel>
-                              <!-- App Name & Description with strict 244px width clip -->
-                              <StackPanel Grid.Column="1" VerticalAlignment="Center" Width="244">
-                                <TextBlock Text="{Binding Name}" FontSize="12" FontWeight="Medium" TextTrimming="CharacterEllipsis" MaxWidth="244"/>
-                                <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis" MaxWidth="244"/>
-                              </StackPanel>
-                            </Grid>
-                          </Button>
-                        </DataTemplate>
-                      </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                  </StackPanel>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-          </StackPanel>
-
-        </StackPanel>
-      </ScrollViewer>
-
-      <!-- Footer Bar: Real Linux User Profile & Power Actions -->
-      <Border Grid.Row="2" Height="64" Padding="24,0" Background="{DynamicResource LauncherFooterBrush}" BorderBrush="{DynamicResource ShellSurfaceBorderBrush}" BorderThickness="0,1,0,0" CornerRadius="0,0,12,12">
-        <Grid ColumnDefinitions="*,Auto">
-          
-          <!-- Left: Active Linux User Profile -->
-          <Button Grid.Column="0" Classes="SubtleLink" HorizontalAlignment="Left" VerticalAlignment="Center">
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <Border Width="36" Height="36" CornerRadius="18" Background="#FF0078D4" ClipToBounds="True">
-                <!-- User Avatar Initials -->
-                <TextBlock Text="{Binding UserInitials}" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-              </Border>
-              <TextBlock Text="{Binding Username}" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+      <Grid Grid.Row="1" Margin="18,16,18,18" ColumnDefinitions="184,1,*">
+        <Grid Grid.Column="0" Margin="0,0,16,0">
+          <Grid RowDefinitions="Auto,Auto,1,Auto,*" RowSpacing="8">
+            <TextBlock Grid.Row="0" Text="Browse" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Margin="8,2,8,0"/>
+            <StackPanel Grid.Row="1" Spacing="2">
+              <ToggleButton Classes="LauncherNav" IsChecked="{Binding IsAlphabeticalMode, Mode=OneWay}" Click="OnSetViewAlphabetical">
+                <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
+                  <TextBlock Text="apps" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
+                  <TextBlock Grid.Column="1" Text="All apps" FontSize="12" FontWeight="Medium" VerticalAlignment="Center"/>
+                </Grid>
+              </ToggleButton>
+              <ToggleButton Classes="LauncherNav" IsChecked="{Binding IsCategoryMode, Mode=OneWay}" Click="OnSetViewCategory">
+                <Grid ColumnDefinitions="20,*" ColumnSpacing="8">
+                  <TextBlock Text="category" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center"/>
+                  <TextBlock Grid.Column="1" Text="Categories" FontSize="12" FontWeight="Medium" VerticalAlignment="Center"/>
+                </Grid>
+              </ToggleButton>
             </StackPanel>
-          </Button>
-
-          <!-- Right: Power Action Button -->
-          <Button Grid.Column="1" Classes="SubtleLink"
-                  Width="40" Height="40" CornerRadius="8" Padding="0"
-                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                  VerticalAlignment="Center" ToolTip.Tip="Power">
-            <TextBlock Text="power_settings_new"
-                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                       FontSize="20"
-                       Foreground="{DynamicResource TextPrimaryBrush}"/>
-            <Button.Flyout>
-              <MenuFlyout Placement="TopEdgeAlignedRight">
-                <MenuItem Header="Sleep" Click="OnSuspendClicked"/>
-                <MenuItem Header="Restart" Click="OnRestartClicked"/>
-                <MenuItem Header="Shut down" Click="OnShutdownClicked"/>
-              </MenuFlyout>
-            </Button.Flyout>
-          </Button>
-
+            <Border Grid.Row="2" Height="1" Background="{DynamicResource ShellSurfaceBorderBrush}" Margin="8,4"/>
+            <TextBlock Grid.Row="3" Text="Most used" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Margin="8,2,8,0"/>
+            <ScrollViewer Grid.Row="4" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="0,0,2,0">
+              <StackPanel Spacing="4">
+                <ItemsControl ItemsSource="{Binding MostUsedApps}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:LauncherItemViewModel">
+                      <Button Classes="LauncherFavorite" Click="OnAppItemClick" ToolTip.Tip="{Binding Description}">
+                        <Grid ColumnDefinitions="28,*" ColumnSpacing="9">
+                          <Panel Width="28" Height="28" VerticalAlignment="Center">
+                            <Image Source="{Binding IconBitmap}" IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                   RenderOptions.BitmapInterpolationMode="HighQuality" Width="28" Height="28"/>
+                            <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
+                                    Background="{DynamicResource ShellSurfaceElevatedBrush}" CornerRadius="7" Width="28" Height="28">
+                              <TextBlock Text="{Binding Name[0]}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                          </Panel>
+                          <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="12" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        </Grid>
+                      </Button>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock Text="Apps you open often appear here" IsVisible="{Binding ShowMostUsedPlaceholder}"
+                           FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="8,4"/>
+              </StackPanel>
+            </ScrollViewer>
+          </Grid>
         </Grid>
-      </Border>
 
+        <Rectangle Grid.Column="1" Fill="{DynamicResource ShellSurfaceBorderBrush}"/>
+
+        <Grid Grid.Column="2" Margin="16,0,0,0">
+          <Grid RowDefinitions="Auto,*">
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,8,12">
+              <StackPanel Spacing="2">
+                <TextBlock Text="{Binding LibraryTitle}" FontSize="15" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding LibrarySubtitle}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"/>
+              </StackPanel>
+              <TextBlock Grid.Column="1" Text="{Binding SelectedViewModeText}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center"/>
+            </Grid>
+
+            <Grid Grid.Row="1">
+              <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
+                <ItemsControl ItemsSource="{Binding ActiveGroups}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AppGroupViewModel">
+                      <StackPanel Spacing="8" Margin="0,0,0,14">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" Margin="0,0,0,2">
+                          <TextBlock Text="{Binding Header}" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                          <Border Grid.Column="1" Height="1" Background="{DynamicResource ShellSurfaceBorderBrush}" VerticalAlignment="Center"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding Items}">
+                          <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                              <UniformGrid Columns="2"/>
+                            </ItemsPanelTemplate>
+                          </ItemsControl.ItemsPanel>
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:LauncherItemViewModel">
+                              <Button Classes="LauncherLibraryItem" Click="OnAppItemClick" ToolTip.Tip="{Binding Description}">
+                                <Grid ColumnDefinitions="34,*" ColumnSpacing="10">
+                                  <Panel Width="34" Height="34" VerticalAlignment="Center">
+                                    <Image Source="{Binding IconBitmap}" IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                           RenderOptions.BitmapInterpolationMode="HighQuality" Width="34" Height="34"/>
+                                    <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
+                                            Background="{DynamicResource ShellSurfaceElevatedBrush}" CornerRadius="9" Width="34" Height="34">
+                                      <TextBlock Text="{Binding Name[0]}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                  </Panel>
+                                  <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                    <TextBlock Text="{Binding Name}" FontSize="12" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding Description}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                                  </StackPanel>
+                                </Grid>
+                              </Button>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </ScrollViewer>
+
+              <StackPanel IsVisible="{Binding ShowNoResults}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+                <TextBlock Text="search_off" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                           FontSize="28" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="No apps found" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                <TextBlock Text="Try another name or category" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
+              </StackPanel>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
     </Grid>
   </Border>
 </UserControl>
