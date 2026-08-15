@@ -1,0 +1,280 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Views.Components.Console.ConsoleQuickMenuOverlay"
+    x:Name="Root"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+    IsVisible="False"
+    ZIndex="800"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch">
+
+  <UserControl.Styles>
+
+    <Style Selector="TextBlock.QuickIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="Foreground" Value="#CCCCCC" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Round Quick Bar Icon Button with White Focus Ring -->
+    <Style Selector="Button.QuickBarIconBtn">
+      <Setter Property="Width" Value="48" />
+      <Setter Property="Height" Value="48" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="#222228" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="24" />
+      <Setter Property="ClipToBounds" Value="False" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Panel ClipToBounds="False">
+            <Border x:Name="PART_FocusRing"
+                    BorderBrush="#FFFFFF"
+                    BorderThickness="2"
+                    CornerRadius="29"
+                    Margin="-5"
+                    IsVisible="False"
+                    ClipToBounds="False" />
+
+            <ContentPresenter x:Name="PART_ContentPresenter"
+                              Background="{TemplateBinding Background}"
+                              BorderBrush="{TemplateBinding BorderBrush}"
+                              BorderThickness="{TemplateBinding BorderThickness}"
+                              CornerRadius="{TemplateBinding CornerRadius}"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Padding="{TemplateBinding Padding}"
+                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                              ClipToBounds="True" />
+          </Panel>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.QuickBarIconBtn.Active /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#FFFFFF" />
+    </Style>
+
+    <Style Selector="Button.QuickBarIconBtn.Active TextBlock.QuickIcon">
+      <Setter Property="Foreground" Value="#000000" />
+    </Style>
+
+    <Style Selector="Button.QuickBarIconBtn:focus /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <Style Selector="Button.QuickBarIconBtn:pointerover /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <!-- Action Button Inside Quick Cards -->
+    <Style Selector="Button.QuickCardActionBtn">
+      <Setter Property="Height" Value="40" />
+      <Setter Property="Padding" Value="20,0" />
+      <Setter Property="Background" Value="#33333D" />
+      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="20" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="ClipToBounds" Value="False" />
+
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Panel ClipToBounds="False">
+            <Border x:Name="PART_FocusRing"
+                    BorderBrush="#FFFFFF"
+                    BorderThickness="2"
+                    CornerRadius="24"
+                    Margin="-4"
+                    IsVisible="False"
+                    ClipToBounds="False" />
+
+            <ContentPresenter x:Name="PART_ContentPresenter"
+                              Background="{TemplateBinding Background}"
+                              BorderBrush="{TemplateBinding BorderBrush}"
+                              BorderThickness="{TemplateBinding BorderThickness}"
+                              CornerRadius="{TemplateBinding CornerRadius}"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Padding="{TemplateBinding Padding}"
+                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                              ClipToBounds="True" />
+          </Panel>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+
+    <Style Selector="Button.QuickCardActionBtn:focus /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <Style Selector="Button.QuickCardActionBtn:pointerover /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+  </UserControl.Styles>
+
+  <!-- Dark Backdrop Canvas -->
+  <Grid Background="#CC000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    
+    <!-- DYNAMIC QUICK CARD (Positioned Above the Horizontal Bar) -->
+    <Border x:Name="QuickCardBorder"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Margin="0,0,0,130"
+            MinWidth="560"
+            Background="#1A1A22"
+            CornerRadius="24"
+            Padding="24,20"
+            BorderBrush="#33FFFFFF"
+            BorderThickness="1"
+            ClipToBounds="False">
+      <Grid ClipToBounds="False">
+        
+        <!-- 1. HOME CARD -->
+        <StackPanel x:Name="CardHomePanel" Spacing="8" IsVisible="True" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <TextBlock Text="Console Home" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
+          <TextBlock Text="Press (X) / Select to return to main Console Dashboard" FontSize="13" Foreground="#88FFFFFF" HorizontalAlignment="Center" />
+          <Button Click="OnGoHomeClicked" Classes="QuickCardActionBtn" Margin="0,8,0,0" HorizontalAlignment="Center">
+            <TextBlock Text="Return to Home Screen" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" />
+          </Button>
+        </StackPanel>
+
+        <!-- 2. SWITCHER CARD -->
+        <StackPanel x:Name="CardSwitcherPanel" Spacing="10" IsVisible="False" HorizontalAlignment="Center">
+          <TextBlock Text="Recent Games &amp; Apps" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
+          <StackPanel x:Name="RecentGamesStack" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,4,0,0" />
+        </StackPanel>
+
+        <!-- 3. NOTIFICATIONS CARD -->
+        <StackPanel x:Name="CardNotificationsPanel" Spacing="8" IsVisible="False" HorizontalAlignment="Center">
+          <TextBlock Text="Notifications" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
+          <Border Background="#242430" CornerRadius="12" Padding="16,10" Margin="0,4,0,0">
+            <StackPanel Spacing="2">
+              <TextBlock Text="DaisyOS System Ready" FontSize="14" FontWeight="Bold" Foreground="#00FF66" />
+              <TextBlock Text="Controller connected • High Performance Mode Active" FontSize="12" Foreground="#88FFFFFF" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+
+        <!-- 4. SOUND CARD -->
+        <StackPanel x:Name="CardSoundPanel" Spacing="10" IsVisible="False" HorizontalAlignment="Center">
+          <TextBlock Text="Sound Settings" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
+          <controls:ConsolePillSlider x:Name="QuickMasterVolumeSlider" Icon="volume_up" Value="50" ValueChanged="OnQuickMasterVolumeChanged" Margin="0,6,0,0" />
+        </StackPanel>
+
+        <!-- 5. MIC CARD -->
+        <StackPanel x:Name="CardMicPanel" Spacing="10" IsVisible="False" HorizontalAlignment="Center">
+          <TextBlock Text="Microphone Level" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
+          <controls:ConsolePillSlider x:Name="QuickMicVolumeSlider" Icon="mic" Value="50" ValueChanged="OnQuickMicVolumeChanged" Margin="0,6,0,0" />
+          <Button x:Name="QuickMuteMicBtn" Click="OnQuickToggleMicMute" Classes="QuickCardActionBtn" HorizontalAlignment="Center" Margin="0,4,0,0">
+            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+              <TextBlock x:Name="QuickMuteMicIcon" Text="mic" Classes="QuickIcon" FontSize="18" VerticalAlignment="Center" />
+              <TextBlock x:Name="QuickMuteMicText" Text="Mute Microphone" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+
+        <!-- 6. CONTROLLER / ACCESSORIES CARD -->
+        <StackPanel x:Name="CardControllerPanel" Spacing="8" IsVisible="False" HorizontalAlignment="Center">
+          <TextBlock Text="Accessories &amp; Controller" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
+          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,4,0,0">
+            <TextBlock Text="sports_esports" Classes="QuickIcon" FontSize="28" Foreground="#00E5FF" VerticalAlignment="Center" />
+            <StackPanel VerticalAlignment="Center">
+              <TextBlock x:Name="QuickControllerStatusText" Text="DualSense Wireless Controller" FontSize="14" FontWeight="Bold" Foreground="#FFFFFF" />
+              <TextBlock Text="Battery: 100% (Charging)" FontSize="12" Foreground="#88FFFFFF" />
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+
+        <!-- 7. POWER CARD -->
+        <StackPanel x:Name="CardPowerPanel" Spacing="10" IsVisible="False" HorizontalAlignment="Center">
+          <TextBlock Text="Power Options" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
+          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,6,0,0">
+            <Button Click="OnQuickRestartClicked" Classes="QuickCardActionBtn">
+              <TextBlock Text="Restart" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" />
+            </Button>
+            <Button Click="OnQuickReturnDesktopClicked" Classes="QuickCardActionBtn">
+              <TextBlock Text="Exit to Desktop" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" />
+            </Button>
+            <Button Click="OnQuickShutdownClicked" Classes="QuickCardActionBtn">
+              <TextBlock Text="Power Off" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" />
+            </Button>
+          </StackPanel>
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- FOCUSED CATEGORY TITLE LABEL ABOVE ICON BAR -->
+    <TextBlock x:Name="QuickBarCategoryTitle"
+               Text="Home"
+               FontSize="13"
+               FontWeight="SemiBold"
+               Foreground="#FFFFFF"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Bottom"
+               Margin="0,0,0,96" />
+
+    <!-- PS5-STYLE BOTTOM HORIZONTAL ICON BAR -->
+    <Border HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Margin="0,0,0,36"
+            Background="#121216"
+            CornerRadius="30"
+            Padding="14,10"
+            ClipToBounds="False">
+      <StackPanel x:Name="IconBarStack" Orientation="Horizontal" Spacing="14" ClipToBounds="False">
+        
+        <!-- 0. Home -->
+        <Button x:Name="BtnQuickHome" Classes="QuickBarIconBtn Active" Click="OnIconBarItemClicked" Tag="Home" ToolTip.Tip="Home">
+          <TextBlock Text="home" Classes="QuickIcon" />
+        </Button>
+
+        <!-- 1. Switcher -->
+        <Button x:Name="BtnQuickSwitcher" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Switcher" ToolTip.Tip="Switcher">
+          <TextBlock Text="view_carousel" Classes="QuickIcon" />
+        </Button>
+
+        <!-- 2. Notifications -->
+        <Button x:Name="BtnQuickNotifications" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Notifications" ToolTip.Tip="Notifications">
+          <TextBlock Text="notifications" Classes="QuickIcon" />
+        </Button>
+
+        <!-- 3. Sound -->
+        <Button x:Name="BtnQuickSound" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Sound" ToolTip.Tip="Sound">
+          <TextBlock Text="volume_up" Classes="QuickIcon" />
+        </Button>
+
+        <!-- 4. Mic -->
+        <Button x:Name="BtnQuickMic" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Mic" ToolTip.Tip="Mic">
+          <TextBlock Text="mic" Classes="QuickIcon" />
+        </Button>
+
+        <!-- 5. Controller -->
+        <Button x:Name="BtnQuickController" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Controller" ToolTip.Tip="Accessories">
+          <TextBlock Text="sports_esports" Classes="QuickIcon" />
+        </Button>
+
+        <!-- 6. Power -->
+        <Button x:Name="BtnQuickPower" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Power" ToolTip.Tip="Power">
+          <TextBlock Text="power_settings_new" Classes="QuickIcon" />
+        </Button>
+
+      </StackPanel>
+    </Border>
+
+    <!-- BOTTOM CONTROLLER TIPS -->
+    <TextBlock Text="Press (PS / Guide) or (O) to Close" FontSize="11" FontWeight="Medium" Foreground="#66FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,12" />
+
+  </Grid>
+
+</UserControl>

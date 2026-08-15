@@ -62,6 +62,28 @@ namespace DaisyOS.Shell.Views
                 _controllerConnected = false;
                 await ReconcileConsoleModeAsync();
             };
+            ConsoleQuickMenu.GoHomeRequested += (_, _) =>
+            {
+                ConsoleSettings.HideOverlay();
+                ConsoleHome.FocusInitialDestination();
+            };
+            ConsoleQuickMenu.ReturnToDesktopRequested += async (_, _) =>
+            {
+                ConsoleSettings.HideOverlay();
+                _consoleModeRequested = false;
+                _controllerConnected = false;
+                await ReconcileConsoleModeAsync();
+            };
+            ConsoleQuickMenu.RestartRequested += (_, _) =>
+            {
+                var launcher = new SafeProcessLauncher();
+                launcher.Launch("systemctl", ["reboot"]);
+            };
+            ConsoleQuickMenu.ShutdownRequested += (_, _) =>
+            {
+                var launcher = new SafeProcessLauncher();
+                launcher.Launch("systemctl", ["poweroff"]);
+            };
 
             if (Application.Current is App feedbackApp)
             {
@@ -281,9 +303,17 @@ namespace DaisyOS.Shell.Views
             {
                 if (_consoleMode)
                 {
-                    if (ConsoleSettings.IsVisible)
+                    if (ConsoleQuickMenu.IsVisible)
+                    {
+                        ConsoleQuickMenu.Navigate(action);
+                    }
+                    else if (ConsoleSettings.IsVisible)
                     {
                         ConsoleSettings.Navigate(action);
+                    }
+                    else if (action == ControllerNavigationAction.OpenConsole || action == ControllerNavigationAction.QuickSettings)
+                    {
+                        ConsoleQuickMenu.ShowQuickMenu();
                     }
                     else
                     {

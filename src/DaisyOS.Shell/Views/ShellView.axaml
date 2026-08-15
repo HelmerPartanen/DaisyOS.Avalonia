@@ -51,8 +51,11 @@
             <TextBlock x:Name="ConsoleFeedbackText" MaxWidth="440" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
         </Border>
 
-        <!-- Console Mode Quick Settings Overlay -->
+        <!-- Console Mode Fullscreen Settings Overlay -->
         <console:ConsoleSettingsOverlay x:Name="ConsoleSettings" IsVisible="False" ZIndex="700" />
+
+        <!-- Console Mode PS5-Style Quick Menu (Command Center) Overlay -->
+        <console:ConsoleQuickMenuOverlay x:Name="ConsoleQuickMenu" IsVisible="False" ZIndex="800" />
 
         <!-- A fully opaque transition makes desktop dismissal and console loading visually atomic. -->
         <Border x:Name="ConsoleTransition" ZIndex="600" IsVisible="False" Opacity="0" Background="#090A0F"
