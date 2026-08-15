@@ -14,8 +14,8 @@
       <Setter Property="Padding" Value="0" />
       <Setter Property="ClipToBounds" Value="True" />
       <Setter Property="Background" Value="#3310121A" />
-      <Setter Property="BorderBrush" Value="#26FFFFFF" />
-      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="#33FFFFFF" />
+      <Setter Property="BorderThickness" Value="1.5" />
       <Setter Property="CornerRadius" Value="18" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -24,24 +24,32 @@
 
       <Setter Property="Transitions">
         <Transitions>
-          <DoubleTransition Property="Opacity" Duration="0:0:0.14" />
-          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.16" />
+          <DoubleTransition Property="Opacity" Duration="0:0:0.18" />
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18" Easing="CubicEaseOut" />
         </Transitions>
       </Setter>
     </Style>
 
+    <!-- Active Focused Card: Increased Size (scale 1.10) & Thicker Active Border (4px) -->
     <Style Selector="Button.GameCoverTile:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#44202432" />
-      <Setter Property="BorderBrush" Value="#EEFFFFFF" />
+      <Setter Property="Background" Value="#55202432" />
+      <Setter Property="BorderBrush" Value="#FFFFFFFF" />
+      <Setter Property="BorderThickness" Value="4" />
     </Style>
 
     <Style Selector="Button.GameCoverTile:focus">
-      <Setter Property="RenderTransform" Value="scale(1.03)" />
+      <Setter Property="RenderTransform" Value="scale(1.10)" />
+      <Setter Property="ZIndex" Value="10" />
     </Style>
 
     <Style Selector="Button.GameCoverTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#44202432" />
-      <Setter Property="BorderBrush" Value="#88FFFFFF" />
+      <Setter Property="BorderBrush" Value="#CCFFFFFF" />
+      <Setter Property="BorderThickness" Value="2.5" />
+    </Style>
+
+    <Style Selector="Button.GameCoverTile:pointerover">
+      <Setter Property="RenderTransform" Value="scale(1.04)" />
     </Style>
 
     <Style Selector="Button.GameCoverTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
@@ -160,16 +168,16 @@
             </Border>
             <TextBlock Text="wifi" Classes="ConsoleStatusIcon" />
             <TextBlock Text="battery_full" Classes="ConsoleStatusIcon" />
-            <TextBlock x:Name="ClockText" Text="14:37" FontSize="15" FontWeight="SemiBold" Foreground="#FFFFFFFF" />
+            <TextBlock x:Name="ClockText" Text="14:40" FontSize="15" FontWeight="SemiBold" Foreground="#FFFFFFFF" />
           </StackPanel>
         </Border>
       </Grid>
 
       <!-- Center Content: Vertically Centered along Y Axis -->
-      <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="24">
+      <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="28">
 
-        <!-- Active Game Spotlight Header (Fixed 72px Height to Prevent Layout Shifts) -->
-        <StackPanel Spacing="8" Margin="8,0,0,0">
+        <!-- Active Game Spotlight Header (Clean Title Heading + Source Badge) -->
+        <StackPanel Spacing="6" Margin="8,0,0,0">
           
           <!-- Source Badge & Status Subtext -->
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
@@ -179,20 +187,17 @@
             <TextBlock x:Name="SelectedGameSubtext" Text="Installed • Ready to play" FontSize="14" FontWeight="Medium" Foreground="#CCFFFFFF" VerticalAlignment="Center" />
           </StackPanel>
 
-          <!-- Fixed-Height Title/Logo Grid: Ensures exact 72px height whether logo image or title text is shown -->
-          <Grid Height="72" VerticalAlignment="Center" HorizontalAlignment="Left">
-            <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="36" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" />
-            <Image x:Name="SelectedGameLogoImage" MaxWidth="380" MaxHeight="64" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center" IsVisible="False" />
-          </Grid>
+          <!-- Prominent Game Title Heading (Always Visible!) -->
+          <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="42" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" />
 
         </StackPanel>
 
-        <!-- Centered Square App Cards Carousel Track -->
-        <Grid Height="220" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+        <!-- Centered Square App Cards Carousel Track (Slightly larger container height for active card scaling) -->
+        <Grid Height="250" HorizontalAlignment="Stretch" VerticalAlignment="Center">
           <StackPanel
               x:Name="CarouselTrack"
               Orientation="Horizontal"
-              Spacing="20"
+              Spacing="24"
               VerticalAlignment="Center">
 
             <!-- Dynamic square game cards populated at runtime -->

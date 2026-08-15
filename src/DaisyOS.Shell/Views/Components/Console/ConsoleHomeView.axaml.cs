@@ -191,7 +191,7 @@ public partial class ConsoleHomeView : UserControl
 
         var cardContent = new Grid();
 
-        // Clipping Outer Border Container
+        // Clipping Outer Border Container (Clips coverImage, logo, and fallbacks to rounded card corners)
         var cardClipperBorder = new Border
         {
             CornerRadius = new CornerRadius(18),
@@ -223,7 +223,7 @@ public partial class ConsoleHomeView : UserControl
         coverImage.Bind(Visual.IsVisibleProperty, new Avalonia.Data.Binding(nameof(ConsoleGameItemViewModel.HasCoverImage)) { Source = vm });
         cardLayersGrid.Children.Add(coverImage);
 
-        // 2. Game Logo Card Layer
+        // 2. Game Logo Card Layer (Used when official store logo is available)
         var logoBorder = new Border
         {
             Padding = new Thickness(16, 16, 16, 36),
@@ -383,7 +383,7 @@ public partial class ConsoleHomeView : UserControl
     {
         if (_games.Count == 0 || _selectedIndex < 0 || _selectedIndex >= _games.Count) return;
 
-        _targetCarouselOffset = -_selectedIndex * 230;
+        _targetCarouselOffset = -_selectedIndex * 234;
         if (!_carouselTimer.IsEnabled)
         {
             _carouselTimer.Start();
@@ -402,9 +402,14 @@ public partial class ConsoleHomeView : UserControl
 
     private void UpdateSelectedGameSpotlight(ConsoleGameItemViewModel vm)
     {
+        // 1. Prominent Game Title Heading is ALWAYS displayed!
+        SelectedGameTitleText.Text = vm.Title;
+
+        // 2. Source Badge & Status Subtext
         SelectedGameSourceText.Text = vm.SourceText.ToUpperInvariant();
         SelectedGameSubtext.Text = "Installed • Ready to play";
 
+        // 3. Hero Background Image Display
         var bgImage = vm.HeroImage ?? vm.CoverImage ?? vm.LogoImage;
         if (bgImage != null)
         {
@@ -414,19 +419,6 @@ public partial class ConsoleHomeView : UserControl
         else
         {
             HeroBackgroundImage.Opacity = 0.15;
-        }
-
-        if (vm.HasLogoImage)
-        {
-            SelectedGameLogoImage.Source = vm.LogoImage;
-            SelectedGameLogoImage.IsVisible = true;
-            SelectedGameTitleText.IsVisible = false;
-        }
-        else
-        {
-            SelectedGameTitleText.Text = vm.Title;
-            SelectedGameLogoImage.IsVisible = false;
-            SelectedGameTitleText.IsVisible = true;
         }
     }
 
