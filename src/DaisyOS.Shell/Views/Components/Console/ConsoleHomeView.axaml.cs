@@ -31,6 +31,7 @@ public partial class ConsoleHomeView : UserControl
     private double _carouselOffset;
     private double _targetCarouselOffset;
     private CancellationTokenSource? _discoveryCts;
+    private int _activeBgLayer = 1;
 
     public ConsoleHomeView()
         : this(new LinuxGameDiscoveryService(), new GameArtworkResolver())
@@ -191,7 +192,7 @@ public partial class ConsoleHomeView : UserControl
 
         var cardContent = new Grid();
 
-        // Clipping Outer Border Container (Clips coverImage, logo, and fallbacks to rounded card corners)
+        // Clipping Outer Border Container
         var cardClipperBorder = new Border
         {
             CornerRadius = new CornerRadius(18),
@@ -402,23 +403,30 @@ public partial class ConsoleHomeView : UserControl
 
     private void UpdateSelectedGameSpotlight(ConsoleGameItemViewModel vm)
     {
-        // 1. Prominent Game Title Heading is ALWAYS displayed!
+        // 1. Prominent Game Title Heading
         SelectedGameTitleText.Text = vm.Title;
 
         // 2. Source Badge & Status Subtext
         SelectedGameSourceText.Text = vm.SourceText.ToUpperInvariant();
         SelectedGameSubtext.Text = "Installed • Ready to play";
 
-        // 3. Hero Background Image Display
+        // 3. Smooth Hero Background Image Crossfade (High Opacity + Blur)
         var bgImage = vm.HeroImage ?? vm.CoverImage ?? vm.LogoImage;
+        
+        var currentLayer = _activeBgLayer == 1 ? HeroBackgroundImage1 : HeroBackgroundImage2;
+        var nextLayer = _activeBgLayer == 1 ? HeroBackgroundImage2 : HeroBackgroundImage1;
+
         if (bgImage != null)
         {
-            HeroBackgroundImage.Source = bgImage;
-            HeroBackgroundImage.Opacity = 0.50;
+            nextLayer.Source = bgImage;
+            nextLayer.Opacity = 0.75;
+            currentLayer.Opacity = 0.0;
+            _activeBgLayer = _activeBgLayer == 1 ? 2 : 1;
         }
         else
         {
-            HeroBackgroundImage.Opacity = 0.15;
+            currentLayer.Opacity = 0.0;
+            nextLayer.Opacity = 0.0;
         }
     }
 
