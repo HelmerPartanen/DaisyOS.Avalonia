@@ -23,7 +23,6 @@ public partial class ConsoleHomeView : UserControl
     private readonly IGameArtworkResolver _artworkResolver;
     private readonly ObservableCollection<ConsoleGameItemViewModel> _games = [];
     private readonly List<Button> _cardTargets = [];
-    private readonly List<Border> _focusRings = [];
     private readonly DispatcherTimer _carouselTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly TranslateTransform _carouselTranslation = new();
 
@@ -59,7 +58,14 @@ public partial class ConsoleHomeView : UserControl
     public string ControllerName
     {
         get => GetValue(ControllerNameProperty);
-        set => SetValue(ControllerNameProperty, value);
+        set
+        {
+            SetValue(ControllerNameProperty, value);
+            if (ControllerStatusText != null)
+            {
+                ControllerStatusText.Text = string.IsNullOrWhiteSpace(value) ? "Controller" : value;
+            }
+        }
     }
 
     public double ParallaxPosition => _games.Count <= 1
@@ -105,7 +111,6 @@ public partial class ConsoleHomeView : UserControl
             _games.Clear();
             CarouselTrack.Children.Clear();
             _cardTargets.Clear();
-            _focusRings.Clear();
 
             int index = 0;
             foreach (var game in discovered)
@@ -186,7 +191,28 @@ public partial class ConsoleHomeView : UserControl
 
         var cardContent = new Grid();
 
-        // 1. Cover Image Layer (Square 210x210)
+        // Clipping Outer Border Container
+        var cardClipperBorder = new Border
+        {
+            CornerRadius = new CornerRadius(18),
+            ClipToBounds = true,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            Background = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(Color.Parse("#282C3A"), 0.0),
+                    new GradientStop(Color.Parse("#161722"), 1.0)
+                }
+            }
+        };
+
+        var cardLayersGrid = new Grid();
+
+        // 1. Cover or Hero Image Layer (Fills the square card)
         var coverImage = new Image
         {
             Stretch = Stretch.UniformToFill,
@@ -195,22 +221,35 @@ public partial class ConsoleHomeView : UserControl
         };
         coverImage.Bind(Image.SourceProperty, new Avalonia.Data.Binding(nameof(ConsoleGameItemViewModel.CoverImage)) { Source = vm });
         coverImage.Bind(Visual.IsVisibleProperty, new Avalonia.Data.Binding(nameof(ConsoleGameItemViewModel.HasCoverImage)) { Source = vm });
-        cardContent.Children.Add(coverImage);
+        cardLayersGrid.Children.Add(coverImage);
 
-        // 2. DaisyOS Dynamic Fallback Card Layer
+        // 2. Game Logo Card Layer
+        var logoBorder = new Border
+        {
+            Padding = new Thickness(16, 16, 16, 36),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
+        };
+        logoBorder.Bind(Visual.IsVisibleProperty, new Avalonia.Data.Binding(nameof(ConsoleGameItemViewModel.IsLogoCard)) { Source = vm });
+
+        var logoImage = new Image
+        {
+            Stretch = Stretch.Uniform,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            MaxWidth = 174,
+            MaxHeight = 140
+        };
+        logoImage.Bind(Image.SourceProperty, new Avalonia.Data.Binding(nameof(ConsoleGameItemViewModel.LogoImage)) { Source = vm });
+        logoBorder.Child = logoImage;
+        cardLayersGrid.Children.Add(logoBorder);
+
+        // 3. Fallback Layer (Shown only when NO game artwork exists at all)
         var fallbackBorder = new Border
         {
-            Background = new LinearGradientBrush
-            {
-                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-                EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
-                GradientStops =
-                {
-                    new GradientStop(Color.Parse("#2A2D39"), 0.0),
-                    new GradientStop(Color.Parse("#181920"), 1.0)
-                }
-            },
-            Padding = new Thickness(14)
+            Padding = new Thickness(14),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
         };
         fallbackBorder.Bind(Visual.IsVisibleProperty, new Avalonia.Data.Binding(nameof(ConsoleGameItemViewModel.ShowFallbackUI)) { Source = vm });
 
@@ -244,7 +283,41 @@ public partial class ConsoleHomeView : UserControl
         fallbackStack.Children.Add(iconImage);
         fallbackStack.Children.Add(fallbackTitle);
         fallbackBorder.Child = fallbackStack;
-        cardContent.Children.Add(fallbackBorder);
+        cardLayersGrid.Children.Add(fallbackBorder);
+
+        // 4. Card Bottom Gradient Scrim & Game Title Overlay
+        var titleScrim = new Border
+        {
+            VerticalAlignment = VerticalAlignment.Bottom,
+            Height = 48,
+            Background = new LinearGradientBrush
+            {
+                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+                EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+                GradientStops =
+                {
+                    new GradientStop(Color.Parse("#00000000"), 0.0),
+                    new GradientStop(Color.Parse("#E0090A0F"), 1.0)
+                }
+            },
+            Padding = new Thickness(10, 0, 10, 8)
+        };
+        var titleText = new TextBlock
+        {
+            Text = vm.Title,
+            FontSize = 13,
+            FontWeight = FontWeight.SemiBold,
+            Foreground = Brushes.White,
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            TextAlignment = TextAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Bottom
+        };
+        titleScrim.Child = titleText;
+        cardLayersGrid.Children.Add(titleScrim);
+
+        cardClipperBorder.Child = cardLayersGrid;
+        cardContent.Children.Add(cardClipperBorder);
 
         button.Content = cardContent;
         button.Click += (s, e) =>
@@ -254,18 +327,8 @@ public partial class ConsoleHomeView : UserControl
             DestinationRequested?.Invoke(this, vm.Title);
         };
 
-        var focusRing = new Border
-        {
-            Classes = { "ConsoleFocusRing" },
-            IsHitTestVisible = false,
-            IsVisible = false
-        };
-
         container.Children.Add(button);
-        container.Children.Add(focusRing);
-
         _cardTargets.Add(button);
-        _focusRings.Add(focusRing);
 
         return container;
     }
@@ -326,14 +389,9 @@ public partial class ConsoleHomeView : UserControl
             _carouselTimer.Start();
         }
 
-        for (int i = 0; i < _cardTargets.Count; i++)
+        if (_selectedIndex < _cardTargets.Count)
         {
-            bool isSelected = i == _selectedIndex;
-            _focusRings[i].IsVisible = isSelected;
-            if (isSelected)
-            {
-                _cardTargets[i].Focus();
-            }
+            _cardTargets[_selectedIndex].Focus();
         }
 
         var activeGame = _games[_selectedIndex];
@@ -344,19 +402,14 @@ public partial class ConsoleHomeView : UserControl
 
     private void UpdateSelectedGameSpotlight(ConsoleGameItemViewModel vm)
     {
-        SelectedGameTitleText.Text = vm.Title;
         SelectedGameSourceText.Text = vm.SourceText.ToUpperInvariant();
-        SelectedGameSubtext.Text = !string.IsNullOrEmpty(vm.SourceIdText) ? $"App ID: {vm.SourceIdText}" : "Installed Game";
+        SelectedGameSubtext.Text = "Installed • Ready to play";
 
-        if (vm.HasHeroImage)
+        var bgImage = vm.HeroImage ?? vm.CoverImage ?? vm.LogoImage;
+        if (bgImage != null)
         {
-            HeroBackgroundImage.Source = vm.HeroImage;
-            HeroBackgroundImage.Opacity = 0.45;
-        }
-        else if (vm.HasCoverImage)
-        {
-            HeroBackgroundImage.Source = vm.CoverImage;
-            HeroBackgroundImage.Opacity = 0.35;
+            HeroBackgroundImage.Source = bgImage;
+            HeroBackgroundImage.Opacity = 0.50;
         }
         else
         {
@@ -371,6 +424,7 @@ public partial class ConsoleHomeView : UserControl
         }
         else
         {
+            SelectedGameTitleText.Text = vm.Title;
             SelectedGameLogoImage.IsVisible = false;
             SelectedGameTitleText.IsVisible = true;
         }

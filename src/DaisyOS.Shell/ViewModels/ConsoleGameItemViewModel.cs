@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -25,38 +26,62 @@ public sealed class ConsoleGameItemViewModel : INotifyPropertyChanged
     public IImage? CoverImage
     {
         get => _coverImage;
-        private set { _coverImage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasCoverImage)); }
+        private set
+        {
+            _coverImage = value;
+            NotifyImageProperties();
+        }
     }
 
     public IImage? HeroImage
     {
         get => _heroImage;
-        private set { _heroImage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasHeroImage)); }
+        private set
+        {
+            _heroImage = value;
+            NotifyImageProperties();
+        }
     }
 
     public IImage? LogoImage
     {
         get => _logoImage;
-        private set { _logoImage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasLogoImage)); }
+        private set
+        {
+            _logoImage = value;
+            NotifyImageProperties();
+        }
     }
 
     public IImage? IconImage
     {
         get => _iconImage;
-        private set { _iconImage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasIconImage)); }
+        private set
+        {
+            _iconImage = value;
+            NotifyImageProperties();
+        }
     }
 
     public bool IsFallback
     {
         get => _isFallback;
-        private set { _isFallback = value; OnPropertyChanged(); OnPropertyChanged(nameof(ShowFallbackUI)); }
+        private set
+        {
+            _isFallback = value;
+            OnPropertyChanged();
+            NotifyImageProperties();
+        }
     }
 
+    public IImage? CardImage => CoverImage ?? LogoImage ?? HeroImage ?? IconImage;
+    public bool HasCardImage => CardImage != null;
     public bool HasCoverImage => CoverImage != null;
     public bool HasHeroImage => HeroImage != null;
     public bool HasLogoImage => LogoImage != null;
     public bool HasIconImage => IconImage != null;
-    public bool ShowFallbackUI => IsFallback || !HasCoverImage;
+    public bool IsLogoCard => CoverImage == null && LogoImage != null;
+    public bool ShowFallbackUI => !HasCoverImage && !HasLogoImage && !HasHeroImage;
 
     public ConsoleGameItemViewModel(GameIdentity game)
     {
@@ -100,6 +125,24 @@ public sealed class ConsoleGameItemViewModel : INotifyPropertyChanged
         {
             IconImage = DesktopItemLoader.LoadBitmapSafe(assets.IconPath!);
         }
+
+        NotifyImageProperties();
+    }
+
+    private void NotifyImageProperties()
+    {
+        OnPropertyChanged(nameof(CoverImage));
+        OnPropertyChanged(nameof(HeroImage));
+        OnPropertyChanged(nameof(LogoImage));
+        OnPropertyChanged(nameof(IconImage));
+        OnPropertyChanged(nameof(CardImage));
+        OnPropertyChanged(nameof(HasCardImage));
+        OnPropertyChanged(nameof(HasCoverImage));
+        OnPropertyChanged(nameof(HasHeroImage));
+        OnPropertyChanged(nameof(HasLogoImage));
+        OnPropertyChanged(nameof(HasIconImage));
+        OnPropertyChanged(nameof(IsLogoCard));
+        OnPropertyChanged(nameof(ShowFallbackUI));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
