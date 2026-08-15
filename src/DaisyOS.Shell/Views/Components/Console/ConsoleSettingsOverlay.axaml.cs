@@ -100,6 +100,9 @@ public partial class ConsoleSettingsOverlay : UserControl
         Closed?.Invoke(this, EventArgs.Empty);
     }
 
+    private int _activeTabIndex = 0;
+    private readonly string[] _tabNames = new[] { "Audio", "Network", "Controls", "System" };
+
     public void Navigate(ControllerNavigationAction action)
     {
         if (_controllerInputService != null && _controllerInputService.IsRebinding)
@@ -107,9 +110,22 @@ public partial class ConsoleSettingsOverlay : UserControl
             return;
         }
 
-        if (action is ControllerNavigationAction.Back or ControllerNavigationAction.QuickSettings)
+        switch (action)
         {
-            HideOverlay();
+            case ControllerNavigationAction.PreviousSection: // LB / L1
+                _activeTabIndex = (_activeTabIndex - 1 + _tabNames.Length) % _tabNames.Length;
+                SelectTab(_tabNames[_activeTabIndex]);
+                break;
+
+            case ControllerNavigationAction.NextSection: // RB / R1
+                _activeTabIndex = (_activeTabIndex + 1) % _tabNames.Length;
+                SelectTab(_tabNames[_activeTabIndex]);
+                break;
+
+            case ControllerNavigationAction.Back:
+            case ControllerNavigationAction.QuickSettings:
+                HideOverlay();
+                break;
         }
     }
 
@@ -278,6 +294,9 @@ public partial class ConsoleSettingsOverlay : UserControl
 
     private void SelectTab(string tabName)
     {
+        _activeTabIndex = Array.IndexOf(_tabNames, tabName);
+        if (_activeTabIndex < 0) _activeTabIndex = 0;
+
         AudioPanel.IsVisible = tabName == "Audio";
         NetworkPanel.IsVisible = tabName == "Network";
         ControlsPanel.IsVisible = tabName == "Controls";
@@ -287,6 +306,18 @@ public partial class ConsoleSettingsOverlay : UserControl
         TabNetworkBtn.Classes.Set("Active", tabName == "Network");
         TabControlsBtn.Classes.Set("Active", tabName == "Controls");
         TabSystemBtn.Classes.Set("Active", tabName == "System");
+
+        if (ActiveSectionSubtitle != null)
+        {
+            ActiveSectionSubtitle.Text = tabName switch
+            {
+                "Audio" => "Audio & Sound",
+                "Network" => "Network & Internet",
+                "Controls" => "Controller & Input",
+                "System" => "System & Power",
+                _ => "Settings"
+            };
+        }
 
         if (tabName == "Controls")
         {

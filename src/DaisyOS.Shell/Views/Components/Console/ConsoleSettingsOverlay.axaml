@@ -4,50 +4,83 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     IsVisible="False"
-    ZIndex="700">
+    ZIndex="700"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch">
 
   <UserControl.Styles>
 
     <Style Selector="TextBlock.SettingsIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
-      <Setter Property="FontSize" Value="18" />
+      <Setter Property="FontSize" Value="20" />
       <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
     </Style>
 
-    <!-- Subnav Tab Buttons -->
-    <Style Selector="Button.SettingsTabBtn">
-      <Setter Property="Height" Value="38" />
-      <Setter Property="Padding" Value="12,0" />
+    <!-- Sidebar Vertical Category Tab Buttons -->
+    <Style Selector="Button.SettingsCategoryBtn">
+      <Setter Property="Height" Value="52" />
+      <Setter Property="Padding" Value="18,0" />
       <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="14" />
       <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="ClipToBounds" Value="False" />
+
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Panel ClipToBounds="False">
+            <!-- Outer Offsetted White Outline Ring -->
+            <Border x:Name="PART_FocusRing"
+                    BorderBrush="#FFFFFF"
+                    BorderThickness="2"
+                    CornerRadius="19"
+                    Margin="-5"
+                    IsVisible="False"
+                    ClipToBounds="False" />
+
+            <ContentPresenter x:Name="PART_ContentPresenter"
+                              Background="{TemplateBinding Background}"
+                              BorderBrush="{TemplateBinding BorderBrush}"
+                              BorderThickness="{TemplateBinding BorderThickness}"
+                              CornerRadius="{TemplateBinding CornerRadius}"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Padding="{TemplateBinding Padding}"
+                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                              ClipToBounds="True" />
+          </Panel>
+        </ControlTemplate>
+      </Setter>
     </Style>
 
-    <Style Selector="Button.SettingsTabBtn /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="ClipToBounds" Value="False" />
-    </Style>
-
-    <Style Selector="Button.SettingsTabBtn.Active">
+    <Style Selector="Button.SettingsCategoryBtn.Active /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
-      <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Button.SettingsCategoryBtn.Active TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
       <Setter Property="FontWeight" Value="Bold" />
-      <Setter Property="ClipToBounds" Value="False" />
     </Style>
 
-    <Style Selector="Button.SettingsTabBtn.Active TextBlock">
+    <Style Selector="Button.SettingsCategoryBtn:focus /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <Style Selector="Button.SettingsCategoryBtn:pointerover:not(.Active) /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <Style Selector="Button.SettingsCategoryBtn:focus TextBlock">
+      <Setter Property="Foreground" Value="#FFFFFF" />
+    </Style>
+
+    <Style Selector="Button.SettingsCategoryBtn.Active:focus TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
-    </Style>
-
-    <Style Selector="Button.SettingsTabBtn:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="ClipToBounds" Value="False" />
-      <Setter Property="BoxShadow" Value="0 0 0 3 #000000, 0 0 0 5 #FFFFFF" />
+      <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <!-- Glass Settings Cards -->
@@ -55,344 +88,378 @@
       <Setter Property="Background" Value="{DynamicResource ConsoleSurfaceBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource ConsoleDividerBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="14" />
-      <Setter Property="Padding" Value="16,14" />
+      <Setter Property="CornerRadius" Value="16" />
+      <Setter Property="Padding" Value="24,20" />
+      <Setter Property="ClipToBounds" Value="False" />
     </Style>
 
+    <!-- Console Action Buttons (Secondary) -->
     <Style Selector="Button.ConsoleActionBtn">
       <Setter Property="Height" Value="44" />
-      <Setter Property="Padding" Value="16,0" />
+      <Setter Property="Padding" Value="18,0" />
       <Setter Property="Background" Value="{DynamicResource ConsoleSecondaryButtonBgBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource ConsoleDividerBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="CornerRadius" Value="12" />
       <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
       <Setter Property="ClipToBounds" Value="False" />
+
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Panel ClipToBounds="False">
+            <Border x:Name="PART_FocusRing"
+                    BorderBrush="#FFFFFF"
+                    BorderThickness="2"
+                    CornerRadius="17"
+                    Margin="-5"
+                    IsVisible="False"
+                    ClipToBounds="False" />
+
+            <ContentPresenter x:Name="PART_ContentPresenter"
+                              Background="{TemplateBinding Background}"
+                              BorderBrush="{TemplateBinding BorderBrush}"
+                              BorderThickness="{TemplateBinding BorderThickness}"
+                              CornerRadius="{TemplateBinding CornerRadius}"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Padding="{TemplateBinding Padding}"
+                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                              ClipToBounds="True" />
+          </Panel>
+        </ControlTemplate>
+      </Setter>
     </Style>
 
-    <Style Selector="Button.ConsoleActionBtn /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="ClipToBounds" Value="False" />
+    <Style Selector="Button.ConsoleActionBtn:focus /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
     </Style>
 
-    <Style Selector="Button.ConsoleActionBtn:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
-      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
-      <Setter Property="BorderBrush" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="ClipToBounds" Value="False" />
-      <Setter Property="BoxShadow" Value="0 0 0 3 #000000, 0 0 0 5 #FFFFFF" />
+    <Style Selector="Button.ConsoleActionBtn:pointerover /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
     </Style>
 
+    <!-- Console Primary Buttons -->
     <Style Selector="Button.ConsolePrimaryBtn">
-      <Setter Property="Height" Value="44" />
-      <Setter Property="Padding" Value="20,0" />
+      <Setter Property="Height" Value="46" />
+      <Setter Property="Padding" Value="24,0" />
       <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
       <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="CornerRadius" Value="12" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="ClipToBounds" Value="False" />
+
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Panel ClipToBounds="False">
+            <Border x:Name="PART_FocusRing"
+                    BorderBrush="#FFFFFF"
+                    BorderThickness="2"
+                    CornerRadius="17"
+                    Margin="-5"
+                    IsVisible="False"
+                    ClipToBounds="False" />
+
+            <ContentPresenter x:Name="PART_ContentPresenter"
+                              Background="{TemplateBinding Background}"
+                              BorderBrush="{TemplateBinding BorderBrush}"
+                              BorderThickness="{TemplateBinding BorderThickness}"
+                              CornerRadius="{TemplateBinding CornerRadius}"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Padding="{TemplateBinding Padding}"
+                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                              ClipToBounds="True" />
+          </Panel>
+        </ControlTemplate>
+      </Setter>
     </Style>
 
-    <Style Selector="Button.ConsolePrimaryBtn /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
-      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="10" />
-      <Setter Property="ClipToBounds" Value="False" />
+    <Style Selector="Button.ConsolePrimaryBtn:focus /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
     </Style>
 
-    <Style Selector="Button.ConsolePrimaryBtn:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonHoverBgBrush}" />
-      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="ClipToBounds" Value="False" />
-      <Setter Property="BoxShadow" Value="0 0 0 3 #000000, 0 0 0 5 #FFFFFF" />
+    <Style Selector="Button.ConsolePrimaryBtn:pointerover /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
     </Style>
 
   </UserControl.Styles>
 
-  <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+  <!-- Fullscreen Main Container -->
+  <Grid Background="{DynamicResource ConsoleBackgroundBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RowDefinitions="Auto,*,Auto">
+    
+    <!-- Top System Header Bar -->
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="56,36,56,16" VerticalAlignment="Center">
+      <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+        <Border Background="{DynamicResource ConsoleSurfaceBrush}" CornerRadius="14" Width="48" Height="48">
+          <TextBlock Text="settings" Classes="SettingsIcon" FontSize="26" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+        <StackPanel VerticalAlignment="Center" Spacing="2">
+          <TextBlock Text="Settings" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+          <TextBlock x:Name="ActiveSectionSubtitle" Text="Audio &amp; Sound" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+        </StackPanel>
+      </StackPanel>
 
-    <!-- Dark Backdrop Mask -->
-    <Border x:Name="BackdropMask" Background="{DynamicResource ConsoleBackgroundBrush}" Opacity="0.85" PointerPressed="OnBackdropPointerPressed" />
+      <!-- Right Header Actions / Close -->
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20" VerticalAlignment="Center">
+        <TextBlock x:Name="ClockText" Text="20:20" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+        <Button Click="OnCloseClicked" Classes="ConsoleActionBtn" Width="40" Height="40" Padding="0" ToolTip.Tip="Close Settings">
+          <TextBlock Text="close" Classes="SettingsIcon" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Button>
+      </StackPanel>
+    </Grid>
 
-    <!-- Right Side Glass Panel -->
-    <Border
-        HorizontalAlignment="Right"
-        VerticalAlignment="Stretch"
-        Width="520"
-        Background="{DynamicResource ConsoleElevatedSurfaceBrush}"
-        BorderBrush="{DynamicResource ConsoleDividerBrush}"
-        BorderThickness="1,0,0,0">
+    <!-- Main Content Split Grid -->
+    <Grid Grid.Row="1" ColumnDefinitions="320,*" Margin="56,16,56,16" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ClipToBounds="False">
       
-      <Grid RowDefinitions="Auto,*,Auto" Margin="24,20,24,20">
+      <!-- Left Vertical Category Sidebar -->
+      <Border Grid.Column="0" Background="{DynamicResource ConsoleSurfaceBrush}" CornerRadius="20" Padding="16" BorderBrush="{DynamicResource ConsoleDividerBrush}" BorderThickness="1" VerticalAlignment="Stretch" ClipToBounds="False">
+        <StackPanel Spacing="10" ClipToBounds="False">
+          <TextBlock Text="CATEGORIES" FontSize="11" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" Margin="8,4,0,8" LetterSpacing="1" />
 
-        <!-- Top Header -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
-          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-            <TextBlock Text="settings" Classes="SettingsIcon" FontSize="26" Foreground="{DynamicResource TextPrimaryBrush}" />
-            <TextBlock Text="Console Settings" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-          </StackPanel>
-
-          <Button Grid.Column="1" Click="OnCloseClicked" Classes="ConsoleActionBtn" Width="40" Height="40" Padding="0">
-            <TextBlock Text="close" Classes="SettingsIcon" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          <Button x:Name="TabAudioBtn" Classes="SettingsCategoryBtn Active" Click="OnTabClicked" Tag="Audio">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+              <TextBlock Text="volume_up" Classes="SettingsIcon" FontSize="22" VerticalAlignment="Center" />
+              <TextBlock Text="Audio &amp; Sound" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
           </Button>
-        </Grid>
 
-        <!-- Subnav Tabs & Content Stack -->
-        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+          <Button x:Name="TabNetworkBtn" Classes="SettingsCategoryBtn" Click="OnTabClicked" Tag="Network">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+              <TextBlock Text="wifi" Classes="SettingsIcon" FontSize="22" VerticalAlignment="Center" />
+              <TextBlock Text="Network &amp; Internet" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
 
-          <!-- Category Subnav Tabs -->
-          <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" Margin="0,0,0,20">
-            <Button x:Name="TabAudioBtn" Classes="SettingsTabBtn Active" Click="OnTabClicked" Tag="Audio">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="volume_up" Classes="SettingsIcon" />
-                <TextBlock Text="Audio" />
-              </StackPanel>
-            </Button>
+          <Button x:Name="TabControlsBtn" Classes="SettingsCategoryBtn" Click="OnTabClicked" Tag="Controls">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+              <TextBlock Text="sports_esports" Classes="SettingsIcon" FontSize="22" VerticalAlignment="Center" />
+              <TextBlock Text="Controller &amp; Input" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
 
-            <Button x:Name="TabNetworkBtn" Classes="SettingsTabBtn" Click="OnTabClicked" Tag="Network">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="wifi" Classes="SettingsIcon" />
-                <TextBlock Text="Network" />
-              </StackPanel>
-            </Button>
+          <Button x:Name="TabSystemBtn" Classes="SettingsCategoryBtn" Click="OnTabClicked" Tag="System">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+              <TextBlock Text="tune" Classes="SettingsIcon" FontSize="22" VerticalAlignment="Center" />
+              <TextBlock Text="System &amp; Power" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Border>
 
-            <Button x:Name="TabControlsBtn" Classes="SettingsTabBtn" Click="OnTabClicked" Tag="Controls">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="sports_esports" Classes="SettingsIcon" />
-                <TextBlock Text="Controls" />
-              </StackPanel>
-            </Button>
+      <!-- Right Detail Settings Content Stack -->
+      <ScrollViewer Grid.Column="1" Margin="40,0,0,0" VerticalScrollBarVisibility="Auto" ClipToBounds="False">
+        <Grid ClipToBounds="False">
 
-            <Button x:Name="TabSystemBtn" Classes="SettingsTabBtn" Click="OnTabClicked" Tag="System">
-              <StackPanel Orientation="Horizontal" Spacing="6">
-                <TextBlock Text="tune" Classes="SettingsIcon" />
-                <TextBlock Text="Quick Actions" />
-              </StackPanel>
-            </Button>
-          </StackPanel>
-
-          <!-- Content Panels Area -->
-          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <Grid>
-
-              <!-- PANEL 1: AUDIO & SOUND -->
-              <StackPanel x:Name="AudioPanel" Spacing="16" IsVisible="True">
-                
-                <!-- Master Volume Card -->
-                <Border Classes="SettingsCard">
-                  <StackPanel Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <TextBlock Text="volume_up" Classes="SettingsIcon" FontSize="20" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Master Output Volume" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                      </StackPanel>
-                      <TextBlock Grid.Column="1" x:Name="VolumeValueText" Text="100%" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                    </Grid>
-
-                    <Slider x:Name="MasterVolumeSlider" Minimum="0" Maximum="100" Value="100" ValueChanged="OnMasterVolumeChanged" />
+          <!-- SECTION 1: AUDIO & SOUND -->
+          <StackPanel x:Name="AudioPanel" Spacing="20" IsVisible="True" ClipToBounds="False">
+            
+            <Border Classes="SettingsCard">
+              <StackPanel Spacing="14">
+                <Grid ColumnDefinitions="*,Auto">
+                  <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="volume_up" Classes="SettingsIcon" FontSize="22" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                    <TextBlock Text="Master Volume" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
                   </StackPanel>
-                </Border>
-
-                <!-- Audio Devices Dropdowns -->
-                <Border Classes="SettingsCard">
-                  <StackPanel Spacing="14">
-                    <StackPanel Spacing="6">
-                      <TextBlock Text="Output Device" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                      <ComboBox x:Name="OutputDeviceCombo" HorizontalAlignment="Stretch" SelectionChanged="OnOutputDeviceSelected" />
-                    </StackPanel>
-
-                    <StackPanel Spacing="6">
-                      <TextBlock Text="Input Device (Microphone)" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                      <ComboBox x:Name="InputDeviceCombo" HorizontalAlignment="Stretch" SelectionChanged="OnInputDeviceSelected" />
-                    </StackPanel>
-                  </StackPanel>
-                </Border>
-
-                <!-- Microphone Controls Card -->
-                <Border Classes="SettingsCard">
-                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                    <StackPanel Spacing="12">
-                      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <TextBlock x:Name="MuteMicIcon" Text="mic" Classes="SettingsIcon" FontSize="20" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Microphone Level" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock x:Name="MicVolumeText" Text="75%" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-                      </StackPanel>
-
-                      <Slider x:Name="MicVolumeSlider" Minimum="0" Maximum="100" Value="75" ValueChanged="OnMicVolumeChanged" Width="260" HorizontalAlignment="Left" />
-                    </StackPanel>
-
-                    <Button Grid.Column="1" x:Name="MuteMicBtn" Classes="ConsoleActionBtn" Click="OnMuteMicClicked">
-                      <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock x:Name="MuteMicBtnIcon" Text="mic_off" Classes="SettingsIcon" />
-                        <TextBlock x:Name="MuteMicText" Text="Mute Mic" FontWeight="SemiBold" />
-                      </StackPanel>
-                    </Button>
-                  </Grid>
-                </Border>
-
+                  <TextBlock Grid.Column="1" x:Name="VolumeValueText" Text="100%" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                </Grid>
+                <Slider x:Name="MasterVolumeSlider" Minimum="0" Maximum="100" Value="100" ValueChanged="OnMasterVolumeChanged" />
               </StackPanel>
+            </Border>
 
-              <!-- PANEL 2: NETWORK -->
-              <StackPanel x:Name="NetworkPanel" Spacing="16" IsVisible="False">
-                
-                <!-- Status Card -->
-                <Border Classes="SettingsCard">
-                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                    <StackPanel Spacing="4">
-                      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <TextBlock Text="wifi" Classes="SettingsIcon" FontSize="20" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Wi-Fi Connection" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                      </StackPanel>
-                      <TextBlock x:Name="NetworkStatusText" Text="Checking network status…" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-                    </StackPanel>
+            <Border Classes="SettingsCard">
+              <StackPanel Spacing="16">
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Audio Output Device" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                  <ComboBox x:Name="OutputDeviceCombo" HorizontalAlignment="Stretch" SelectionChanged="OnOutputDeviceSelected" />
+                </StackPanel>
 
-                    <ToggleSwitch Grid.Column="1" x:Name="WifiToggleSwitch" IsChecked="True" Click="OnWifiToggled" />
-                  </Grid>
-                </Border>
-
-                <!-- Wi-Fi Networks List -->
-                <Border Classes="SettingsCard">
-                  <StackPanel Spacing="12">
-                    <Grid ColumnDefinitions="*,Auto">
-                      <TextBlock Text="Available Networks" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                      <Button Grid.Column="1" Click="OnRefreshWifiClicked" Classes="ConsoleActionBtn" Height="32" Padding="10,0">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                          <TextBlock Text="refresh" Classes="SettingsIcon" FontSize="16" />
-                          <TextBlock Text="Scan" FontSize="12" />
-                        </StackPanel>
-                      </Button>
-                    </Grid>
-
-                    <StackPanel x:Name="WifiListStack" Spacing="8" />
-                  </StackPanel>
-                </Border>
-
+                <StackPanel Spacing="8">
+                  <TextBlock Text="Microphone Input Device" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                  <ComboBox x:Name="InputDeviceCombo" HorizontalAlignment="Stretch" SelectionChanged="OnInputDeviceSelected" />
+                </StackPanel>
               </StackPanel>
+            </Border>
 
-              <!-- PANEL 3: CONTROLLER KEYBINDINGS & LIVE TEST -->
-              <StackPanel x:Name="ControlsPanel" Spacing="16" IsVisible="False">
-                
-                <Border Classes="SettingsCard">
-                  <StackPanel Spacing="12">
-                    <StackPanel Spacing="4">
-                      <TextBlock Text="Controller Button Keybindings" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                      <TextBlock Text="Click Remap on any action, then press your controller button to assign." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
-                    </StackPanel>
-
-                    <StackPanel x:Name="KeybindingsListStack" Spacing="8" Margin="0,6,0,0" />
+            <Border Classes="SettingsCard">
+              <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                <StackPanel Spacing="14">
+                  <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock x:Name="MuteMicIcon" Text="mic" Classes="SettingsIcon" FontSize="22" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                    <TextBlock Text="Microphone Level" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                    <TextBlock x:Name="MicVolumeText" Text="75%" FontSize="14" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
                   </StackPanel>
-                </Border>
+                  <Slider x:Name="MicVolumeSlider" Minimum="0" Maximum="100" Value="75" ValueChanged="OnMicVolumeChanged" Width="320" HorizontalAlignment="Left" />
+                </StackPanel>
 
-                <!-- Live Controller Input Test Box -->
-                <Border Classes="SettingsCard" Background="#1A1A24">
-                  <StackPanel Spacing="6">
-                    <TextBlock Text="LIVE CONTROLLER TEST FEED" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" />
-                    <TextBlock x:Name="LiveTestFeedText" Text="Press any controller button to test input live..." FontSize="13" FontWeight="Medium" Foreground="#00FF66" TextWrapping="Wrap" />
-                  </StackPanel>
-                </Border>
-
-                <!-- Reset to Defaults -->
-                <Button Click="OnResetKeybindingsClicked" Classes="ConsolePrimaryBtn" HorizontalAlignment="Stretch">
-                  <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                    <TextBlock Text="restart_alt" Classes="SettingsIcon" Foreground="{DynamicResource ConsolePrimaryButtonFgBrush}" />
-                    <TextBlock Text="Reset Keybindings to Defaults" FontWeight="Bold" Foreground="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+                <Button Grid.Column="1" x:Name="MuteMicBtn" Classes="ConsoleActionBtn" Click="OnMuteMicClicked">
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock x:Name="MuteMicBtnIcon" Text="mic_off" Classes="SettingsIcon" />
+                    <TextBlock x:Name="MuteMicText" Text="Mute Mic" FontWeight="SemiBold" />
                   </StackPanel>
                 </Button>
-
-              </StackPanel>
-
-              <!-- PANEL 4: QUICK SYSTEM ACTIONS -->
-              <StackPanel x:Name="SystemPanel" Spacing="16" IsVisible="False">
-                
-                <Border Classes="SettingsCard">
-                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                    <StackPanel Spacing="4">
-                      <TextBlock Text="Performance Overlay" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                      <TextBlock Text="Show FPS, CPU &amp; GPU stats" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-                    </StackPanel>
-
-                    <ToggleSwitch Grid.Column="1" x:Name="PerfOverlayToggle" Click="OnPerfOverlayToggled" />
-                  </Grid>
-                </Border>
-
-                <Border Classes="SettingsCard">
-                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-                    <StackPanel Spacing="4">
-                      <TextBlock Text="Return to Desktop" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                      <TextBlock Text="Exit console mode to DaisyOS desktop" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-                    </StackPanel>
-
-                    <Button Grid.Column="1" Click="OnReturnToDesktopClicked" Classes="ConsolePrimaryBtn">
-                      <TextBlock Text="Desktop" FontWeight="Bold" />
-                    </Button>
-                  </Grid>
-                </Border>
-
-                <Border Classes="SettingsCard">
-                  <StackPanel Spacing="12">
-                    <TextBlock Text="Power Options" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
-
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                      <Button Grid.Column="0" Click="OnRestartClicked" Classes="ConsoleActionBtn">
-                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                          <TextBlock Text="restart_alt" Classes="SettingsIcon" />
-                          <TextBlock Text="Restart" FontWeight="SemiBold" />
-                        </StackPanel>
-                      </Button>
-
-                      <Button Grid.Column="1" Click="OnShutdownClicked" Classes="ConsoleActionBtn">
-                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                          <TextBlock Text="power_settings_new" Classes="SettingsIcon" />
-                          <TextBlock Text="Power Off" FontWeight="SemiBold" />
-                        </StackPanel>
-                      </Button>
-                    </Grid>
-                  </StackPanel>
-                </Border>
-
-              </StackPanel>
-
-            </Grid>
-          </ScrollViewer>
-
-        </Grid>
-
-        <!-- Bottom Action Hints using PNG Asset Icons -->
-        <Grid Grid.Row="2" Margin="0,16,0,0" ColumnDefinitions="*,Auto" RenderOptions.BitmapInterpolationMode="HighQuality">
-          <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-            
-            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-              <Image x:Name="HintDpadImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
-              <TextBlock Text="Navigate" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-              <Image x:Name="HintConfirmImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
-              <TextBlock Text="Select" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-              <Image x:Name="HintDetailsImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
-              <TextBlock Text="Details" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
-            </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-              <Image x:Name="HintBackImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
-              <TextBlock Text="Back" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
-            </StackPanel>
+              </Grid>
+            </Border>
 
           </StackPanel>
 
-          <Button Grid.Column="1" Click="OnCloseClicked" Classes="ConsolePrimaryBtn" Height="36" Padding="16,0">
-            <TextBlock Text="Close" FontSize="13" FontWeight="Bold" />
-          </Button>
+          <!-- SECTION 2: NETWORK -->
+          <StackPanel x:Name="NetworkPanel" Spacing="20" IsVisible="False" ClipToBounds="False">
+            <Border Classes="SettingsCard">
+              <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                <StackPanel Spacing="4">
+                  <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="wifi" Classes="SettingsIcon" FontSize="22" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                    <TextBlock Text="Wi-Fi Connection" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                  </StackPanel>
+                  <TextBlock x:Name="NetworkStatusText" Text="Checking network status…" FontSize="14" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                  <ToggleSwitch x:Name="WifiToggleSwitch" IsChecked="True" VerticalAlignment="Center" />
+                  <Button Click="OnRefreshWifiClicked" Classes="ConsoleActionBtn">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <TextBlock Text="refresh" Classes="SettingsIcon" FontSize="18" />
+                      <TextBlock Text="Scan Networks" FontSize="13" FontWeight="SemiBold" />
+                    </StackPanel>
+                  </Button>
+                </StackPanel>
+              </Grid>
+            </Border>
+
+            <Border Classes="SettingsCard">
+              <StackPanel Spacing="14">
+                <TextBlock Text="Available Networks" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                <StackPanel x:Name="WifiListStack" Spacing="10" />
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
+          <!-- SECTION 3: CONTROLLER & KEYBINDINGS -->
+          <StackPanel x:Name="ControlsPanel" Spacing="20" IsVisible="False" ClipToBounds="False">
+            <Border Classes="SettingsCard">
+              <StackPanel Spacing="14">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="Controller Remapping" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                  <TextBlock Text="Click Remap on any action, then press your controller button to reassign." FontSize="14" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                </StackPanel>
+                <StackPanel x:Name="KeybindingsListStack" Spacing="10" Margin="0,6,0,0" />
+              </StackPanel>
+            </Border>
+
+            <Border Classes="SettingsCard" Background="#12121A">
+              <StackPanel Spacing="8">
+                <TextBlock Text="LIVE CONTROLLER TEST FEED" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" LetterSpacing="1" />
+                <TextBlock x:Name="LiveTestFeedText" Text="Press any controller button to test input live..." FontSize="14" FontWeight="Medium" Foreground="#00FF66" TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+
+            <Button Click="OnResetKeybindingsClicked" Classes="ConsolePrimaryBtn" HorizontalAlignment="Stretch">
+              <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                <TextBlock Text="restart_alt" Classes="SettingsIcon" Foreground="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+                <TextBlock Text="Reset Keybindings to Defaults" FontWeight="Bold" Foreground="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+              </StackPanel>
+            </Button>
+          </StackPanel>
+
+          <!-- SECTION 4: SYSTEM & POWER -->
+          <StackPanel x:Name="SystemPanel" Spacing="20" IsVisible="False" ClipToBounds="False">
+            <Border Classes="SettingsCard">
+              <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="Performance Overlay" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                  <TextBlock Text="Show live FPS, CPU &amp; GPU hardware telemetry overlay" FontSize="14" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                </StackPanel>
+                <ToggleSwitch Grid.Column="1" x:Name="PerfOverlayToggle" Click="OnPerfOverlayToggled" />
+              </Grid>
+            </Border>
+
+            <Border Classes="SettingsCard">
+              <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="Return to Desktop" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                  <TextBlock Text="Exit console mode and return to DaisyOS desktop" FontSize="14" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                </StackPanel>
+
+                <Button Grid.Column="1" Click="OnReturnToDesktopClicked" Classes="ConsolePrimaryBtn">
+                  <TextBlock Text="Exit to Desktop" FontWeight="Bold" />
+                </Button>
+              </Grid>
+            </Border>
+
+            <Border Classes="SettingsCard">
+              <StackPanel Spacing="16">
+                <TextBlock Text="Power Management" FontSize="17" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                  <Button Grid.Column="0" Click="OnRestartClicked" Classes="ConsoleActionBtn" Height="48">
+                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                      <TextBlock Text="restart_alt" Classes="SettingsIcon" />
+                      <TextBlock Text="Restart Console" FontWeight="Bold" />
+                    </StackPanel>
+                  </Button>
+
+                  <Button Grid.Column="1" Click="OnShutdownClicked" Classes="ConsoleActionBtn" Height="48">
+                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+                      <TextBlock Text="power_settings_new" Classes="SettingsIcon" />
+                      <TextBlock Text="Shut Down" FontWeight="Bold" />
+                    </StackPanel>
+                  </Button>
+                </Grid>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+
         </Grid>
+      </ScrollViewer>
 
+    </Grid>
+
+    <!-- Bottom Controller Action Hints Footer -->
+    <Border Grid.Row="2" Background="{DynamicResource ConsoleSurfaceBrush}" BorderBrush="{DynamicResource ConsoleDividerBrush}" BorderThickness="0,1,0,0" Padding="56,16" VerticalAlignment="Bottom">
+      <Grid ColumnDefinitions="*,Auto" RenderOptions.BitmapInterpolationMode="HighQuality">
+        <StackPanel Orientation="Horizontal" Spacing="24" VerticalAlignment="Center">
+          
+          <!-- LB / RB Switch Tab -->
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Border Background="#33FFFFFF" CornerRadius="6" Padding="6,2">
+              <TextBlock Text="LB / RB" FontSize="12" FontWeight="Bold" Foreground="White" />
+            </Border>
+            <TextBlock Text="Switch Tab" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- D-Pad Navigate -->
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Image x:Name="HintDpadImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+            <TextBlock Text="Navigate" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Select -->
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Image x:Name="HintConfirmImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+            <TextBlock Text="Select" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Details -->
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Image x:Name="HintDetailsImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+            <TextBlock Text="Details" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- Back -->
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Image x:Name="HintBackImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+            <TextBlock Text="Back" FontSize="13" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+          </StackPanel>
+
+        </StackPanel>
+
+        <Button Grid.Column="1" Click="OnCloseClicked" Classes="ConsolePrimaryBtn" Height="38" Padding="20,0">
+          <TextBlock Text="Close Settings" FontSize="13" FontWeight="Bold" />
+        </Button>
       </Grid>
-
     </Border>
 
   </Grid>

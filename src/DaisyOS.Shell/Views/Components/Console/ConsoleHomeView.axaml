@@ -373,7 +373,7 @@
               <Button Click="OnOpenQuickSettingsClicked" Classes="ConsoleActionBtn" HorizontalAlignment="Center" Margin="0,10,0,0">
                 <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                   <TextBlock Text="tune" Classes="ConsoleStatusIcon" FontSize="20" />
-                  <TextBlock Text="Open Quick Settings Overlay" FontSize="15" FontWeight="Bold" />
+                  <TextBlock Text="Open Fullscreen Settings" FontSize="15" FontWeight="Bold" />
                 </StackPanel>
               </Button>
             </StackPanel>
