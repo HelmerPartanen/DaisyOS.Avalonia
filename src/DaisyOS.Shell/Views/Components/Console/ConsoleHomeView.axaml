@@ -138,7 +138,7 @@
               Fixed PS5-style card row.
 
               Card size: 210 x 210
-              Slot:      230 x 230 (5px focus ring)
+              Slot:      210 x 210 (5px focus ring overlay)
               Step:      230
           -->
           <Border
@@ -148,21 +148,12 @@
             <StackPanel
                 x:Name="CarouselTrack"
                 Orientation="Horizontal"
-                Spacing="0"
+                Spacing="20"
                 VerticalAlignment="Center">
 
 
               <!-- Library -->
-              <Grid Width="230" Height="230">
-                <Border
-                    x:Name="LibraryFocusRing"
-                    BorderBrush="White"
-                    BorderThickness="5"
-                    CornerRadius="29"
-                    IsHitTestVisible="False"
-                    IsVisible="False"
-                    Margin="5" />
-
+              <Grid Width="210" Height="210">
                 <Button
                     x:Name="LibraryButton"
                     Classes="ConsoleTile"
@@ -185,20 +176,18 @@
                 </StackPanel>
 
                 </Button>
+                <Border
+                    x:Name="LibraryFocusRing"
+                    BorderBrush="White"
+                    BorderThickness="5"
+                    CornerRadius="24"
+                    IsHitTestVisible="False"
+                    IsVisible="False" />
               </Grid>
 
 
               <!-- Recent -->
-              <Grid Width="230" Height="230">
-                <Border
-                    x:Name="RecentFocusRing"
-                    BorderBrush="White"
-                    BorderThickness="5"
-                    CornerRadius="29"
-                    IsHitTestVisible="False"
-                    IsVisible="False"
-                    Margin="5" />
-
+              <Grid Width="210" Height="210">
                 <Button
                     x:Name="RecentButton"
                     Classes="ConsoleTile"
@@ -221,20 +210,18 @@
                 </StackPanel>
 
                 </Button>
+                <Border
+                    x:Name="RecentFocusRing"
+                    BorderBrush="White"
+                    BorderThickness="5"
+                    CornerRadius="24"
+                    IsHitTestVisible="False"
+                    IsVisible="False" />
               </Grid>
 
 
               <!-- Friends -->
-              <Grid Width="230" Height="230">
-                <Border
-                    x:Name="FriendsFocusRing"
-                    BorderBrush="White"
-                    BorderThickness="5"
-                    CornerRadius="29"
-                    IsHitTestVisible="False"
-                    IsVisible="False"
-                    Margin="5" />
-
+              <Grid Width="210" Height="210">
                 <Button
                     x:Name="FriendsButton"
                     Classes="ConsoleTile"
@@ -257,20 +244,18 @@
                 </StackPanel>
 
                 </Button>
+                <Border
+                    x:Name="FriendsFocusRing"
+                    BorderBrush="White"
+                    BorderThickness="5"
+                    CornerRadius="24"
+                    IsHitTestVisible="False"
+                    IsVisible="False" />
               </Grid>
 
 
               <!-- Settings -->
-              <Grid Width="230" Height="230">
-                <Border
-                    x:Name="SettingsFocusRing"
-                    BorderBrush="White"
-                    BorderThickness="5"
-                    CornerRadius="29"
-                    IsHitTestVisible="False"
-                    IsVisible="False"
-                    Margin="5" />
-
+              <Grid Width="210" Height="210">
                 <Button
                     x:Name="SettingsButton"
                     Classes="ConsoleTile"
@@ -293,6 +278,13 @@
                 </StackPanel>
 
                 </Button>
+                <Border
+                    x:Name="SettingsFocusRing"
+                    BorderBrush="White"
+                    BorderThickness="5"
+                    CornerRadius="24"
+                    IsHitTestVisible="False"
+                    IsVisible="False" />
               </Grid>
 
             </StackPanel>
