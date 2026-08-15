@@ -14,8 +14,8 @@ public readonly record struct TaskbarWindowPresentation(
     public static TaskbarWindowPresentation From(NativeAppWindowState state) => state switch
     {
         NativeAppWindowState.Active => new(true, true, false, 20, 1, "active"),
-        NativeAppWindowState.Minimized => new(true, false, true, 10, 0.42, "minimized"),
-        NativeAppWindowState.RunningInactive => new(true, false, false, 14, 0.58, "running"),
+        NativeAppWindowState.Minimized => new(true, false, true, 4, 1, "minimized"),
+        NativeAppWindowState.RunningInactive => new(true, false, false, 14, 1, "running"),
         _ => new(false, false, false, 0, 0, null)
     };
 }

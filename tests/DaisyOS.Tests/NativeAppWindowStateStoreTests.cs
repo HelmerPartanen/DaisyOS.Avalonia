@@ -58,9 +58,9 @@ public sealed class NativeAppWindowStateStoreTests
 
     [Theory]
     [InlineData(NativeAppWindowState.NotRunning, false, false, false, 0, 0)]
-    [InlineData(NativeAppWindowState.RunningInactive, true, false, false, 14, 0.58)]
+    [InlineData(NativeAppWindowState.RunningInactive, true, false, false, 14, 1)]
     [InlineData(NativeAppWindowState.Active, true, true, false, 20, 1)]
-    [InlineData(NativeAppWindowState.Minimized, true, false, true, 10, 0.42)]
+    [InlineData(NativeAppWindowState.Minimized, true, false, true, 4, 1)]
     public void TaskbarPresentation_MapsEveryWindowState(
         NativeAppWindowState state,
         bool isRunning,

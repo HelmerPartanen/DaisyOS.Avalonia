@@ -1,6 +1,31 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <!-- Semantic theme roles only. Components choose a role, never a component-specific colour. -->
+  <!-- Semantic theme roles only. Components choose a role, never a component-specific colour.
+
+OPACITY VALUES
+
+100% — FF
+95% — F2
+90% — E6
+85% — D9
+80% — CC
+75% — BF
+70% — B3
+65% — A6
+60% — 99
+55% — 8C
+50% — 80
+45% — 73
+40% — 66
+35% — 59
+30% — 4D
+25% — 40
+20% — 33
+15% — 26
+10% — 1A
+5% — 0D
+0% — 00 
+  -->
   <ResourceDictionary.ThemeDictionaries>
     <ResourceDictionary x:Key="Light">
       <!-- Primary is the app background, then increasing elevation. -->
@@ -10,9 +35,9 @@
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1A000000" />
       <SolidColorBrush x:Key="DividerBrush" Color="#26000000" />
 
-      <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FF1C1C1E" />
-      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#B31C1C1E" />
-      <SolidColorBrush x:Key="TextTertiaryBrush" Color="#801C1C1E" />
+      <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FF000000" />
+      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CC000000" />
+      <SolidColorBrush x:Key="TextTertiaryBrush" Color="#99000000" />
 
       <SolidColorBrush x:Key="GhostHoverBrush" Color="#26000000" />
       <SolidColorBrush x:Key="GhostPressedBrush" Color="#33000000" />
@@ -56,8 +81,8 @@
       <SolidColorBrush x:Key="DividerBrush" Color="#26FFFFFF" />
 
       <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFF5F5F7" />
-      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#B3F5F5F7" />
-      <SolidColorBrush x:Key="TextTertiaryBrush" Color="#80F5F5F7" />
+      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CCF5F5F7" />
+      <SolidColorBrush x:Key="TextTertiaryBrush" Color="#99F5F5F7" />
 
       <SolidColorBrush x:Key="GhostHoverBrush" Color="#26FFFFFF" />
       <SolidColorBrush x:Key="GhostPressedBrush" Color="#33FFFFFF" />
