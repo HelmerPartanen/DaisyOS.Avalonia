@@ -3,94 +3,69 @@
     x:Name="Root"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Background="Transparent">
+    Background="Black">
 
   <UserControl.Styles>
 
-    <Style Selector="Button.ConsoleTile">
+    <!-- Square Game Cover Card Button -->
+    <Style Selector="Button.GameCoverTile">
       <Setter Property="Width" Value="210" />
       <Setter Property="Height" Value="210" />
-      <Setter Property="Padding" Value="20" />
+      <Setter Property="Padding" Value="0" />
       <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedXL}" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-      <Setter Property="HorizontalContentAlignment" Value="Left" />
-      <Setter Property="VerticalContentAlignment" Value="Bottom" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalAlignment" Value="Center" />
 
       <Setter Property="Transitions">
         <Transitions>
-          <DoubleTransition
-              Property="Opacity"
-              Duration="0:0:0.14" />
-
-          <TransformOperationsTransition
-              Property="RenderTransform"
-              Duration="0:0:0.16" />
+          <DoubleTransition Property="Opacity" Duration="0:0:0.14" />
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.16" />
         </Transitions>
       </Setter>
     </Style>
 
-    <!-- Controller focus -->
-    <Style Selector="Button.ConsoleTile:focus /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.GameCoverTile:focus /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
-    <!-- Mouse hover is quieter than controller focus -->
-    <Style Selector="Button.ConsoleTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.GameCoverTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
     </Style>
 
-    <Style Selector="Button.ConsoleTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.GameCoverTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}" />
     </Style>
 
-    <Style Selector="Button.ConsoleTile:pressed">
+    <Style Selector="Button.GameCoverTile:pressed">
       <Setter Property="RenderTransform" Value="scale(0.985)" />
-    </Style>
-
-    <Style Selector="TextBlock.ConsoleStatusIcon">
-      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
-      <Setter Property="FontSize" Value="18" />
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
-    </Style>
-
-    <Style Selector="TextBlock.ConsoleTileIcon">
-      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
-      <Setter Property="FontSize" Value="36" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-    </Style>
-
-    <Style Selector="TextBlock.ConsoleTileLabel">
-      <Setter Property="FontSize" Value="18" />
-      <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
     <Style Selector="Border.ConsoleFocusRing">
       <Setter Property="BorderBrush" Value="{DynamicResource TextPrimaryBrush}" />
-      <Setter Property="BorderThickness" Value="5" />
+      <Setter Property="BorderThickness" Value="4" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedXL}" />
     </Style>
 
-    <!-- The header owns system navigation; the large cards remain its content surface. -->
     <Style Selector="Button.ConsoleHeaderNav">
       <Setter Property="Height" Value="44" />
       <Setter Property="Padding" Value="14,0" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
-      <Setter Property="FontSize" Value="21" />
+      <Setter Property="FontSize" Value="20" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav > TextBlock">
-      <Setter Property="FontSize" Value="21" />
+      <Setter Property="FontSize" Value="20" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
@@ -103,27 +78,40 @@
       <Setter Property="Foreground" Value="{DynamicResource OnAccentSurfaceBrush}" />
     </Style>
 
-    <Style Selector="Button.ConsoleHeaderNav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
-    </Style>
-
-    <Style Selector="Button.ConsoleHeaderNav:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+    <Style Selector="TextBlock.ConsoleStatusIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
+      <Setter Property="FontSize" Value="18" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
     </Style>
 
   </UserControl.Styles>
 
-
   <Grid>
 
-    <!-- Keep the shared wallpaper visible -->
-    <Border
-        Background="{DynamicResource PrimarySurfaceBrush}"
-        Opacity="0.22"
-        IsHitTestVisible="False" />
+    <!-- Fullscreen Background Image (Unzoomed, Crisp Display) -->
+    <Image
+        x:Name="HeroBackgroundImage"
+        Stretch="UniformToFill"
+        Opacity="0.42">
+      <Image.Transitions>
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.4" Easing="CubicEaseOut" />
+        </Transitions>
+      </Image.Transitions>
+    </Image>
 
+    <!-- Dark gradient overlay for visual clarity -->
+    <Border IsHitTestVisible="False">
+      <Border.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+          <GradientStop Color="#DD090A0F" Offset="0.0" />
+          <GradientStop Color="#99090A0F" Offset="0.5" />
+          <GradientStop Color="#F4090A0F" Offset="1.0" />
+        </LinearGradientBrush>
+      </Border.Background>
+    </Border>
 
-    <Grid Margin="72,32,72,48">
+    <Grid Margin="64,28,64,36">
 
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -131,223 +119,65 @@
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-
-      <!-- Header -->
-      <Grid
-          Grid.Row="0"
-          ColumnDefinitions="*,Auto"
-          VerticalAlignment="Center">
-
-        <StackPanel
-            Orientation="Horizontal"
-            Spacing="4"
-            VerticalAlignment="Center">
-
-          <Button
-              x:Name="HeaderLibraryButton"
-              Classes="ConsoleHeaderNav"
-              ToolTip.Tip="Library">
-            <TextBlock Text="Library" />
+      <!-- Top System Bar Header -->
+      <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Top">
+        <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+          <Button x:Name="HeaderLibraryButton" Classes="ConsoleHeaderNav" ToolTip.Tip="Library">
+            <TextBlock Text="Games" />
           </Button>
-
-          <Button
-              x:Name="HeaderRecentButton"
-              Classes="ConsoleHeaderNav"
-              ToolTip.Tip="Recently played">
+          <Button x:Name="HeaderRecentButton" Classes="ConsoleHeaderNav" ToolTip.Tip="Recently played">
             <TextBlock Text="Recent" />
           </Button>
-
-          <Button
-              x:Name="HeaderFriendsButton"
-              Classes="ConsoleHeaderNav"
-              ToolTip.Tip="Friends">
-            <TextBlock Text="Friends" />
-          </Button>
-
-          <Button
-              x:Name="HeaderSettingsButton"
-              Classes="ConsoleHeaderNav"
-              ToolTip.Tip="Settings">
+          <Button x:Name="HeaderSettingsButton" Classes="ConsoleHeaderNav" ToolTip.Tip="Settings">
             <TextBlock Text="Settings" />
           </Button>
-
         </StackPanel>
 
-        <Border
-            Grid.Column="1">
+        <Border Grid.Column="1">
+          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <TextBlock Text="wifi" Classes="ConsoleStatusIcon" />
+            <TextBlock Text="battery_full" Classes="ConsoleStatusIcon" />
+            <TextBlock x:Name="ClockText" Text="14:22" FontSize="15" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+          </StackPanel>
+        </Border>
+      </Grid>
 
-          <StackPanel
-              Orientation="Horizontal"
-              Spacing="12"
-              VerticalAlignment="Center">
+      <!-- Center Content: Vertically Centered along Y Axis -->
+      <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="24">
 
-          <TextBlock
-              Text="wifi"
-              Classes="ConsoleStatusIcon" />
-
-          <TextBlock
-              Text="battery_full"
-              Classes="ConsoleStatusIcon" />
-
-          <TextBlock
-              Text="11:42"
-              FontSize="15"
-              FontWeight="Medium"
-              Foreground="{DynamicResource TextPrimaryBrush}" />
-
+        <!-- Active Game Spotlight Header -->
+        <StackPanel Spacing="8" Margin="8,0,0,0">
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <Border Background="#3AFFFFFF" CornerRadius="6" Padding="8,3" VerticalAlignment="Center">
+              <TextBlock x:Name="SelectedGameSourceText" Text="STEAM" FontSize="12" FontWeight="Bold" Foreground="#EEFFFFFF" />
+            </Border>
+            <TextBlock x:Name="SelectedGameSubtext" Text="Ready to play" FontSize="14" Foreground="#AAFFFFFF" VerticalAlignment="Center" />
           </StackPanel>
 
-        </Border>
-
-      </Grid>
-
-
-      <!-- Main console home -->
-      <Grid
-          Grid.Row="1"
-          MaxWidth="1400"
-          HorizontalAlignment="Stretch"
-          VerticalAlignment="Center">
-
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="24" />
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-
-        <StackPanel
-            Grid.Row="2">
-
-          <Border
-              Height="230"
-              HorizontalAlignment="Stretch">
-
-            <StackPanel
-                x:Name="CarouselTrack"
-                Orientation="Horizontal"
-                Spacing="20"
-                VerticalAlignment="Center">
-
-
-              <!-- Library -->
-              <Grid Width="210" Height="210">
-                <Button
-                    x:Name="LibraryButton"
-                    Classes="ConsoleTile"
-                    ToolTip.Tip="Library">
-
-                <StackPanel Spacing="10">
-
-                  <TextBlock
-                      Text="stadia_controller"
-                      Classes="ConsoleTileIcon" />
-
-                  <TextBlock
-                      Text="Library"
-                      Classes="ConsoleTileLabel" />
-
-                </StackPanel>
-
-                </Button>
-                <Border
-                    x:Name="LibraryFocusRing"
-                    Classes="ConsoleFocusRing"
-                    IsHitTestVisible="False"
-                    IsVisible="False" />
-              </Grid>
-
-
-              <!-- Recent -->
-              <Grid Width="210" Height="210">
-                <Button
-                    x:Name="RecentButton"
-                    Classes="ConsoleTile"
-                    ToolTip.Tip="Recently played">
-
-                <StackPanel Spacing="10">
-
-                  <TextBlock
-                      Text="history"
-                      Classes="ConsoleTileIcon" />
-
-                  <TextBlock
-                      Text="Recent"
-                      Classes="ConsoleTileLabel" />
-
-                </StackPanel>
-
-                </Button>
-                <Border
-                    x:Name="RecentFocusRing"
-                    Classes="ConsoleFocusRing"
-                    IsHitTestVisible="False"
-                    IsVisible="False" />
-              </Grid>
-
-
-              <!-- Friends -->
-              <Grid Width="210" Height="210">
-                <Button
-                    x:Name="FriendsButton"
-                    Classes="ConsoleTile"
-                    ToolTip.Tip="Friends">
-
-                <StackPanel Spacing="10">
-
-                  <TextBlock
-                      Text="group"
-                      Classes="ConsoleTileIcon" />
-
-                  <TextBlock
-                      Text="Friends"
-                      Classes="ConsoleTileLabel" />
-
-                </StackPanel>
-
-                </Button>
-                <Border
-                    x:Name="FriendsFocusRing"
-                    Classes="ConsoleFocusRing"
-                    IsHitTestVisible="False"
-                    IsVisible="False" />
-              </Grid>
-
-
-              <!-- Settings -->
-              <Grid Width="210" Height="210">
-                <Button
-                    x:Name="SettingsButton"
-                    Classes="ConsoleTile"
-                    ToolTip.Tip="Settings">
-
-                <StackPanel Spacing="10">
-
-                  <TextBlock
-                      Text="settings"
-                      Classes="ConsoleTileIcon" />
-
-                  <TextBlock
-                      Text="Settings"
-                      Classes="ConsoleTileLabel" />
-
-                </StackPanel>
-
-                </Button>
-                <Border
-                    x:Name="SettingsFocusRing"
-                    Classes="ConsoleFocusRing"
-                    IsHitTestVisible="False"
-                    IsVisible="False" />
-              </Grid>
-
-            </StackPanel>
-
-          </Border>
-
+          <!-- Transparent Logo or Title -->
+          <Panel Height="70" HorizontalAlignment="Left">
+            <Image x:Name="SelectedGameLogoImage" MaxWidth="380" MaxHeight="70" Stretch="Uniform" HorizontalAlignment="Left" IsVisible="False" />
+            <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="36" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+          </Panel>
         </StackPanel>
 
-      </Grid>
+        <!-- Centered Square App Cards Carousel Track -->
+        <Grid Height="220" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+          <StackPanel
+              x:Name="CarouselTrack"
+              Orientation="Horizontal"
+              Spacing="20"
+              VerticalAlignment="Center">
+
+            <!-- Dynamic square game cards populated at runtime -->
+
+          </StackPanel>
+        </Grid>
+
+      </StackPanel>
+
+      <!-- Bottom Spacer -->
+      <Border Grid.Row="2" Height="20" />
 
     </Grid>
 

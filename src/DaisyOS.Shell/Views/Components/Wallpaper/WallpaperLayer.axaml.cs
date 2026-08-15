@@ -11,16 +11,15 @@ public partial class WallpaperLayer : UserControl
 {
     // Travel is capped by each dimension's actual layout overscan, preventing exposed edges
     // on portrait and narrow displays without making the image zoom further.
-    private const double MaximumParallaxOffset = 64;
-    private const double WallpaperScale = 1.18;
-    private const double EdgeSafetyInset = 2;
+    private const double MaximumParallaxOffset = 0;
+    private const double WallpaperScale = 1.0;
+    private const double EdgeSafetyInset = 0;
     private readonly DispatcherTimer _parallaxTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly TranslateTransform _parallaxTranslation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
     private App? _app;
     private WallpaperImageService? _wallpaperImageService;
     private WallpaperRenderMetrics _wallpaperMetrics;
-    private bool _parallaxEnabled;
     private double _targetOffsetX;
     private double _targetOffsetY;
     private double _offsetX;
@@ -47,32 +46,15 @@ public partial class WallpaperLayer : UserControl
     /// <summary>Updates console parallax from the selected position in the controller carousel.</summary>
     public void SetConsoleNavigationParallax(double position)
     {
-        if (!_parallaxEnabled)
-        {
-            return;
-        }
-
-        _targetOffsetX = -Math.Clamp(position, -1, 1) * _horizontalTravelLimit;
+        _targetOffsetX = 0;
         _targetOffsetY = 0;
-        if (!_parallaxTimer.IsEnabled)
-        {
-            _parallaxTimer.Start();
-        }
     }
 
     /// <summary>Enables console motion or eases the wallpaper back to its desktop position.</summary>
     public void SetConsoleParallaxEnabled(bool enabled)
     {
-        _parallaxEnabled = enabled;
-        if (!enabled)
-        {
-            _targetOffsetX = 0;
-            _targetOffsetY = 0;
-            if (!_parallaxTimer.IsEnabled)
-            {
-                _parallaxTimer.Start();
-            }
-        }
+        _targetOffsetX = 0;
+        _targetOffsetY = 0;
     }
 
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

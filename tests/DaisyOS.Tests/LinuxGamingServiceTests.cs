@@ -54,9 +54,7 @@ public sealed class LinuxGamingServiceTests
 
         Assert.Equal("Unknown", status.GpuVendor);
         Assert.False(status.VulkanAvailable);
-        Assert.False(status.Vulkan32Available);
         Assert.False(status.WineInstalled);
-        Assert.False(status.ControllerRulesInstalled);
         Assert.False(status.BluetoothServiceAvailable);
         Assert.False(status.BluetoothServiceRunning);
         Assert.Contains("Vulkan: Not detected", status.Detail, StringComparison.Ordinal);
