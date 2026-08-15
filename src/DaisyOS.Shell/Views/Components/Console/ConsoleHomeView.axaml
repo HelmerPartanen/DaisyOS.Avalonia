@@ -74,6 +74,12 @@
           ColumnDefinitions="*,Auto"
           VerticalAlignment="Center">
 
+        <TextBlock
+            Text="Home"
+            FontSize="21"
+            FontWeight="SemiBold"
+            Foreground="White"
+            VerticalAlignment="Center" />
 
         <StackPanel
             Grid.Column="1"
@@ -119,19 +125,7 @@
 
 
         <StackPanel
-            Grid.Row="2"
-            Spacing="20">
-
-          <!-- Section header -->
-          <Grid ColumnDefinitions="*,Auto">
-
-            <TextBlock
-                Text="Home"
-                FontSize="21"
-                FontWeight="SemiBold"
-                Foreground="White" />
-
-          </Grid>
+            Grid.Row="2">
 
 
           <!--
