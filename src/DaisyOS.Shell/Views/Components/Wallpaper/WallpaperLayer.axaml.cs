@@ -9,7 +9,11 @@ namespace DaisyOS.Shell.Views.Components.Wallpaper;
 /// <summary>The one wallpaper visual shared by the desktop and console shell experiences.</summary>
 public partial class WallpaperLayer : UserControl
 {
-    private const double MaximumParallaxOffset = 22;
+    // Travel is capped by each dimension's actual layout overscan, preventing exposed edges
+    // on portrait and narrow displays without making the image zoom further.
+    private const double MaximumParallaxOffset = 64;
+    private const double WallpaperScale = 1.18;
+    private const double EdgeSafetyInset = 2;
     private readonly DispatcherTimer _parallaxTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly TranslateTransform _parallaxTranslation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
@@ -21,38 +25,35 @@ public partial class WallpaperLayer : UserControl
     private double _targetOffsetY;
     private double _offsetX;
     private double _offsetY;
+    private double _horizontalTravelLimit;
+    private double _verticalTravelLimit;
     private int _refreshRequestVersion;
     private bool _isLoaded;
 
     public WallpaperLayer()
     {
         InitializeComponent();
-        WallpaperImage.RenderTransform = new TransformGroup
-        {
-            Children =
-            {
-                new ScaleTransform(1.06, 1.06),
-                _parallaxTranslation
-            }
-        };
+        WallpaperImage.RenderTransform = _parallaxTranslation;
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
-        SizeChanged += (_, _) => RequestWallpaperRefresh();
+        SizeChanged += (_, _) =>
+        {
+            ApplyWallpaperGeometry();
+            RequestWallpaperRefresh();
+        };
         _parallaxTimer.Tick += (_, _) => AdvanceParallax();
     }
 
-    /// <summary>Updates the console parallax target from an in-window pointer position.</summary>
-    public void SetParallaxTarget(Point position, Size viewport)
+    /// <summary>Updates console parallax from the selected position in the controller carousel.</summary>
+    public void SetConsoleNavigationParallax(double position)
     {
-        if (!_parallaxEnabled || viewport.Width <= 0 || viewport.Height <= 0)
+        if (!_parallaxEnabled)
         {
             return;
         }
 
-        var normalizedX = Math.Clamp((position.X / viewport.Width - 0.5) * 2, -1, 1);
-        var normalizedY = Math.Clamp((position.Y / viewport.Height - 0.5) * 2, -1, 1);
-        _targetOffsetX = -normalizedX * MaximumParallaxOffset;
-        _targetOffsetY = -normalizedY * MaximumParallaxOffset;
+        _targetOffsetX = -Math.Clamp(position, -1, 1) * _horizontalTravelLimit;
+        _targetOffsetY = 0;
         if (!_parallaxTimer.IsEnabled)
         {
             _parallaxTimer.Start();
@@ -77,6 +78,7 @@ public partial class WallpaperLayer : UserControl
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         _isLoaded = true;
+        ApplyWallpaperGeometry();
         _app = Application.Current as App;
         if (_app is null)
         {
@@ -128,6 +130,27 @@ public partial class WallpaperLayer : UserControl
         {
             _ = RefreshWallpaperAsync(Interlocked.Increment(ref _refreshRequestVersion));
         }
+    }
+
+    private void ApplyWallpaperGeometry()
+    {
+        if (Bounds.Width <= 0 || Bounds.Height <= 0)
+        {
+            return;
+        }
+
+        // Give the Image genuine layout bleed rather than relying on a scale render transform.
+        // Avalonia can then paint its whole enlarged bitmap before the parent clips it.
+        WallpaperImage.Width = Bounds.Width * WallpaperScale;
+        WallpaperImage.Height = Bounds.Height * WallpaperScale;
+        _horizontalTravelLimit = Math.Max(0, Math.Min(
+            MaximumParallaxOffset,
+            (WallpaperImage.Width - Bounds.Width) / 2 - EdgeSafetyInset));
+        _verticalTravelLimit = Math.Max(0, Math.Min(
+            MaximumParallaxOffset,
+            (WallpaperImage.Height - Bounds.Height) / 2 - EdgeSafetyInset));
+        _targetOffsetX = Math.Clamp(_targetOffsetX, -_horizontalTravelLimit, _horizontalTravelLimit);
+        _targetOffsetY = Math.Clamp(_targetOffsetY, -_verticalTravelLimit, _verticalTravelLimit);
     }
 
     private async Task RefreshWallpaperAsync(int requestVersion)

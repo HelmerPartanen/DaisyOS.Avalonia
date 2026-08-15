@@ -80,7 +80,8 @@ public sealed class LinuxControllerService : IControllerService
                 return new ControllerConnectionStatus(
                     true,
                     string.IsNullOrWhiteSpace(name) ? "Game controller" : name,
-                    handler is null ? null : $"/dev/input/{handler}");
+                    handler is null ? null : $"/dev/input/{handler}",
+                    joystickHandler is null ? null : $"/dev/input/{joystickHandler}");
             }
         }
 

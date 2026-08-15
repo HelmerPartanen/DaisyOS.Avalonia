@@ -21,6 +21,7 @@ namespace DaisyOS.Shell.Views
         private static readonly TimeSpan ConsoleLoadingDuration = TimeSpan.FromMilliseconds(720);
         private static readonly TimeSpan DesktopRestoreDuration = TimeSpan.FromMilliseconds(360);
         private readonly IControllerService _controllerService;
+        private readonly IControllerInputService _controllerInputService;
         private CancellationTokenSource? _controllerCancellation;
         private bool _controllerConnected;
         private bool _checkingController;
@@ -28,18 +29,25 @@ namespace DaisyOS.Shell.Views
         private bool _consoleTransitionInProgress;
 
         public ShellView()
-            : this(new LinuxControllerService())
+            : this(new LinuxControllerService(), new LinuxControllerInputService())
         {
         }
 
         public ShellView(IControllerService controllerService)
+            : this(controllerService, new LinuxControllerInputService())
+        {
+        }
+
+        public ShellView(IControllerService controllerService, IControllerInputService controllerInputService)
         {
             _controllerService = controllerService ?? throw new ArgumentNullException(nameof(controllerService));
+            _controllerInputService = controllerInputService ?? throw new ArgumentNullException(nameof(controllerInputService));
             InitializeComponent();
             AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, Avalonia.Interactivity.RoutingStrategies.Tunnel);
-            AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, Avalonia.Interactivity.RoutingStrategies.Tunnel);
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
+            _controllerInputService.NavigationRequested += OnControllerNavigationRequested;
+            ConsoleHome.SelectionChanged += OnConsoleSelectionChanged;
 
             if (Application.Current is App feedbackApp)
             {
@@ -72,6 +80,10 @@ namespace DaisyOS.Shell.Views
             _controllerCancellation?.Cancel();
             _controllerCancellation?.Dispose();
             _controllerCancellation = null;
+            _controllerInputService.NavigationRequested -= OnControllerNavigationRequested;
+            ConsoleHome.SelectionChanged -= OnConsoleSelectionChanged;
+            _controllerInputService.Stop();
+            _ = _controllerInputService.DisposeAsync();
         }
 
         private async Task RefreshControllerStateAsync()
@@ -108,6 +120,11 @@ namespace DaisyOS.Shell.Views
             if (status.IsConnected)
             {
                 ConsoleHome.ControllerName = status.Name ?? "Game controller";
+                _controllerInputService.Start(status);
+            }
+            else
+            {
+                _controllerInputService.Stop();
             }
 
             await ReconcileConsoleModeAsync();
@@ -147,6 +164,7 @@ namespace DaisyOS.Shell.Views
                         DesktopExperience.IsVisible = false;
                         ConsoleHome.IsVisible = true;
                         ShellWallpaper.SetConsoleParallaxEnabled(true);
+                        Dispatcher.UIThread.Post(ConsoleHome.FocusInitialDestination, DispatcherPriority.Input);
                         await Task.Delay(ConsoleLoadingDuration);
                     }
                     else
@@ -171,6 +189,10 @@ namespace DaisyOS.Shell.Views
                     else
                     {
                         _consoleMode = enteringConsoleMode;
+                        if (_consoleMode)
+                        {
+                            ShellWallpaper.SetConsoleNavigationParallax(ConsoleHome.ParallaxPosition);
+                        }
                     }
 
                     ConsoleTransition.Opacity = 0;
@@ -218,11 +240,22 @@ namespace DaisyOS.Shell.Views
             }
         }
 
-        private void OnPointerMoved(object? sender, PointerEventArgs e)
+        private void OnControllerNavigationRequested(object? sender, ControllerNavigationAction action)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_consoleMode)
+                {
+                    ConsoleHome.Navigate(action);
+                }
+            }, DispatcherPriority.Input);
+        }
+
+        private void OnConsoleSelectionChanged(object? sender, double position)
         {
             if (_consoleMode)
             {
-                ShellWallpaper.SetParallaxTarget(e.GetPosition(this), Bounds.Size);
+                ShellWallpaper.SetConsoleNavigationParallax(position);
             }
         }
 

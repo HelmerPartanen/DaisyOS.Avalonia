@@ -4,7 +4,8 @@ namespace DaisyOS.Core.Models;
 public sealed record ControllerConnectionStatus(
     bool IsConnected,
     string? Name,
-    string? DevicePath)
+    string? DevicePath,
+    string? JoystickPath = null)
 {
     public static ControllerConnectionStatus Disconnected { get; } = new(false, null, null);
 }

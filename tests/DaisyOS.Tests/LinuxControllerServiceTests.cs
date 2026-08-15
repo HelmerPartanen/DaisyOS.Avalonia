@@ -1,3 +1,4 @@
+using DaisyOS.Core.Models;
 using DaisyOS.System.Controllers;
 using Xunit;
 
@@ -36,6 +37,7 @@ public sealed class LinuxControllerServiceTests
 
         Assert.True(status.IsConnected);
         Assert.Equal("/dev/input/event4", status.DevicePath);
+        Assert.Equal("/dev/input/js0", status.JoystickPath);
     }
 
     [Fact]
@@ -57,5 +59,17 @@ public sealed class LinuxControllerServiceTests
 
         Assert.False(status.IsConnected);
         Assert.Null(status.Name);
+    }
+
+    [Theory]
+    [InlineData((byte)0x02, (short)-32767, (byte)6, ControllerNavigationAction.Left)]
+    [InlineData((byte)0x02, (short)32767, (byte)7, ControllerNavigationAction.Down)]
+    [InlineData((byte)0x01, (short)1, (byte)0, ControllerNavigationAction.Confirm)]
+    [InlineData((byte)0x01, (short)1, (byte)1, ControllerNavigationAction.Back)]
+    public void DecodeNavigation_MapsCommonDualSenseEvents(byte type, short value, byte number, ControllerNavigationAction expected)
+    {
+        var input = new LinuxControllerInputService();
+
+        Assert.Equal(expected, input.DecodeNavigation(type, value, number));
     }
 }
