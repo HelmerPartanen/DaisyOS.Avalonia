@@ -228,7 +228,7 @@ public partial class ConsoleHomeView : UserControl
         {
             Classes = { "GameCoverTile" },
             Tag = itemIndex,
-            ClipToBounds = true
+            ClipToBounds = false
         };
         ToolTip.SetTip(button, vm.Title);
 
@@ -260,7 +260,7 @@ public partial class ConsoleHomeView : UserControl
         // 2. Logo Card Layer
         var logoBorder = new Border
         {
-            Padding = new Thickness(16, 16, 16, 36),
+            Padding = new Thickness(16),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch
         };
@@ -318,30 +318,6 @@ public partial class ConsoleHomeView : UserControl
         fallbackStack.Children.Add(fallbackTitle);
         fallbackBorder.Child = fallbackStack;
         cardLayersGrid.Children.Add(fallbackBorder);
-
-        // 4. Card Title Overlay
-        var titleScrim = new Border
-        {
-            Classes = { "ConsoleTitleScrim" },
-            VerticalAlignment = VerticalAlignment.Bottom,
-            Height = 48,
-            Padding = new Thickness(10, 0, 10, 8)
-        };
-
-        var titleText = new TextBlock
-        {
-            Classes = { "ConsoleCardTitleText" },
-            Text = vm.Title,
-            FontSize = 13,
-            FontWeight = FontWeight.SemiBold,
-            TextTrimming = TextTrimming.CharacterEllipsis,
-            TextAlignment = TextAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Bottom
-        };
-
-        titleScrim.Child = titleText;
-        cardLayersGrid.Children.Add(titleScrim);
 
         cardClipperBorder.Child = cardLayersGrid;
         cardContent.Children.Add(cardClipperBorder);

@@ -14,7 +14,7 @@ public partial class ConsoleHeaderBar : UserControl
 
     public Button RecentButton => HeaderRecentButton;
     public Button LibraryButton => HeaderLibraryButton;
-    public Button SettingsButton => HeaderSettingsButton;
+    public Button SettingsButton => HeaderSettingsIconButton;
 
     public ConsoleHeaderBar()
     {
@@ -32,17 +32,12 @@ public partial class ConsoleHeaderBar : UserControl
 
     public void UpdateControllerInfo(ControllerType type, string name)
     {
-        if (ControllerStatusText != null)
-        {
-            ControllerStatusText.Text = string.IsNullOrWhiteSpace(name) ? "Controller" : name;
-        }
     }
 
     public void SetActiveTab(string tabName)
     {
         HeaderRecentButton.Classes.Remove("Active");
         HeaderLibraryButton.Classes.Remove("Active");
-        HeaderSettingsButton.Classes.Remove("Active");
 
         switch (tabName)
         {
@@ -51,9 +46,6 @@ public partial class ConsoleHeaderBar : UserControl
                 break;
             case "Library":
                 HeaderLibraryButton.Classes.Add("Active");
-                break;
-            case "Settings":
-                HeaderSettingsButton.Classes.Add("Active");
                 break;
         }
     }
@@ -68,12 +60,6 @@ public partial class ConsoleHeaderBar : UserControl
     {
         SetActiveTab("Library");
         TabSelected?.Invoke(this, "Library");
-    }
-
-    private void OnHeaderSettingsClicked(object? sender, RoutedEventArgs e)
-    {
-        SetActiveTab("Settings");
-        TabSelected?.Invoke(this, "Settings");
     }
 
     private void OnSettingsButtonClicked(object? sender, RoutedEventArgs e)
