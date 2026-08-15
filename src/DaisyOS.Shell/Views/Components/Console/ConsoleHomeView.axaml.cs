@@ -12,6 +12,7 @@ public partial class ConsoleHomeView : UserControl
         AvaloniaProperty.Register<ConsoleHomeView, string>(nameof(ControllerName), "Game controller");
 
     private Button[] _navigationTargets = [];
+    private Border[] _focusRings = [];
     private readonly string[] _navigationLabels = ["Library", "Recent", "Friends", "Settings"];
     private readonly DispatcherTimer _carouselTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly TranslateTransform _carouselTranslation = new();
@@ -27,6 +28,7 @@ public partial class ConsoleHomeView : UserControl
         Loaded += (_, _) =>
         {
             _navigationTargets = [LibraryButton, RecentButton, FriendsButton, SettingsButton];
+            _focusRings = [LibraryFocusRing, RecentFocusRing, FriendsFocusRing, SettingsFocusRing];
             foreach (var target in _navigationTargets)
             {
                 target.Click += OnTargetClicked;
@@ -110,6 +112,11 @@ public partial class ConsoleHomeView : UserControl
         }
 
         _navigationTargets[_selectedIndex].Focus();
+        for (var index = 0; index < _focusRings.Length; index++)
+        {
+            _focusRings[index].IsVisible = index == _selectedIndex;
+        }
+
         SelectionChanged?.Invoke(this, ParallaxPosition);
     }
 

@@ -34,9 +34,8 @@
 
     <!-- Controller focus -->
     <Style Selector="Button.ConsoleTile:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#33FFFFFF" />
-      <Setter Property="BorderBrush" Value="#B3FFFFFF" />
-      <Setter Property="RenderTransform" Value="scale(1.035)" />
+      <Setter Property="Background" Value="#26FFFFFF" />
+      <Setter Property="BorderBrush" Value="#1FFFFFFF" />
     </Style>
 
     <!-- Mouse hover is quieter than controller focus -->
@@ -44,7 +43,7 @@
       <Setter Property="Background" Value="#26FFFFFF" />
     </Style>
 
-    <Style Selector="Button.ConsoleTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="Button.ConsoleTile:pressed">
       <Setter Property="Background" Value="#4DFFFFFF" />
       <Setter Property="RenderTransform" Value="scale(0.985)" />
     </Style>
@@ -74,50 +73,6 @@
           Grid.Row="0"
           ColumnDefinitions="*,Auto"
           VerticalAlignment="Center">
-
-        <StackPanel
-            Orientation="Horizontal"
-            Spacing="12"
-            VerticalAlignment="Center">
-
-          <Border
-              Width="34"
-              Height="34"
-              Background="#FFFFFFFF"
-              CornerRadius="17">
-
-            <TextBlock
-                Text="daisy"
-                FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                FontSize="21"
-                Foreground="#FF07101F"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center" />
-
-          </Border>
-
-          <TextBlock
-              Text="DaisyOS"
-              FontSize="20"
-              FontWeight="SemiBold"
-              Foreground="White"
-              VerticalAlignment="Center" />
-
-          <Border
-              Background="#24FFFFFF"
-              Padding="10,4"
-              CornerRadius="12"
-              VerticalAlignment="Center">
-
-            <TextBlock
-                Text="CONSOLE"
-                FontSize="11"
-                FontWeight="SemiBold"
-                Foreground="#CCFFFFFF" />
-
-          </Border>
-
-        </StackPanel>
 
 
         <StackPanel
@@ -183,7 +138,7 @@
               Fixed PS5-style card row.
 
               Card size: 210 x 210
-              Gap:       20
+              Slot:      230 x 230 (5px focus ring)
               Step:      230
           -->
           <Border
@@ -193,15 +148,25 @@
             <StackPanel
                 x:Name="CarouselTrack"
                 Orientation="Horizontal"
-                Spacing="20"
+                Spacing="0"
                 VerticalAlignment="Center">
 
 
               <!-- Library -->
-              <Button
-                  x:Name="LibraryButton"
-                  Classes="ConsoleTile"
-                  ToolTip.Tip="Library">
+              <Grid Width="230" Height="230">
+                <Border
+                    x:Name="LibraryFocusRing"
+                    BorderBrush="White"
+                    BorderThickness="5"
+                    CornerRadius="29"
+                    IsHitTestVisible="False"
+                    IsVisible="False"
+                    Margin="5" />
+
+                <Button
+                    x:Name="LibraryButton"
+                    Classes="ConsoleTile"
+                    ToolTip.Tip="Library">
 
                 <StackPanel Spacing="10">
 
@@ -219,14 +184,25 @@
 
                 </StackPanel>
 
-              </Button>
+                </Button>
+              </Grid>
 
 
               <!-- Recent -->
-              <Button
-                  x:Name="RecentButton"
-                  Classes="ConsoleTile"
-                  ToolTip.Tip="Recently played">
+              <Grid Width="230" Height="230">
+                <Border
+                    x:Name="RecentFocusRing"
+                    BorderBrush="White"
+                    BorderThickness="5"
+                    CornerRadius="29"
+                    IsHitTestVisible="False"
+                    IsVisible="False"
+                    Margin="5" />
+
+                <Button
+                    x:Name="RecentButton"
+                    Classes="ConsoleTile"
+                    ToolTip.Tip="Recently played">
 
                 <StackPanel Spacing="10">
 
@@ -244,14 +220,25 @@
 
                 </StackPanel>
 
-              </Button>
+                </Button>
+              </Grid>
 
 
               <!-- Friends -->
-              <Button
-                  x:Name="FriendsButton"
-                  Classes="ConsoleTile"
-                  ToolTip.Tip="Friends">
+              <Grid Width="230" Height="230">
+                <Border
+                    x:Name="FriendsFocusRing"
+                    BorderBrush="White"
+                    BorderThickness="5"
+                    CornerRadius="29"
+                    IsHitTestVisible="False"
+                    IsVisible="False"
+                    Margin="5" />
+
+                <Button
+                    x:Name="FriendsButton"
+                    Classes="ConsoleTile"
+                    ToolTip.Tip="Friends">
 
                 <StackPanel Spacing="10">
 
@@ -269,14 +256,25 @@
 
                 </StackPanel>
 
-              </Button>
+                </Button>
+              </Grid>
 
 
               <!-- Settings -->
-              <Button
-                  x:Name="SettingsButton"
-                  Classes="ConsoleTile"
-                  ToolTip.Tip="Settings">
+              <Grid Width="230" Height="230">
+                <Border
+                    x:Name="SettingsFocusRing"
+                    BorderBrush="White"
+                    BorderThickness="5"
+                    CornerRadius="29"
+                    IsHitTestVisible="False"
+                    IsVisible="False"
+                    Margin="5" />
+
+                <Button
+                    x:Name="SettingsButton"
+                    Classes="ConsoleTile"
+                    ToolTip.Tip="Settings">
 
                 <StackPanel Spacing="10">
 
@@ -294,7 +292,8 @@
 
                 </StackPanel>
 
-              </Button>
+                </Button>
+              </Grid>
 
             </StackPanel>
 
