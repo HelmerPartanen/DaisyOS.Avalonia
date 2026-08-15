@@ -4,10 +4,12 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Interactivity;
+using DaisyOS.Shell.Services.Windows;
 
 namespace DaisyOS.Shell.Views.Components.Taskbar
 {
@@ -32,6 +34,9 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private Border? _taskbarBody;
         private Avalonia.Controls.Shapes.Path? _bottomEdgeBridge;
         private readonly List<Button> _order = new();
+        private readonly Dictionary<string, NativeAppWindowState> _windowStates = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, string> _appNames = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, Border> _windowIndicators = new(StringComparer.Ordinal);
         private int _testAppCounter = 1;
 
         // Active drag state
@@ -68,15 +73,39 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         public void SetLauncherOpen(bool isOpen) =>
             _startButton?.Classes.Set("LauncherActive", isOpen);
 
+        /// <summary>Applies native owned-window state without changing taskbar geometry.</summary>
+        public void SetAppWindowState(string appId, NativeAppWindowState state)
+        {
+            _windowStates[appId] = state;
+            if (_order.FirstOrDefault(button => string.Equals(button.Tag as string, appId, StringComparison.Ordinal)) is { } button)
+            {
+                ApplyWindowState(button, appId, state);
+            }
+        }
+
         private void InitializeIcons()
         {
             if (_canvas is null) return;
+
+            _windowIndicators.Clear();
+            foreach (var indicator in _canvas.Children.OfType<Border>())
+            {
+                if (indicator.Tag is string appId)
+                {
+                    _windowIndicators[appId] = indicator;
+                }
+            }
 
             _order.Clear();
             foreach (var child in _canvas.Children.OfType<Button>())
             {
                 _order.Add(child);
                 WireUpIcon(child);
+                if (child.Tag is string appId)
+                {
+                    _appNames[appId] = child.GetValue(ToolTip.TipProperty) as string ?? appId;
+                    ApplyWindowState(child, appId, _windowStates.GetValueOrDefault(appId, NativeAppWindowState.NotRunning));
+                }
             }
 
             if (_pendingOrder is { Count: > 0 })
@@ -149,6 +178,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                 icon.Transitions = null; // avoid animating in from 0 on first layout
                 Canvas.SetLeft(icon, SlotX(i));
                 icon.Transitions = SharedPositionTransitions;
+                PositionIndicator(icon, SlotX(i));
             }
         }
 
@@ -159,6 +189,27 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             // The outer Border auto-sizes to its content via Padding - no manual math needed.
             var count = _order.Count;
             _canvas.Width = count == 0 ? 0 : count * ItemWidth + (count - 1) * Spacing;
+        }
+
+        private void ApplyWindowState(Button button, string appId, NativeAppWindowState state)
+        {
+            var presentation = TaskbarWindowPresentation.From(state);
+            button.Classes.Set("WindowRunning", presentation.IsRunning);
+            button.Classes.Set("WindowActive", presentation.IsActive);
+            button.Classes.Set("WindowMinimized", presentation.IsMinimized);
+
+            if (_windowIndicators.TryGetValue(appId, out var indicator))
+            {
+                indicator.Classes.Set("WindowRunning", presentation.IsRunning && !presentation.IsMinimized);
+                indicator.Classes.Set("WindowActive", presentation.IsActive);
+                indicator.Classes.Set("WindowMinimized", presentation.IsMinimized);
+                PositionIndicator(button, Canvas.GetLeft(button));
+            }
+
+            var appName = _appNames.GetValueOrDefault(appId, button.GetValue(ToolTip.TipProperty) as string ?? appId);
+            var accessibleName = presentation.StateLabel is null ? appName : $"{appName} — {presentation.StateLabel}";
+            button.SetValue(ToolTip.TipProperty, accessibleName);
+            button.SetValue(AutomationProperties.NameProperty, accessibleName);
         }
 
         private void UpdateBottomEdgeBridge()
@@ -325,6 +376,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             // Track the pointer 1:1 - no transition on the dragged item itself.
             icon.Transitions = null;
             Canvas.SetLeft(icon, newLeft);
+            PositionIndicator(icon, newLeft);
 
             ReorderIfNeeded(icon, newLeft);
         }
@@ -367,10 +419,12 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             }
         }
 
-        private static void AnimateToSlot(Button icon, int index)
+        private void AnimateToSlot(Button icon, int index)
         {
+            var left = SlotX(index);
             icon.Transitions = SharedPositionTransitions;
-            Canvas.SetLeft(icon, SlotX(index));
+            Canvas.SetLeft(icon, left);
+            PositionIndicator(icon, left);
         }
 
         private void Icon_PointerReleased(object? sender, PointerReleasedEventArgs e)
@@ -397,6 +451,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             {
                 icon.Transitions = SharedPositionTransitions;
                 Canvas.SetLeft(icon, SlotX(index));
+                PositionIndicator(icon, SlotX(index));
             }
 
             icon.Classes.Remove("dragging");
@@ -432,6 +487,29 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             {
                 AppIconClicked?.Invoke(this, tag);
             }
+        }
+
+        private void PositionIndicator(Button icon, double itemLeft)
+        {
+            if (icon.Tag is not string appId || !_windowIndicators.TryGetValue(appId, out var indicator))
+            {
+                return;
+            }
+
+            if (double.IsNaN(itemLeft))
+            {
+                var index = _order.IndexOf(icon);
+                if (index < 0)
+                {
+                    return;
+                }
+
+                itemLeft = SlotX(index);
+            }
+
+            var presentation = TaskbarWindowPresentation.From(
+                _windowStates.GetValueOrDefault(appId, NativeAppWindowState.NotRunning));
+            Canvas.SetLeft(indicator, itemLeft + (ItemWidth - presentation.IndicatorWidth) / 2);
         }
     }
 }

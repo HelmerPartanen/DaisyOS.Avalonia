@@ -16,6 +16,29 @@
     <Style Selector="Button.TaskbarApp.LauncherActive /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}"/>
     </Style>
+    <Style Selector="Button.TaskbarApp.WindowActive /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}"/>
+    </Style>
+
+    <Style Selector="Border.TaskbarWindowIndicator">
+      <Setter Property="Width" Value="0"/>
+      <Setter Property="Height" Value="4"/>
+      <Setter Property="Opacity" Value="0"/>
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedPill}"/>
+    </Style>
+    <Style Selector="Border.TaskbarWindowIndicator.WindowRunning">
+      <Setter Property="Width" Value="14"/>
+      <Setter Property="Opacity" Value="0.58"/>
+    </Style>
+    <Style Selector="Border.TaskbarWindowIndicator.WindowMinimized">
+      <Setter Property="Width" Value="10"/>
+      <Setter Property="Opacity" Value="0.42"/>
+    </Style>
+    <Style Selector="Border.TaskbarWindowIndicator.WindowActive">
+      <Setter Property="Width" Value="20"/>
+      <Setter Property="Opacity" Value="1"/>
+    </Style>
 
     <!-- Reorderable app icon. Positioned absolutely inside AppIconsCanvas via Canvas.Left,
          which is animated in code-behind so items glide into their new slot. -->
@@ -71,32 +94,42 @@
       <!-- Reorderable App Icons Canvas. Width is set from code-behind. -->
       <Canvas x:Name="AppIconsCanvas" Height="40">
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="notes" ToolTip.Tip="Notes">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/NotesIcon.png"
-                 RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="26" Height="26" IsHitTestVisible="False">
-          </Image>
+          <Grid Width="32" Height="32">
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/NotesIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="26" Height="26" IsHitTestVisible="False" />
+          </Grid>
         </Button>
 
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="calculator" ToolTip.Tip="Calculator">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/CalculatorIcon.png"
-                 RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="26" Height="26" IsHitTestVisible="False">
-          </Image>
+          <Grid Width="32" Height="32">
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/CalculatorIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="26" Height="26" IsHitTestVisible="False" />
+          </Grid>
         </Button>
 
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="settings" ToolTip.Tip="Settings">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
-                 RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="26" Height="26" IsHitTestVisible="False">
-          </Image>
+          <Grid Width="32" Height="32">
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="26" Height="26" IsHitTestVisible="False" />
+          </Grid>
         </Button>
 
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="files" ToolTip.Tip="Files">
-          <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
-                 RenderOptions.BitmapInterpolationMode="HighQuality"
-                 Width="26" Height="26" IsHitTestVisible="False">
-          </Image>
+          <Grid Width="32" Height="32">
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/FilesIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="26" Height="26" IsHitTestVisible="False" />
+          </Grid>
         </Button>
+
+        <!-- Overlay siblings keep the status marker out of each 40px button's layout box. -->
+        <Border Classes="TaskbarWindowIndicator" Tag="notes" Canvas.Top="41" IsHitTestVisible="False" />
+        <Border Classes="TaskbarWindowIndicator" Tag="calculator" Canvas.Top="41" IsHitTestVisible="False" />
+        <Border Classes="TaskbarWindowIndicator" Tag="settings" Canvas.Top="41" IsHitTestVisible="False" />
+        <Border Classes="TaskbarWindowIndicator" Tag="files" Canvas.Top="41" IsHitTestVisible="False" />
       </Canvas>
 
       </StackPanel>

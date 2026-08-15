@@ -16,6 +16,7 @@ using System;
 using DaisyOS.Shell.Apps.Notes;
 using DaisyOS.Shell.Apps.Calculator;
 using DaisyOS.Shell.Apps.Files;
+using DaisyOS.Shell.Services.Windows;
 
 namespace DaisyOS.Shell;
 
@@ -31,12 +32,19 @@ public partial class App : Application
     private CalculatorWindow? _calculatorWindow;
     private FilesWindow? _filesWindow;
     private ShellView? _shellView;
+    private readonly NativeAppWindowTracker _nativeWindowTracker = new();
 
     public ShellSessionState SessionState { get; } = new();
     public ShellFeedbackService Feedback { get; } = new();
 
     public event EventHandler<string>? WallpaperChanged;
     public event EventHandler<bool>? LauncherVisibilityChanged;
+
+    public App()
+    {
+        _nativeWindowTracker.StateChanged += (_, args) =>
+            _shellView?.Taskbar.SetAppWindowState(args.AppId, args.State);
+    }
 
     public override void Initialize()
     {
@@ -148,6 +156,10 @@ public partial class App : Application
         shell.Taskbar.OrderChanged += (_, order) => SessionState.SetDockOrder(order);
         shell.Taskbar.StartButtonClicked += (_, _) => ToggleLauncher();
         shell.Taskbar.AppIconClicked += (_, appId) => LaunchTaskbarApp(appId);
+        foreach (var appId in NativeAppIds)
+        {
+            shell.Taskbar.SetAppWindowState(appId, _nativeWindowTracker.GetState(appId));
+        }
         shell.SystemBar.QuickSettingsRequested += (_, _) => ToggleQuickSettings();
         shell.SystemBar.QuickSettingsDismissRequested += (_, _) => HideQuickSettings();
         shell.Launcher.AppLaunchRequested += (_, _) => HideLauncher();
@@ -196,6 +208,11 @@ public partial class App : Application
     private void LaunchTaskbarApp(string appId)
     {
         HideLauncher();
+        if (_nativeWindowTracker.ToggleFromTaskbar(appId))
+        {
+            return;
+        }
+
         switch (appId)
         {
             case "settings":
@@ -217,14 +234,13 @@ public partial class App : Application
     public void ShowSettings()
     {
         HideLauncher();
-        if (_settingsWindow is { IsVisible: true } settingsWindow)
+        if (_nativeWindowTracker.RestoreAndActivate("settings"))
         {
-            settingsWindow.WindowState = Avalonia.Controls.WindowState.Normal;
-            settingsWindow.Activate();
             return;
         }
 
         _settingsWindow = new SettingsWindow();
+        _nativeWindowTracker.Register("settings", _settingsWindow);
         _settingsWindow.Closed += (_, _) => _settingsWindow = null;
 
         // The shell root is fullscreen. Make Settings an owned normal window so KWin/X11
@@ -243,14 +259,13 @@ public partial class App : Application
     public void ShowNotes()
     {
         HideLauncher();
-        if (_notesWindow is { IsVisible: true } notesWindow)
+        if (_nativeWindowTracker.RestoreAndActivate("notes"))
         {
-            notesWindow.WindowState = Avalonia.Controls.WindowState.Normal;
-            notesWindow.Activate();
             return;
         }
 
         _notesWindow = new NotesWindow();
+        _nativeWindowTracker.Register("notes", _notesWindow);
         _notesWindow.Closed += (_, _) => _notesWindow = null;
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
@@ -267,14 +282,13 @@ public partial class App : Application
     public void ShowCalculator()
     {
         HideLauncher();
-        if (_calculatorWindow is { IsVisible: true } calculatorWindow)
+        if (_nativeWindowTracker.RestoreAndActivate("calculator"))
         {
-            calculatorWindow.WindowState = Avalonia.Controls.WindowState.Normal;
-            calculatorWindow.Activate();
             return;
         }
 
         _calculatorWindow = new CalculatorWindow();
+        _nativeWindowTracker.Register("calculator", _calculatorWindow);
         _calculatorWindow.Closed += (_, _) => _calculatorWindow = null;
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
@@ -290,14 +304,13 @@ public partial class App : Application
     public void ShowFiles()
     {
         HideLauncher();
-        if (_filesWindow is { IsVisible: true } filesWindow)
+        if (_nativeWindowTracker.RestoreAndActivate("files"))
         {
-            filesWindow.WindowState = Avalonia.Controls.WindowState.Normal;
-            filesWindow.Activate();
             return;
         }
 
         _filesWindow = new FilesWindow();
+        _nativeWindowTracker.Register("files", _filesWindow);
         _filesWindow.Closed += (_, _) => _filesWindow = null;
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow }) _filesWindow.Show(mainWindow);
         else _filesWindow.Show();
@@ -305,5 +318,7 @@ public partial class App : Application
 
     public Task SetWallpaperAsync(string wallpaperUri) =>
         _wallpaperService?.SetWallpaperAsync(wallpaperUri) ?? Task.CompletedTask;
+
+    private static readonly string[] NativeAppIds = ["notes", "calculator", "settings", "files"];
 
 }
