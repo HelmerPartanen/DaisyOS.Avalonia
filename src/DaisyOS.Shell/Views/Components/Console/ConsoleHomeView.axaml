@@ -1,0 +1,131 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Views.Components.Console.ConsoleHomeView"
+    x:Name="Root"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="#FF07101F">
+  <UserControl.Styles>
+    <Style Selector="Button.ConsoleTile">
+      <Setter Property="Width" Value="156" />
+      <Setter Property="Height" Value="96" />
+      <Setter Property="Padding" Value="16" />
+      <Setter Property="Background" Value="#1AFFFFFF" />
+      <Setter Property="BorderBrush" Value="#1FFFFFFF" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="16" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.14" />
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.16" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.ConsoleTile:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.ConsoleTile:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#33FFFFFF" />
+      <Setter Property="BorderBrush" Value="#B3FFFFFF" />
+      <Setter Property="RenderTransform" Value="scale(1.035)" />
+    </Style>
+    <Style Selector="Button.ConsoleTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#4DFFFFFF" />
+      <Setter Property="RenderTransform" Value="scale(0.985)" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid Margin="72,48">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+      <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+        <Border Width="34" Height="34" Background="#FFFFFFFF" CornerRadius="17">
+          <TextBlock Text="daisy" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="21" Foreground="#FF07101F" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+        <TextBlock Text="DaisyOS" FontSize="20" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+        <Border Background="#24FFFFFF" Padding="10,4" CornerRadius="12" VerticalAlignment="Center">
+          <TextBlock Text="CONSOLE" FontSize="11" FontWeight="SemiBold" Foreground="#CCFFFFFF" />
+        </Border>
+      </StackPanel>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="18" VerticalAlignment="Center">
+        <TextBlock Text="wifi" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Foreground="#CCFFFFFF" />
+        <TextBlock Text="battery_full" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Foreground="#CCFFFFFF" />
+        <TextBlock Text="11:42" FontSize="15" FontWeight="Medium" Foreground="#E6FFFFFF" />
+      </StackPanel>
+    </Grid>
+
+    <Grid Grid.Row="1" MaxWidth="1260" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="24" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <Border Grid.Row="0" MinHeight="240" MaxHeight="320" CornerRadius="24" ClipToBounds="True" BoxShadow="0 18 52 0 #80000000">
+        <Border.Background>
+          <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#FF194E89" Offset="0" />
+            <GradientStop Color="#FF152C5A" Offset="0.5" />
+            <GradientStop Color="#FF0C142C" Offset="1" />
+          </LinearGradientBrush>
+        </Border.Background>
+        <Grid ColumnDefinitions="1.2*,0.8*" Margin="56">
+          <StackPanel VerticalAlignment="Center" MaxWidth="560">
+            <Border Background="#30FFFFFF" Padding="10,5" CornerRadius="12" HorizontalAlignment="Left">
+              <TextBlock Text="CONTINUE PLAYING" FontSize="11" FontWeight="SemiBold" Foreground="#E6FFFFFF" />
+            </Border>
+            <TextBlock Text="Your games,\nyour way." FontSize="48" FontWeight="SemiBold" Foreground="White" Margin="0,16,0,8" />
+            <TextBlock Text="A calm, controller-first home for your library, friends, and play sessions." FontSize="16" Foreground="#CCFFFFFF" TextWrapping="Wrap" />
+            <Button Content="Resume library" HorizontalAlignment="Left" Margin="0,24,0,0" Padding="18,10" Background="#FFFFFFFF" Foreground="#FF10214A" BorderThickness="0" CornerRadius="12" />
+          </StackPanel>
+          <Grid Grid.Column="1" IsHitTestVisible="False">
+            <Border Width="220" Height="220" CornerRadius="140" Background="#26A5D8FF" HorizontalAlignment="Right" VerticalAlignment="Center" />
+            <TextBlock Text="sports_esports" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="172" Foreground="#F2FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Grid>
+        </Grid>
+      </Border>
+
+      <StackPanel Grid.Row="2" Spacing="14">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Text="Home" FontSize="21" FontWeight="SemiBold" Foreground="White" />
+          <TextBlock Grid.Column="1" Text="Use the controller to explore" FontSize="14" Foreground="#99FFFFFF" />
+        </Grid>
+        <StackPanel Orientation="Horizontal" Spacing="14">
+          <Button Classes="ConsoleTile" ToolTip.Tip="Library">
+            <StackPanel Spacing="7">
+              <TextBlock Text="stadia_controller" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="28" Foreground="White" />
+              <TextBlock Text="Library" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+            </StackPanel>
+          </Button>
+          <Button Classes="ConsoleTile" ToolTip.Tip="Recently played">
+            <StackPanel Spacing="7">
+              <TextBlock Text="history" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="28" Foreground="White" />
+              <TextBlock Text="Recent" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+            </StackPanel>
+          </Button>
+          <Button Classes="ConsoleTile" ToolTip.Tip="Friends">
+            <StackPanel Spacing="7">
+              <TextBlock Text="group" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="28" Foreground="White" />
+              <TextBlock Text="Friends" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+            </StackPanel>
+          </Button>
+          <Button Classes="ConsoleTile" ToolTip.Tip="Settings">
+            <StackPanel Spacing="7">
+              <TextBlock Text="settings" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="28" Foreground="White" />
+              <TextBlock Text="Settings" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </StackPanel>
+    </Grid>
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,28,0,0">
+      <TextBlock Text="sports_esports" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" Foreground="#B3FFFFFF" />
+      <TextBlock Text="{Binding ControllerName, ElementName=Root}" FontSize="14" Foreground="#CCFFFFFF" />
+      <TextBlock Text="connected" FontSize="14" Foreground="#99FFFFFF" />
+    </StackPanel>
+  </Grid>
+</UserControl>

@@ -7,32 +7,57 @@
     xmlns:widgets="clr-namespace:DaisyOS.Shell.Views.Components.Widgets"
     xmlns:taskbar="clr-namespace:DaisyOS.Shell.Views.Components.Taskbar"
     xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
+    xmlns:console="clr-namespace:DaisyOS.Shell.Views.Components.Console"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
-        <desktop:DesktopView x:Name="Desktop" />
+        <Grid x:Name="DesktopExperience">
+            <desktop:DesktopView x:Name="Desktop" />
 
-        <!-- In-window bottom chrome: no native surface or compositor blur region. -->
-        <widgets:MediaWidget x:Name="MediaWidgetContent"
-                             HorizontalAlignment="Left"
-                             VerticalAlignment="Bottom" />
-        <taskbar:TaskbarView x:Name="TaskbarContent"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Bottom" />
-        <systembar:SystemBarView x:Name="SystemBarContent"
-                                 HorizontalAlignment="Right"
+            <!-- In-window bottom chrome: no native surface or compositor blur region. -->
+            <widgets:MediaWidget x:Name="MediaWidgetContent"
+                                 HorizontalAlignment="Left"
                                  VerticalAlignment="Bottom" />
-        <launcher:LauncherView x:Name="LauncherContent"
-                               IsVisible="False"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Bottom"
-                               Margin="0,0,0,64"
-                               ZIndex="20" />
+            <taskbar:TaskbarView x:Name="TaskbarContent"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Bottom" />
+            <systembar:SystemBarView x:Name="SystemBarContent"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Bottom" />
+            <launcher:LauncherView x:Name="LauncherContent"
+                                   IsVisible="False"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Bottom"
+                                   Margin="0,0,0,64"
+                                   ZIndex="20" />
 
-        <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
-                HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"
-                Padding="16,10" Background="{DynamicResource ElevatedSurfaceBrush}"
-                BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedMD}">
-            <TextBlock x:Name="FeedbackText" MaxWidth="440" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
+            <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"
+                    Padding="16,10" Background="{DynamicResource ElevatedSurfaceBrush}"
+                    BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedMD}">
+                <TextBlock x:Name="FeedbackText" MaxWidth="440" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
+            </Border>
+        </Grid>
+
+        <!-- This is intentionally an in-process shell mode, not a separate compositor/session. -->
+        <console:ConsoleHomeView x:Name="ConsoleHome" IsVisible="False" ZIndex="500" />
+
+        <!-- A fully opaque transition makes desktop dismissal and console loading visually atomic. -->
+        <Border x:Name="ConsoleTransition" ZIndex="600" IsVisible="False" Opacity="0" Background="Black"
+                AutomationProperties.LiveSetting="Polite">
+            <Border.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.24" Easing="CubicEaseInOut" />
+                </Transitions>
+            </Border.Transitions>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="18">
+                <TextBlock Text="sports_esports"
+                           FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                           FontSize="72" Foreground="White" HorizontalAlignment="Center" />
+                <TextBlock x:Name="ConsoleTransitionTitle" Text="Switching to console mode"
+                           FontSize="20" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Center" />
+                <TextBlock x:Name="ConsoleTransitionDetail" Text="Preparing your controller-first home"
+                           FontSize="14" Foreground="#99FFFFFF" HorizontalAlignment="Center" />
+            </StackPanel>
         </Border>
     </Grid>
 </UserControl>
