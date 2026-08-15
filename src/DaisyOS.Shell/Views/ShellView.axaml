@@ -44,6 +44,13 @@
         <!-- This is intentionally an in-process shell mode, not a separate compositor/session. -->
         <console:ConsoleHomeView x:Name="ConsoleHome" IsVisible="False" ZIndex="500" />
 
+        <Border x:Name="ConsoleFeedbackHost" ZIndex="650" IsVisible="False"
+                HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,32,0,0"
+                Padding="16,10" Background="{DynamicResource ElevatedSurfaceBrush}"
+                BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedMD}">
+            <TextBlock x:Name="ConsoleFeedbackText" MaxWidth="440" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
+        </Border>
+
         <!-- Console Mode Quick Settings Overlay -->
         <console:ConsoleSettingsOverlay x:Name="ConsoleSettings" IsVisible="False" ZIndex="700" />
 

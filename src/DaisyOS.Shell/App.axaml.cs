@@ -163,6 +163,7 @@ public partial class App : Application
         }
         shell.SystemBar.QuickSettingsRequested += (_, _) => ToggleQuickSettings();
         shell.SystemBar.QuickSettingsDismissRequested += (_, _) => HideQuickSettings();
+        shell.SystemBar.ConsoleModeRequested += (_, _) => shell.RequestConsoleMode();
         shell.Launcher.AppLaunchRequested += (_, _) => HideLauncher();
         LauncherVisibilityChanged += (_, isVisible) => shell.Taskbar.SetLauncherOpen(isVisible);
     }

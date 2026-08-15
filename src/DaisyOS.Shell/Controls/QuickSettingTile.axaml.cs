@@ -69,6 +69,44 @@ public partial class QuickSettingTile : UserControl
         set => SetValue(DetailsToolTipTextProperty, value);
     }
 
+    /// <summary>Moves controller/keyboard focus to the primary action.</summary>
+    public void FocusPrimary()
+    {
+        if (HasDetails)
+        {
+            SplitToggle.Focus();
+        }
+        else
+        {
+            SingleToggle.Focus();
+        }
+    }
+
+    /// <summary>Moves controller/keyboard focus to the optional detail action.</summary>
+    public void FocusDetails()
+    {
+        if (HasDetails)
+        {
+            DetailsButton.Focus();
+        }
+    }
+
+    /// <summary>Activates the same state change and routed event as the primary tile action.</summary>
+    public void ActivatePrimary()
+    {
+        IsChecked = !IsChecked;
+        Toggled?.Invoke(this, new RoutedEventArgs());
+    }
+
+    /// <summary>Activates the optional detail action when one is available.</summary>
+    public void ActivateDetails()
+    {
+        if (HasDetails)
+        {
+            DetailsClicked?.Invoke(this, new RoutedEventArgs());
+        }
+    }
+
     private void OnSingleToggleClick(object? sender, RoutedEventArgs e)
     {
         Toggled?.Invoke(this, e);

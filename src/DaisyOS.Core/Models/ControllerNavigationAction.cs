@@ -8,5 +8,10 @@ public enum ControllerNavigationAction
     Left,
     Right,
     Confirm,
-    Back
+    Back,
+    QuickSettings,
+    PreviousSection,
+    NextSection,
+    OpenConsole,
+    Details
 }

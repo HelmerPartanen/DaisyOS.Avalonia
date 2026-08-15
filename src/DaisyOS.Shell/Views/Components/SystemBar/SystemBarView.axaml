@@ -155,7 +155,9 @@
             <controls:QuickSettingTile Grid.Row="1" Grid.Column="1" x:Name="ThemeTile"
                                        Icon="contrast" Label="Theme" ToolTipText="Change theme" Toggled="OnThemeTileToggled"/>
             <controls:QuickSettingTile Grid.Row="1" Grid.Column="2" x:Name="GamingTile"
-                                       Icon="sports_esports" Label="Gaming" ToolTipText="Gaming mode" Toggled="OnGamingTileToggled"/>
+                                       Icon="sports_esports" Label="Gaming" HasDetails="True"
+                                       ToolTipText="Gaming mode" DetailsToolTipText="Open console mode"
+                                       Toggled="OnGamingTileToggled" DetailsClicked="OnGamingDetailsClicked"/>
           </Grid>
           <Grid ColumnDefinitions="*,1,40">
             <controls:QuickSettingsSlider x:Name="VolumeSlider" Grid.Column="0" Icon="volume_up"

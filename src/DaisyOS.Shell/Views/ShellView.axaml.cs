@@ -5,7 +5,9 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
+using DaisyOS.Core.Models.Gaming;
 using DaisyOS.System.Controllers;
+using DaisyOS.System.Processes;
 using DaisyOS.Shell.Views.Components.Console;
 using DaisyOS.Shell.Views.Components.Launcher;
 using DaisyOS.Shell.Views.Components.SystemBar;
@@ -24,6 +26,8 @@ namespace DaisyOS.Shell.Views
         private readonly IControllerInputService _controllerInputService;
         private CancellationTokenSource? _controllerCancellation;
         private bool _controllerConnected;
+        private bool _physicalControllerConnected;
+        private bool _consoleModeRequested;
         private bool _checkingController;
         private bool _consoleMode;
         private bool _consoleTransitionInProgress;
@@ -49,8 +53,11 @@ namespace DaisyOS.Shell.Views
             _controllerInputService.NavigationRequested += OnControllerNavigationRequested;
             ConsoleHome.SelectionChanged += OnConsoleSelectionChanged;
             ConsoleHome.SettingsRequested += (_, _) => ConsoleSettings.ShowOverlay("Audio");
+            ConsoleHome.GameLaunchRequested += (_, game) => LaunchConsoleGame(game);
+            ConsoleSettings.Closed += (_, _) => Dispatcher.UIThread.Post(ConsoleHome.FocusInitialDestination, DispatcherPriority.Input);
             ConsoleSettings.ReturnToDesktopRequested += async (_, _) =>
             {
+                _consoleModeRequested = false;
                 _controllerConnected = false;
                 await ReconcileConsoleModeAsync();
             };
@@ -64,6 +71,7 @@ namespace DaisyOS.Shell.Views
             {
                 _feedbackTimer.Stop();
                 if (this.FindControl<Control>("FeedbackHost") is { } host) host.IsVisible = false;
+                if (this.FindControl<Control>("ConsoleFeedbackHost") is { } consoleHost) consoleHost.IsVisible = false;
             };
             _controllerPollTimer.Tick += async (_, _) => await RefreshControllerStateAsync();
         }
@@ -72,6 +80,20 @@ namespace DaisyOS.Shell.Views
         public SystemBarView SystemBar => SystemBarContent;
         public LauncherView Launcher => LauncherContent;
         public bool IsLauncherVisible => LauncherContent.IsVisible;
+
+        /// <summary>Enters the controller-first shell only after the user explicitly asks for it.</summary>
+        public void RequestConsoleMode()
+        {
+            if (!_physicalControllerConnected)
+            {
+                (Application.Current as App)?.Feedback.Show("Connect a controller before opening console mode.");
+                return;
+            }
+
+            _consoleModeRequested = true;
+            _controllerConnected = true;
+            _ = ReconcileConsoleModeAsync();
+        }
 
         private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
@@ -122,16 +144,21 @@ namespace DaisyOS.Shell.Views
 
         private async Task ApplyControllerStatusAsync(ControllerConnectionStatus status)
         {
-            _controllerConnected = status.IsConnected;
+            _physicalControllerConnected = status.IsConnected;
             if (status.IsConnected)
             {
                 ConsoleHome.ControllerName = status.Name ?? "Game controller";
+                ConsoleHome.SetControllerLayout(status.Name);
+                ConsoleSettings.SetControllerLayout(status.Name);
                 _controllerInputService.Start(status);
             }
             else
             {
                 _controllerInputService.Stop();
+                _consoleModeRequested = false;
             }
+
+            _controllerConnected = status.IsConnected && _consoleModeRequested;
 
             await ReconcileConsoleModeAsync();
         }
@@ -155,7 +182,7 @@ namespace DaisyOS.Shell.Views
                     ConsoleTransitionTitle.Text = enteringConsoleMode ? "Switching to console mode" : "Returning to desktop";
                     ConsoleTransitionDetail.Text = enteringConsoleMode
                         ? $"{ConsoleHome.ControllerName} connected"
-                        : "Controller disconnected";
+                        : _physicalControllerConnected ? "Console mode closed" : "Controller disconnected";
                     ConsoleTransition.IsVisible = true;
                     await Task.Delay(24);
                     ConsoleTransition.Opacity = 1;
@@ -175,6 +202,7 @@ namespace DaisyOS.Shell.Views
                     }
                     else
                     {
+                        ConsoleSettings.HideOverlay();
                         ConsoleHome.IsVisible = false;
                         ShellWallpaper.SetConsoleParallaxEnabled(false);
                         DesktopExperience.IsVisible = true;
@@ -252,7 +280,18 @@ namespace DaisyOS.Shell.Views
             {
                 if (_consoleMode)
                 {
-                    ConsoleHome.Navigate(action);
+                    if (ConsoleSettings.IsVisible)
+                    {
+                        ConsoleSettings.Navigate(action);
+                    }
+                    else
+                    {
+                        ConsoleHome.Navigate(action);
+                    }
+                }
+                else if (action == ControllerNavigationAction.OpenConsole)
+                {
+                    RequestConsoleMode();
                 }
             }, DispatcherPriority.Input);
         }
@@ -265,6 +304,22 @@ namespace DaisyOS.Shell.Views
             }
         }
 
+        private static void LaunchConsoleGame(GameIdentity game)
+        {
+            var launcher = new SafeProcessLauncher();
+            var result = game.Source == GameStoreSource.Steam && !string.IsNullOrWhiteSpace(game.SourceId)
+                ? launcher.Launch("xdg-open", [$"steam://rungameid/{game.SourceId}"])
+                : !string.IsNullOrWhiteSpace(game.DesktopFilePath)
+                    ? launcher.Launch("gtk-launch", [Path.GetFileNameWithoutExtension(game.DesktopFilePath)])
+                    : !string.IsNullOrWhiteSpace(game.ExecutablePath)
+                        ? launcher.Launch(game.ExecutablePath)
+                        : new AppLaunchResult(false, $"{game.Title} has no launch target.");
+
+            (Application.Current as App)?.Feedback.Show(result.Succeeded
+                ? $"Launching {game.Title}…"
+                : $"DaisyOS could not launch {game.Title}.");
+        }
+
         private static bool IsWithin(Visual source, Visual container) =>
             ReferenceEquals(source, container) || source.GetVisualAncestors().Any(ancestor => ReferenceEquals(ancestor, container));
 
@@ -272,8 +327,10 @@ namespace DaisyOS.Shell.Views
         {
             Dispatcher.UIThread.Post(() =>
             {
-                if (this.FindControl<TextBlock>("FeedbackText") is { } text) text.Text = message;
-                if (this.FindControl<Control>("FeedbackHost") is { } host) host.IsVisible = true;
+                var textName = _consoleMode ? "ConsoleFeedbackText" : "FeedbackText";
+                var hostName = _consoleMode ? "ConsoleFeedbackHost" : "FeedbackHost";
+                if (this.FindControl<TextBlock>(textName) is { } text) text.Text = message;
+                if (this.FindControl<Control>(hostName) is { } host) host.IsVisible = true;
                 _feedbackTimer.Stop();
                 _feedbackTimer.Start();
             });

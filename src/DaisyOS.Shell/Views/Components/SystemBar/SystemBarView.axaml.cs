@@ -41,6 +41,7 @@ public partial class SystemBarView : UserControl
 
     public event EventHandler? QuickSettingsRequested;
     public event EventHandler? QuickSettingsDismissRequested;
+    public event EventHandler? ConsoleModeRequested;
 
     public SystemBarView()
     {
@@ -144,6 +145,9 @@ public partial class SystemBarView : UserControl
     {
         if (sender is QuickSettingTile tile) _sessionState.GamingMode = tile.IsChecked;
     }
+
+    private void OnGamingDetailsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e) =>
+        ConsoleModeRequested?.Invoke(this, EventArgs.Empty);
 
     private async void OnVolumeChanged(object? sender, EventArgs e)
     {

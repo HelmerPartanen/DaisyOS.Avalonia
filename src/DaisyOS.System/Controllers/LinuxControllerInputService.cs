@@ -12,18 +12,21 @@ public sealed class LinuxControllerInputService : IControllerInputService
     private const byte ButtonEvent = 0x01;
     private const byte AxisEvent = 0x02;
     private const byte InitialStateFlag = 0x80;
+    private const ushort EvdevKeyEvent = 0x01;
+    private const ushort EvdevAbsoluteAxisEvent = 0x03;
     private const short AxisThreshold = 16_000;
     private readonly object _sync = new();
     private readonly Dictionary<byte, ControllerNavigationAction> _activeAxes = [];
     private CancellationTokenSource? _readerCancellation;
     private Task? _readerTask;
     private string? _activeDevicePath;
+    private bool _playStationLayout;
 
     public event EventHandler<ControllerNavigationAction>? NavigationRequested;
 
     public void Start(ControllerConnectionStatus controller)
     {
-        var devicePath = controller.JoystickPath;
+        var devicePath = controller.JoystickPath ?? controller.DevicePath;
         if (string.IsNullOrWhiteSpace(devicePath) || !File.Exists(devicePath))
         {
             Stop();
@@ -39,8 +42,12 @@ public sealed class LinuxControllerInputService : IControllerInputService
 
             StopReaderLocked();
             _activeDevicePath = devicePath;
+            _playStationLayout = IsPlayStationController(controller.Name);
             _readerCancellation = new CancellationTokenSource();
-            _readerTask = Task.Run(() => ReadEventsAsync(devicePath, _readerCancellation.Token));
+            var usesJoystickProtocol = !string.IsNullOrWhiteSpace(controller.JoystickPath);
+            _readerTask = Task.Run(() => usesJoystickProtocol
+                ? ReadJoystickEventsAsync(devicePath, _readerCancellation.Token)
+                : ReadEvdevEventsAsync(devicePath, _readerCancellation.Token));
         }
     }
 
@@ -74,7 +81,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
         }
     }
 
-    private async Task ReadEventsAsync(string devicePath, CancellationToken cancellationToken)
+    private async Task ReadJoystickEventsAsync(string devicePath, CancellationToken cancellationToken)
     {
         try
         {
@@ -101,7 +108,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
                     received += read;
                 }
 
-                var action = DecodeNavigation(buffer[6], BitConverter.ToInt16(buffer, 4), buffer[7]);
+                var action = DecodeNavigation(buffer[6], BitConverter.ToInt16(buffer, 4), buffer[7], _playStationLayout);
                 if (action is { } navigationAction)
                 {
                     NavigationRequested?.Invoke(this, navigationAction);
@@ -122,8 +129,54 @@ public sealed class LinuxControllerInputService : IControllerInputService
         }
     }
 
+    private async Task ReadEvdevEventsAsync(string devicePath, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await using var stream = new FileStream(
+                devicePath,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.ReadWrite,
+                bufferSize: 24,
+                FileOptions.Asynchronous);
+            // Linux input_event on the supported 64-bit desktop targets: timeval (16), type,
+            // code, value. This fallback covers controllers that expose eventN but no jsN node.
+            var buffer = new byte[24];
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                var received = 0;
+                while (received < buffer.Length)
+                {
+                    var read = await stream.ReadAsync(buffer.AsMemory(received, buffer.Length - received), cancellationToken);
+                    if (read == 0) return;
+                    received += read;
+                }
+
+                var action = DecodeEvdevNavigation(
+                    BitConverter.ToUInt16(buffer, 16),
+                    BitConverter.ToUInt16(buffer, 18),
+                    BitConverter.ToInt32(buffer, 20));
+                if (action is { } navigationAction)
+                {
+                    NavigationRequested?.Invoke(this, navigationAction);
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+    }
+
     /// <summary>Maps a Linux js_event into a shell action. Kept public for deterministic tests.</summary>
-    public ControllerNavigationAction? DecodeNavigation(byte rawType, short value, byte number)
+    public ControllerNavigationAction? DecodeNavigation(byte rawType, short value, byte number, bool playStationLayout = false)
     {
         if ((rawType & InitialStateFlag) != 0)
         {
@@ -133,14 +186,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
         var eventType = (byte)(rawType & ~InitialStateFlag);
         if (eventType == ButtonEvent)
         {
-            return value == 1
-                ? number switch
-                {
-                    0 => ControllerNavigationAction.Confirm, // Cross / A
-                    1 => ControllerNavigationAction.Back,    // Circle / B
-                    _ => null
-                }
-                : null;
+            return value == 1 ? MapButton(number, playStationLayout) : null;
         }
 
         if (eventType != AxisEvent)
@@ -164,6 +210,50 @@ public sealed class LinuxControllerInputService : IControllerInputService
         return action;
     }
 
+    /// <summary>Maps the evdev fallback protocol used by event-only controllers.</summary>
+    public ControllerNavigationAction? DecodeEvdevNavigation(ushort type, ushort code, int value)
+    {
+        if (type == EvdevKeyEvent)
+        {
+            if (value != 1) return null;
+            return code switch
+            {
+                0x130 => ControllerNavigationAction.Confirm,         // BTN_SOUTH / A / Cross
+                0x131 => ControllerNavigationAction.Back,            // BTN_EAST / B / Circle
+                0x133 => ControllerNavigationAction.QuickSettings,   // BTN_WEST / X / Square
+                0x134 => ControllerNavigationAction.Details,         // BTN_NORTH / Y / Triangle
+                0x136 => ControllerNavigationAction.PreviousSection, // BTN_TL / LB
+                0x137 => ControllerNavigationAction.NextSection,     // BTN_TR / RB
+                0x13c or 0x13d => ControllerNavigationAction.OpenConsole, // BTN_MODE variants
+                _ => null
+            };
+        }
+
+        if (type != EvdevAbsoluteAxisEvent) return null;
+        var action = code switch
+        {
+            0 or 16 when value < 0 => ControllerNavigationAction.Left,
+            0 or 16 when value > 0 && (code == 16 || value > AxisThreshold) => ControllerNavigationAction.Right,
+            1 or 17 when value < 0 => ControllerNavigationAction.Up,
+            1 or 17 when value > 0 && (code == 17 || value > AxisThreshold) => ControllerNavigationAction.Down,
+            _ => (ControllerNavigationAction?)null
+        };
+
+        if (action is null)
+        {
+            _activeAxes.Remove((byte)code);
+            return null;
+        }
+
+        if (_activeAxes.TryGetValue((byte)code, out var activeAction) && activeAction == action)
+        {
+            return null;
+        }
+
+        _activeAxes[(byte)code] = action.Value;
+        return action;
+    }
+
     private static ControllerNavigationAction? MapAxis(short value, byte axis) => axis switch
     {
         0 or 6 or 16 when value <= -AxisThreshold => ControllerNavigationAction.Left,
@@ -173,6 +263,38 @@ public sealed class LinuxControllerInputService : IControllerInputService
         _ => null
     };
 
+    private static ControllerNavigationAction? MapButton(byte number, bool playStationLayout) =>
+        playStationLayout
+            ? number switch
+            {
+                1 => ControllerNavigationAction.Confirm, // Cross
+                2 => ControllerNavigationAction.Back, // Circle
+                0 => ControllerNavigationAction.QuickSettings, // Square
+                3 => ControllerNavigationAction.Details, // Triangle
+                4 => ControllerNavigationAction.PreviousSection, // L1
+                5 => ControllerNavigationAction.NextSection, // R1
+                10 or 12 => ControllerNavigationAction.OpenConsole, // PlayStation / touchpad variant
+                _ => null
+            }
+            : number switch
+            {
+                0 => ControllerNavigationAction.Confirm, // A
+                1 => ControllerNavigationAction.Back, // B
+                2 => ControllerNavigationAction.QuickSettings, // X
+                3 => ControllerNavigationAction.Details, // Y
+                4 => ControllerNavigationAction.PreviousSection, // LB
+                5 => ControllerNavigationAction.NextSection, // RB
+                8 or 10 => ControllerNavigationAction.OpenConsole, // Guide variants
+                _ => null
+            };
+
+    private static bool IsPlayStationController(string? name) =>
+        !string.IsNullOrWhiteSpace(name) &&
+        (name.Contains("sony", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("dualshock", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("dualsense", StringComparison.OrdinalIgnoreCase)
+            || name.Contains("playstation", StringComparison.OrdinalIgnoreCase));
+
     private void StopReaderLocked()
     {
         _readerCancellation?.Cancel();
@@ -180,6 +302,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
         _readerCancellation = null;
         _readerTask = null;
         _activeDevicePath = null;
+        _playStationLayout = false;
         _activeAxes.Clear();
     }
 }

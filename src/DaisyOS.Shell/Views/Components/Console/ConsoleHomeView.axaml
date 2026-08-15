@@ -187,9 +187,9 @@
         <!-- Header Navigation Tabs -->
         <StackPanel Orientation="Horizontal" Spacing="24" VerticalAlignment="Center">
           
-          <Button x:Name="HeaderRecentButton" Classes="ConsoleHeaderNav Active" Click="OnHeaderRecentClicked" ToolTip.Tip="Recents">
+          <Button x:Name="HeaderRecentButton" Classes="ConsoleHeaderNav Active" Click="OnHeaderRecentClicked" ToolTip.Tip="Home">
             <StackPanel Spacing="4" HorizontalAlignment="Center" VerticalAlignment="Center">
-              <TextBlock Text="Recents" />
+              <TextBlock Text="Home" />
               <Border x:Name="RecentTabIndicator" Height="3" CornerRadius="1.5" Background="{DynamicResource TextPrimaryBrush}" IsVisible="True" HorizontalAlignment="Stretch" />
             </StackPanel>
           </Button>
@@ -222,8 +222,6 @@
               </Border>
             </Button>
 
-            <TextBlock Text="wifi" Classes="ConsoleStatusIcon" />
-            <TextBlock Text="battery_full" Classes="ConsoleStatusIcon" />
             <TextBlock x:Name="ClockText" Text="15:19" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
           </StackPanel>
         </Border>
@@ -286,6 +284,11 @@
 
             </WrapPanel>
 
+            <TextBlock x:Name="EmptyLibraryMessage" IsVisible="False"
+                       Text="No installed games found. Install or add games from the DaisyOS desktop, then return here."
+                       MaxWidth="520" FontSize="16" TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextSecondaryBrush}" />
+
           </StackPanel>
 
         </StackPanel>
@@ -299,7 +302,7 @@
           <!-- (A) Select / Launch -->
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
-              <TextBlock Text="A" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <TextBlock x:Name="SelectHintButton" Text="A" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <TextBlock Text="Select / Launch" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
           </StackPanel>
@@ -307,17 +310,17 @@
           <!-- (X) Quick Settings -->
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
-              <TextBlock Text="X" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <TextBlock x:Name="QuickSettingsHintButton" Text="X" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
             <TextBlock Text="Quick Settings" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
           </StackPanel>
 
-          <!-- (Y) Nav Hint -->
+          <!-- (B) Back -->
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
-              <TextBlock Text="Y" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <TextBlock x:Name="BackHintButton" Text="B" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="Library Grid" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+            <TextBlock Text="Back" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
           </StackPanel>
 
         </StackPanel>
@@ -326,9 +329,9 @@
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
           <Border Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedSM}" Padding="10,4">
             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-              <TextBlock Text="LB" FontSize="12" FontWeight="Bold" Foreground="White" />
+              <TextBlock x:Name="PreviousSectionHintButton" Text="LB" FontSize="12" FontWeight="Bold" Foreground="White" />
               <TextBlock Text="/" FontSize="12" Foreground="#AAFFFFFF" />
-              <TextBlock Text="RB" FontSize="12" FontWeight="Bold" Foreground="White" />
+              <TextBlock x:Name="NextSectionHintButton" Text="RB" FontSize="12" FontWeight="Bold" Foreground="White" />
             </StackPanel>
           </Border>
           <TextBlock Text="Switch Tab" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />

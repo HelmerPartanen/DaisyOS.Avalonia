@@ -41,6 +41,12 @@
       <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}"/>
       <Setter Property="Opacity" Value="0.48"/>
     </Style>
+    <!-- Controller focus must be as explicit as pointer hover. The shared tiles are used in
+         console mode where there is no cursor to reveal the current destination. -->
+    <Style Selector="ToggleButton.QuickSetting:focus /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="BorderThickness" Value="2"/>
+    </Style>
     <Style Selector="Border.QuickSettingSplitDivider">
       <Setter Property="Background" Value="{DynamicResource DividerBrush}"/>
     </Style>
