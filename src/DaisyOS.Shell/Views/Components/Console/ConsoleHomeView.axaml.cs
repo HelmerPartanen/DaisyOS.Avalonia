@@ -72,29 +72,8 @@ public partial class ConsoleHomeView : UserControl
             ? (type == ControllerType.PlayStation ? "PlayStation Controller" : type == ControllerType.Xbox ? "Xbox Controller" : "Game controller")
             : name;
 
-        var isPlayStation = type == ControllerType.PlayStation;
-        var prefix = isPlayStation
-            ? "avares://DaisyOS.Shell/Assets/PlaystationController/"
-            : "avares://DaisyOS.Shell/Assets/XboxController/";
-
-        try
-        {
-            if (ConfirmBtnImage != null)
-                ConfirmBtnImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-blue-cross.png" : "a-filled-green.png"))));
-
-            if (SettingsBtnImage != null)
-                SettingsBtnImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-purple-square.png" : "x-filled-blue.png"))));
-
-            if (TabLeftBtnImage != null)
-                TabLeftBtnImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-L1.png" : "left-bumper.png"))));
-
-            if (TabRightBtnImage != null)
-                TabRightBtnImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-R1.png" : "right-bumper.png"))));
-        }
-        catch
-        {
-            // Graceful fallback
-        }
+        ActionBar?.SetControllerLayout(type);
+        HeaderBar?.UpdateControllerInfo(type, ControllerName);
     }
 
     public void SetControllerLayout(ControllerConnectionStatus status)
@@ -108,10 +87,8 @@ public partial class ConsoleHomeView : UserControl
         set
         {
             SetValue(ControllerNameProperty, value);
-            if (ControllerStatusText != null)
-            {
-                ControllerStatusText.Text = string.IsNullOrWhiteSpace(value) ? "Controller" : value;
-            }
+            var type = ControllerConnectionStatus.DetectType(value);
+            HeaderBar?.UpdateControllerInfo(type, value);
         }
     }
 
@@ -121,7 +98,7 @@ public partial class ConsoleHomeView : UserControl
 
     private async void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        ClockText.Text = DateTime.Now.ToString("HH:mm");
+        HeaderBar?.UpdateClock();
 
         _discoveryCts = new CancellationTokenSource();
         await LoadGamesAsync(_discoveryCts.Token);
@@ -422,9 +399,9 @@ public partial class ConsoleHomeView : UserControl
                     break;
 
                 case ControllerNavigationAction.Confirm:
-                    if (_headerFocusIndex == 0) OnHeaderRecentClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
-                    else if (_headerFocusIndex == 1) OnHeaderLibraryClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
-                    else if (_headerFocusIndex == 2) OnHeaderSettingsClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
+                    if (_headerFocusIndex == 0) OnHeaderTabSelected(this, "Recents");
+                    else if (_headerFocusIndex == 1) OnHeaderTabSelected(this, "Library");
+                    else if (_headerFocusIndex == 2) OnHeaderTabSelected(this, "Settings");
                     break;
             }
             return;
@@ -526,16 +503,17 @@ public partial class ConsoleHomeView : UserControl
 
     private void FocusHeaderButton(int index)
     {
+        if (HeaderBar == null) return;
         switch (index)
         {
             case 0:
-                HeaderRecentButton?.Focus();
+                HeaderBar.RecentButton?.Focus();
                 break;
             case 1:
-                HeaderLibraryButton?.Focus();
+                HeaderBar.LibraryButton?.Focus();
                 break;
             case 2:
-                HeaderSettingsButton?.Focus();
+                HeaderBar.SettingsButton?.Focus();
                 break;
         }
     }
@@ -570,28 +548,17 @@ public partial class ConsoleHomeView : UserControl
         }
     }
 
-    private void OnHeaderRecentClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnHeaderTabSelected(object? sender, string tabName)
     {
-        SetActiveTab("Recents");
-        if (_cardTargets.Count > 0 && !_isHeaderFocused)
+        SetActiveTab(tabName);
+        if (!_isHeaderFocused)
         {
-            _cardTargets[Math.Min(_selectedIndex, _cardTargets.Count - 1)].Focus();
+            FocusActiveTabContent();
         }
-    }
-
-    private void OnHeaderLibraryClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        SetActiveTab("Library");
-        if (_libraryCardTargets.Count > 0 && !_isHeaderFocused)
+        if (tabName == "Settings")
         {
-            _libraryCardTargets[Math.Min(_librarySelectedIndex, _libraryCardTargets.Count - 1)].Focus();
+            SettingsRequested?.Invoke(this, EventArgs.Empty);
         }
-    }
-
-    private void OnHeaderSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        SetActiveTab("Settings");
-        SettingsRequested?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnOpenQuickSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -607,9 +574,7 @@ public partial class ConsoleHomeView : UserControl
         if (LibraryTabContent != null) LibraryTabContent.IsVisible = tabName == "Library";
         if (SettingsTabContent != null) SettingsTabContent.IsVisible = tabName == "Settings";
 
-        if (HeaderRecentButton != null) HeaderRecentButton.Classes.Set("Active", tabName == "Recents");
-        if (HeaderLibraryButton != null) HeaderLibraryButton.Classes.Set("Active", tabName == "Library");
-        if (HeaderSettingsButton != null) HeaderSettingsButton.Classes.Set("Active", tabName == "Settings");
+        HeaderBar?.SetActiveTab(tabName);
     }
 
     private void ApplySelection()
