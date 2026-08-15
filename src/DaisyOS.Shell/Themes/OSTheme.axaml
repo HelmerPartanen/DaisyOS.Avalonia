@@ -5,7 +5,7 @@
     <ResourceDictionary x:Key="Light">
       <!-- Primary is the app background, then increasing elevation. -->
       <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="#FFF5F5F5" />
-      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#D9FFFFFF" />
+      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#99F5F5F5" />
       <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#F2FFFFFF" />
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1A000000" />
       <SolidColorBrush x:Key="DividerBrush" Color="#26000000" />
@@ -50,7 +50,7 @@
     <ResourceDictionary x:Key="Dark">
       <!-- Surface roles retain contrast over the #FF000000 base without a grey washout. -->
       <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="#FF000000" />
-      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#D91C1C1C" />
+      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#991C1C1C" />
       <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#F2262628" />
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1AFFFFFF" />
       <SolidColorBrush x:Key="DividerBrush" Color="#26FFFFFF" />
