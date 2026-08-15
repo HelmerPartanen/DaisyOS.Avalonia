@@ -15,6 +15,7 @@ using DaisyOS.System.Audio;
 using DaisyOS.System.Controllers;
 using DaisyOS.System.Networking;
 using DaisyOS.System.Processes;
+using DaisyOS.Shell.Controls;
 
 namespace DaisyOS.Shell.Views.Components.Console;
 
@@ -82,6 +83,44 @@ public partial class ConsoleSettingsOverlay : UserControl
         _controllerInputService.RawInputReceived += OnRawControllerInputReceived;
     }
 
+    private List<Control> GetCurrentPanelFocusableControls()
+    {
+        var list = new List<Control>();
+
+        if (AudioPanel.IsVisible)
+        {
+            if (VolumeRowBtn != null) list.Add(VolumeRowBtn);
+            if (MicRowBtn != null) list.Add(MicRowBtn);
+            if (OutputDeviceRowBtn != null) list.Add(OutputDeviceRowBtn);
+            if (InputDeviceRowBtn != null) list.Add(InputDeviceRowBtn);
+        }
+        else if (NetworkPanel.IsVisible)
+        {
+            if (WifiRowBtn != null) list.Add(WifiRowBtn);
+        }
+        else if (ControlsPanel.IsVisible)
+        {
+            if (RemapInfoRowBtn != null) list.Add(RemapInfoRowBtn);
+            foreach (var child in KeybindingsListStack.Children)
+            {
+                if (child is Button b) list.Add(b);
+            }
+            if (ResetKeybindingsRowBtn != null) list.Add(ResetKeybindingsRowBtn);
+        }
+        else if (SystemPanel.IsVisible)
+        {
+            if (PerfOverlayRowBtn != null) list.Add(PerfOverlayRowBtn);
+            if (ReturnDesktopRowBtn != null) list.Add(ReturnDesktopRowBtn);
+            if (RestartRowBtn != null) list.Add(RestartRowBtn);
+            if (ShutdownRowBtn != null) list.Add(ShutdownRowBtn);
+        }
+
+        return list;
+    }
+
+    private int _itemIndex = 0;
+    private bool _isSidebarFocused = false;
+
     public void ShowOverlay(string initialTab = "Audio")
     {
         IsVisible = true;
@@ -89,6 +128,11 @@ public partial class ConsoleSettingsOverlay : UserControl
         _loadCts?.Cancel();
         _loadCts = new CancellationTokenSource();
         _ = LoadSettingsDataAsync(_loadCts.Token);
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            FocusFirstControlInActivePanel();
+        }, DispatcherPriority.Input);
     }
 
     public void HideOverlay()
@@ -110,22 +154,139 @@ public partial class ConsoleSettingsOverlay : UserControl
             return;
         }
 
+        var controls = GetCurrentPanelFocusableControls();
+
         switch (action)
         {
             case ControllerNavigationAction.PreviousSection: // LB / L1
                 _activeTabIndex = (_activeTabIndex - 1 + _tabNames.Length) % _tabNames.Length;
                 SelectTab(_tabNames[_activeTabIndex]);
+                FocusFirstControlInActivePanel();
                 break;
 
             case ControllerNavigationAction.NextSection: // RB / R1
                 _activeTabIndex = (_activeTabIndex + 1) % _tabNames.Length;
                 SelectTab(_tabNames[_activeTabIndex]);
+                FocusFirstControlInActivePanel();
+                break;
+
+            case ControllerNavigationAction.Up:
+                if (_isSidebarFocused)
+                {
+                    _activeTabIndex = (_activeTabIndex - 1 + _tabNames.Length) % _tabNames.Length;
+                    SelectTab(_tabNames[_activeTabIndex]);
+                    FocusSidebarTab(_activeTabIndex);
+                }
+                else if (controls.Count > 0)
+                {
+                    _itemIndex = (_itemIndex - 1 + controls.Count) % controls.Count;
+                    controls[_itemIndex].Focus();
+                }
+                break;
+
+            case ControllerNavigationAction.Down:
+                if (_isSidebarFocused)
+                {
+                    _activeTabIndex = (_activeTabIndex + 1) % _tabNames.Length;
+                    SelectTab(_tabNames[_activeTabIndex]);
+                    FocusSidebarTab(_activeTabIndex);
+                }
+                else if (controls.Count > 0)
+                {
+                    _itemIndex = (_itemIndex + 1) % controls.Count;
+                    controls[_itemIndex].Focus();
+                }
+                break;
+
+            case ControllerNavigationAction.Left:
+                if (!_isSidebarFocused)
+                {
+                    var focusedL = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+                    if (focusedL == VolumeRowBtn && MasterVolumePillSlider != null)
+                    {
+                        MasterVolumePillSlider.Value = Math.Max(MasterVolumePillSlider.Minimum, MasterVolumePillSlider.Value - MasterVolumePillSlider.Step);
+                    }
+                    else if (focusedL == MicRowBtn && MicVolumePillSlider != null)
+                    {
+                        MicVolumePillSlider.Value = Math.Max(MicVolumePillSlider.Minimum, MicVolumePillSlider.Value - MicVolumePillSlider.Step);
+                    }
+                    else
+                    {
+                        _isSidebarFocused = true;
+                        FocusSidebarTab(_activeTabIndex);
+                    }
+                }
+                break;
+
+            case ControllerNavigationAction.Right:
+                if (!_isSidebarFocused)
+                {
+                    var focusedR = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+                    if (focusedR == VolumeRowBtn && MasterVolumePillSlider != null)
+                    {
+                        MasterVolumePillSlider.Value = Math.Min(MasterVolumePillSlider.Maximum, MasterVolumePillSlider.Value + MasterVolumePillSlider.Step);
+                    }
+                    else if (focusedR == MicRowBtn && MicVolumePillSlider != null)
+                    {
+                        MicVolumePillSlider.Value = Math.Min(MicVolumePillSlider.Maximum, MicVolumePillSlider.Value + MicVolumePillSlider.Step);
+                    }
+                }
+                else
+                {
+                    _isSidebarFocused = false;
+                    FocusFirstControlInActivePanel();
+                }
+                break;
+
+            case ControllerNavigationAction.Confirm:
+                var focusedC = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+                if (_isSidebarFocused)
+                {
+                    _isSidebarFocused = false;
+                    FocusFirstControlInActivePanel();
+                }
+                else if (focusedC is Button btn)
+                {
+                    btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                }
+                else if (focusedC is ToggleSwitch ts)
+                {
+                    ts.IsChecked = !ts.IsChecked;
+                    ts.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                }
                 break;
 
             case ControllerNavigationAction.Back:
             case ControllerNavigationAction.QuickSettings:
                 HideOverlay();
                 break;
+        }
+    }
+
+    private void FocusSidebarTab(int index)
+    {
+        _isSidebarFocused = true;
+        switch (index)
+        {
+            case 0: TabAudioBtn.Focus(); break;
+            case 1: TabNetworkBtn.Focus(); break;
+            case 2: TabControlsBtn.Focus(); break;
+            case 3: TabSystemBtn.Focus(); break;
+        }
+    }
+
+    private void FocusFirstControlInActivePanel()
+    {
+        _isSidebarFocused = false;
+        _itemIndex = 0;
+        var controls = GetCurrentPanelFocusableControls();
+        if (controls.Count > 0)
+        {
+            controls[0].Focus();
+        }
+        else
+        {
+            FocusSidebarTab(_activeTabIndex);
         }
     }
 
@@ -180,23 +341,17 @@ public partial class ConsoleSettingsOverlay : UserControl
         {
             // 1. Audio Data
             var volume = await _audioService.GetVolumeAsync(cancellationToken).ConfigureAwait(true);
-            if (volume.HasValue)
+            if (volume.HasValue && MasterVolumePillSlider != null)
             {
-                var volPercent = (int)Math.Round(volume.Value);
-                MasterVolumeSlider.Value = volPercent;
-                VolumeValueText.Text = $"{volPercent}%";
+                MasterVolumePillSlider.Value = (int)Math.Round(volume.Value);
             }
 
             var devices = await _audioService.GetAudioDevicesAsync(cancellationToken).ConfigureAwait(true);
-            OutputDeviceCombo.ItemsSource = devices.Select(d => d.Name).ToList();
-            if (devices.Count > 0)
+            if (devices.Count > 0 && OutputDeviceText != null)
             {
                 var defaultOutput = devices.FirstOrDefault(d => d.IsDefault) ?? devices[0];
-                OutputDeviceCombo.SelectedItem = defaultOutput.Name;
+                OutputDeviceText.Text = defaultOutput.Name;
             }
-
-            InputDeviceCombo.ItemsSource = new List<string> { "Built-in Microphone", "Headset Microphone", "USB Audio Input" };
-            InputDeviceCombo.SelectedIndex = 0;
 
             // 2. Network Status
             var netStatus = await _networkStatusService.GetStatusAsync(cancellationToken).ConfigureAwait(true);
@@ -306,18 +461,6 @@ public partial class ConsoleSettingsOverlay : UserControl
         TabNetworkBtn.Classes.Set("Active", tabName == "Network");
         TabControlsBtn.Classes.Set("Active", tabName == "Controls");
         TabSystemBtn.Classes.Set("Active", tabName == "System");
-
-        if (ActiveSectionSubtitle != null)
-        {
-            ActiveSectionSubtitle.Text = tabName switch
-            {
-                "Audio" => "Audio & Sound",
-                "Network" => "Network & Internet",
-                "Controls" => "Controller & Input",
-                "System" => "System & Power",
-                _ => "Settings"
-            };
-        }
 
         if (tabName == "Controls")
         {
@@ -546,13 +689,11 @@ public partial class ConsoleSettingsOverlay : UserControl
         }
     }
 
-    private async void OnMasterVolumeChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private async void OnMasterVolumePillChanged(object? sender, double value)
     {
-        var volPercent = (int)Math.Round(e.NewValue);
-        VolumeValueText.Text = $"{volPercent}%";
         try
         {
-            await _audioService.SetVolumeAsync(e.NewValue).ConfigureAwait(true);
+            await _audioService.SetVolumeAsync(value).ConfigureAwait(true);
         }
         catch
         {
@@ -560,32 +701,38 @@ public partial class ConsoleSettingsOverlay : UserControl
         }
     }
 
-    private void OnMicVolumeChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+    private void OnMicVolumePillChanged(object? sender, double value)
     {
-        _micVolume = Math.Round(e.NewValue);
-        MicVolumeText.Text = $"{_micVolume}%";
+        _micVolume = Math.Round(value);
     }
 
-    private void OnMuteMicClicked(object? sender, RoutedEventArgs e)
+    private int _outputDeviceIndex = 0;
+    private readonly string[] _outputDevices = new[] { "Default", "Speakers (Realtek Audio)", "Headphones (USB Audio)" };
+
+    private void OnToggleOutputDeviceClicked(object? sender, RoutedEventArgs e)
     {
-        _isMicMuted = !_isMicMuted;
-        if (_isMicMuted)
+        _outputDeviceIndex = (_outputDeviceIndex + 1) % _outputDevices.Length;
+        if (OutputDeviceText != null)
         {
-            MuteMicIcon.Text = "mic_off";
-            MuteMicText.Text = "Unmute Mic";
-            MuteMicBtn.Classes.Add("Active");
+            OutputDeviceText.Text = _outputDevices[_outputDeviceIndex];
         }
-        else
+    }
+
+    private int _inputDeviceIndex = 0;
+    private readonly string[] _inputDevices = new[] { "Default", "Built-in Microphone", "Headset Microphone" };
+
+    private void OnToggleInputDeviceClicked(object? sender, RoutedEventArgs e)
+    {
+        _inputDeviceIndex = (_inputDeviceIndex + 1) % _inputDevices.Length;
+        if (InputDeviceText != null)
         {
-            MuteMicIcon.Text = "mic";
-            MuteMicText.Text = "Mute Mic";
-            MuteMicBtn.Classes.Remove("Active");
+            InputDeviceText.Text = _inputDevices[_inputDeviceIndex];
         }
     }
 
     private async void OnOutputDeviceSelected(object? sender, SelectionChangedEventArgs e)
     {
-        if (OutputDeviceCombo.SelectedItem is string deviceName)
+        if (OutputDeviceText != null && OutputDeviceText.Text is string deviceName)
         {
             try
             {
