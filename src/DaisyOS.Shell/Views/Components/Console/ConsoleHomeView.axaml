@@ -11,10 +11,11 @@
       <Setter Property="Width" Value="210" />
       <Setter Property="Height" Value="210" />
       <Setter Property="Padding" Value="20" />
-      <Setter Property="Background" Value="#1AFFFFFF" />
-      <Setter Property="BorderBrush" Value="#1FFFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="24" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedXL}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Bottom" />
       <Setter Property="VerticalAlignment" Value="Center" />
@@ -34,18 +35,80 @@
 
     <!-- Controller focus -->
     <Style Selector="Button.ConsoleTile:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#26FFFFFF" />
-      <Setter Property="BorderBrush" Value="#1FFFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
     </Style>
 
     <!-- Mouse hover is quieter than controller focus -->
     <Style Selector="Button.ConsoleTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#26FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+    </Style>
+
+    <Style Selector="Button.ConsoleTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleTile:pressed">
-      <Setter Property="Background" Value="#4DFFFFFF" />
       <Setter Property="RenderTransform" Value="scale(0.985)" />
+    </Style>
+
+    <Style Selector="TextBlock.ConsoleStatusIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
+      <Setter Property="FontSize" Value="18" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ConsoleTileIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
+      <Setter Property="FontSize" Value="36" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ConsoleTileLabel">
+      <Setter Property="FontSize" Value="18" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Border.ConsoleFocusRing">
+      <Setter Property="BorderBrush" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="BorderThickness" Value="5" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedXL}" />
+    </Style>
+
+    <!-- The header owns system navigation; the large cards remain its content surface. -->
+    <Style Selector="Button.ConsoleHeaderNav">
+      <Setter Property="Height" Value="44" />
+      <Setter Property="Padding" Value="14,0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
+      <Setter Property="FontSize" Value="21" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Button.ConsoleHeaderNav > TextBlock">
+      <Setter Property="FontSize" Value="21" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Button.ConsoleHeaderNav:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentSurfaceBrush}" />
+    </Style>
+
+    <Style Selector="Button.ConsoleHeaderNav:focus > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentSurfaceBrush}" />
+    </Style>
+
+    <Style Selector="Button.ConsoleHeaderNav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+    </Style>
+
+    <Style Selector="Button.ConsoleHeaderNav:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
     </Style>
 
   </UserControl.Styles>
@@ -55,11 +118,12 @@
 
     <!-- Keep the shared wallpaper visible -->
     <Border
-        Background="#33000000"
+        Background="{DynamicResource PrimarySurfaceBrush}"
+        Opacity="0.22"
         IsHitTestVisible="False" />
 
 
-    <Grid Margin="72,48">
+    <Grid Margin="72,32,72,48">
 
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -74,38 +138,66 @@
           ColumnDefinitions="*,Auto"
           VerticalAlignment="Center">
 
-        <TextBlock
-            Text="Home"
-            FontSize="21"
-            FontWeight="SemiBold"
-            Foreground="White"
-            VerticalAlignment="Center" />
-
         <StackPanel
-            Grid.Column="1"
             Orientation="Horizontal"
-            Spacing="18"
+            Spacing="4"
             VerticalAlignment="Center">
+
+          <Button
+              x:Name="HeaderLibraryButton"
+              Classes="ConsoleHeaderNav"
+              ToolTip.Tip="Library">
+            <TextBlock Text="Library" />
+          </Button>
+
+          <Button
+              x:Name="HeaderRecentButton"
+              Classes="ConsoleHeaderNav"
+              ToolTip.Tip="Recently played">
+            <TextBlock Text="Recent" />
+          </Button>
+
+          <Button
+              x:Name="HeaderFriendsButton"
+              Classes="ConsoleHeaderNav"
+              ToolTip.Tip="Friends">
+            <TextBlock Text="Friends" />
+          </Button>
+
+          <Button
+              x:Name="HeaderSettingsButton"
+              Classes="ConsoleHeaderNav"
+              ToolTip.Tip="Settings">
+            <TextBlock Text="Settings" />
+          </Button>
+
+        </StackPanel>
+
+        <Border
+            Grid.Column="1">
+
+          <StackPanel
+              Orientation="Horizontal"
+              Spacing="12"
+              VerticalAlignment="Center">
 
           <TextBlock
               Text="wifi"
-              FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-              FontSize="20"
-              Foreground="#CCFFFFFF" />
+              Classes="ConsoleStatusIcon" />
 
           <TextBlock
               Text="battery_full"
-              FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-              FontSize="20"
-              Foreground="#CCFFFFFF" />
+              Classes="ConsoleStatusIcon" />
 
           <TextBlock
               Text="11:42"
               FontSize="15"
               FontWeight="Medium"
-              Foreground="#E6FFFFFF" />
+              Foreground="{DynamicResource TextPrimaryBrush}" />
 
-        </StackPanel>
+          </StackPanel>
+
+        </Border>
 
       </Grid>
 
@@ -127,14 +219,6 @@
         <StackPanel
             Grid.Row="2">
 
-
-          <!--
-              Fixed PS5-style card row.
-
-              Card size: 210 x 210
-              Slot:      210 x 210 (5px focus ring overlay)
-              Step:      230
-          -->
           <Border
               Height="230"
               HorizontalAlignment="Stretch">
@@ -157,24 +241,18 @@
 
                   <TextBlock
                       Text="stadia_controller"
-                      FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                      FontSize="36"
-                      Foreground="White" />
+                      Classes="ConsoleTileIcon" />
 
                   <TextBlock
                       Text="Library"
-                      FontSize="18"
-                      FontWeight="SemiBold"
-                      Foreground="White" />
+                      Classes="ConsoleTileLabel" />
 
                 </StackPanel>
 
                 </Button>
                 <Border
                     x:Name="LibraryFocusRing"
-                    BorderBrush="White"
-                    BorderThickness="5"
-                    CornerRadius="24"
+                    Classes="ConsoleFocusRing"
                     IsHitTestVisible="False"
                     IsVisible="False" />
               </Grid>
@@ -191,24 +269,18 @@
 
                   <TextBlock
                       Text="history"
-                      FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                      FontSize="36"
-                      Foreground="White" />
+                      Classes="ConsoleTileIcon" />
 
                   <TextBlock
                       Text="Recent"
-                      FontSize="18"
-                      FontWeight="SemiBold"
-                      Foreground="White" />
+                      Classes="ConsoleTileLabel" />
 
                 </StackPanel>
 
                 </Button>
                 <Border
                     x:Name="RecentFocusRing"
-                    BorderBrush="White"
-                    BorderThickness="5"
-                    CornerRadius="24"
+                    Classes="ConsoleFocusRing"
                     IsHitTestVisible="False"
                     IsVisible="False" />
               </Grid>
@@ -225,24 +297,18 @@
 
                   <TextBlock
                       Text="group"
-                      FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                      FontSize="36"
-                      Foreground="White" />
+                      Classes="ConsoleTileIcon" />
 
                   <TextBlock
                       Text="Friends"
-                      FontSize="18"
-                      FontWeight="SemiBold"
-                      Foreground="White" />
+                      Classes="ConsoleTileLabel" />
 
                 </StackPanel>
 
                 </Button>
                 <Border
                     x:Name="FriendsFocusRing"
-                    BorderBrush="White"
-                    BorderThickness="5"
-                    CornerRadius="24"
+                    Classes="ConsoleFocusRing"
                     IsHitTestVisible="False"
                     IsVisible="False" />
               </Grid>
@@ -259,24 +325,18 @@
 
                   <TextBlock
                       Text="settings"
-                      FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                      FontSize="36"
-                      Foreground="White" />
+                      Classes="ConsoleTileIcon" />
 
                   <TextBlock
                       Text="Settings"
-                      FontSize="18"
-                      FontWeight="SemiBold"
-                      Foreground="White" />
+                      Classes="ConsoleTileLabel" />
 
                 </StackPanel>
 
                 </Button>
                 <Border
                     x:Name="SettingsFocusRing"
-                    BorderBrush="White"
-                    BorderThickness="5"
-                    CornerRadius="24"
+                    Classes="ConsoleFocusRing"
                     IsHitTestVisible="False"
                     IsVisible="False" />
               </Grid>

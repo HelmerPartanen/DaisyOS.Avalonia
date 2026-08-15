@@ -12,6 +12,7 @@ public partial class ConsoleHomeView : UserControl
         AvaloniaProperty.Register<ConsoleHomeView, string>(nameof(ControllerName), "Game controller");
 
     private Button[] _navigationTargets = [];
+    private Button[] _cardTargets = [];
     private Border[] _focusRings = [];
     private readonly string[] _navigationLabels = ["Library", "Recent", "Friends", "Settings"];
     private readonly DispatcherTimer _carouselTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
@@ -27,11 +28,17 @@ public partial class ConsoleHomeView : UserControl
         _carouselTimer.Tick += (_, _) => AdvanceCarousel();
         Loaded += (_, _) =>
         {
-            _navigationTargets = [LibraryButton, RecentButton, FriendsButton, SettingsButton];
+            _navigationTargets = [HeaderLibraryButton, HeaderRecentButton, HeaderFriendsButton, HeaderSettingsButton];
+            _cardTargets = [LibraryButton, RecentButton, FriendsButton, SettingsButton];
             _focusRings = [LibraryFocusRing, RecentFocusRing, FriendsFocusRing, SettingsFocusRing];
             foreach (var target in _navigationTargets)
             {
                 target.Click += OnTargetClicked;
+            }
+
+            foreach (var card in _cardTargets)
+            {
+                card.Click += OnCardClicked;
             }
         };
     }
@@ -52,7 +59,7 @@ public partial class ConsoleHomeView : UserControl
         set => SetValue(ControllerNameProperty, value);
     }
 
-    /// <summary>Moves focus between the console's controller-first destinations.</summary>
+    /// <summary>Moves focus between the header's controller-first system destinations.</summary>
     public void Navigate(ControllerNavigationAction action)
     {
         if (_navigationTargets.Length == 0)
@@ -102,9 +109,20 @@ public partial class ConsoleHomeView : UserControl
         }
     }
 
+    private void OnCardClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        var index = Array.IndexOf(_cardTargets, sender);
+        if (index >= 0)
+        {
+            _selectedIndex = index;
+            ApplySelection();
+            DestinationRequested?.Invoke(this, _navigationLabels[index]);
+        }
+    }
+
     private void ApplySelection()
     {
-        // 210px tiles + 20px gap. The selected tile remains at the fixed carousel anchor.
+        // Header navigation selects the corresponding 210px card at the fixed carousel anchor.
         _targetCarouselOffset = -_selectedIndex * 230;
         if (!_carouselTimer.IsEnabled)
         {
