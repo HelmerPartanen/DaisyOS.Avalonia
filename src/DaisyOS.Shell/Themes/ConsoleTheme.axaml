@@ -1,0 +1,46 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Core Palette Tokens for Console UI -->
+  <Color x:Key="ConsoleBackgroundColor">#000000</Color>
+  <Color x:Key="ConsoleSurfaceColor">#0A0A0E</Color>
+  <Color x:Key="ConsoleElevatedSurfaceColor">#14141C</Color>
+  <Color x:Key="ConsoleSubtleSurfaceColor">#1E1E28</Color>
+
+  <!-- Accent Color: Pure White -->
+  <Color x:Key="ConsoleAccentColor">#FFFFFF</Color>
+  <Color x:Key="ConsoleOnAccentColor">#000000</Color>
+
+  <!-- High-Contrast Text Tokens -->
+  <Color x:Key="ConsoleTextPrimaryColor">#FFFFFF</Color>
+  <Color x:Key="ConsoleTextSecondaryColor">#B5B5C8</Color>
+  <Color x:Key="ConsoleTextMutedColor">#707085</Color>
+  <Color x:Key="ConsoleDividerColor">#2AFFFFFF</Color>
+
+  <!-- Solid Color Brushes -->
+  <SolidColorBrush x:Key="ConsoleBackgroundBrush" Color="{StaticResource ConsoleBackgroundColor}" />
+  <SolidColorBrush x:Key="ConsoleSurfaceBrush" Color="{StaticResource ConsoleSurfaceColor}" />
+  <SolidColorBrush x:Key="ConsoleElevatedSurfaceBrush" Color="{StaticResource ConsoleElevatedSurfaceColor}" />
+  <SolidColorBrush x:Key="ConsoleSubtleSurfaceBrush" Color="{StaticResource ConsoleSubtleSurfaceColor}" />
+
+  <SolidColorBrush x:Key="ConsoleAccentBrush" Color="{StaticResource ConsoleAccentColor}" />
+  <SolidColorBrush x:Key="ConsoleOnAccentBrush" Color="{StaticResource ConsoleOnAccentColor}" />
+
+  <!-- Primary Action Buttons: Pure White Background, Solid Black Foreground -->
+  <SolidColorBrush x:Key="ConsolePrimaryButtonBgBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="ConsolePrimaryButtonFgBrush" Color="#000000" />
+  <SolidColorBrush x:Key="ConsolePrimaryButtonHoverBgBrush" Color="#E5E5E5" />
+  <SolidColorBrush x:Key="ConsolePrimaryButtonPressedBgBrush" Color="#CCCCCC" />
+
+  <!-- Secondary Buttons: Dark Carbon Glass, White Text -->
+  <SolidColorBrush x:Key="ConsoleSecondaryButtonBgBrush" Color="#1C1C24" />
+  <SolidColorBrush x:Key="ConsoleSecondaryButtonFgBrush" Color="#FFFFFF" />
+  <SolidColorBrush x:Key="ConsoleSecondaryButtonHoverBgBrush" Color="#282834" />
+  <SolidColorBrush x:Key="ConsoleSecondaryButtonPressedBgBrush" Color="#14141C" />
+
+  <SolidColorBrush x:Key="ConsoleTextPrimaryBrush" Color="{StaticResource ConsoleTextPrimaryColor}" />
+  <SolidColorBrush x:Key="ConsoleTextSecondaryBrush" Color="{StaticResource ConsoleTextSecondaryColor}" />
+  <SolidColorBrush x:Key="ConsoleTextMutedBrush" Color="{StaticResource ConsoleTextMutedColor}" />
+  <SolidColorBrush x:Key="ConsoleDividerBrush" Color="{StaticResource ConsoleDividerColor}" />
+
+</ResourceDictionary>

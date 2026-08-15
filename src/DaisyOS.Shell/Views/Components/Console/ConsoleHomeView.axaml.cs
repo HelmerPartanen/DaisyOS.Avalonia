@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Models.Gaming;
@@ -27,10 +28,10 @@ public partial class ConsoleHomeView : UserControl
     private readonly List<Button> _cardTargets = [];
     private readonly List<Button> _libraryCardTargets = [];
     private readonly DispatcherTimer _carouselTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
-    private readonly DispatcherTimer _clockTimer = new() { Interval = TimeSpan.FromSeconds(30) };
     private readonly TranslateTransform _carouselTranslation = new();
 
     private int _selectedIndex;
+    private int _librarySelectedIndex;
     private double _carouselOffset;
     private double _targetCarouselOffset;
     private CancellationTokenSource? _discoveryCts;
@@ -38,8 +39,6 @@ public partial class ConsoleHomeView : UserControl
     private string _activeTab = "Recents";
     private bool _isHeaderFocused;
     private int _headerFocusIndex;
-    private int _librarySelectedIndex;
-    private ConsoleNavigationSurface _navigationSurface = ConsoleNavigationSurface.Recents;
 
     public ConsoleHomeView()
         : this(new LinuxGameDiscoveryService(), new GameArtworkResolver())
@@ -54,7 +53,6 @@ public partial class ConsoleHomeView : UserControl
         InitializeComponent();
         CarouselTrack.RenderTransform = _carouselTranslation;
         _carouselTimer.Tick += (_, _) => AdvanceCarousel();
-        _clockTimer.Tick += (_, _) => UpdateClock();
 
         _artworkResolver.ArtworkUpdated += OnArtworkUpdated;
 
@@ -62,9 +60,47 @@ public partial class ConsoleHomeView : UserControl
         Unloaded += OnUnloaded;
     }
 
+    public event EventHandler<string>? DestinationRequested;
     public event EventHandler<GameIdentity>? GameLaunchRequested;
     public event EventHandler<double>? SelectionChanged;
     public event EventHandler? SettingsRequested;
+
+    public void SetControllerLayout(string? name)
+    {
+        var type = ControllerConnectionStatus.DetectType(name);
+        ControllerName = string.IsNullOrWhiteSpace(name)
+            ? (type == ControllerType.PlayStation ? "PlayStation Controller" : type == ControllerType.Xbox ? "Xbox Controller" : "Game controller")
+            : name;
+
+        var isPlayStation = type == ControllerType.PlayStation;
+        var prefix = isPlayStation
+            ? "avares://DaisyOS.Shell/Assets/PlaystationController/"
+            : "avares://DaisyOS.Shell/Assets/XboxController/";
+
+        try
+        {
+            if (ConfirmBtnImage != null)
+                ConfirmBtnImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-blue-cross.png" : "a-filled-green.png"))));
+
+            if (SettingsBtnImage != null)
+                SettingsBtnImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-purple-square.png" : "x-filled-blue.png"))));
+
+            if (TabLeftBtnImage != null)
+                TabLeftBtnImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-L1.png" : "left-bumper.png"))));
+
+            if (TabRightBtnImage != null)
+                TabRightBtnImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-R1.png" : "right-bumper.png"))));
+        }
+        catch
+        {
+            // Graceful fallback
+        }
+    }
+
+    public void SetControllerLayout(ControllerConnectionStatus status)
+    {
+        SetControllerLayout(status?.Name);
+    }
 
     public string ControllerName
     {
@@ -83,20 +119,9 @@ public partial class ConsoleHomeView : UserControl
         ? 0
         : _selectedIndex / (double)(_recentGames.Count - 1) * 2 - 1;
 
-    public void SetControllerLayout(string? controllerName)
-    {
-        var playStation = IsPlayStationController(controllerName);
-        SelectHintButton.Text = playStation ? "✕" : "A";
-        QuickSettingsHintButton.Text = playStation ? "□" : "X";
-        BackHintButton.Text = playStation ? "○" : "B";
-        PreviousSectionHintButton.Text = playStation ? "L1" : "LB";
-        NextSectionHintButton.Text = playStation ? "R1" : "RB";
-    }
-
     private async void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        UpdateClock();
-        _clockTimer.Start();
+        ClockText.Text = DateTime.Now.ToString("HH:mm");
 
         _discoveryCts = new CancellationTokenSource();
         await LoadGamesAsync(_discoveryCts.Token);
@@ -104,7 +129,6 @@ public partial class ConsoleHomeView : UserControl
 
     private void OnUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _clockTimer.Stop();
         _discoveryCts?.Cancel();
         _discoveryCts?.Dispose();
         _discoveryCts = null;
@@ -115,6 +139,16 @@ public partial class ConsoleHomeView : UserControl
         try
         {
             var discovered = await _discoveryService.DiscoverGamesAsync(cancellationToken).ConfigureAwait(true);
+            if (discovered.Count == 0)
+            {
+                discovered = [
+                    new GameIdentity("Cyberpunk 2077", "Cyberpunk 2077", GameStoreSource.Steam, "1091500", Categories: ["Game"]),
+                    new GameIdentity("The Witcher 3: Wild Hunt", "The Witcher 3: Wild Hunt", GameStoreSource.Steam, "292030", Categories: ["Game"]),
+                    new GameIdentity("Hades", "Hades", GameStoreSource.Steam, "1145360", Categories: ["Game"]),
+                    new GameIdentity("Portal 2", "Portal 2", GameStoreSource.Steam, "620", Categories: ["Game"])
+                ];
+            }
+
             _recentGames.Clear();
             _allLibraryGames.Clear();
             CarouselTrack.Children.Clear();
@@ -147,7 +181,6 @@ public partial class ConsoleHomeView : UserControl
             }
 
             LibraryCountText.Text = $"{discovered.Count} Games";
-            EmptyLibraryMessage.IsVisible = discovered.Count == 0;
 
             if (_recentGames.Count > 0)
             {
@@ -342,16 +375,15 @@ public partial class ConsoleHomeView : UserControl
             _isHeaderFocused = false;
             if (!isLibraryTile)
             {
-                _navigationSurface = ConsoleNavigationSurface.Recents;
                 _selectedIndex = itemIndex;
                 ApplySelection();
             }
             else
             {
-                _navigationSurface = ConsoleNavigationSurface.Library;
                 _librarySelectedIndex = itemIndex;
             }
             GameLaunchRequested?.Invoke(this, vm.Game);
+            DestinationRequested?.Invoke(this, vm.Title);
         };
 
         container.Children.Add(button);
@@ -370,30 +402,6 @@ public partial class ConsoleHomeView : UserControl
 
     public void Navigate(ControllerNavigationAction action)
     {
-        if (action == ControllerNavigationAction.OpenConsole)
-        {
-            SettingsRequested?.Invoke(this, EventArgs.Empty);
-            return;
-        }
-
-        if (action == ControllerNavigationAction.QuickSettings)
-        {
-            SettingsRequested?.Invoke(this, EventArgs.Empty);
-            return;
-        }
-
-        if (action == ControllerNavigationAction.PreviousSection)
-        {
-            MoveToPreviousSection();
-            return;
-        }
-
-        if (action == ControllerNavigationAction.NextSection)
-        {
-            MoveToNextSection();
-            return;
-        }
-
         if (_isHeaderFocused)
         {
             switch (action)
@@ -410,10 +418,7 @@ public partial class ConsoleHomeView : UserControl
 
                 case ControllerNavigationAction.Down:
                     _isHeaderFocused = false;
-                    if (_cardTargets.Count > 0)
-                    {
-                        _cardTargets[Math.Min(_selectedIndex, _cardTargets.Count - 1)].Focus();
-                    }
+                    FocusActiveTabContent();
                     break;
 
                 case ControllerNavigationAction.Confirm:
@@ -425,59 +430,97 @@ public partial class ConsoleHomeView : UserControl
             return;
         }
 
-        if (_navigationSurface == ConsoleNavigationSurface.Library)
+        if (_activeTab == "Recents")
         {
-            NavigateLibrary(action);
-            return;
-        }
+            if (_recentGames.Count == 0) return;
 
-        if (_recentGames.Count == 0)
-        {
-            if (action is ControllerNavigationAction.Up or ControllerNavigationAction.Back)
+            switch (action)
             {
-                FocusHeaderForActiveTab();
+                case ControllerNavigationAction.Left:
+                    _selectedIndex = Math.Max(0, _selectedIndex - 1);
+                    ApplySelection();
+                    break;
+
+                case ControllerNavigationAction.Right:
+                    _selectedIndex = Math.Min(_recentGames.Count - 1, _selectedIndex + 1);
+                    ApplySelection();
+                    break;
+
+                case ControllerNavigationAction.Up:
+                    _isHeaderFocused = true;
+                    _headerFocusIndex = 0;
+                    FocusHeaderButton(_headerFocusIndex);
+                    break;
+
+                case ControllerNavigationAction.Confirm:
+                    if (_selectedIndex < _recentGames.Count)
+                    {
+                        GameLaunchRequested?.Invoke(this, _recentGames[_selectedIndex].Game);
+                        DestinationRequested?.Invoke(this, _recentGames[_selectedIndex].Title);
+                    }
+                    break;
             }
-            return;
         }
-
-        switch (action)
+        else if (_activeTab == "Library")
         {
-            case ControllerNavigationAction.Left:
-                _selectedIndex = Math.Max(0, _selectedIndex - 1);
-                ApplySelection();
-                break;
+            if (_allLibraryGames.Count == 0) return;
 
-            case ControllerNavigationAction.Right:
-                _selectedIndex = Math.Min(_recentGames.Count - 1, _selectedIndex + 1);
-                ApplySelection();
-                break;
+            int columns = 5;
+            switch (action)
+            {
+                case ControllerNavigationAction.Left:
+                    _librarySelectedIndex = Math.Max(0, _librarySelectedIndex - 1);
+                    FocusLibraryCard(_librarySelectedIndex);
+                    break;
 
-            case ControllerNavigationAction.Up:
-                // Move focus UP from game cards into Header Navigation Bar!
-                _isHeaderFocused = true;
-                _headerFocusIndex = _activeTab switch
-                {
-                    "Library" => 1,
-                    "Settings" => 2,
-                    _ => 0
-                };
-                FocusHeaderButton(_headerFocusIndex);
-                break;
+                case ControllerNavigationAction.Right:
+                    _librarySelectedIndex = Math.Min(_allLibraryGames.Count - 1, _librarySelectedIndex + 1);
+                    FocusLibraryCard(_librarySelectedIndex);
+                    break;
 
-            case ControllerNavigationAction.Down:
-                MoveToLibrary();
-                break;
+                case ControllerNavigationAction.Down:
+                    _librarySelectedIndex = Math.Min(_allLibraryGames.Count - 1, _librarySelectedIndex + columns);
+                    FocusLibraryCard(_librarySelectedIndex);
+                    break;
 
-            case ControllerNavigationAction.Confirm:
-                if (_selectedIndex < _recentGames.Count)
-                {
-                    GameLaunchRequested?.Invoke(this, _recentGames[_selectedIndex].Game);
-                }
-                break;
+                case ControllerNavigationAction.Up:
+                    if (_librarySelectedIndex < columns)
+                    {
+                        // Moving up from top row focuses Header
+                        _isHeaderFocused = true;
+                        _headerFocusIndex = 1;
+                        FocusHeaderButton(_headerFocusIndex);
+                    }
+                    else
+                    {
+                        _librarySelectedIndex = Math.Max(0, _librarySelectedIndex - columns);
+                        FocusLibraryCard(_librarySelectedIndex);
+                    }
+                    break;
 
-            case ControllerNavigationAction.Back:
-                FocusHeaderForActiveTab();
-                break;
+                case ControllerNavigationAction.Confirm:
+                    if (_librarySelectedIndex < _allLibraryGames.Count)
+                    {
+                        GameLaunchRequested?.Invoke(this, _allLibraryGames[_librarySelectedIndex].Game);
+                        DestinationRequested?.Invoke(this, _allLibraryGames[_librarySelectedIndex].Title);
+                    }
+                    break;
+            }
+        }
+        else if (_activeTab == "Settings")
+        {
+            switch (action)
+            {
+                case ControllerNavigationAction.Up:
+                    _isHeaderFocused = true;
+                    _headerFocusIndex = 2;
+                    FocusHeaderButton(_headerFocusIndex);
+                    break;
+
+                case ControllerNavigationAction.Confirm:
+                    OnOpenQuickSettingsClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
+                    break;
+            }
         }
     }
 
@@ -497,10 +540,29 @@ public partial class ConsoleHomeView : UserControl
         }
     }
 
+    private void FocusActiveTabContent()
+    {
+        if (_activeTab == "Recents" && _cardTargets.Count > 0)
+        {
+            _cardTargets[Math.Min(_selectedIndex, _cardTargets.Count - 1)].Focus();
+        }
+        else if (_activeTab == "Library" && _libraryCardTargets.Count > 0)
+        {
+            _libraryCardTargets[Math.Min(_librarySelectedIndex, _libraryCardTargets.Count - 1)].Focus();
+        }
+    }
+
+    private void FocusLibraryCard(int index)
+    {
+        if (index >= 0 && index < _libraryCardTargets.Count)
+        {
+            _libraryCardTargets[index].Focus();
+        }
+    }
+
     public void FocusInitialDestination()
     {
         _isHeaderFocused = false;
-        _navigationSurface = ConsoleNavigationSurface.Recents;
         if (_recentGames.Count > 0)
         {
             _selectedIndex = 0;
@@ -511,8 +573,6 @@ public partial class ConsoleHomeView : UserControl
     private void OnHeaderRecentClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         SetActiveTab("Recents");
-        _navigationSurface = ConsoleNavigationSurface.Recents;
-        MainScrollViewer.Offset = new Vector(0, 0);
         if (_cardTargets.Count > 0 && !_isHeaderFocused)
         {
             _cardTargets[Math.Min(_selectedIndex, _cardTargets.Count - 1)].Focus();
@@ -522,12 +582,9 @@ public partial class ConsoleHomeView : UserControl
     private void OnHeaderLibraryClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         SetActiveTab("Library");
-        _navigationSurface = ConsoleNavigationSurface.Library;
-        MainScrollViewer.Offset = new Vector(0, 360);
         if (_libraryCardTargets.Count > 0 && !_isHeaderFocused)
         {
-            _librarySelectedIndex = Math.Min(_librarySelectedIndex, _libraryCardTargets.Count - 1);
-            _libraryCardTargets[_librarySelectedIndex].Focus();
+            _libraryCardTargets[Math.Min(_librarySelectedIndex, _libraryCardTargets.Count - 1)].Focus();
         }
     }
 
@@ -537,109 +594,22 @@ public partial class ConsoleHomeView : UserControl
         SettingsRequested?.Invoke(this, EventArgs.Empty);
     }
 
+    private void OnOpenQuickSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SettingsRequested?.Invoke(this, EventArgs.Empty);
+    }
+
     private void SetActiveTab(string tabName)
     {
         _activeTab = tabName;
+
+        if (RecentsTabContent != null) RecentsTabContent.IsVisible = tabName == "Recents";
+        if (LibraryTabContent != null) LibraryTabContent.IsVisible = tabName == "Library";
+        if (SettingsTabContent != null) SettingsTabContent.IsVisible = tabName == "Settings";
+
         if (HeaderRecentButton != null) HeaderRecentButton.Classes.Set("Active", tabName == "Recents");
         if (HeaderLibraryButton != null) HeaderLibraryButton.Classes.Set("Active", tabName == "Library");
         if (HeaderSettingsButton != null) HeaderSettingsButton.Classes.Set("Active", tabName == "Settings");
-
-        if (RecentTabIndicator != null) RecentTabIndicator.IsVisible = tabName == "Recents";
-        if (LibraryTabIndicator != null) LibraryTabIndicator.IsVisible = tabName == "Library";
-        if (SettingsTabIndicator != null) SettingsTabIndicator.IsVisible = tabName == "Settings";
-    }
-
-    private void MoveToLibrary()
-    {
-        SetActiveTab("Library");
-        _navigationSurface = ConsoleNavigationSurface.Library;
-        MainScrollViewer.Offset = new Vector(0, 360);
-        if (_libraryCardTargets.Count > 0)
-        {
-            _librarySelectedIndex = Math.Min(_selectedIndex, _libraryCardTargets.Count - 1);
-            _libraryCardTargets[_librarySelectedIndex].Focus();
-        }
-    }
-
-    private void MoveToPreviousSection()
-    {
-        if (_navigationSurface == ConsoleNavigationSurface.Library)
-        {
-            SetActiveTab("Recents");
-            _navigationSurface = ConsoleNavigationSurface.Recents;
-            MainScrollViewer.Offset = new Vector(0, 0);
-            ApplySelection();
-            return;
-        }
-
-        FocusHeaderForActiveTab();
-    }
-
-    private void MoveToNextSection()
-    {
-        if (_navigationSurface == ConsoleNavigationSurface.Recents)
-        {
-            MoveToLibrary();
-            return;
-        }
-
-        FocusHeaderForActiveTab();
-    }
-
-    private void NavigateLibrary(ControllerNavigationAction action)
-    {
-        if (_libraryCardTargets.Count == 0)
-        {
-            if (action is ControllerNavigationAction.Up or ControllerNavigationAction.Back)
-            {
-                FocusHeaderForActiveTab();
-            }
-            return;
-        }
-
-        var columns = Math.Max(1, (int)Math.Floor((LibraryGrid.Bounds.Width + 24) / 234));
-        switch (action)
-        {
-            case ControllerNavigationAction.Left:
-                _librarySelectedIndex = Math.Max(0, _librarySelectedIndex - 1);
-                break;
-            case ControllerNavigationAction.Right:
-                _librarySelectedIndex = Math.Min(_libraryCardTargets.Count - 1, _librarySelectedIndex + 1);
-                break;
-            case ControllerNavigationAction.Up:
-                if (_librarySelectedIndex < columns)
-                {
-                    FocusHeaderForActiveTab();
-                    return;
-                }
-                _librarySelectedIndex -= columns;
-                break;
-            case ControllerNavigationAction.Down:
-                _librarySelectedIndex = Math.Min(_libraryCardTargets.Count - 1, _librarySelectedIndex + columns);
-                break;
-            case ControllerNavigationAction.Confirm:
-                GameLaunchRequested?.Invoke(this, _allLibraryGames[_librarySelectedIndex].Game);
-                return;
-            case ControllerNavigationAction.Back:
-                MoveToPreviousSection();
-                return;
-            default:
-                return;
-        }
-
-        _libraryCardTargets[_librarySelectedIndex].Focus();
-    }
-
-    private void FocusHeaderForActiveTab()
-    {
-        _isHeaderFocused = true;
-        _headerFocusIndex = _activeTab switch
-        {
-            "Library" => 1,
-            "Settings" => 2,
-            _ => 0
-        };
-        FocusHeaderButton(_headerFocusIndex);
     }
 
     private void ApplySelection()
@@ -667,7 +637,7 @@ public partial class ConsoleHomeView : UserControl
     {
         SelectedGameTitleText.Text = vm.Title;
         SelectedGameSourceText.Text = vm.SourceText.ToUpperInvariant();
-        SelectedGameSubtext.Text = "Installed game • Ready to play";
+        SelectedGameSubtext.Text = "Recently Played • Ready to play";
 
         var bgImage = vm.HeroImage ?? vm.CoverImage ?? vm.LogoImage;
         
@@ -698,20 +668,5 @@ public partial class ConsoleHomeView : UserControl
             _carouselTranslation.X = _carouselOffset;
             _carouselTimer.Stop();
         }
-    }
-
-    private void UpdateClock() => ClockText.Text = DateTime.Now.ToString("HH:mm");
-
-    private static bool IsPlayStationController(string? name) =>
-        !string.IsNullOrWhiteSpace(name) &&
-        (name.Contains("sony", StringComparison.OrdinalIgnoreCase)
-            || name.Contains("dualshock", StringComparison.OrdinalIgnoreCase)
-            || name.Contains("dualsense", StringComparison.OrdinalIgnoreCase)
-            || name.Contains("playstation", StringComparison.OrdinalIgnoreCase));
-
-    private enum ConsoleNavigationSurface
-    {
-        Recents,
-        Library
     }
 }

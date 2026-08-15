@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
 
@@ -6,6 +7,7 @@ namespace DaisyOS.System.Controllers;
 /// <summary>
 /// Reads the Linux joystick interface for the currently connected controller. It consumes only
 /// the controller node; keyboard and mouse input remain entirely outside this service.
+/// Keybindings are dynamically loaded from ~/.config/daisyos/controller_keybindings.json.
 /// </summary>
 public sealed class LinuxControllerInputService : IControllerInputService
 {
@@ -21,8 +23,65 @@ public sealed class LinuxControllerInputService : IControllerInputService
     private Task? _readerTask;
     private string? _activeDevicePath;
     private bool _playStationLayout;
+    private ControllerKeybindingsConfig _keybindingsConfig = new();
+
+    public LinuxControllerInputService(bool loadUserConfig = true)
+    {
+        if (loadUserConfig)
+        {
+            LoadOrInitKeybindingsConfig();
+        }
+        else
+        {
+            _keybindingsConfig = new ControllerKeybindingsConfig();
+        }
+    }
 
     public event EventHandler<ControllerNavigationAction>? NavigationRequested;
+    public event EventHandler<RawControllerInputEventArgs>? RawInputReceived;
+
+    public bool IsRebinding { get; set; }
+
+    public void ReloadKeybindings()
+    {
+        LoadOrInitKeybindingsConfig();
+    }
+
+    private void LoadOrInitKeybindingsConfig()
+    {
+        _keybindingsConfig = new ControllerKeybindingsConfig();
+        try
+        {
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var configDir = Path.Combine(home, ".config", "daisyos");
+            Directory.CreateDirectory(configDir);
+            var configFile = Path.Combine(configDir, "controller_keybindings.json");
+
+            if (File.Exists(configFile))
+            {
+                var json = File.ReadAllText(configFile);
+                var loaded = JsonSerializer.Deserialize<ControllerKeybindingsConfig>(json);
+                if (loaded != null)
+                {
+                    var defaults = new ControllerKeybindingsConfig();
+                    foreach (var kvp in defaults.XboxButtons) loaded.XboxButtons.TryAdd(kvp.Key, kvp.Value);
+                    foreach (var kvp in defaults.PlayStationButtons) loaded.PlayStationButtons.TryAdd(kvp.Key, kvp.Value);
+                    foreach (var kvp in defaults.EvdevKeys) loaded.EvdevKeys.TryAdd(kvp.Key, kvp.Value);
+                    _keybindingsConfig = loaded;
+                    return;
+                }
+            }
+
+            // Write default keybindings file if not exists or unreadable
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var defaultJson = JsonSerializer.Serialize(_keybindingsConfig, options);
+            File.WriteAllText(configFile, defaultJson);
+        }
+        catch
+        {
+            _keybindingsConfig = new ControllerKeybindingsConfig();
+        }
+    }
 
     public void Start(ControllerConnectionStatus controller)
     {
@@ -109,7 +168,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
                 }
 
                 var action = DecodeNavigation(buffer[6], BitConverter.ToInt16(buffer, 4), buffer[7], _playStationLayout);
-                if (action is { } navigationAction)
+                if (action is { } navigationAction && !IsRebinding)
                 {
                     NavigationRequested?.Invoke(this, navigationAction);
                 }
@@ -140,8 +199,6 @@ public sealed class LinuxControllerInputService : IControllerInputService
                 FileShare.ReadWrite,
                 bufferSize: 24,
                 FileOptions.Asynchronous);
-            // Linux input_event on the supported 64-bit desktop targets: timeval (16), type,
-            // code, value. This fallback covers controllers that expose eventN but no jsN node.
             var buffer = new byte[24];
 
             while (!cancellationToken.IsCancellationRequested)
@@ -158,7 +215,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
                     BitConverter.ToUInt16(buffer, 16),
                     BitConverter.ToUInt16(buffer, 18),
                     BitConverter.ToInt32(buffer, 20));
-                if (action is { } navigationAction)
+                if (action is { } navigationAction && !IsRebinding)
                 {
                     NavigationRequested?.Invoke(this, navigationAction);
                 }
@@ -186,6 +243,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
         var eventType = (byte)(rawType & ~InitialStateFlag);
         if (eventType == ButtonEvent)
         {
+            RawInputReceived?.Invoke(this, new RawControllerInputEventArgs(eventType, number, value));
             return value == 1 ? MapButton(number, playStationLayout) : null;
         }
 
@@ -215,7 +273,15 @@ public sealed class LinuxControllerInputService : IControllerInputService
     {
         if (type == EvdevKeyEvent)
         {
+            RawInputReceived?.Invoke(this, new RawControllerInputEventArgs(1, (byte)code, (short)value, code));
             if (value != 1) return null;
+
+            if (_keybindingsConfig.EvdevKeys.TryGetValue(code, out var actionName) &&
+                Enum.TryParse<ControllerNavigationAction>(actionName, ignoreCase: true, out var mappedAction))
+            {
+                return mappedAction;
+            }
+
             return code switch
             {
                 0x130 => ControllerNavigationAction.Confirm,         // BTN_SOUTH / A / Cross
@@ -232,10 +298,10 @@ public sealed class LinuxControllerInputService : IControllerInputService
         if (type != EvdevAbsoluteAxisEvent) return null;
         var action = code switch
         {
-            0 or 16 when value < 0 => ControllerNavigationAction.Left,
-            0 or 16 when value > 0 && (code == 16 || value > AxisThreshold) => ControllerNavigationAction.Right,
-            1 or 17 when value < 0 => ControllerNavigationAction.Up,
-            1 or 17 when value > 0 && (code == 17 || value > AxisThreshold) => ControllerNavigationAction.Down,
+            0 or 6 or 16 when value < 0 => ControllerNavigationAction.Left,
+            0 or 6 or 16 when value > 0 && (code == 16 || value > AxisThreshold) => ControllerNavigationAction.Right,
+            1 or 7 or 17 when value < 0 => ControllerNavigationAction.Up,
+            1 or 7 or 17 when value > 0 && (code == 17 || value > AxisThreshold) => ControllerNavigationAction.Down,
             _ => (ControllerNavigationAction?)null
         };
 
@@ -263,17 +329,25 @@ public sealed class LinuxControllerInputService : IControllerInputService
         _ => null
     };
 
-    private static ControllerNavigationAction? MapButton(byte number, bool playStationLayout) =>
-        playStationLayout
+    private ControllerNavigationAction? MapButton(byte number, bool playStationLayout)
+    {
+        var buttonMap = playStationLayout ? _keybindingsConfig.PlayStationButtons : _keybindingsConfig.XboxButtons;
+        if (buttonMap.TryGetValue(number, out var actionName) &&
+            Enum.TryParse<ControllerNavigationAction>(actionName, ignoreCase: true, out var mappedAction))
+        {
+            return mappedAction;
+        }
+
+        return playStationLayout
             ? number switch
             {
-                1 => ControllerNavigationAction.Confirm, // Cross
-                2 => ControllerNavigationAction.Back, // Circle
-                0 => ControllerNavigationAction.QuickSettings, // Square
-                3 => ControllerNavigationAction.Details, // Triangle
+                0 => ControllerNavigationAction.Confirm, // Cross (✕)
+                1 => ControllerNavigationAction.Back, // Circle (○)
+                3 => ControllerNavigationAction.QuickSettings, // Square (▫)
+                2 => ControllerNavigationAction.Details, // Triangle (△)
                 4 => ControllerNavigationAction.PreviousSection, // L1
                 5 => ControllerNavigationAction.NextSection, // R1
-                10 or 12 => ControllerNavigationAction.OpenConsole, // PlayStation / touchpad variant
+                8 or 9 or 10 => ControllerNavigationAction.OpenConsole, // Share / Options / PS Button
                 _ => null
             }
             : number switch
@@ -287,6 +361,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
                 8 or 10 => ControllerNavigationAction.OpenConsole, // Guide variants
                 _ => null
             };
+    }
 
     private static bool IsPlayStationController(string? name) =>
         !string.IsNullOrWhiteSpace(name) &&

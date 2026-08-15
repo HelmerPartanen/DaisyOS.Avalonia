@@ -9,6 +9,7 @@
         <ResourceInclude Source="avares://DaisyOS.Shell/Themes/DynamicColors.axaml" />
         <ResourceInclude Source="avares://DaisyOS.Shell/Themes/DesignTokens.axaml" />
         <ResourceInclude Source="avares://DaisyOS.Shell/Themes/OSTheme.axaml" />
+        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/ConsoleTheme.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

@@ -74,20 +74,20 @@ public sealed class LinuxControllerServiceTests
     [InlineData((byte)0x01, (short)1, (byte)10, ControllerNavigationAction.OpenConsole)]
     public void DecodeNavigation_MapsCommonControllerEvents(byte type, short value, byte number, ControllerNavigationAction expected)
     {
-        var input = new LinuxControllerInputService();
+        var input = new LinuxControllerInputService(loadUserConfig: false);
 
         Assert.Equal(expected, input.DecodeNavigation(type, value, number));
     }
 
     [Theory]
-    [InlineData((byte)1, ControllerNavigationAction.Confirm)]
-    [InlineData((byte)2, ControllerNavigationAction.Back)]
-    [InlineData((byte)0, ControllerNavigationAction.QuickSettings)]
-    [InlineData((byte)3, ControllerNavigationAction.Details)]
+    [InlineData((byte)0, ControllerNavigationAction.Confirm)]
+    [InlineData((byte)1, ControllerNavigationAction.Back)]
+    [InlineData((byte)3, ControllerNavigationAction.QuickSettings)]
+    [InlineData((byte)2, ControllerNavigationAction.Details)]
     [InlineData((byte)10, ControllerNavigationAction.OpenConsole)]
     public void DecodeNavigation_MapsDualShockJoystickLayout(byte button, ControllerNavigationAction expected)
     {
-        var input = new LinuxControllerInputService();
+        var input = new LinuxControllerInputService(loadUserConfig: false);
 
         Assert.Equal(expected, input.DecodeNavigation((byte)0x01, 1, button, playStationLayout: true));
     }
@@ -99,7 +99,7 @@ public sealed class LinuxControllerServiceTests
     [InlineData((ushort)0x03, (ushort)17, 1, ControllerNavigationAction.Down)]
     public void DecodeEvdevNavigation_MapsEventOnlyControllerInput(ushort type, ushort code, int value, ControllerNavigationAction expected)
     {
-        var input = new LinuxControllerInputService();
+        var input = new LinuxControllerInputService(loadUserConfig: false);
 
         Assert.Equal(expected, input.DecodeEvdevNavigation(type, code, value));
     }

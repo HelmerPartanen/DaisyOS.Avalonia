@@ -6,7 +6,11 @@ namespace DaisyOS.Core.Services;
 public interface IControllerInputService : IAsyncDisposable
 {
     event EventHandler<ControllerNavigationAction>? NavigationRequested;
+    event EventHandler<RawControllerInputEventArgs>? RawInputReceived;
+
+    bool IsRebinding { get; set; }
 
     void Start(ControllerConnectionStatus controller);
     void Stop();
+    void ReloadKeybindings();
 }

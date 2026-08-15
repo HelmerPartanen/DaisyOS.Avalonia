@@ -3,126 +3,379 @@
     x:Name="Root"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     IsVisible="False"
     ZIndex="700">
 
   <UserControl.Styles>
-    <Style Selector="TextBlock.ConsoleSettingsIcon">
-      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
-      <Setter Property="FontSize" Value="20" />
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+
+    <Style Selector="TextBlock.SettingsIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
+      <Setter Property="FontSize" Value="18" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
     </Style>
-    <Style Selector="Button.ConsoleSettingsAction">
-      <Setter Property="Height" Value="44" />
-      <Setter Property="Padding" Value="14,0" />
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+
+    <!-- Subnav Tab Buttons -->
+    <Style Selector="Button.SettingsTabBtn">
+      <Setter Property="Height" Value="38" />
+      <Setter Property="Padding" Value="12,0" />
+      <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
     </Style>
-    <Style Selector="Button.ConsoleSettingsAction:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+
+    <Style Selector="Button.SettingsTabBtn.Active">
+      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
+      <Setter Property="BorderBrush" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style Selector="Button.SettingsTabBtn.Active TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+    </Style>
+
+    <Style Selector="Button.SettingsTabBtn:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderBrush" Value="#FFFFFF" />
       <Setter Property="BorderThickness" Value="2" />
     </Style>
-    <Style Selector="Button.ConsoleSettingsListItem">
-      <Setter Property="MinHeight" Value="48" />
-      <Setter Property="Padding" Value="12,8" />
-      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-      <Setter Property="Background" Value="Transparent" />
+
+    <!-- Glass Settings Cards -->
+    <Style Selector="Border.SettingsCard">
+      <Setter Property="Background" Value="{DynamicResource ConsoleSurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ConsoleDividerBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="14" />
+      <Setter Property="Padding" Value="16,14" />
+    </Style>
+
+    <Style Selector="Button.ConsoleActionBtn">
+      <Setter Property="Height" Value="44" />
+      <Setter Property="Padding" Value="16,0" />
+      <Setter Property="Background" Value="{DynamicResource ConsoleSecondaryButtonBgBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ConsoleDividerBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Button.ConsoleActionBtn:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
+      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="BorderBrush" Value="#FFFFFF" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="BoxShadow" Value="0 0 20 0 #E6FFFFFF" />
+    </Style>
+
+    <Style Selector="Button.ConsolePrimaryBtn">
+      <Setter Property="Height" Value="44" />
+      <Setter Property="Padding" Value="20,0" />
+      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
+      <Setter Property="CornerRadius" Value="10" />
+      <Setter Property="FontWeight" Value="Bold" />
     </Style>
-    <Style Selector="Button.ConsoleSettingsListItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+
+    <Style Selector="Button.ConsolePrimaryBtn /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
+      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
     </Style>
+
+    <Style Selector="Button.ConsolePrimaryBtn:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonHoverBgBrush}" />
+      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="BorderBrush" Value="#FFFFFF" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="BoxShadow" Value="0 0 24 0 #E6FFFFFF" />
+    </Style>
+
   </UserControl.Styles>
 
-  <Grid>
-    <Border Background="#B8090A0F" PointerPressed="OnBackdropPointerPressed" />
+  <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-    <Border HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="480"
-            Padding="24,20" Background="{DynamicResource PrimarySurfaceBrush}"
-            BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1,0,0,0">
-      <Grid RowDefinitions="Auto,*,Auto">
-        <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,20">
-          <StackPanel Orientation="Horizontal" Spacing="10">
-            <TextBlock Text="tune" Classes="ConsoleSettingsIcon" FontSize="26" Foreground="{DynamicResource TextPrimaryBrush}" />
-            <StackPanel Spacing="1">
-              <TextBlock Text="Quick settings" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-              <TextBlock Text="System controls for this session" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-            </StackPanel>
+    <!-- Dark Backdrop Mask -->
+    <Border x:Name="BackdropMask" Background="{DynamicResource ConsoleBackgroundBrush}" Opacity="0.85" PointerPressed="OnBackdropPointerPressed" />
+
+    <!-- Right Side Glass Panel -->
+    <Border
+        HorizontalAlignment="Right"
+        VerticalAlignment="Stretch"
+        Width="520"
+        Background="{DynamicResource ConsoleElevatedSurfaceBrush}"
+        BorderBrush="{DynamicResource ConsoleDividerBrush}"
+        BorderThickness="1,0,0,0">
+      
+      <Grid RowDefinitions="Auto,*,Auto" Margin="24,20,24,20">
+
+        <!-- Top Header -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <TextBlock Text="settings" Classes="SettingsIcon" FontSize="26" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="Console Settings" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
           </StackPanel>
-          <Button x:Name="CloseButton" Grid.Column="1" Classes="ConsoleSettingsAction" Width="44" Padding="0" Click="OnCloseClicked" ToolTip.Tip="Close quick settings">
-            <TextBlock Text="close" Classes="ConsoleSettingsIcon" HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+          <Button Grid.Column="1" Click="OnCloseClicked" Classes="ConsoleActionBtn" Width="40" Height="40" Padding="0">
+            <TextBlock Text="close" Classes="SettingsIcon" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
           </Button>
         </Grid>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-          <StackPanel Spacing="18">
-            <!-- These are the exact tile and range primitives used by desktop Quick Settings. -->
-            <Grid ColumnDefinitions="96,96,96" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12" HorizontalAlignment="Center">
-              <controls:QuickSettingTile x:Name="WifiTile" Grid.Row="0" Grid.Column="0" Icon="wifi" Label="Wi-Fi" HasDetails="True"
-                                         ToolTipText="Toggle Wi-Fi" DetailsToolTipText="Wi-Fi networks"
-                                         Toggled="OnWifiTileToggled" DetailsClicked="OnWifiDetailsClicked" />
-              <controls:QuickSettingTile x:Name="BluetoothTile" Grid.Row="0" Grid.Column="1" Icon="bluetooth" Label="Bluetooth"
-                                         ToolTipText="Toggle Bluetooth" Toggled="OnBluetoothTileToggled" />
-              <controls:QuickSettingTile x:Name="FocusTile" Grid.Row="0" Grid.Column="2" Icon="do_not_disturb_on" Label="Focus"
-                                         ToolTipText="Do not disturb" Toggled="OnFocusTileToggled" />
-              <controls:QuickSettingTile x:Name="GamingTile" Grid.Row="1" Grid.Column="0" Icon="sports_esports" Label="Gaming"
-                                         ToolTipText="Gaming mode" Toggled="OnGamingTileToggled" />
-            </Grid>
+        <!-- Subnav Tabs & Content Stack -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
 
-            <StackPanel Spacing="8">
-              <TextBlock Text="Volume" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-              <Grid ColumnDefinitions="*,44">
-                <controls:QuickSettingsSlider x:Name="VolumeSlider" Grid.Column="0" Icon="volume_up" Minimum="0" Maximum="100"
-                                              ValueChanged="OnVolumeChanged" TrackBorderBrush="{DynamicResource DividerBrush}" TrackBorderThickness="1" />
-                <Button x:Name="OutputDetailsButton" Grid.Column="1" Classes="ConsoleSettingsAction" Padding="0" Margin="8,0,0,0"
-                        Click="OnOutputDetailsClicked" ToolTip.Tip="Choose output device">
-                  <TextBlock Text="speaker" Classes="ConsoleSettingsIcon" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                </Button>
-              </Grid>
-            </StackPanel>
-
-            <Border x:Name="DetailsCard" IsVisible="False" Padding="12" Background="{DynamicResource ElevatedSurfaceBrush}"
-                    BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedLG}">
-              <StackPanel Spacing="8">
-                <Grid ColumnDefinitions="*,Auto">
-                  <TextBlock x:Name="DetailsTitle" Text="Details" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                  <Button Grid.Column="1" Classes="ConsoleSettingsAction" Height="32" Padding="10,0" Click="OnDetailsCloseClicked">
-                    <TextBlock Text="Back" FontSize="12" />
-                  </Button>
-                </Grid>
-                <StackPanel x:Name="DetailsHost" Spacing="2" />
+          <!-- Category Subnav Tabs -->
+          <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6" Margin="0,0,0,20">
+            <Button x:Name="TabAudioBtn" Classes="SettingsTabBtn Active" Click="OnTabClicked" Tag="Audio">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="volume_up" Classes="SettingsIcon" />
+                <TextBlock Text="Audio" />
               </StackPanel>
-            </Border>
+            </Button>
 
-            <Border Padding="14" Background="{DynamicResource ElevatedSurfaceBrush}" BorderBrush="{DynamicResource DividerBrush}"
-                    BorderThickness="1" CornerRadius="{DynamicResource RoundedLG}">
-              <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Spacing="3">
-                  <TextBlock Text="Desktop mode" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                  <TextBlock Text="Return to the full DaisyOS desktop." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
-                </StackPanel>
-                <Button x:Name="DesktopModeButton" Grid.Column="1" Classes="ConsoleSettingsAction" Click="OnReturnToDesktopClicked">
-                  <TextBlock Text="Desktop" FontSize="13" FontWeight="SemiBold" />
-                </Button>
-              </Grid>
-            </Border>
+            <Button x:Name="TabNetworkBtn" Classes="SettingsTabBtn" Click="OnTabClicked" Tag="Network">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="wifi" Classes="SettingsIcon" />
+                <TextBlock Text="Network" />
+              </StackPanel>
+            </Button>
+
+            <Button x:Name="TabControlsBtn" Classes="SettingsTabBtn" Click="OnTabClicked" Tag="Controls">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="sports_esports" Classes="SettingsIcon" />
+                <TextBlock Text="Controls" />
+              </StackPanel>
+            </Button>
+
+            <Button x:Name="TabSystemBtn" Classes="SettingsTabBtn" Click="OnTabClicked" Tag="System">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="tune" Classes="SettingsIcon" />
+                <TextBlock Text="Quick Actions" />
+              </StackPanel>
+            </Button>
           </StackPanel>
-        </ScrollViewer>
 
-        <Grid Grid.Row="2" Margin="0,18,0,0" ColumnDefinitions="*,Auto">
-          <TextBlock x:Name="ControllerHintText" Text="D-pad  Navigate   A  Select   Y  Details   B  Back" FontSize="12" FontWeight="SemiBold"
-                     Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
-          <Button x:Name="DoneButton" Grid.Column="1" Classes="ConsoleSettingsAction" Click="OnCloseClicked">
-            <TextBlock x:Name="DoneButtonText" Text="B  Back to console" FontSize="14" FontWeight="SemiBold" />
+          <!-- Content Panels Area -->
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <Grid>
+
+              <!-- PANEL 1: AUDIO & SOUND -->
+              <StackPanel x:Name="AudioPanel" Spacing="16" IsVisible="True">
+                
+                <!-- Master Volume Card -->
+                <Border Classes="SettingsCard">
+                  <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <TextBlock Text="volume_up" Classes="SettingsIcon" FontSize="20" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="Master Output Volume" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                      <TextBlock Grid.Column="1" x:Name="VolumeValueText" Text="100%" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    </Grid>
+
+                    <Slider x:Name="MasterVolumeSlider" Minimum="0" Maximum="100" Value="100" ValueChanged="OnMasterVolumeChanged" />
+                  </StackPanel>
+                </Border>
+
+                <!-- Audio Devices Dropdowns -->
+                <Border Classes="SettingsCard">
+                  <StackPanel Spacing="14">
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="Output Device" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <ComboBox x:Name="OutputDeviceCombo" HorizontalAlignment="Stretch" SelectionChanged="OnOutputDeviceSelected" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                      <TextBlock Text="Input Device (Microphone)" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <ComboBox x:Name="InputDeviceCombo" HorizontalAlignment="Stretch" SelectionChanged="OnInputDeviceSelected" />
+                    </StackPanel>
+                  </StackPanel>
+                </Border>
+
+                <!-- Microphone Controls Card -->
+                <Border Classes="SettingsCard">
+                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <StackPanel Spacing="12">
+                      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <TextBlock x:Name="MuteMicIcon" Text="mic" Classes="SettingsIcon" FontSize="20" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="Microphone Level" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock x:Name="MicVolumeText" Text="75%" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                      </StackPanel>
+
+                      <Slider x:Name="MicVolumeSlider" Minimum="0" Maximum="100" Value="75" ValueChanged="OnMicVolumeChanged" Width="260" HorizontalAlignment="Left" />
+                    </StackPanel>
+
+                    <Button Grid.Column="1" x:Name="MuteMicBtn" Classes="ConsoleActionBtn" Click="OnMuteMicClicked">
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock x:Name="MuteMicBtnIcon" Text="mic_off" Classes="SettingsIcon" />
+                        <TextBlock x:Name="MuteMicText" Text="Mute Mic" FontWeight="SemiBold" />
+                      </StackPanel>
+                    </Button>
+                  </Grid>
+                </Border>
+
+              </StackPanel>
+
+              <!-- PANEL 2: NETWORK -->
+              <StackPanel x:Name="NetworkPanel" Spacing="16" IsVisible="False">
+                
+                <!-- Status Card -->
+                <Border Classes="SettingsCard">
+                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <StackPanel Spacing="4">
+                      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <TextBlock Text="wifi" Classes="SettingsIcon" FontSize="20" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock Text="Wi-Fi Connection" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                      </StackPanel>
+                      <TextBlock x:Name="NetworkStatusText" Text="Checking network status…" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+
+                    <ToggleSwitch Grid.Column="1" x:Name="WifiToggleSwitch" IsChecked="True" Click="OnWifiToggled" />
+                  </Grid>
+                </Border>
+
+                <!-- Wi-Fi Networks List -->
+                <Border Classes="SettingsCard">
+                  <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                      <TextBlock Text="Available Networks" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                      <Button Grid.Column="1" Click="OnRefreshWifiClicked" Classes="ConsoleActionBtn" Height="32" Padding="10,0">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <TextBlock Text="refresh" Classes="SettingsIcon" FontSize="16" />
+                          <TextBlock Text="Scan" FontSize="12" />
+                        </StackPanel>
+                      </Button>
+                    </Grid>
+
+                    <StackPanel x:Name="WifiListStack" Spacing="8" />
+                  </StackPanel>
+                </Border>
+
+              </StackPanel>
+
+              <!-- PANEL 3: CONTROLLER KEYBINDINGS & LIVE TEST -->
+              <StackPanel x:Name="ControlsPanel" Spacing="16" IsVisible="False">
+                
+                <Border Classes="SettingsCard">
+                  <StackPanel Spacing="12">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="Controller Button Keybindings" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="Click Remap on any action, then press your controller button to assign." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="KeybindingsListStack" Spacing="8" Margin="0,6,0,0" />
+                  </StackPanel>
+                </Border>
+
+                <!-- Live Controller Input Test Box -->
+                <Border Classes="SettingsCard" Background="#1A1A24">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="LIVE CONTROLLER TEST FEED" FontSize="11" FontWeight="Bold" Foreground="#00E5FF" />
+                    <TextBlock x:Name="LiveTestFeedText" Text="Press any controller button to test input live..." FontSize="13" FontWeight="Medium" Foreground="#00FF66" TextWrapping="Wrap" />
+                  </StackPanel>
+                </Border>
+
+                <!-- Reset to Defaults -->
+                <Button Click="OnResetKeybindingsClicked" Classes="ConsolePrimaryBtn" HorizontalAlignment="Stretch">
+                  <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                    <TextBlock Text="restart_alt" Classes="SettingsIcon" Foreground="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+                    <TextBlock Text="Reset Keybindings to Defaults" FontWeight="Bold" Foreground="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+                  </StackPanel>
+                </Button>
+
+              </StackPanel>
+
+              <!-- PANEL 4: QUICK SYSTEM ACTIONS -->
+              <StackPanel x:Name="SystemPanel" Spacing="16" IsVisible="False">
+                
+                <Border Classes="SettingsCard">
+                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="Performance Overlay" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="Show FPS, CPU &amp; GPU stats" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+
+                    <ToggleSwitch Grid.Column="1" x:Name="PerfOverlayToggle" Click="OnPerfOverlayToggled" />
+                  </Grid>
+                </Border>
+
+                <Border Classes="SettingsCard">
+                  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                    <StackPanel Spacing="4">
+                      <TextBlock Text="Return to Desktop" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="Exit console mode to DaisyOS desktop" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </StackPanel>
+
+                    <Button Grid.Column="1" Click="OnReturnToDesktopClicked" Classes="ConsolePrimaryBtn">
+                      <TextBlock Text="Desktop" FontWeight="Bold" />
+                    </Button>
+                  </Grid>
+                </Border>
+
+                <Border Classes="SettingsCard">
+                  <StackPanel Spacing="12">
+                    <TextBlock Text="Power Options" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                      <Button Grid.Column="0" Click="OnRestartClicked" Classes="ConsoleActionBtn">
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                          <TextBlock Text="restart_alt" Classes="SettingsIcon" />
+                          <TextBlock Text="Restart" FontWeight="SemiBold" />
+                        </StackPanel>
+                      </Button>
+
+                      <Button Grid.Column="1" Click="OnShutdownClicked" Classes="ConsoleActionBtn">
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                          <TextBlock Text="power_settings_new" Classes="SettingsIcon" />
+                          <TextBlock Text="Power Off" FontWeight="SemiBold" />
+                        </StackPanel>
+                      </Button>
+                    </Grid>
+                  </StackPanel>
+                </Border>
+
+              </StackPanel>
+
+            </Grid>
+          </ScrollViewer>
+
+        </Grid>
+
+        <!-- Bottom Action Hints using PNG Asset Icons -->
+        <Grid Grid.Row="2" Margin="0,16,0,0" ColumnDefinitions="*,Auto" RenderOptions.BitmapInterpolationMode="HighQuality">
+          <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+            
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Image x:Name="HintDpadImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+              <TextBlock Text="Navigate" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Image x:Name="HintConfirmImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+              <TextBlock Text="Select" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Image x:Name="HintDetailsImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+              <TextBlock Text="Details" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <Image x:Name="HintBackImage" Width="20" Height="20" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+              <TextBlock Text="Back" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+            </StackPanel>
+
+          </StackPanel>
+
+          <Button Grid.Column="1" Click="OnCloseClicked" Classes="ConsolePrimaryBtn" Height="36" Padding="16,0">
+            <TextBlock Text="Close" FontSize="13" FontWeight="Bold" />
           </Button>
         </Grid>
+
       </Grid>
+
     </Border>
+
   </Grid>
+
 </UserControl>

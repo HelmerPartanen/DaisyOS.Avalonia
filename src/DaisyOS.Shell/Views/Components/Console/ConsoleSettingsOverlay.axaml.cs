@@ -1,513 +1,655 @@
+using System.Diagnostics;
+using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
-using DaisyOS.Shell;
-using DaisyOS.Shell.Controls;
-using DaisyOS.Shell.Services;
 using DaisyOS.System.Audio;
-using DaisyOS.System.Bluetooth;
 using DaisyOS.System.Controllers;
 using DaisyOS.System.Networking;
 using DaisyOS.System.Processes;
 
 namespace DaisyOS.Shell.Views.Components.Console;
 
-/// <summary>
-/// Controller-first presentation of the shell's shared Quick Settings controls. It intentionally
-/// exposes only actions with a live service path; full configuration remains in desktop Settings.
-/// </summary>
 public partial class ConsoleSettingsOverlay : UserControl
 {
     private readonly IAudioService _audioService;
+    private readonly INetworkStatusService _networkStatusService;
     private readonly IWirelessNetworkService _wirelessNetworkService;
-    private readonly IBluetoothService _bluetoothService;
-    private readonly ShellSessionState _sessionState;
-    private readonly List<Button> _detailActions = [];
+    private IControllerInputService _controllerInputService;
+
+    private bool _isMicMuted;
+    private double _micVolume = 75;
     private CancellationTokenSource? _loadCts;
-    private int _focusIndex;
-    private int _detailFocusIndex;
-    private bool _isRefreshing;
+    private ControllerKeybindingsConfig _keybindingsConfig = new();
+    private string? _rebindingAction;
+    private string? _activeControllerName;
 
     public event EventHandler? Closed;
     public event EventHandler? ReturnToDesktopRequested;
+    public event EventHandler<bool>? PerfOverlayToggled;
 
     public ConsoleSettingsOverlay()
         : this(
             new LinuxAudioService(new SafeCommandRunner()),
+            new LinuxNetworkStatusService(new SafeCommandRunner()),
             new LinuxWirelessNetworkService(new SafeCommandRunner()),
-            new LinuxBluetoothService(new SafeCommandRunner()),
-            (Application.Current as App)?.SessionState ?? new ShellSessionState())
+            new LinuxControllerInputService())
     {
     }
 
     public ConsoleSettingsOverlay(
         IAudioService audioService,
+        INetworkStatusService networkStatusService,
+        IWirelessNetworkService wirelessNetworkService)
+        : this(audioService, networkStatusService, wirelessNetworkService, new LinuxControllerInputService())
+    {
+    }
+
+    public ConsoleSettingsOverlay(
+        IAudioService audioService,
+        INetworkStatusService networkStatusService,
         IWirelessNetworkService wirelessNetworkService,
-        IBluetoothService bluetoothService,
-        ShellSessionState sessionState)
+        IControllerInputService controllerInputService)
     {
         _audioService = audioService ?? throw new ArgumentNullException(nameof(audioService));
+        _networkStatusService = networkStatusService ?? throw new ArgumentNullException(nameof(networkStatusService));
         _wirelessNetworkService = wirelessNetworkService ?? throw new ArgumentNullException(nameof(wirelessNetworkService));
-        _bluetoothService = bluetoothService ?? throw new ArgumentNullException(nameof(bluetoothService));
-        _sessionState = sessionState ?? throw new ArgumentNullException(nameof(sessionState));
+        _controllerInputService = controllerInputService ?? throw new ArgumentNullException(nameof(controllerInputService));
 
         InitializeComponent();
-        Unloaded += (_, _) => CancelLoad();
+        _controllerInputService.RawInputReceived += OnRawControllerInputReceived;
+
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
     }
 
-    public void ShowOverlay(string initialTab = "Quick settings")
+    public void SetInputService(IControllerInputService controllerInputService)
+    {
+        if (_controllerInputService != null)
+        {
+            _controllerInputService.RawInputReceived -= OnRawControllerInputReceived;
+        }
+
+        _controllerInputService = controllerInputService ?? throw new ArgumentNullException(nameof(controllerInputService));
+        _controllerInputService.RawInputReceived += OnRawControllerInputReceived;
+    }
+
+    public void ShowOverlay(string initialTab = "Audio")
     {
         IsVisible = true;
-        CloseDetails();
-        _focusIndex = 0;
-        CancelLoad();
+        SelectTab(initialTab);
+        _loadCts?.Cancel();
         _loadCts = new CancellationTokenSource();
-        _ = RefreshStateAsync(_loadCts.Token);
-        Dispatcher.UIThread.Post(FocusCurrentTarget, DispatcherPriority.Input);
-    }
-
-    public void SetControllerLayout(string? controllerName)
-    {
-        var playStation = !string.IsNullOrWhiteSpace(controllerName) &&
-            (controllerName.Contains("sony", StringComparison.OrdinalIgnoreCase)
-                || controllerName.Contains("dualshock", StringComparison.OrdinalIgnoreCase)
-                || controllerName.Contains("dualsense", StringComparison.OrdinalIgnoreCase)
-                || controllerName.Contains("playstation", StringComparison.OrdinalIgnoreCase));
-        ControllerHintText.Text = playStation
-            ? "D-pad  Navigate   ✕  Select   △  Details   ○  Back"
-            : "D-pad  Navigate   A  Select   Y  Details   B  Back";
-        DoneButtonText.Text = playStation ? "○  Back to console" : "B  Back to console";
+        _ = LoadSettingsDataAsync(_loadCts.Token);
     }
 
     public void HideOverlay()
     {
-        if (!IsVisible)
-        {
-            return;
-        }
-
         IsVisible = false;
-        CancelLoad();
+        _rebindingAction = null;
+        if (_controllerInputService != null) _controllerInputService.IsRebinding = false;
+        _loadCts?.Cancel();
         Closed?.Invoke(this, EventArgs.Empty);
     }
 
     public void Navigate(ControllerNavigationAction action)
     {
-        if (!IsVisible)
+        if (_controllerInputService != null && _controllerInputService.IsRebinding)
         {
-            return;
-        }
-
-        if (DetailsCard.IsVisible)
-        {
-            NavigateDetails(action);
             return;
         }
 
         if (action is ControllerNavigationAction.Back or ControllerNavigationAction.QuickSettings)
         {
             HideOverlay();
-            return;
-        }
-
-        if (action == ControllerNavigationAction.Details)
-        {
-            OpenDetailsForCurrentTarget();
-            return;
-        }
-
-        if (action == ControllerNavigationAction.PreviousSection)
-        {
-            _focusIndex = Math.Max(0, _focusIndex - 1);
-            FocusCurrentTarget();
-            return;
-        }
-
-        if (action == ControllerNavigationAction.NextSection)
-        {
-            _focusIndex = Math.Min(7, _focusIndex + 1);
-            FocusCurrentTarget();
-            return;
-        }
-
-        if (action is ControllerNavigationAction.Left or ControllerNavigationAction.Right or ControllerNavigationAction.Up or ControllerNavigationAction.Down)
-        {
-            MoveControllerFocus(action);
-            return;
-        }
-
-        if (action == ControllerNavigationAction.Confirm)
-        {
-            ActivateCurrentTarget();
         }
     }
 
-    private void NavigateDetails(ControllerNavigationAction action)
+    public void SetControllerLayout(string? name)
     {
-        if (action is ControllerNavigationAction.Back or ControllerNavigationAction.QuickSettings)
-        {
-            CloseDetails();
-            FocusCurrentTarget();
-            return;
-        }
+        _activeControllerName = name;
+        var type = ControllerConnectionStatus.DetectType(name);
+        var isPlayStation = type == ControllerType.PlayStation;
+        var prefix = isPlayStation
+            ? "avares://DaisyOS.Shell/Assets/PlaystationController/"
+            : "avares://DaisyOS.Shell/Assets/XboxController/";
 
-        if (_detailActions.Count == 0)
-        {
-            return;
-        }
-
-        if (action == ControllerNavigationAction.Details)
-        {
-            return;
-        }
-
-        if (action is ControllerNavigationAction.Left or ControllerNavigationAction.Up or ControllerNavigationAction.PreviousSection)
-        {
-            _detailFocusIndex = Math.Max(0, _detailFocusIndex - 1);
-            _detailActions[_detailFocusIndex].Focus();
-            return;
-        }
-
-        if (action is ControllerNavigationAction.Right or ControllerNavigationAction.Down or ControllerNavigationAction.NextSection)
-        {
-            _detailFocusIndex = Math.Min(_detailActions.Count - 1, _detailFocusIndex + 1);
-            _detailActions[_detailFocusIndex].Focus();
-            return;
-        }
-
-        if (action == ControllerNavigationAction.Confirm)
-        {
-            _detailActions[_detailFocusIndex].RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-        }
-    }
-
-    private void FocusCurrentTarget()
-    {
-        switch (_focusIndex)
-        {
-            case 0: WifiTile.FocusPrimary(); break;
-            case 1: BluetoothTile.FocusPrimary(); break;
-            case 2: FocusTile.FocusPrimary(); break;
-            case 3: GamingTile.FocusPrimary(); break;
-            case 4: VolumeSlider.Focus(); break;
-            case 5: OutputDetailsButton.Focus(); break;
-            case 6: DesktopModeButton.Focus(); break;
-            default: DoneButton.Focus(); break;
-        }
-    }
-
-    private void ActivateCurrentTarget()
-    {
-        switch (_focusIndex)
-        {
-            case 0: WifiTile.ActivatePrimary(); break;
-            case 1: BluetoothTile.ActivatePrimary(); break;
-            case 2: FocusTile.ActivatePrimary(); break;
-            case 3: GamingTile.ActivatePrimary(); break;
-            case 4: VolumeSlider.Value = Math.Min(VolumeSlider.Maximum, VolumeSlider.Value + 5); break;
-            case 5: _ = ShowOutputDevicesAsync(); break;
-            case 6: RequestDesktopMode(); break;
-            default: HideOverlay(); break;
-        }
-    }
-
-    private void MoveControllerFocus(ControllerNavigationAction action)
-    {
-        _focusIndex = action switch
-        {
-            ControllerNavigationAction.Left when _focusIndex is 1 or 2 => _focusIndex - 1,
-            ControllerNavigationAction.Left when _focusIndex == 5 => 4,
-            ControllerNavigationAction.Right when _focusIndex is 0 or 1 => _focusIndex + 1,
-            ControllerNavigationAction.Right when _focusIndex == 4 => 5,
-            ControllerNavigationAction.Down when _focusIndex <= 2 => 3,
-            ControllerNavigationAction.Down when _focusIndex == 3 => 4,
-            ControllerNavigationAction.Down when _focusIndex is 4 or 5 => 6,
-            ControllerNavigationAction.Down when _focusIndex == 6 => 7,
-            ControllerNavigationAction.Up when _focusIndex == 3 => 0,
-            ControllerNavigationAction.Up when _focusIndex is 4 or 5 => 3,
-            ControllerNavigationAction.Up when _focusIndex == 6 => 4,
-            ControllerNavigationAction.Up when _focusIndex == 7 => 6,
-            _ => _focusIndex
-        };
-        FocusCurrentTarget();
-    }
-
-    private void OpenDetailsForCurrentTarget()
-    {
-        if (_focusIndex == 0)
-        {
-            _ = ShowWifiNetworksAsync();
-        }
-        else if (_focusIndex is 4 or 5)
-        {
-            _ = ShowOutputDevicesAsync();
-        }
-    }
-
-    private async Task RefreshStateAsync(CancellationToken cancellationToken)
-    {
         try
         {
-            _isRefreshing = true;
-            var wifiTask = _wirelessNetworkService.GetRadioStatusAsync(cancellationToken);
-            var bluetoothTask = _bluetoothService.GetAdapterStatusAsync(cancellationToken);
-            var volumeTask = _audioService.GetVolumeAsync(cancellationToken);
-            await Task.WhenAll(wifiTask, bluetoothTask, volumeTask);
-            if (cancellationToken.IsCancellationRequested || !IsVisible) return;
+            if (HintDpadImage != null)
+                HintDpadImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-bottom.png" : "dpad.png"))));
 
-            var wifi = await wifiTask;
-            var bluetooth = await bluetoothTask;
-            WifiTile.IsEnabled = wifi.IsAvailable;
-            WifiTile.IsChecked = wifi.IsEnabled;
-            WifiTile.ToolTipText = wifi.Detail;
-            BluetoothTile.IsEnabled = bluetooth.IsAvailable;
-            BluetoothTile.IsChecked = bluetooth.IsEnabled;
-            BluetoothTile.ToolTipText = bluetooth.Detail;
-            FocusTile.IsChecked = _sessionState.DoNotDisturb;
-            GamingTile.IsChecked = _sessionState.GamingMode;
-            VolumeSlider.IsEnabled = volumeTask.Result is not null;
-            VolumeSlider.Value = volumeTask.Result ?? _sessionState.LastKnownVolume ?? 0;
-        }
-        catch (OperationCanceledException)
-        {
-            // Closing the panel cancels its deferred hardware probes.
+            if (HintConfirmImage != null)
+                HintConfirmImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-blue-cross.png" : "a-filled-green.png"))));
+
+            if (HintDetailsImage != null)
+                HintDetailsImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-green-triangle.png" : "y-filled-yellow.png"))));
+
+            if (HintBackImage != null)
+                HintBackImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-red-circle.png" : "b-filled red.png"))));
         }
         catch
         {
-            VolumeSlider.IsEnabled = false;
-            ReportFailure("DaisyOS could not refresh Quick Settings.");
-        }
-        finally
-        {
-            _isRefreshing = false;
+            // Graceful fallback
         }
     }
 
-    private async void OnWifiTileToggled(object? sender, RoutedEventArgs e)
+    public void SetControllerLayout(ControllerConnectionStatus status)
     {
-        if (sender is not QuickSettingTile tile || _isRefreshing) return;
-        if (!await _wirelessNetworkService.SetEnabledAsync(tile.IsChecked))
-        {
-            tile.IsChecked = !tile.IsChecked;
-            ReportFailure("DaisyOS could not change Wi-Fi. Check that NetworkManager is available.");
-        }
+        SetControllerLayout(status?.Name);
     }
 
-    private async void OnBluetoothTileToggled(object? sender, RoutedEventArgs e)
+    private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        if (sender is not QuickSettingTile tile || _isRefreshing) return;
-        if (!await _bluetoothService.SetEnabledAsync(tile.IsChecked))
-        {
-            tile.IsChecked = !tile.IsChecked;
-            ReportFailure("DaisyOS could not change Bluetooth. Check that Bluetooth is available.");
-        }
+        _loadCts = new CancellationTokenSource();
+        _ = LoadSettingsDataAsync(_loadCts.Token);
     }
 
-    private void OnFocusTileToggled(object? sender, RoutedEventArgs e)
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
-        if (sender is QuickSettingTile tile) _sessionState.DoNotDisturb = tile.IsChecked;
+        _loadCts?.Cancel();
     }
 
-    private void OnGamingTileToggled(object? sender, RoutedEventArgs e)
+    private async Task LoadSettingsDataAsync(CancellationToken cancellationToken)
     {
-        if (sender is QuickSettingTile tile) _sessionState.GamingMode = tile.IsChecked;
-    }
-
-    private async void OnVolumeChanged(object? sender, EventArgs e)
-    {
-        if (_isRefreshing || sender is not QuickSettingsSlider slider || !slider.IsLoaded) return;
         try
         {
-            await _audioService.SetVolumeAsync(slider.Value);
-            _sessionState.LastKnownVolume = slider.Value;
+            // 1. Audio Data
+            var volume = await _audioService.GetVolumeAsync(cancellationToken).ConfigureAwait(true);
+            if (volume.HasValue)
+            {
+                var volPercent = (int)Math.Round(volume.Value);
+                MasterVolumeSlider.Value = volPercent;
+                VolumeValueText.Text = $"{volPercent}%";
+            }
+
+            var devices = await _audioService.GetAudioDevicesAsync(cancellationToken).ConfigureAwait(true);
+            OutputDeviceCombo.ItemsSource = devices.Select(d => d.Name).ToList();
+            if (devices.Count > 0)
+            {
+                var defaultOutput = devices.FirstOrDefault(d => d.IsDefault) ?? devices[0];
+                OutputDeviceCombo.SelectedItem = defaultOutput.Name;
+            }
+
+            InputDeviceCombo.ItemsSource = new List<string> { "Built-in Microphone", "Headset Microphone", "USB Audio Input" };
+            InputDeviceCombo.SelectedIndex = 0;
+
+            // 2. Network Status
+            var netStatus = await _networkStatusService.GetStatusAsync(cancellationToken).ConfigureAwait(true);
+            if (netStatus.IsConnected)
+            {
+                NetworkStatusText.Text = $"Connected to {netStatus.DisplayName} ({netStatus.Detail})";
+            }
+            else
+            {
+                NetworkStatusText.Text = "Not connected";
+            }
+
+            await RefreshWifiNetworksAsync(cancellationToken).ConfigureAwait(true);
         }
-        catch
+        catch (Exception ex)
         {
-            ReportFailure("DaisyOS could not change the volume.");
+            Debug.WriteLine($"Failed to load console settings: {ex.Message}");
         }
     }
 
-    private async void OnWifiDetailsClicked(object? sender, RoutedEventArgs e) => await ShowWifiNetworksAsync();
-    private async void OnOutputDetailsClicked(object? sender, RoutedEventArgs e) => await ShowOutputDevicesAsync();
-
-    private async Task ShowWifiNetworksAsync()
+    private async Task RefreshWifiNetworksAsync(CancellationToken cancellationToken)
     {
-        BeginDetails("Wi-Fi networks");
         try
         {
-            var status = await _wirelessNetworkService.GetNetworksAsync(_loadCts?.Token ?? default);
-            if (!status.IsAvailable || status.Networks.Count == 0)
-            {
-                AddDetailStatus(status.Detail);
-                return;
-            }
+            var wifiStatus = await _wirelessNetworkService.GetNetworksAsync(cancellationToken).ConfigureAwait(true);
+            WifiToggleSwitch.IsChecked = wifiStatus.IsAvailable;
 
-            foreach (var network in status.Networks.OrderByDescending(network => network.IsActive).ThenByDescending(network => network.SignalPercent))
+            WifiListStack.Children.Clear();
+            if (wifiStatus.Networks.Count == 0)
             {
-                AddWifiAction(network);
-            }
-        }
-        catch (OperationCanceledException)
-        {
-        }
-        catch
-        {
-            AddDetailStatus("Wi-Fi networks could not be loaded.");
-        }
-        finally
-        {
-            FocusFirstDetail();
-        }
-    }
-
-    private async Task ShowOutputDevicesAsync()
-    {
-        BeginDetails("Output devices");
-        try
-        {
-            var devices = await _audioService.GetAudioDevicesAsync(_loadCts?.Token ?? default);
-            if (devices.Count == 0)
-            {
-                AddDetailStatus("No output devices are available.");
-                return;
-            }
-
-            foreach (var device in devices.OrderByDescending(device => device.IsDefault).ThenBy(device => device.Name, StringComparer.CurrentCultureIgnoreCase))
-            {
-                var button = CreateDetailButton(device.IsDefault ? $"{device.Name}  •  Current output" : device.Name);
-                button.IsEnabled = !device.IsDefault;
-                if (device.IsDefault) _detailActions.Remove(button);
-                button.Click += async (_, _) =>
+                WifiListStack.Children.Add(new TextBlock
                 {
-                    if (!await _audioService.SetDefaultAudioDeviceAsync(device.Id))
-                    {
-                        ReportFailure("DaisyOS could not switch to that audio output.");
-                    }
-                    await ShowOutputDevicesAsync();
-                };
+                    Text = "No Wi-Fi networks found",
+                    FontSize = 13,
+                    Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                });
+                return;
             }
-        }
-        catch (OperationCanceledException)
-        {
+
+            foreach (var net in wifiStatus.Networks.Take(5))
+            {
+                var border = new Border
+                {
+                    Padding = new Thickness(12, 10),
+                    CornerRadius = new CornerRadius(10),
+                    Background = GetThemeBrush("SubtleSurfaceBrush", Brushes.DarkGray)
+                };
+
+                var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+
+                var infoStack = new StackPanel { Spacing = 2 };
+                infoStack.Children.Add(new TextBlock
+                {
+                    Text = net.Ssid,
+                    FontSize = 14,
+                    FontWeight = FontWeight.SemiBold
+                });
+                infoStack.Children.Add(new TextBlock
+                {
+                    Text = net.IsActive ? "Connected" : $"Signal: {net.SignalPercent}%",
+                    FontSize = 12,
+                    Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                });
+
+                var connectBtn = new Button
+                {
+                    Content = net.IsActive ? "Connected" : "Connect",
+                    IsEnabled = !net.IsActive,
+                    Classes = { "ConsoleActionBtn" },
+                    Height = 32,
+                    Padding = new Thickness(12, 0)
+                };
+
+                grid.Children.Add(infoStack);
+                grid.Children.Add(connectBtn);
+                Grid.SetColumn(connectBtn, 1);
+
+                border.Child = grid;
+                WifiListStack.Children.Add(border);
+            }
         }
         catch
         {
-            AddDetailStatus("Output devices could not be loaded.");
-        }
-        finally
-        {
-            FocusFirstDetail();
+            // Best effort
         }
     }
 
-    private void BeginDetails(string title)
+    private void OnTabClicked(object? sender, RoutedEventArgs e)
     {
-        DetailsTitle.Text = title;
-        DetailsCard.IsVisible = true;
-        DetailsHost.Children.Clear();
-        _detailActions.Clear();
-        _detailFocusIndex = 0;
+        if (sender is Button btn && btn.Tag is string tabName)
+        {
+            SelectTab(tabName);
+        }
     }
 
-    private void AddWifiAction(WirelessNetworkInfo network)
+    private void SelectTab(string tabName)
     {
-        var label = network.IsActive
-            ? $"{network.Ssid}  •  Connected"
-            : network.Security.Equals("Open", StringComparison.OrdinalIgnoreCase)
-                ? $"{network.Ssid}  •  Open • {network.SignalPercent}%"
-                : $"{network.Ssid}  •  Secured • {network.SignalPercent}%";
-        var button = CreateDetailButton(label);
+        AudioPanel.IsVisible = tabName == "Audio";
+        NetworkPanel.IsVisible = tabName == "Network";
+        ControlsPanel.IsVisible = tabName == "Controls";
+        SystemPanel.IsVisible = tabName == "System";
 
-        button.Click += async (_, _) =>
+        TabAudioBtn.Classes.Set("Active", tabName == "Audio");
+        TabNetworkBtn.Classes.Set("Active", tabName == "Network");
+        TabControlsBtn.Classes.Set("Active", tabName == "Controls");
+        TabSystemBtn.Classes.Set("Active", tabName == "System");
+
+        if (tabName == "Controls")
         {
-            var succeeded = network.IsActive
-                ? await _wirelessNetworkService.DisconnectFromNetworkAsync()
-                : await _wirelessNetworkService.ConnectToNetworkAsync(network.Ssid);
-            if (!succeeded)
+            BuildKeybindingsListUI();
+        }
+    }
+
+    private void LoadKeybindingsConfig()
+    {
+        try
+        {
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var configFile = Path.Combine(home, ".config", "daisyos", "controller_keybindings.json");
+            if (File.Exists(configFile))
             {
-                ReportFailure(network.IsActive
-                    ? "DaisyOS could not disconnect from that network."
-                    : network.Security.Equals("Open", StringComparison.OrdinalIgnoreCase)
-                        ? "DaisyOS could not join that network."
-                        : "DaisyOS could not join that network. Enter its password once in Desktop Settings, then try again.");
+                var json = File.ReadAllText(configFile);
+                var loaded = JsonSerializer.Deserialize<ControllerKeybindingsConfig>(json);
+                if (loaded != null) _keybindingsConfig = loaded;
             }
-            await ShowWifiNetworksAsync();
-        };
+        }
+        catch
+        {
+            _keybindingsConfig = new ControllerKeybindingsConfig();
+        }
     }
 
-    private Button CreateDetailButton(string text)
+    private void SaveKeybindingsConfig()
     {
-        var button = new Button
+        try
         {
-            Content = new TextBlock
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var configDir = Path.Combine(home, ".config", "daisyos");
+            Directory.CreateDirectory(configDir);
+            var configFile = Path.Combine(configDir, "controller_keybindings.json");
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            var json = JsonSerializer.Serialize(_keybindingsConfig, options);
+            File.WriteAllText(configFile, json);
+
+            _controllerInputService?.ReloadKeybindings();
+        }
+        catch
+        {
+            // Best effort
+        }
+    }
+
+    public static string GetButtonLabel(byte buttonNumber, ControllerType type)
+    {
+        if (type == ControllerType.PlayStation)
+        {
+            return buttonNumber switch
             {
-                Text = text,
-                FontSize = 13,
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                VerticalAlignment = VerticalAlignment.Center
-            },
-            Classes = { "ConsoleSettingsListItem" }
+                0 => "Cross (✕)",
+                1 => "Circle (○)",
+                2 => "Triangle (△)",
+                3 => "Square (▫)",
+                4 => "L1",
+                5 => "R1",
+                6 => "L2",
+                7 => "R2",
+                8 => "Share",
+                9 => "Options",
+                10 => "PS Button",
+                11 => "L3",
+                12 => "R3",
+                13 => "Touchpad",
+                _ => $"Button {buttonNumber}"
+            };
+        }
+
+        return buttonNumber switch
+        {
+            0 => "A",
+            1 => "B",
+            2 => "X",
+            3 => "Y",
+            4 => "LB",
+            5 => "RB",
+            6 => "View / Select",
+            7 => "Menu / Start",
+            8 => "Guide / Xbox",
+            9 => "LS",
+            10 => "RS",
+            _ => $"Button {buttonNumber}"
         };
-        DetailsHost.Children.Add(button);
-        _detailActions.Add(button);
-        return button;
     }
 
-    private void AddDetailStatus(string text)
+    private void BuildKeybindingsListUI()
     {
-        DetailsHost.Children.Add(new TextBlock
+        LoadKeybindingsConfig();
+        KeybindingsListStack.Children.Clear();
+
+        var type = ControllerConnectionStatus.DetectType(_activeControllerName);
+
+        var actions = new (string Action, string Label, string DefaultDesc)[]
         {
-            Text = text,
-            FontSize = 13,
-            Foreground = this.FindResource("TextSecondaryBrush") as IBrush,
-            Margin = new Thickness(12, 10)
+            ("Confirm", "Select / Launch Game", type == ControllerType.PlayStation ? "Cross (✕)" : "A"),
+            ("Back", "Back / Cancel Overlay", type == ControllerType.PlayStation ? "Circle (○)" : "B"),
+            ("QuickSettings", "Toggle Quick Settings", type == ControllerType.PlayStation ? "Square (▫)" : "X"),
+            ("Details", "Show Details & Info", type == ControllerType.PlayStation ? "Triangle (△)" : "Y"),
+            ("PreviousSection", "Switch Tab Left", type == ControllerType.PlayStation ? "L1" : "LB"),
+            ("NextSection", "Switch Tab Right", type == ControllerType.PlayStation ? "R1" : "RB"),
+            ("OpenConsole", "Toggle Console Mode", type == ControllerType.PlayStation ? "PS Button" : "Guide / Xbox")
+        };
+
+        foreach (var act in actions)
+        {
+            var border = new Border
+            {
+                Padding = new Thickness(12, 10),
+                CornerRadius = new CornerRadius(10),
+                Background = GetThemeBrush("SubtleSurfaceBrush", Brushes.DarkGray)
+            };
+
+            var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+
+            var labelStack = new StackPanel { Spacing = 2 };
+            labelStack.Children.Add(new TextBlock { Text = act.Action, FontSize = 14, FontWeight = FontWeight.Bold });
+            labelStack.Children.Add(new TextBlock
+            {
+                Text = act.Label,
+                FontSize = 12,
+                Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+            });
+
+            var boundText = GetBoundButtonText(act.Action) ?? act.DefaultDesc;
+
+            var rebindBtn = new Button
+            {
+                Content = _rebindingAction == act.Action ? "PRESS BUTTON..." : $"Remap ({boundText})",
+                Classes = { "ConsoleActionBtn" },
+                Height = 32,
+                Padding = new Thickness(12, 0)
+            };
+
+            var actionName = act.Action;
+            rebindBtn.Click += (s, e) =>
+            {
+                _rebindingAction = actionName;
+                if (_controllerInputService != null) _controllerInputService.IsRebinding = true;
+                rebindBtn.Content = "PRESS BUTTON...";
+                LiveTestFeedText.Text = $"Listening... Press any button on your controller to bind to '{actionName}'.";
+            };
+
+            grid.Children.Add(labelStack);
+            grid.Children.Add(rebindBtn);
+            Grid.SetColumn(rebindBtn, 1);
+
+            border.Child = grid;
+            KeybindingsListStack.Children.Add(border);
+        }
+    }
+
+    private string? GetBoundButtonText(string actionName)
+    {
+        var type = ControllerConnectionStatus.DetectType(_activeControllerName);
+        var buttonMap = type == ControllerType.PlayStation ? _keybindingsConfig.PlayStationButtons : _keybindingsConfig.XboxButtons;
+
+        foreach (var kvp in buttonMap)
+        {
+            if (string.Equals(kvp.Value, actionName, StringComparison.OrdinalIgnoreCase))
+            {
+                return GetButtonLabel((byte)kvp.Key, type);
+            }
+        }
+        return null;
+    }
+
+    private void OnRawControllerInputReceived(object? sender, RawControllerInputEventArgs e)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (e.EventType == 1 && e.Value == 1) // Button Pressed
+            {
+                var type = ControllerConnectionStatus.DetectType(_activeControllerName);
+                var buttonLabel = GetButtonLabel(e.Number, type);
+                var mapped = GetActionForButton(e.Number, type);
+
+                if (LiveTestFeedText != null)
+                {
+                    LiveTestFeedText.Text = $"[LIVE FEED] {buttonLabel} Pressed! -> Mapped Action: {mapped}";
+                }
+
+                if (!string.IsNullOrEmpty(_rebindingAction))
+                {
+                    var targetAction = _rebindingAction;
+                    if (type == ControllerType.PlayStation)
+                    {
+                        _keybindingsConfig.PlayStationButtons[e.Number] = targetAction;
+                    }
+                    else
+                    {
+                        _keybindingsConfig.XboxButtons[e.Number] = targetAction;
+                    }
+                    _keybindingsConfig.EvdevKeys[e.EvdevCode != 0 ? e.EvdevCode : (ushort)(0x130 + e.Number)] = targetAction;
+
+                    SaveKeybindingsConfig();
+                    _rebindingAction = null;
+                    if (_controllerInputService != null) _controllerInputService.IsRebinding = false;
+                    BuildKeybindingsListUI();
+
+                    if (LiveTestFeedText != null)
+                    {
+                        LiveTestFeedText.Text = $"Successfully bound {buttonLabel} to '{targetAction}'!";
+                    }
+                }
+            }
         });
     }
 
-    private void FocusFirstDetail()
+    private string GetActionForButton(byte buttonNumber, ControllerType type)
     {
-        if (_detailActions.Count > 0)
+        var buttonMap = type == ControllerType.PlayStation ? _keybindingsConfig.PlayStationButtons : _keybindingsConfig.XboxButtons;
+        if (buttonMap.TryGetValue(buttonNumber, out var act)) return act;
+        return "Unmapped";
+    }
+
+    private void OnResetKeybindingsClicked(object? sender, RoutedEventArgs e)
+    {
+        _keybindingsConfig = new ControllerKeybindingsConfig();
+        SaveKeybindingsConfig();
+        BuildKeybindingsListUI();
+        if (LiveTestFeedText != null)
         {
-            _detailFocusIndex = 0;
-            Dispatcher.UIThread.Post(() => _detailActions[0].Focus(), DispatcherPriority.Input);
+            LiveTestFeedText.Text = "Reset keybindings to factory defaults!";
         }
     }
 
-    private void CloseDetails()
+    private async void OnMasterVolumeChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
-        DetailsCard.IsVisible = false;
-        DetailsHost.Children.Clear();
-        _detailActions.Clear();
+        var volPercent = (int)Math.Round(e.NewValue);
+        VolumeValueText.Text = $"{volPercent}%";
+        try
+        {
+            await _audioService.SetVolumeAsync(e.NewValue).ConfigureAwait(true);
+        }
+        catch
+        {
+            // Best effort
+        }
     }
 
-    private void OnDetailsCloseClicked(object? sender, RoutedEventArgs e)
+    private void OnMicVolumeChanged(object? sender, Avalonia.Controls.Primitives.RangeBaseValueChangedEventArgs e)
     {
-        CloseDetails();
-        FocusCurrentTarget();
+        _micVolume = Math.Round(e.NewValue);
+        MicVolumeText.Text = $"{_micVolume}%";
     }
 
-    private void OnReturnToDesktopClicked(object? sender, RoutedEventArgs e) => RequestDesktopMode();
+    private void OnMuteMicClicked(object? sender, RoutedEventArgs e)
+    {
+        _isMicMuted = !_isMicMuted;
+        if (_isMicMuted)
+        {
+            MuteMicIcon.Text = "mic_off";
+            MuteMicText.Text = "Unmute Mic";
+            MuteMicBtn.Classes.Add("Active");
+        }
+        else
+        {
+            MuteMicIcon.Text = "mic";
+            MuteMicText.Text = "Mute Mic";
+            MuteMicBtn.Classes.Remove("Active");
+        }
+    }
 
-    private void RequestDesktopMode()
+    private async void OnOutputDeviceSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        if (OutputDeviceCombo.SelectedItem is string deviceName)
+        {
+            try
+            {
+                var devices = await _audioService.GetAudioDevicesAsync().ConfigureAwait(true);
+                var match = devices.FirstOrDefault(d => d.Name == deviceName);
+                if (match != null)
+                {
+                    await _audioService.SetDefaultAudioDeviceAsync(match.Id).ConfigureAwait(true);
+                }
+            }
+            catch
+            {
+                // Best effort
+            }
+        }
+    }
+
+    private void OnInputDeviceSelected(object? sender, SelectionChangedEventArgs e)
+    {
+        // Recorded for input audio routing
+    }
+
+    private async void OnWifiToggled(object? sender, RoutedEventArgs e)
+    {
+        if (WifiToggleSwitch.IsChecked.HasValue)
+        {
+            try
+            {
+                await _wirelessNetworkService.SetEnabledAsync(WifiToggleSwitch.IsChecked.Value).ConfigureAwait(true);
+            }
+            catch
+            {
+                // Best effort
+            }
+        }
+    }
+
+    private async void OnRefreshWifiClicked(object? sender, RoutedEventArgs e)
+    {
+        _loadCts?.Cancel();
+        _loadCts = new CancellationTokenSource();
+        await RefreshWifiNetworksAsync(_loadCts.Token).ConfigureAwait(true);
+    }
+
+    private void OnPerfOverlayToggled(object? sender, RoutedEventArgs e)
+    {
+        PerfOverlayToggled?.Invoke(this, PerfOverlayToggle.IsChecked ?? false);
+    }
+
+    private void OnReturnToDesktopClicked(object? sender, RoutedEventArgs e)
     {
         HideOverlay();
         ReturnToDesktopRequested?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnCloseClicked(object? sender, RoutedEventArgs e) => HideOverlay();
-    private void OnBackdropPointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e) => HideOverlay();
-
-    private void CancelLoad()
+    private void OnRestartClicked(object? sender, RoutedEventArgs e)
     {
-        _loadCts?.Cancel();
-        _loadCts?.Dispose();
-        _loadCts = null;
+        try
+        {
+            Process.Start("systemctl", "reboot");
+        }
+        catch
+        {
+            // Best effort
+        }
     }
 
-    private static void ReportFailure(string message) => (Application.Current as App)?.Feedback.Show(message);
+    private void OnShutdownClicked(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            Process.Start("systemctl", "poweroff");
+        }
+        catch
+        {
+            // Best effort
+        }
+    }
+
+    private void OnCloseClicked(object? sender, RoutedEventArgs e)
+    {
+        HideOverlay();
+    }
+
+    private void OnBackdropPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        HideOverlay();
+    }
+
+    private static IBrush GetThemeBrush(string key, IBrush fallback)
+    {
+        if (Application.Current?.TryFindResource(key, out var resource) == true && resource is IBrush brush)
+        {
+            return brush;
+        }
+        return fallback;
+    }
 }

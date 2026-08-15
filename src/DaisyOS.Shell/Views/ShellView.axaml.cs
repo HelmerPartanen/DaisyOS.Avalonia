@@ -47,6 +47,7 @@ namespace DaisyOS.Shell.Views
             _controllerService = controllerService ?? throw new ArgumentNullException(nameof(controllerService));
             _controllerInputService = controllerInputService ?? throw new ArgumentNullException(nameof(controllerInputService));
             InitializeComponent();
+            ConsoleSettings.SetInputService(_controllerInputService);
             AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, Avalonia.Interactivity.RoutingStrategies.Tunnel);
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
