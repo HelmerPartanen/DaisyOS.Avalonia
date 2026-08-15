@@ -3,7 +3,7 @@
     x:Name="Root"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Background="#FF07101F">
+    Background="Transparent">
   <UserControl.Styles>
     <Style Selector="Button.ConsoleTile">
       <Setter Property="Width" Value="156" />
@@ -33,7 +33,10 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid Margin="72,48">
+  <Grid>
+    <!-- The console keeps the shared wallpaper legible without replacing it. -->
+    <Border Background="#B8071020" IsHitTestVisible="False" />
+    <Grid Margin="72,48">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
@@ -127,5 +130,6 @@
       <TextBlock Text="{Binding ControllerName, ElementName=Root}" FontSize="14" Foreground="#CCFFFFFF" />
       <TextBlock Text="connected" FontSize="14" Foreground="#99FFFFFF" />
     </StackPanel>
+    </Grid>
   </Grid>
 </UserControl>

@@ -36,6 +36,7 @@ public partial class App : Application
 
     public ShellSessionState SessionState { get; } = new();
     public ShellFeedbackService Feedback { get; } = new();
+    public string CurrentWallpaperUri => _wallpaperService?.CurrentWallpaperUri ?? ShellSettings.DefaultWallpaperUri;
 
     public event EventHandler<string>? WallpaperChanged;
     public event EventHandler<bool>? LauncherVisibilityChanged;

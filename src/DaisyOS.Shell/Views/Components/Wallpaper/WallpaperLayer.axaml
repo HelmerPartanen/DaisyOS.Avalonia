@@ -1,0 +1,14 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Views.Components.Wallpaper.WallpaperLayer"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    ClipToBounds="True"
+    IsHitTestVisible="False">
+  <!-- The small overscan keeps the image edge outside the viewport during console parallax. -->
+  <Image x:Name="WallpaperImage"
+         Source="avares://DaisyOS.Shell/Assets/Wallpapers/Dusk.png"
+         Stretch="UniformToFill"
+         HorizontalAlignment="Stretch"
+         VerticalAlignment="Stretch"
+         RenderTransformOrigin="0.5,0.5" />
+</UserControl>

@@ -7,16 +7,7 @@
   <Grid
       x:Name="InteractionSurface"
       Focusable="True"
-      Background="Black">
-
-    <!-- Wallpaper -->
-    <Image
-        x:Name="WallpaperImage"
-        Source="avares://DaisyOS.Shell/Assets/Wallpapers/Dusk.png"
-        Stretch="UniformToFill"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch"
-        IsHitTestVisible="False" />
+      Background="Transparent">
 
     <!-- Items Layer -->
     <ItemsControl

@@ -17,6 +17,9 @@ namespace DaisyOS.Shell.Views
     {
         private readonly DispatcherTimer _feedbackTimer = new() { Interval = TimeSpan.FromSeconds(5) };
         private readonly DispatcherTimer _controllerPollTimer = new() { Interval = TimeSpan.FromSeconds(2) };
+        private static readonly TimeSpan BlackFadeDuration = TimeSpan.FromMilliseconds(640);
+        private static readonly TimeSpan ConsoleLoadingDuration = TimeSpan.FromMilliseconds(720);
+        private static readonly TimeSpan DesktopRestoreDuration = TimeSpan.FromMilliseconds(360);
         private readonly IControllerService _controllerService;
         private CancellationTokenSource? _controllerCancellation;
         private bool _controllerConnected;
@@ -34,6 +37,7 @@ namespace DaisyOS.Shell.Views
             _controllerService = controllerService ?? throw new ArgumentNullException(nameof(controllerService));
             InitializeComponent();
             AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, Avalonia.Interactivity.RoutingStrategies.Tunnel);
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
 
@@ -130,20 +134,28 @@ namespace DaisyOS.Shell.Views
                         ? $"{ConsoleHome.ControllerName} connected"
                         : "Controller disconnected";
                     ConsoleTransition.IsVisible = true;
-                    await Task.Delay(16);
+                    await Task.Delay(24);
                     ConsoleTransition.Opacity = 1;
-                    await Task.Delay(250);
+                    await Task.Delay(BlackFadeDuration);
 
                     if (enteringConsoleMode)
                     {
                         (Application.Current as App)?.DismissTransientShellSurfaces();
+                        // Disable the entire desktop tree before revealing console mode. The black
+                        // screen above both roots makes this hand-off visually continuous.
+                        DesktopExperience.IsHitTestVisible = false;
+                        DesktopExperience.IsVisible = false;
                         ConsoleHome.IsVisible = true;
-                        await Task.Delay(520);
+                        ShellWallpaper.SetConsoleParallaxEnabled(true);
+                        await Task.Delay(ConsoleLoadingDuration);
                     }
                     else
                     {
                         ConsoleHome.IsVisible = false;
-                        await Task.Delay(140);
+                        ShellWallpaper.SetConsoleParallaxEnabled(false);
+                        DesktopExperience.IsVisible = true;
+                        DesktopExperience.IsHitTestVisible = true;
+                        await Task.Delay(DesktopRestoreDuration);
                     }
 
                     // Do not expose a mode which was superseded while its transition was running.
@@ -152,6 +164,9 @@ namespace DaisyOS.Shell.Views
                     if (enteringConsoleMode != _controllerConnected)
                     {
                         ConsoleHome.IsVisible = _consoleMode;
+                        DesktopExperience.IsVisible = !_consoleMode;
+                        DesktopExperience.IsHitTestVisible = !_consoleMode;
+                        ShellWallpaper.SetConsoleParallaxEnabled(_consoleMode);
                     }
                     else
                     {
@@ -159,7 +174,7 @@ namespace DaisyOS.Shell.Views
                     }
 
                     ConsoleTransition.Opacity = 0;
-                    await Task.Delay(250);
+                    await Task.Delay(BlackFadeDuration);
                     ConsoleTransition.IsVisible = false;
                 }
             }
@@ -200,6 +215,14 @@ namespace DaisyOS.Shell.Views
             if (SystemBar.IsQuickSettingsVisible && !IsWithin(source, SystemBarContent))
             {
                 (Application.Current as App)?.DismissTransientShellSurfaces();
+            }
+        }
+
+        private void OnPointerMoved(object? sender, PointerEventArgs e)
+        {
+            if (_consoleMode)
+            {
+                ShellWallpaper.SetParallaxTarget(e.GetPosition(this), Bounds.Size);
             }
         }
 

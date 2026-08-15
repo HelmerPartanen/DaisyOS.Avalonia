@@ -8,8 +8,11 @@
     xmlns:taskbar="clr-namespace:DaisyOS.Shell.Views.Components.Taskbar"
     xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
     xmlns:console="clr-namespace:DaisyOS.Shell.Views.Components.Console"
+    xmlns:wallpaper="clr-namespace:DaisyOS.Shell.Views.Components.Wallpaper"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
+        <wallpaper:WallpaperLayer x:Name="ShellWallpaper" />
+
         <Grid x:Name="DesktopExperience">
             <desktop:DesktopView x:Name="Desktop" />
 
@@ -46,7 +49,7 @@
                 AutomationProperties.LiveSetting="Polite">
             <Border.Transitions>
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="0:0:0.24" Easing="CubicEaseInOut" />
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.62" Easing="CubicEaseInOut" />
                 </Transitions>
             </Border.Transitions>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="18">
