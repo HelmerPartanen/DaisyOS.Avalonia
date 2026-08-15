@@ -192,23 +192,14 @@ public partial class ConsoleHomeView : UserControl
 
         var cardContent = new Grid();
 
-        // Clipping Outer Border Container
+        // Clipping Outer Border Container (Styled with OSTheme via ConsoleCardClipper class)
         var cardClipperBorder = new Border
         {
+            Classes = { "ConsoleCardClipper" },
             CornerRadius = new CornerRadius(18),
             ClipToBounds = true,
             HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch,
-            Background = new LinearGradientBrush
-            {
-                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-                EndPoint = new RelativePoint(1, 1, RelativeUnit.Relative),
-                GradientStops =
-                {
-                    new GradientStop(Color.Parse("#282C3A"), 0.0),
-                    new GradientStop(Color.Parse("#161722"), 1.0)
-                }
-            }
+            VerticalAlignment = VerticalAlignment.Stretch
         };
 
         var cardLayersGrid = new Grid();
@@ -224,7 +215,7 @@ public partial class ConsoleHomeView : UserControl
         coverImage.Bind(Visual.IsVisibleProperty, new Avalonia.Data.Binding(nameof(ConsoleGameItemViewModel.HasCoverImage)) { Source = vm });
         cardLayersGrid.Children.Add(coverImage);
 
-        // 2. Game Logo Card Layer (Used when official store logo is available)
+        // 2. Game Logo Card Layer
         var logoBorder = new Border
         {
             Padding = new Thickness(16, 16, 16, 36),
@@ -245,7 +236,7 @@ public partial class ConsoleHomeView : UserControl
         logoBorder.Child = logoImage;
         cardLayersGrid.Children.Add(logoBorder);
 
-        // 3. Fallback Layer (Shown only when NO game artwork exists at all)
+        // 3. Fallback Layer
         var fallbackBorder = new Border
         {
             Padding = new Thickness(14),
@@ -272,10 +263,10 @@ public partial class ConsoleHomeView : UserControl
 
         var fallbackTitle = new TextBlock
         {
+            Classes = { "ConsoleFallbackTitle" },
             Text = vm.Title,
             FontSize = 14,
             FontWeight = FontWeight.SemiBold,
-            Foreground = Brushes.White,
             TextWrapping = TextWrapping.Wrap,
             TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center
@@ -286,34 +277,27 @@ public partial class ConsoleHomeView : UserControl
         fallbackBorder.Child = fallbackStack;
         cardLayersGrid.Children.Add(fallbackBorder);
 
-        // 4. Card Bottom Gradient Scrim & Game Title Overlay
+        // 4. Card Bottom Scrim & Title Overlay (Styled with OSTheme via ConsoleTitleScrim and ConsoleCardTitleText)
         var titleScrim = new Border
         {
+            Classes = { "ConsoleTitleScrim" },
             VerticalAlignment = VerticalAlignment.Bottom,
             Height = 48,
-            Background = new LinearGradientBrush
-            {
-                StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
-                EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
-                GradientStops =
-                {
-                    new GradientStop(Color.Parse("#00000000"), 0.0),
-                    new GradientStop(Color.Parse("#E0090A0F"), 1.0)
-                }
-            },
             Padding = new Thickness(10, 0, 10, 8)
         };
+
         var titleText = new TextBlock
         {
+            Classes = { "ConsoleCardTitleText" },
             Text = vm.Title,
             FontSize = 13,
             FontWeight = FontWeight.SemiBold,
-            Foreground = Brushes.White,
             TextTrimming = TextTrimming.CharacterEllipsis,
             TextAlignment = TextAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Bottom
         };
+
         titleScrim.Child = titleText;
         cardLayersGrid.Children.Add(titleScrim);
 
@@ -403,14 +387,10 @@ public partial class ConsoleHomeView : UserControl
 
     private void UpdateSelectedGameSpotlight(ConsoleGameItemViewModel vm)
     {
-        // 1. Prominent Game Title Heading
         SelectedGameTitleText.Text = vm.Title;
-
-        // 2. Source Badge & Status Subtext
         SelectedGameSourceText.Text = vm.SourceText.ToUpperInvariant();
         SelectedGameSubtext.Text = "Installed • Ready to play";
 
-        // 3. Smooth Hero Background Image Crossfade (High Opacity + Blur)
         var bgImage = vm.HeroImage ?? vm.CoverImage ?? vm.LogoImage;
         
         var currentLayer = _activeBgLayer == 1 ? HeroBackgroundImage1 : HeroBackgroundImage2;

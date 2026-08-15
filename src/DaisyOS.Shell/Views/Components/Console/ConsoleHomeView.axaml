@@ -3,7 +3,7 @@
     x:Name="Root"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Background="#090A0F">
+    Background="{DynamicResource PrimarySurfaceBrush}">
 
   <UserControl.Styles>
 
@@ -13,8 +13,8 @@
       <Setter Property="Height" Value="210" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="ClipToBounds" Value="True" />
-      <Setter Property="Background" Value="#3310121A" />
-      <Setter Property="BorderBrush" Value="#33FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
       <Setter Property="BorderThickness" Value="1.5" />
       <Setter Property="CornerRadius" Value="18" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
@@ -30,10 +30,10 @@
       </Setter>
     </Style>
 
-    <!-- Active Focused Card: Increased Size (scale 1.10) & Thicker Active Border (4px) -->
+    <!-- Active Focused Card: Uses OSTheme TextPrimaryBrush for focus border -->
     <Style Selector="Button.GameCoverTile:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#55202432" />
-      <Setter Property="BorderBrush" Value="#FFFFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="BorderThickness" Value="4" />
     </Style>
 
@@ -43,8 +43,8 @@
     </Style>
 
     <Style Selector="Button.GameCoverTile:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#44202432" />
-      <Setter Property="BorderBrush" Value="#CCFFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource TextSecondaryBrush}" />
       <Setter Property="BorderThickness" Value="2.5" />
     </Style>
 
@@ -53,11 +53,28 @@
     </Style>
 
     <Style Selector="Button.GameCoverTile:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#66202432" />
+      <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}" />
     </Style>
 
     <Style Selector="Button.GameCoverTile:pressed">
       <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+
+    <!-- OSTheme Classes for Dynamically Created Tile Elements -->
+    <Style Selector="Border.ConsoleCardClipper">
+      <Setter Property="Background" Value="{DynamicResource ElevatedSurfaceBrush}" />
+    </Style>
+
+    <Style Selector="Border.ConsoleTitleScrim">
+      <Setter Property="Background" Value="{DynamicResource SecondarySurfaceBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ConsoleCardTitleText">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.ConsoleFallbackTitle">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav">
@@ -75,33 +92,33 @@
     <Style Selector="Button.ConsoleHeaderNav > TextBlock">
       <Setter Property="FontSize" Value="18" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="#BBFFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#33FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource AccentSurfaceBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:focus > TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource OnAccentSurfaceBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#22FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
 
     <Style Selector="TextBlock.ConsoleStatusIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
       <Setter Property="FontSize" Value="18" />
-      <Setter Property="Foreground" Value="#CCFFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
     </Style>
 
   </UserControl.Styles>
 
   <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-    <!-- Dual-Layer Fullscreen Background Images for Smooth Crossfading (High Opacity + Blur) -->
+    <!-- Dual-Layer Fullscreen Background Images for Smooth Crossfading (Zoomed scale 1.15x for Seamless Edge Blur) -->
     <Grid x:Name="HeroBackgroundContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       
       <!-- Background Layer 1 -->
@@ -110,9 +127,11 @@
           Stretch="UniformToFill"
           HorizontalAlignment="Center"
           VerticalAlignment="Center"
+          RenderTransformOrigin="50%,50%"
+          RenderTransform="scale(1.15)"
           Opacity="0.0">
         <Image.Effect>
-          <BlurEffect Radius="28" />
+          <BlurEffect Radius="32" />
         </Image.Effect>
         <Image.Transitions>
           <Transitions>
@@ -127,9 +146,11 @@
           Stretch="UniformToFill"
           HorizontalAlignment="Center"
           VerticalAlignment="Center"
+          RenderTransformOrigin="50%,50%"
+          RenderTransform="scale(1.15)"
           Opacity="0.0">
         <Image.Effect>
-          <BlurEffect Radius="28" />
+          <BlurEffect Radius="32" />
         </Image.Effect>
         <Image.Transitions>
           <Transitions>
@@ -140,26 +161,8 @@
 
     </Grid>
 
-    <!-- TV Vignette & Dark Gradient Mask for Maximum Contrast -->
-    <Border IsHitTestVisible="False">
-      <Border.Background>
-        <RadialGradientBrush Center="50%,50%" GradientOrigin="50%,50%" RadiusX="85%" RadiusY="85%">
-          <GradientStop Color="#00000000" Offset="0.0" />
-          <GradientStop Color="#99090A0F" Offset="0.65" />
-          <GradientStop Color="#F0090A0F" Offset="1.0" />
-        </RadialGradientBrush>
-      </Border.Background>
-    </Border>
-
-    <Border IsHitTestVisible="False">
-      <Border.Background>
-        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-          <GradientStop Color="#CD090A0F" Offset="0.0" />
-          <GradientStop Color="#55090A0F" Offset="0.45" />
-          <GradientStop Color="#EE090A0F" Offset="1.0" />
-        </LinearGradientBrush>
-      </Border.Background>
-    </Border>
+    <!-- OSTheme Surface Overlay for High Contrast Readability -->
+    <Border IsHitTestVisible="False" Background="{DynamicResource SecondarySurfaceBrush}" Opacity="0.85" />
 
     <Grid Margin="64,28,64,28">
 
@@ -185,15 +188,15 @@
 
         <Border Grid.Column="1" VerticalAlignment="Center">
           <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-            <Border Background="#28FFFFFF" CornerRadius="12" Padding="10,4">
+            <Border Background="{DynamicResource SubtleSurfaceBrush}" CornerRadius="12" Padding="10,4">
               <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                 <TextBlock Text="sports_esports" Classes="ConsoleStatusIcon" FontSize="16" />
-                <TextBlock x:Name="ControllerStatusText" Text="Controller" FontSize="13" FontWeight="Medium" Foreground="#DDFFFFFF" />
+                <TextBlock x:Name="ControllerStatusText" Text="Controller" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
               </StackPanel>
             </Border>
             <TextBlock Text="wifi" Classes="ConsoleStatusIcon" />
             <TextBlock Text="battery_full" Classes="ConsoleStatusIcon" />
-            <TextBlock x:Name="ClockText" Text="14:44" FontSize="15" FontWeight="SemiBold" Foreground="#FFFFFFFF" />
+            <TextBlock x:Name="ClockText" Text="14:54" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
           </StackPanel>
         </Border>
       </Grid>
@@ -201,18 +204,18 @@
       <!-- Center Content: Vertically Centered along Y Axis -->
       <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="28">
 
-        <!-- Active Game Spotlight Header (Clean Title Heading + Source Badge) -->
+        <!-- Active Game Spotlight Header -->
         <StackPanel Spacing="6" Margin="8,0,0,0">
           
-          <!-- Source Badge & Status Subtext -->
+          <!-- Source Badge & Status Subtext (White Badge Background & White Text) -->
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-            <Border Background="#44FFFFFF" CornerRadius="6" Padding="10,3" VerticalAlignment="Center">
-              <TextBlock x:Name="SelectedGameSourceText" Text="STEAM" FontSize="12" FontWeight="Bold" Foreground="#FFFFFFFF" />
+            <Border Background="#33FFFFFF" CornerRadius="6" Padding="10,3" VerticalAlignment="Center">
+              <TextBlock x:Name="SelectedGameSourceText" Text="STEAM" FontSize="12" FontWeight="Bold" Foreground="White" />
             </Border>
-            <TextBlock x:Name="SelectedGameSubtext" Text="Installed • Ready to play" FontSize="14" FontWeight="Medium" Foreground="#EEFFFFFF" VerticalAlignment="Center" />
+            <TextBlock x:Name="SelectedGameSubtext" Text="Installed • Ready to play" FontSize="14" FontWeight="Medium" Foreground="White" VerticalAlignment="Center" />
           </StackPanel>
 
-          <!-- Prominent Game Title Heading (Always Visible!) -->
+          <!-- Prominent Game Title Heading (White Text) -->
           <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="42" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" />
 
         </StackPanel>
@@ -232,56 +235,48 @@
 
       </StackPanel>
 
-      <!-- Bottom Controller Action Hints Footer Glass Bar -->
-      <Border
-          Grid.Row="2"
-          Background="#4410121A"
-          BorderBrush="#33FFFFFF"
-          BorderThickness="1"
-          CornerRadius="16"
-          Padding="20,12">
-        <Grid ColumnDefinitions="*,Auto">
-          <StackPanel Orientation="Horizontal" Spacing="32" VerticalAlignment="Center">
-            
-            <!-- (A) Select / Launch -->
-            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-              <Border Width="26" Height="26" CornerRadius="13" Background="#1E88E5" BorderBrush="#80FFFFFF" BorderThickness="1">
-                <TextBlock Text="A" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </Border>
-              <TextBlock Text="Select / Launch" FontSize="14" FontWeight="SemiBold" Foreground="#FFFFFFFF" VerticalAlignment="Center" />
-            </StackPanel>
-
-            <!-- (X) Game Details -->
-            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-              <Border Width="26" Height="26" CornerRadius="13" Background="#43A047" BorderBrush="#80FFFFFF" BorderThickness="1">
-                <TextBlock Text="X" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </Border>
-              <TextBlock Text="Game Details" FontSize="14" FontWeight="SemiBold" Foreground="#FFFFFFFF" VerticalAlignment="Center" />
-            </StackPanel>
-
-            <!-- (Y) Options -->
-            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-              <Border Width="26" Height="26" CornerRadius="13" Background="#FB8C00" BorderBrush="#80FFFFFF" BorderThickness="1">
-                <TextBlock Text="Y" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
-              </Border>
-              <TextBlock Text="Options" FontSize="14" FontWeight="SemiBold" Foreground="#FFFFFFFF" VerticalAlignment="Center" />
-            </StackPanel>
-
-          </StackPanel>
-
-          <!-- Tab Navigation Hint (LB / RB) -->
-          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-            <Border Background="#33FFFFFF" BorderBrush="#44FFFFFF" BorderThickness="1" CornerRadius="8" Padding="10,4">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <TextBlock Text="LB" FontSize="12" FontWeight="Bold" Foreground="White" />
-                <TextBlock Text="/" FontSize="12" Foreground="#88FFFFFF" />
-                <TextBlock Text="RB" FontSize="12" FontWeight="Bold" Foreground="White" />
-              </StackPanel>
+      <!-- Bottom Controller Action Hints Bar -->
+      <Grid Grid.Row="2" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom" Margin="8,0">
+        <StackPanel Orientation="Horizontal" Spacing="32" VerticalAlignment="Center">
+          
+          <!-- (A) Select / Launch -->
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
+              <TextBlock Text="A" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="Switch Tab" FontSize="14" FontWeight="SemiBold" Foreground="#EEFFFFFF" VerticalAlignment="Center" />
+            <TextBlock Text="Select / Launch" FontSize="14" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
           </StackPanel>
-        </Grid>
-      </Border>
+
+          <!-- (X) Game Details -->
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
+              <TextBlock Text="X" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="Game Details" FontSize="14" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+          </StackPanel>
+
+          <!-- (Y) Options -->
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
+              <TextBlock Text="Y" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="Options" FontSize="14" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+          </StackPanel>
+
+        </StackPanel>
+
+        <!-- Tab Navigation Hint (LB / RB) -->
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <Border Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="8" Padding="10,4">
+            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+              <TextBlock Text="LB" FontSize="12" FontWeight="Bold" Foreground="White" />
+              <TextBlock Text="/" FontSize="12" Foreground="#AAFFFFFF" />
+              <TextBlock Text="RB" FontSize="12" FontWeight="Bold" Foreground="White" />
+            </StackPanel>
+          </Border>
+          <TextBlock Text="Switch Tab" FontSize="14" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+        </StackPanel>
+      </Grid>
 
     </Grid>
 

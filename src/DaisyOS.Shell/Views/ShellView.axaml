@@ -45,21 +45,23 @@
         <console:ConsoleHomeView x:Name="ConsoleHome" IsVisible="False" ZIndex="500" />
 
         <!-- A fully opaque transition makes desktop dismissal and console loading visually atomic. -->
-        <Border x:Name="ConsoleTransition" ZIndex="600" IsVisible="False" Opacity="0" Background="Black"
+        <Border x:Name="ConsoleTransition" ZIndex="600" IsVisible="False" Opacity="0" Background="#090A0F"
                 AutomationProperties.LiveSetting="Polite">
             <Border.Transitions>
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="0:0:0.62" Easing="CubicEaseInOut" />
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.5" Easing="CubicEaseInOut" />
                 </Transitions>
             </Border.Transitions>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="18">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20">
                 <TextBlock Text="sports_esports"
-                           FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                           FontSize="72" Foreground="White" HorizontalAlignment="Center" />
-                <TextBlock x:Name="ConsoleTransitionTitle" Text="Switching to console mode"
-                           FontSize="20" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Center" />
-                <TextBlock x:Name="ConsoleTransitionDetail" Text="Preparing your controller-first home"
-                           FontSize="14" Foreground="#99FFFFFF" HorizontalAlignment="Center" />
+                           FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled"
+                           FontSize="64" Foreground="White" HorizontalAlignment="Center" />
+                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                    <TextBlock x:Name="ConsoleTransitionTitle" Text="Switching to console mode"
+                               FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="ConsoleTransitionDetail" Text="Preparing your controller-first home"
+                               FontSize="14" FontWeight="Medium" Foreground="#AAFFFFFF" HorizontalAlignment="Center" />
+                </StackPanel>
             </StackPanel>
         </Border>
     </Grid>
