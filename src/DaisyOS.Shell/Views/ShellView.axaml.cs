@@ -48,6 +48,12 @@ namespace DaisyOS.Shell.Views
             Unloaded += OnUnloaded;
             _controllerInputService.NavigationRequested += OnControllerNavigationRequested;
             ConsoleHome.SelectionChanged += OnConsoleSelectionChanged;
+            ConsoleHome.SettingsRequested += (_, _) => ConsoleSettings.ShowOverlay("Audio");
+            ConsoleSettings.ReturnToDesktopRequested += async (_, _) =>
+            {
+                _controllerConnected = false;
+                await ReconcileConsoleModeAsync();
+            };
 
             if (Application.Current is App feedbackApp)
             {

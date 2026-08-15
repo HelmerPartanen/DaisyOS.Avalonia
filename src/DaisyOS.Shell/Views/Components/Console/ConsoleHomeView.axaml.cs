@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -21,17 +22,21 @@ public partial class ConsoleHomeView : UserControl
 
     private readonly IGameDiscoveryService _discoveryService;
     private readonly IGameArtworkResolver _artworkResolver;
-    private readonly ObservableCollection<ConsoleGameItemViewModel> _games = [];
+    private readonly ObservableCollection<ConsoleGameItemViewModel> _recentGames = [];
+    private readonly ObservableCollection<ConsoleGameItemViewModel> _allLibraryGames = [];
     private readonly List<Button> _cardTargets = [];
+    private readonly List<Button> _libraryCardTargets = [];
     private readonly DispatcherTimer _carouselTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly TranslateTransform _carouselTranslation = new();
 
-    private Button[] _navigationTargets = [];
     private int _selectedIndex;
     private double _carouselOffset;
     private double _targetCarouselOffset;
     private CancellationTokenSource? _discoveryCts;
     private int _activeBgLayer = 1;
+    private string _activeTab = "Recents";
+    private bool _isHeaderFocused;
+    private int _headerFocusIndex;
 
     public ConsoleHomeView()
         : this(new LinuxGameDiscoveryService(), new GameArtworkResolver())
@@ -55,6 +60,7 @@ public partial class ConsoleHomeView : UserControl
 
     public event EventHandler<string>? DestinationRequested;
     public event EventHandler<double>? SelectionChanged;
+    public event EventHandler? SettingsRequested;
 
     public string ControllerName
     {
@@ -69,18 +75,12 @@ public partial class ConsoleHomeView : UserControl
         }
     }
 
-    public double ParallaxPosition => _games.Count <= 1
+    public double ParallaxPosition => _recentGames.Count <= 1
         ? 0
-        : _selectedIndex / (double)(_games.Count - 1) * 2 - 1;
+        : _selectedIndex / (double)(_recentGames.Count - 1) * 2 - 1;
 
     private async void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _navigationTargets = [HeaderLibraryButton, HeaderRecentButton, HeaderSettingsButton];
-        foreach (var nav in _navigationTargets)
-        {
-            nav.Click += OnHeaderNavClicked;
-        }
-
         ClockText.Text = DateTime.Now.ToString("HH:mm");
 
         _discoveryCts = new CancellationTokenSource();
@@ -109,28 +109,47 @@ public partial class ConsoleHomeView : UserControl
                 ];
             }
 
-            _games.Clear();
+            _recentGames.Clear();
+            _allLibraryGames.Clear();
             CarouselTrack.Children.Clear();
+            LibraryGrid.Children.Clear();
             _cardTargets.Clear();
+            _libraryCardTargets.Clear();
 
+            // Populate Recents (First 6 items)
             int index = 0;
-            foreach (var game in discovered)
+            foreach (var game in discovered.Take(6))
             {
                 var vm = new ConsoleGameItemViewModel(game);
-                _games.Add(vm);
+                _recentGames.Add(vm);
 
-                var tileGrid = CreateGameTile(vm, index);
+                var tileGrid = CreateGameTile(vm, index, isLibraryTile: false);
                 CarouselTrack.Children.Add(tileGrid);
                 index++;
             }
 
-            if (_games.Count > 0)
+            // Populate All Library Games
+            int libIndex = 0;
+            foreach (var game in discovered)
+            {
+                var vm = new ConsoleGameItemViewModel(game);
+                _allLibraryGames.Add(vm);
+
+                var tileGrid = CreateGameTile(vm, libIndex, isLibraryTile: true);
+                LibraryGrid.Children.Add(tileGrid);
+                libIndex++;
+            }
+
+            LibraryCountText.Text = $"{discovered.Count} Games";
+
+            if (_recentGames.Count > 0)
             {
                 _selectedIndex = 0;
                 ApplySelection();
             }
 
-            foreach (var vm in _games)
+            // Request Artwork
+            foreach (var vm in _recentGames.Concat(_allLibraryGames))
             {
                 _ = RequestArtworkAsync(vm, cancellationToken);
             }
@@ -148,7 +167,7 @@ public partial class ConsoleHomeView : UserControl
             var assets = await _artworkResolver.GetArtworkAsync(vm.Game, cancellationToken).ConfigureAwait(true);
             vm.ApplyArtworkAssets(assets);
 
-            if (_games.Count > 0 && _games[_selectedIndex] == vm)
+            if (_recentGames.Count > 0 && _recentGames[_selectedIndex] == vm)
             {
                 UpdateSelectedGameSpotlight(vm);
             }
@@ -163,40 +182,46 @@ public partial class ConsoleHomeView : UserControl
     {
         Dispatcher.UIThread.Post(() =>
         {
-            var match = _games.FirstOrDefault(g => g.Game.Title == e.Game.Title && g.Game.Source == e.Game.Source);
-            if (match != null)
+            var matchRecent = _recentGames.FirstOrDefault(g => g.Game.Title == e.Game.Title && g.Game.Source == e.Game.Source);
+            if (matchRecent != null)
             {
-                match.ApplyArtworkAssets(e.Assets);
-                if (_games.Count > 0 && _games[_selectedIndex] == match)
+                matchRecent.ApplyArtworkAssets(e.Assets);
+                if (_recentGames.Count > 0 && _recentGames[_selectedIndex] == matchRecent)
                 {
-                    UpdateSelectedGameSpotlight(match);
+                    UpdateSelectedGameSpotlight(matchRecent);
                 }
             }
+
+            var matchLib = _allLibraryGames.FirstOrDefault(g => g.Game.Title == e.Game.Title && g.Game.Source == e.Game.Source);
+            matchLib?.ApplyArtworkAssets(e.Assets);
         });
     }
 
-    private Grid CreateGameTile(ConsoleGameItemViewModel vm, int itemIndex)
+    private Grid CreateGameTile(ConsoleGameItemViewModel vm, int itemIndex, bool isLibraryTile)
     {
         var container = new Grid
         {
             Width = 210,
-            Height = 210
+            Height = 210,
+            Margin = isLibraryTile ? new Thickness(0, 0, 24, 32) : new Thickness(0),
+            ClipToBounds = false
         };
 
         var button = new Button
         {
             Classes = { "GameCoverTile" },
-            Tag = itemIndex
+            Tag = itemIndex,
+            ClipToBounds = true
         };
         ToolTip.SetTip(button, vm.Title);
 
         var cardContent = new Grid();
 
-        // Clipping Outer Border Container (Styled with OSTheme via ConsoleCardClipper class)
+        // Outer Border Container
         var cardClipperBorder = new Border
         {
             Classes = { "ConsoleCardClipper" },
-            CornerRadius = new CornerRadius(18),
+            CornerRadius = new CornerRadius(16),
             ClipToBounds = true,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch
@@ -204,7 +229,7 @@ public partial class ConsoleHomeView : UserControl
 
         var cardLayersGrid = new Grid();
 
-        // 1. Cover or Hero Image Layer (Fills the square card)
+        // 1. Cover Image Layer
         var coverImage = new Image
         {
             Stretch = Stretch.UniformToFill,
@@ -215,7 +240,7 @@ public partial class ConsoleHomeView : UserControl
         coverImage.Bind(Visual.IsVisibleProperty, new Avalonia.Data.Binding(nameof(ConsoleGameItemViewModel.HasCoverImage)) { Source = vm });
         cardLayersGrid.Children.Add(coverImage);
 
-        // 2. Game Logo Card Layer
+        // 2. Logo Card Layer
         var logoBorder = new Border
         {
             Padding = new Thickness(16, 16, 16, 36),
@@ -277,7 +302,7 @@ public partial class ConsoleHomeView : UserControl
         fallbackBorder.Child = fallbackStack;
         cardLayersGrid.Children.Add(fallbackBorder);
 
-        // 4. Card Bottom Scrim & Title Overlay (Styled with OSTheme via ConsoleTitleScrim and ConsoleCardTitleText)
+        // 4. Card Title Overlay
         var titleScrim = new Border
         {
             Classes = { "ConsoleTitleScrim" },
@@ -307,79 +332,186 @@ public partial class ConsoleHomeView : UserControl
         button.Content = cardContent;
         button.Click += (s, e) =>
         {
-            _selectedIndex = itemIndex;
-            ApplySelection();
+            _isHeaderFocused = false;
+            if (!isLibraryTile)
+            {
+                _selectedIndex = itemIndex;
+                ApplySelection();
+            }
             DestinationRequested?.Invoke(this, vm.Title);
         };
 
         container.Children.Add(button);
-        _cardTargets.Add(button);
+
+        if (isLibraryTile)
+        {
+            _libraryCardTargets.Add(button);
+        }
+        else
+        {
+            _cardTargets.Add(button);
+        }
 
         return container;
     }
 
     public void Navigate(ControllerNavigationAction action)
     {
-        if (_games.Count == 0) return;
+        if (_isHeaderFocused)
+        {
+            switch (action)
+            {
+                case ControllerNavigationAction.Left:
+                    _headerFocusIndex = Math.Max(0, _headerFocusIndex - 1);
+                    FocusHeaderButton(_headerFocusIndex);
+                    break;
+
+                case ControllerNavigationAction.Right:
+                    _headerFocusIndex = Math.Min(2, _headerFocusIndex + 1);
+                    FocusHeaderButton(_headerFocusIndex);
+                    break;
+
+                case ControllerNavigationAction.Down:
+                    _isHeaderFocused = false;
+                    if (_cardTargets.Count > 0)
+                    {
+                        _cardTargets[Math.Min(_selectedIndex, _cardTargets.Count - 1)].Focus();
+                    }
+                    break;
+
+                case ControllerNavigationAction.Confirm:
+                    if (_headerFocusIndex == 0) OnHeaderRecentClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
+                    else if (_headerFocusIndex == 1) OnHeaderLibraryClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
+                    else if (_headerFocusIndex == 2) OnHeaderSettingsClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
+                    break;
+            }
+            return;
+        }
+
+        if (_recentGames.Count == 0) return;
 
         switch (action)
         {
             case ControllerNavigationAction.Left:
-            case ControllerNavigationAction.Up:
                 _selectedIndex = Math.Max(0, _selectedIndex - 1);
+                ApplySelection();
                 break;
+
             case ControllerNavigationAction.Right:
-            case ControllerNavigationAction.Down:
-                _selectedIndex = Math.Min(_games.Count - 1, _selectedIndex + 1);
+                _selectedIndex = Math.Min(_recentGames.Count - 1, _selectedIndex + 1);
+                ApplySelection();
                 break;
-            case ControllerNavigationAction.Confirm:
-                if (_selectedIndex < _games.Count)
+
+            case ControllerNavigationAction.Up:
+                // Move focus UP from game cards into Header Navigation Bar!
+                _isHeaderFocused = true;
+                _headerFocusIndex = _activeTab switch
                 {
-                    DestinationRequested?.Invoke(this, _games[_selectedIndex].Title);
+                    "Library" => 1,
+                    "Settings" => 2,
+                    _ => 0
+                };
+                FocusHeaderButton(_headerFocusIndex);
+                break;
+
+            case ControllerNavigationAction.Down:
+                // Scroll down smoothly to Library Grid
+                OnHeaderLibraryClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
+                if (_libraryCardTargets.Count > 0)
+                {
+                    _libraryCardTargets[0].Focus();
                 }
                 break;
-            case ControllerNavigationAction.Back:
-                _selectedIndex = 0;
+
+            case ControllerNavigationAction.Confirm:
+                if (_selectedIndex < _recentGames.Count)
+                {
+                    DestinationRequested?.Invoke(this, _recentGames[_selectedIndex].Title);
+                }
                 break;
         }
+    }
 
-        ApplySelection();
+    private void FocusHeaderButton(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                HeaderRecentButton?.Focus();
+                break;
+            case 1:
+                HeaderLibraryButton?.Focus();
+                break;
+            case 2:
+                HeaderSettingsButton?.Focus();
+                break;
+        }
     }
 
     public void FocusInitialDestination()
     {
-        if (_games.Count > 0)
+        _isHeaderFocused = false;
+        if (_recentGames.Count > 0)
         {
             _selectedIndex = 0;
             ApplySelection();
         }
     }
 
-    private void OnHeaderNavClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnHeaderRecentClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (sender is Button nav)
+        SetActiveTab("Recents");
+        MainScrollViewer.Offset = new Vector(0, 0);
+        if (_cardTargets.Count > 0 && !_isHeaderFocused)
         {
-            var tip = ToolTip.GetTip(nav)?.ToString();
-            DestinationRequested?.Invoke(this, tip ?? "Nav");
+            _cardTargets[Math.Min(_selectedIndex, _cardTargets.Count - 1)].Focus();
         }
+    }
+
+    private void OnHeaderLibraryClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SetActiveTab("Library");
+        MainScrollViewer.Offset = new Vector(0, 360);
+        if (_libraryCardTargets.Count > 0 && !_isHeaderFocused)
+        {
+            _libraryCardTargets[0].Focus();
+        }
+    }
+
+    private void OnHeaderSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SetActiveTab("Settings");
+        SettingsRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void SetActiveTab(string tabName)
+    {
+        _activeTab = tabName;
+        if (HeaderRecentButton != null) HeaderRecentButton.Classes.Set("Active", tabName == "Recents");
+        if (HeaderLibraryButton != null) HeaderLibraryButton.Classes.Set("Active", tabName == "Library");
+        if (HeaderSettingsButton != null) HeaderSettingsButton.Classes.Set("Active", tabName == "Settings");
+
+        if (RecentTabIndicator != null) RecentTabIndicator.IsVisible = tabName == "Recents";
+        if (LibraryTabIndicator != null) LibraryTabIndicator.IsVisible = tabName == "Library";
+        if (SettingsTabIndicator != null) SettingsTabIndicator.IsVisible = tabName == "Settings";
     }
 
     private void ApplySelection()
     {
-        if (_games.Count == 0 || _selectedIndex < 0 || _selectedIndex >= _games.Count) return;
+        if (_recentGames.Count == 0 || _selectedIndex < 0 || _selectedIndex >= _recentGames.Count) return;
 
-        _targetCarouselOffset = -_selectedIndex * 234;
+        _targetCarouselOffset = -_selectedIndex * 238;
         if (!_carouselTimer.IsEnabled)
         {
             _carouselTimer.Start();
         }
 
-        if (_selectedIndex < _cardTargets.Count)
+        if (!_isHeaderFocused && _activeTab == "Recents" && _selectedIndex < _cardTargets.Count)
         {
             _cardTargets[_selectedIndex].Focus();
         }
 
-        var activeGame = _games[_selectedIndex];
+        var activeGame = _recentGames[_selectedIndex];
         UpdateSelectedGameSpotlight(activeGame);
 
         SelectionChanged?.Invoke(this, ParallaxPosition);
@@ -389,7 +521,7 @@ public partial class ConsoleHomeView : UserControl
     {
         SelectedGameTitleText.Text = vm.Title;
         SelectedGameSourceText.Text = vm.SourceText.ToUpperInvariant();
-        SelectedGameSubtext.Text = "Installed • Ready to play";
+        SelectedGameSubtext.Text = "Recently Played • Ready to play";
 
         var bgImage = vm.HeroImage ?? vm.CoverImage ?? vm.LogoImage;
         

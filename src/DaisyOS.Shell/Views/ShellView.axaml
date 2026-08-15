@@ -44,6 +44,9 @@
         <!-- This is intentionally an in-process shell mode, not a separate compositor/session. -->
         <console:ConsoleHomeView x:Name="ConsoleHome" IsVisible="False" ZIndex="500" />
 
+        <!-- Console Mode Quick Settings Overlay -->
+        <console:ConsoleSettingsOverlay x:Name="ConsoleSettings" IsVisible="False" ZIndex="700" />
+
         <!-- A fully opaque transition makes desktop dismissal and console loading visually atomic. -->
         <Border x:Name="ConsoleTransition" ZIndex="600" IsVisible="False" Opacity="0" Background="#090A0F"
                 AutomationProperties.LiveSetting="Polite">

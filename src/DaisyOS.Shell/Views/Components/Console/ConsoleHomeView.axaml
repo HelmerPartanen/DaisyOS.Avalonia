@@ -16,11 +16,10 @@
       <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
       <Setter Property="BorderThickness" Value="1.5" />
-      <Setter Property="CornerRadius" Value="18" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedXL}" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalContentAlignment" Value="Stretch" />
-      <Setter Property="VerticalAlignment" Value="Center" />
 
       <Setter Property="Transitions">
         <Transitions>
@@ -77,35 +76,45 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
+    <!-- Top Header Tab Navigation Buttons (Clean transparent styling, underline indicator & text color only) -->
     <Style Selector="Button.ConsoleHeaderNav">
-      <Setter Property="Height" Value="40" />
-      <Setter Property="Padding" Value="16,0" />
+      <Setter Property="Height" Value="44" />
+      <Setter Property="Padding" Value="12,4" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="20" />
-      <Setter Property="FontSize" Value="18" />
-      <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
-    <Style Selector="Button.ConsoleHeaderNav > TextBlock">
-      <Setter Property="FontSize" Value="18" />
-      <Setter Property="FontWeight" Value="SemiBold" />
+    <Style Selector="Button.ConsoleHeaderNav /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <!-- Inactive Header Tab Text: TextSecondaryBrush, Medium -->
+    <Style Selector="Button.ConsoleHeaderNav TextBlock">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <Style Selector="Button.ConsoleHeaderNav:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentSurfaceBrush}" />
+    <!-- Active Header Tab Text: TextPrimaryBrush, Bold -->
+    <Style Selector="Button.ConsoleHeaderNav.Active TextBlock">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
-    <Style Selector="Button.ConsoleHeaderNav:focus > TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource OnAccentSurfaceBrush}" />
+    <Style Selector="Button.ConsoleHeaderNav:focus /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <Style Selector="Button.ConsoleHeaderNav:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
     </Style>
 
     <Style Selector="TextBlock.ConsoleStatusIcon">
@@ -118,7 +127,7 @@
 
   <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-    <!-- Dual-Layer Fullscreen Background Images for Smooth Crossfading (Zoomed scale 1.15x for Seamless Edge Blur) -->
+    <!-- Dual-Layer Fullscreen Background Images for Smooth Crossfading -->
     <Grid x:Name="HeroBackgroundContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
       
       <!-- Background Layer 1 -->
@@ -164,7 +173,7 @@
     <!-- OSTheme Surface Overlay for High Contrast Readability -->
     <Border IsHitTestVisible="False" Background="{DynamicResource SecondarySurfaceBrush}" Opacity="0.85" />
 
-    <Grid Margin="64,28,64,28">
+    <Grid Margin="64,24,64,24" ClipToBounds="False">
 
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -173,70 +182,118 @@
       </Grid.RowDefinitions>
 
       <!-- Top System Bar Header -->
-      <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Top">
-        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-          <Button x:Name="HeaderLibraryButton" Classes="ConsoleHeaderNav" ToolTip.Tip="Library">
-            <TextBlock Text="Games" />
+      <Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Top" Margin="0,0,0,16" ZIndex="20">
+        
+        <!-- Header Navigation Tabs -->
+        <StackPanel Orientation="Horizontal" Spacing="24" VerticalAlignment="Center">
+          
+          <Button x:Name="HeaderRecentButton" Classes="ConsoleHeaderNav Active" Click="OnHeaderRecentClicked" ToolTip.Tip="Recents">
+            <StackPanel Spacing="4" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <TextBlock Text="Recents" />
+              <Border x:Name="RecentTabIndicator" Height="3" CornerRadius="1.5" Background="{DynamicResource TextPrimaryBrush}" IsVisible="True" HorizontalAlignment="Stretch" />
+            </StackPanel>
           </Button>
-          <Button x:Name="HeaderRecentButton" Classes="ConsoleHeaderNav" ToolTip.Tip="Recently played">
-            <TextBlock Text="Recent" />
+
+          <Button x:Name="HeaderLibraryButton" Classes="ConsoleHeaderNav" Click="OnHeaderLibraryClicked" ToolTip.Tip="Library">
+            <StackPanel Spacing="4" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <TextBlock Text="Library" />
+              <Border x:Name="LibraryTabIndicator" Height="3" CornerRadius="1.5" Background="{DynamicResource TextPrimaryBrush}" IsVisible="False" HorizontalAlignment="Stretch" />
+            </StackPanel>
           </Button>
-          <Button x:Name="HeaderSettingsButton" Classes="ConsoleHeaderNav" ToolTip.Tip="Settings">
-            <TextBlock Text="Settings" />
+
+          <Button x:Name="HeaderSettingsButton" Classes="ConsoleHeaderNav" Click="OnHeaderSettingsClicked" ToolTip.Tip="Settings">
+            <StackPanel Spacing="4" HorizontalAlignment="Center" VerticalAlignment="Center">
+              <TextBlock Text="Settings" />
+              <Border x:Name="SettingsTabIndicator" Height="3" CornerRadius="1.5" Background="{DynamicResource TextPrimaryBrush}" IsVisible="False" HorizontalAlignment="Stretch" />
+            </StackPanel>
           </Button>
+
         </StackPanel>
 
+        <!-- Right System Status Icons -->
         <Border Grid.Column="1" VerticalAlignment="Center">
           <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-            <Border Background="{DynamicResource SubtleSurfaceBrush}" CornerRadius="12" Padding="10,4">
-              <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                <TextBlock Text="sports_esports" Classes="ConsoleStatusIcon" FontSize="16" />
-                <TextBlock x:Name="ControllerStatusText" Text="Controller" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
-              </StackPanel>
-            </Border>
+            <Button Click="OnHeaderSettingsClicked" Background="Transparent" BorderThickness="0" Padding="0">
+              <Border Background="{DynamicResource SubtleSurfaceBrush}" CornerRadius="{DynamicResource RoundedMD}" Padding="10,4">
+                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                  <TextBlock Text="sports_esports" Classes="ConsoleStatusIcon" FontSize="16" />
+                  <TextBlock x:Name="ControllerStatusText" Text="Controller" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                </StackPanel>
+              </Border>
+            </Button>
+
             <TextBlock Text="wifi" Classes="ConsoleStatusIcon" />
             <TextBlock Text="battery_full" Classes="ConsoleStatusIcon" />
-            <TextBlock x:Name="ClockText" Text="14:54" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock x:Name="ClockText" Text="15:19" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
           </StackPanel>
         </Border>
+
       </Grid>
 
-      <!-- Center Content: Vertically Centered along Y Axis -->
-      <StackPanel Grid.Row="1" VerticalAlignment="Center" Spacing="28">
+      <!-- Center Content: Main ScrollViewer with Expanded Horizontal Bounds to Prevent Template Clipping -->
+      <ScrollViewer x:Name="MainScrollViewer" Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" ClipToBounds="False" Margin="-300,0,-300,0" Padding="300,0,300,0">
+        
+        <StackPanel Spacing="32" Margin="0,40,0,80" ClipToBounds="False">
 
-        <!-- Active Game Spotlight Header -->
-        <StackPanel Spacing="6" Margin="8,0,0,0">
-          
-          <!-- Source Badge & Status Subtext (White Badge Background & White Text) -->
-          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-            <Border Background="#33FFFFFF" CornerRadius="6" Padding="10,3" VerticalAlignment="Center">
-              <TextBlock x:Name="SelectedGameSourceText" Text="STEAM" FontSize="12" FontWeight="Bold" Foreground="White" />
-            </Border>
-            <TextBlock x:Name="SelectedGameSubtext" Text="Installed • Ready to play" FontSize="14" FontWeight="Medium" Foreground="White" VerticalAlignment="Center" />
+          <!-- 1. RECENTS SECTION (Spotlight Header + Main Carousel Track) -->
+          <StackPanel x:Name="RecentsSection" Spacing="20" ClipToBounds="False">
+
+            <!-- Active Game Spotlight Header -->
+            <StackPanel Spacing="6" Margin="8,0,0,0">
+              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Border Background="#33FFFFFF" CornerRadius="{DynamicResource RoundedSM}" Padding="10,3" VerticalAlignment="Center">
+                  <TextBlock x:Name="SelectedGameSourceText" Text="STEAM" FontSize="12" FontWeight="Bold" Foreground="White" />
+                </Border>
+                <TextBlock x:Name="SelectedGameSubtext" Text="Recently Played • Ready to play" FontSize="14" FontWeight="Medium" Foreground="White" VerticalAlignment="Center" />
+              </StackPanel>
+
+              <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="42" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" />
+            </StackPanel>
+
+            <!-- Carousel Container (Left Margin 24px guarantees zero left card clipping on scale 1.10) -->
+            <Grid Height="290" Margin="0,10,0,20" HorizontalAlignment="Stretch" VerticalAlignment="Center" ClipToBounds="False">
+              <StackPanel
+                  x:Name="CarouselTrack"
+                  Orientation="Horizontal"
+                  Spacing="28"
+                  Margin="24,0,0,0"
+                  VerticalAlignment="Center"
+                  ClipToBounds="False">
+
+                <!-- Dynamic recent game cards populated at runtime -->
+
+              </StackPanel>
+            </Grid>
+
           </StackPanel>
 
-          <!-- Prominent Game Title Heading (White Text) -->
-          <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="42" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" />
+          <!-- 2. LIBRARY SECTION (Directly below Recents; Accessible by scrolling down or clicking Header) -->
+          <StackPanel x:Name="LibrarySection" Spacing="20" Margin="8,12,0,0" ClipToBounds="False">
+            
+            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock Text="grid_view" Classes="ConsoleStatusIcon" FontSize="22" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+              </StackPanel>
+
+              <TextBlock Grid.Column="1" x:Name="LibraryCountText" Text="0 Games" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- Multi-Row Wrap Grid of All Installed Games (ClipToBounds False prevents scaled focus clipping) -->
+            <WrapPanel x:Name="LibraryGrid" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,10,0,0" ClipToBounds="False">
+
+              <!-- Dynamic all-games library cards populated at runtime -->
+
+            </WrapPanel>
+
+          </StackPanel>
 
         </StackPanel>
 
-        <!-- Centered Square App Cards Carousel Track -->
-        <Grid Height="250" HorizontalAlignment="Stretch" VerticalAlignment="Center">
-          <StackPanel
-              x:Name="CarouselTrack"
-              Orientation="Horizontal"
-              Spacing="24"
-              VerticalAlignment="Center">
-
-            <!-- Dynamic square game cards populated at runtime -->
-
-          </StackPanel>
-        </Grid>
-
-      </StackPanel>
+      </ScrollViewer>
 
       <!-- Bottom Controller Action Hints Bar -->
-      <Grid Grid.Row="2" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom" Margin="8,0">
+      <Grid Grid.Row="2" ColumnDefinitions="*,Auto" VerticalAlignment="Bottom" Margin="8,0" ZIndex="20">
         <StackPanel Orientation="Horizontal" Spacing="32" VerticalAlignment="Center">
           
           <!-- (A) Select / Launch -->
@@ -244,37 +301,37 @@
             <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
               <TextBlock Text="A" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="Select / Launch" FontSize="14" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+            <TextBlock Text="Select / Launch" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
           </StackPanel>
 
-          <!-- (X) Game Details -->
+          <!-- (X) Quick Settings -->
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
               <TextBlock Text="X" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="Game Details" FontSize="14" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+            <TextBlock Text="Quick Settings" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
           </StackPanel>
 
-          <!-- (Y) Options -->
+          <!-- (Y) Nav Hint -->
           <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
             <Border Width="26" Height="26" CornerRadius="13" Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1">
               <TextBlock Text="Y" FontSize="13" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
-            <TextBlock Text="Options" FontSize="14" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+            <TextBlock Text="Library Grid" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
           </StackPanel>
 
         </StackPanel>
 
         <!-- Tab Navigation Hint (LB / RB) -->
         <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-          <Border Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="8" Padding="10,4">
+          <Border Background="#1C1C1C" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedSM}" Padding="10,4">
             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
               <TextBlock Text="LB" FontSize="12" FontWeight="Bold" Foreground="White" />
               <TextBlock Text="/" FontSize="12" Foreground="#AAFFFFFF" />
               <TextBlock Text="RB" FontSize="12" FontWeight="Bold" Foreground="White" />
             </StackPanel>
           </Border>
-          <TextBlock Text="Switch Tab" FontSize="14" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" />
+          <TextBlock Text="Switch Tab" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
         </StackPanel>
       </Grid>
 
