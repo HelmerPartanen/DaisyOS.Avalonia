@@ -67,6 +67,9 @@ public partial class ConsolePillSlider : UserControl
         InitializeComponent();
         UpdateIcon();
         UpdatePills();
+
+        GotFocus += (s, e) => { if (FocusBorder != null) FocusBorder.IsVisible = true; };
+        LostFocus += (s, e) => { if (FocusBorder != null) FocusBorder.IsVisible = false; };
     }
 
     private void UpdateIcon()
@@ -123,18 +126,6 @@ public partial class ConsolePillSlider : UserControl
     private void OnIncrementClicked(object? sender, RoutedEventArgs e)
     {
         Value = Math.Min(Maximum, Value + Step);
-    }
-
-    protected override void OnGotFocus(GotFocusEventArgs e)
-    {
-        base.OnGotFocus(e);
-        if (FocusBorder != null) FocusBorder.IsVisible = true;
-    }
-
-    protected override void OnLostFocus(RoutedEventArgs e)
-    {
-        base.OnLostFocus(e);
-        if (FocusBorder != null) FocusBorder.IsVisible = false;
     }
 
     protected override void OnKeyDown(KeyEventArgs e)

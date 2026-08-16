@@ -301,7 +301,7 @@
       </Grid.RowDefinitions>
 
       <!-- Top System Bar Header (Modular Component) -->
-      <console:ConsoleHeaderBar x:Name="HeaderBar" Grid.Row="0" TabSelected="OnHeaderTabSelected" SettingsClicked="OnOpenQuickSettingsClicked" />
+      <console:ConsoleHeaderBar x:Name="HeaderBar" Grid.Row="0" TabSelected="OnHeaderTabSelected" SettingsClicked="OnHeaderSettingsClicked" />
 
       <!-- Main Content Area: PS5/PS6 Discrete Tab View Containers (Zero Layout Confusion) -->
       <Grid Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ClipToBounds="False">
@@ -360,25 +360,6 @@
 
           </StackPanel>
         </ScrollViewer>
-
-        <!-- TAB 3: SETTINGS TAB CONTENT (Direct Launch & Overview) -->
-        <Grid x:Name="SettingsTabContent" IsVisible="False" VerticalAlignment="Center" HorizontalAlignment="Center">
-          <Border Background="{DynamicResource ConsoleElevatedSurfaceBrush}" BorderBrush="{DynamicResource ConsoleDividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedXL}" Padding="36,32" MaxWidth="560">
-            <StackPanel Spacing="20" HorizontalAlignment="Center">
-              <TextBlock Text="settings" Classes="ConsoleStatusIcon" FontSize="48" HorizontalAlignment="Center" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
-              <StackPanel Spacing="6" HorizontalAlignment="Center">
-                <TextBlock Text="Console Settings" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" />
-                <TextBlock Text="Manage Audio devices, Mic mute, Wi-Fi networks, and System preferences." FontSize="14" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" TextAlignment="Center" TextWrapping="Wrap" />
-              </StackPanel>
-              <Button Click="OnOpenQuickSettingsClicked" Classes="ConsoleActionBtn" HorizontalAlignment="Center" Margin="0,10,0,0">
-                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                  <TextBlock Text="tune" Classes="ConsoleStatusIcon" FontSize="20" />
-                  <TextBlock Text="Open Fullscreen Settings" FontSize="15" FontWeight="Bold" />
-                </StackPanel>
-              </Button>
-            </StackPanel>
-          </Border>
-        </Grid>
 
       </Grid>
 

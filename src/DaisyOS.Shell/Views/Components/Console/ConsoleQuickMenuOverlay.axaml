@@ -144,16 +144,6 @@
 
   <!-- Full-Screen Dark Overlay Canvas -->
   <Grid Background="{DynamicResource ConsoleBackgroundBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-    
-    <!-- TOP OVERLAY HEADER -->
-    <Grid VerticalAlignment="Top" Margin="48,32,48,0" ColumnDefinitions="Auto,*,Auto">
-      <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-        <TextBlock Text="sports_esports"
-                   FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled"
-                   FontSize="24" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center"/>
-        <TextBlock Text="QUICK MENU" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" LetterSpacing="2" VerticalAlignment="Center"/>
-      </StackPanel>
-    </Grid>
 
     <!-- MAIN CONTENT AREA (Spacious Overlay Area with Action Buttons Outlined On Focus) -->
     <Grid x:Name="QuickCardBorder"

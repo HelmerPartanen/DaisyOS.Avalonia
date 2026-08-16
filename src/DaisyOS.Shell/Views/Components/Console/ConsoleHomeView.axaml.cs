@@ -357,7 +357,7 @@ public partial class ConsoleHomeView : UserControl
     {
         if (action == ControllerNavigationAction.PreviousSection)
         {
-            var tabs = new[] { "Recents", "Library", "Settings" };
+            var tabs = new[] { "Recents", "Library" };
             int idx = Array.IndexOf(tabs, _activeTab);
             if (idx < 0) idx = 0;
             int nextIdx = (idx - 1 + tabs.Length) % tabs.Length;
@@ -375,7 +375,7 @@ public partial class ConsoleHomeView : UserControl
         }
         else if (action == ControllerNavigationAction.NextSection)
         {
-            var tabs = new[] { "Recents", "Library", "Settings" };
+            var tabs = new[] { "Recents", "Library" };
             int idx = Array.IndexOf(tabs, _activeTab);
             if (idx < 0) idx = 0;
             int nextIdx = (idx + 1) % tabs.Length;
@@ -402,7 +402,7 @@ public partial class ConsoleHomeView : UserControl
                     break;
 
                 case ControllerNavigationAction.Right:
-                    _headerFocusIndex = Math.Min(2, _headerFocusIndex + 1);
+                    _headerFocusIndex = Math.Min(1, _headerFocusIndex + 1);
                     FocusHeaderButton(_headerFocusIndex);
                     break;
 
@@ -414,7 +414,6 @@ public partial class ConsoleHomeView : UserControl
                 case ControllerNavigationAction.Confirm:
                     if (_headerFocusIndex == 0) OnHeaderTabSelected(this, "Recents");
                     else if (_headerFocusIndex == 1) OnHeaderTabSelected(this, "Library");
-                    else if (_headerFocusIndex == 2) OnHeaderTabSelected(this, "Settings");
                     break;
             }
             return;
@@ -497,21 +496,6 @@ public partial class ConsoleHomeView : UserControl
                     break;
             }
         }
-        else if (_activeTab == "Settings")
-        {
-            switch (action)
-            {
-                case ControllerNavigationAction.Up:
-                    _isHeaderFocused = true;
-                    _headerFocusIndex = 2;
-                    FocusHeaderButton(_headerFocusIndex);
-                    break;
-
-                case ControllerNavigationAction.Confirm:
-                    OnOpenQuickSettingsClicked(this, new Avalonia.Interactivity.RoutedEventArgs());
-                    break;
-            }
-        }
     }
 
     private void FocusHeaderButton(int index)
@@ -525,21 +509,19 @@ public partial class ConsoleHomeView : UserControl
             case 1:
                 HeaderBar.LibraryButton?.Focus();
                 break;
-            case 2:
-                HeaderBar.SettingsButton?.Focus();
-                break;
         }
     }
 
     private void FocusActiveTabContent()
     {
-        if (_activeTab == "Recents" && _cardTargets.Count > 0)
-        {
-            _cardTargets[Math.Min(_selectedIndex, _cardTargets.Count - 1)].Focus();
-        }
-        else if (_activeTab == "Library" && _libraryCardTargets.Count > 0)
+        if (_activeTab == "Library" && _libraryCardTargets.Count > 0)
         {
             _libraryCardTargets[Math.Min(_librarySelectedIndex, _libraryCardTargets.Count - 1)].Focus();
+        }
+        else if (_cardTargets.Count > 0)
+        {
+            _activeTab = "Recents";
+            _cardTargets[Math.Min(_selectedIndex, _cardTargets.Count - 1)].Focus();
         }
     }
 
@@ -554,11 +536,7 @@ public partial class ConsoleHomeView : UserControl
     public void FocusInitialDestination()
     {
         _isHeaderFocused = false;
-        if (_recentGames.Count > 0)
-        {
-            _selectedIndex = 0;
-            ApplySelection();
-        }
+        FocusActiveTabContent();
     }
 
     private void OnHeaderTabSelected(object? sender, string tabName)
@@ -568,26 +546,21 @@ public partial class ConsoleHomeView : UserControl
         {
             FocusActiveTabContent();
         }
-        if (tabName == "Settings")
-        {
-            SettingsRequested?.Invoke(this, EventArgs.Empty);
-        }
     }
 
-    private void OnOpenQuickSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnHeaderSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         SettingsRequested?.Invoke(this, EventArgs.Empty);
     }
 
     private void SetActiveTab(string tabName)
     {
-        _activeTab = tabName;
+        _activeTab = tabName == "Library" ? "Library" : "Recents";
 
-        if (RecentsTabContent != null) RecentsTabContent.IsVisible = tabName == "Recents";
-        if (LibraryTabContent != null) LibraryTabContent.IsVisible = tabName == "Library";
-        if (SettingsTabContent != null) SettingsTabContent.IsVisible = tabName == "Settings";
+        if (RecentsTabContent != null) RecentsTabContent.IsVisible = _activeTab == "Recents";
+        if (LibraryTabContent != null) LibraryTabContent.IsVisible = _activeTab == "Library";
 
-        HeaderBar?.SetActiveTab(tabName);
+        HeaderBar?.SetActiveTab(_activeTab);
     }
 
     private void ApplySelection()
