@@ -5,9 +5,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     IsVisible="False"
+    IsHitTestVisible="False"
+    Opacity="0"
     ZIndex="700"
     HorizontalAlignment="Stretch"
     VerticalAlignment="Stretch">
+
+  <UserControl.Transitions>
+    <Transitions>
+      <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseOut" />
+    </Transitions>
+  </UserControl.Transitions>
 
   <UserControl.Styles>
 
@@ -189,6 +197,21 @@
       <Setter Property="MinWidth" Value="180" />
     </Style>
 
+    <Style Selector="StackPanel.SettingsTabPanel">
+      <Setter Property="IsHitTestVisible" Value="False" />
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="LinearEasing" />
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <Style Selector="StackPanel.SettingsTabPanel.ActiveTab">
+      <Setter Property="IsHitTestVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+
   </UserControl.Styles>
 
   <!-- Fullscreen Main Canvas -->
@@ -252,7 +275,7 @@
           <Grid ClipToBounds="False">
 
             <!-- PANEL 1: SOUND / AUDIO -->
-            <StackPanel x:Name="AudioPanel" Spacing="8" IsVisible="True" ClipToBounds="False">
+            <StackPanel x:Name="AudioPanel" Spacing="8" Classes="SettingsTabPanel" ClipToBounds="False">
               
               <!-- Row 1: Volume -->
               <Button x:Name="VolumeRowBtn" Classes="ConsoleSettingRow">
@@ -296,7 +319,7 @@
             </StackPanel>
 
             <!-- PANEL 2: NETWORK -->
-            <StackPanel x:Name="NetworkPanel" Spacing="8" IsVisible="False" ClipToBounds="False">
+            <StackPanel x:Name="NetworkPanel" Spacing="8" Classes="SettingsTabPanel" ClipToBounds="False">
               <Button x:Name="WifiRowBtn" Classes="ConsoleSettingRow" Click="OnRefreshWifiClicked">
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                   <StackPanel Spacing="4">
@@ -317,7 +340,7 @@
             </StackPanel>
 
             <!-- PANEL 3: CONTROLLER & KEYBINDINGS -->
-            <StackPanel x:Name="ControlsPanel" Spacing="8" IsVisible="False" ClipToBounds="False">
+            <StackPanel x:Name="ControlsPanel" Spacing="8" Classes="SettingsTabPanel" ClipToBounds="False">
               <Button x:Name="RemapInfoRowBtn" Classes="ConsoleSettingRow">
                 <StackPanel Spacing="6">
                   <TextBlock Text="Controller Button Remapping" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
@@ -340,7 +363,7 @@
             </StackPanel>
 
             <!-- PANEL 4: SYSTEM & POWER -->
-            <StackPanel x:Name="SystemPanel" Spacing="8" IsVisible="False" ClipToBounds="False">
+            <StackPanel x:Name="SystemPanel" Spacing="8" Classes="SettingsTabPanel" ClipToBounds="False">
               
               <Button x:Name="PerfOverlayRowBtn" Classes="ConsoleSettingRow" Click="OnPerfOverlayToggled">
                 <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">

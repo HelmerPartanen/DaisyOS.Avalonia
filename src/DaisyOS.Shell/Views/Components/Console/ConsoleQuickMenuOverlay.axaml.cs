@@ -47,6 +47,9 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     public void ShowQuickMenu()
     {
         IsVisible = true;
+        Opacity = 1;
+        IsHitTestVisible = true;
+
         SelectCategory(_quickCategories[_activeIconIndex]);
         UpdateControllerHintIcons("DualSense Wireless Controller");
 
@@ -116,10 +119,14 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         }
     }
 
-    public void HideQuickMenu()
+    public async void HideQuickMenu()
     {
-        IsVisible = false;
+        Opacity = 0;
+        IsHitTestVisible = false;
         Closed?.Invoke(this, EventArgs.Empty);
+
+        await Task.Delay(250);
+        if (Opacity == 0) IsVisible = false;
     }
 
     public void Navigate(ControllerNavigationAction action)

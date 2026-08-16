@@ -330,6 +330,21 @@
       <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
     </Style>
 
+    <Style Selector="Control.HomeTabContent">
+      <Setter Property="IsHitTestVisible" Value="False" />
+      <Setter Property="Opacity" Value="0" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="LinearEasing" />
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <Style Selector="Control.HomeTabContent.ActiveTab">
+      <Setter Property="IsHitTestVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+
   </UserControl.Styles>
 
   <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -366,7 +381,7 @@
       <Grid Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ClipToBounds="False">
 
         <!-- TAB 1: RECENTS TAB CONTENT (Spotlight Header + Hero Carousel Track) -->
-        <Grid x:Name="RecentsTabContent" IsVisible="True" VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="False">
+        <Grid x:Name="RecentsTabContent" Classes="HomeTabContent ActiveTab" VerticalAlignment="Center" HorizontalAlignment="Stretch" ClipToBounds="False">
           <StackPanel Spacing="24" ClipToBounds="False">
 
             <!-- Active Game Spotlight Header -->
@@ -396,7 +411,7 @@
         </Grid>
 
         <!-- TAB 2: LIBRARY TAB CONTENT (Clean Multi-Row Scrollable Game Grid) -->
-        <ScrollViewer x:Name="LibraryTabContent" IsVisible="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" ClipToBounds="False" Padding="24,16,24,40">
+        <ScrollViewer x:Name="LibraryTabContent" Classes="HomeTabContent" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" ClipToBounds="False" Padding="24,16,24,40">
           <StackPanel Spacing="20" ClipToBounds="False">
             
             <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">

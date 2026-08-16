@@ -5,9 +5,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     IsVisible="False"
+    IsHitTestVisible="False"
+    Opacity="0"
     ZIndex="800"
     HorizontalAlignment="Stretch"
     VerticalAlignment="Stretch">
+
+  <UserControl.Transitions>
+    <Transitions>
+      <DoubleTransition Property="Opacity" Duration="0:0:0.2" Easing="CubicEaseOut" />
+    </Transitions>
+  </UserControl.Transitions>
 
   <UserControl.Styles>
 

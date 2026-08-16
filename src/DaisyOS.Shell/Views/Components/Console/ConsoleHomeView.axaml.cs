@@ -458,8 +458,8 @@ public partial class ConsoleHomeView : UserControl
     {
         _activeTab = tabName == "Library" ? "Library" : "Recents";
 
-        if (RecentsTabContent != null) RecentsTabContent.IsVisible = _activeTab == "Recents";
-        if (LibraryTabContent != null) LibraryTabContent.IsVisible = _activeTab == "Library";
+        if (RecentsTabContent != null) RecentsTabContent.Classes.Set("ActiveTab", _activeTab == "Recents");
+        if (LibraryTabContent != null) LibraryTabContent.Classes.Set("ActiveTab", _activeTab == "Library");
 
         HeaderBar?.SetActiveTab(_activeTab);
     }

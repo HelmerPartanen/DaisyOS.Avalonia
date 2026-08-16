@@ -86,18 +86,18 @@ public partial class ConsoleSettingsOverlay : UserControl
     {
         var list = new List<Control>();
 
-        if (AudioPanel.IsVisible)
+        if (AudioPanel.Classes.Contains("ActiveTab"))
         {
             if (VolumeRowBtn != null) list.Add(VolumeRowBtn);
             if (MicRowBtn != null) list.Add(MicRowBtn);
             if (OutputDeviceRowBtn != null) list.Add(OutputDeviceRowBtn);
             if (InputDeviceRowBtn != null) list.Add(InputDeviceRowBtn);
         }
-        else if (NetworkPanel.IsVisible)
+        else if (NetworkPanel.Classes.Contains("ActiveTab"))
         {
             if (WifiRowBtn != null) list.Add(WifiRowBtn);
         }
-        else if (ControlsPanel.IsVisible)
+        else if (ControlsPanel.Classes.Contains("ActiveTab"))
         {
             if (RemapInfoRowBtn != null) list.Add(RemapInfoRowBtn);
             foreach (var child in KeybindingsListStack.Children)
@@ -106,7 +106,7 @@ public partial class ConsoleSettingsOverlay : UserControl
             }
             if (ResetKeybindingsRowBtn != null) list.Add(ResetKeybindingsRowBtn);
         }
-        else if (SystemPanel.IsVisible)
+        else if (SystemPanel.Classes.Contains("ActiveTab"))
         {
             if (PerfOverlayRowBtn != null) list.Add(PerfOverlayRowBtn);
             if (ReturnDesktopRowBtn != null) list.Add(ReturnDesktopRowBtn);
@@ -123,6 +123,9 @@ public partial class ConsoleSettingsOverlay : UserControl
     public void ShowOverlay(string initialTab = "Audio")
     {
         IsVisible = true;
+        Opacity = 1;
+        IsHitTestVisible = true;
+        
         SelectTab(initialTab);
         _loadCts?.Cancel();
         _loadCts = new CancellationTokenSource();
@@ -134,13 +137,18 @@ public partial class ConsoleSettingsOverlay : UserControl
         }, DispatcherPriority.Input);
     }
 
-    public void HideOverlay()
+    public async void HideOverlay()
     {
-        IsVisible = false;
+        Opacity = 0;
+        IsHitTestVisible = false;
+        
         _rebindingAction = null;
         if (_controllerInputService != null) _controllerInputService.IsRebinding = false;
         _loadCts?.Cancel();
         Closed?.Invoke(this, EventArgs.Empty);
+        
+        await Task.Delay(250);
+        if (Opacity == 0) IsVisible = false;
     }
 
     private int _activeTabIndex = 0;
@@ -201,13 +209,9 @@ public partial class ConsoleSettingsOverlay : UserControl
                 if (!_isSidebarFocused)
                 {
                     var focusedL = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-                    if (focusedL == VolumeRowBtn && MasterVolumePillSlider != null)
+                    if (focusedL is ConsolePillSlider pillL)
                     {
-                        MasterVolumePillSlider.Value = Math.Max(MasterVolumePillSlider.Minimum, MasterVolumePillSlider.Value - MasterVolumePillSlider.Step);
-                    }
-                    else if (focusedL == MicRowBtn && MicVolumePillSlider != null)
-                    {
-                        MicVolumePillSlider.Value = Math.Max(MicVolumePillSlider.Minimum, MicVolumePillSlider.Value - MicVolumePillSlider.Step);
+                        pillL.Value = Math.Max(pillL.Minimum, pillL.Value - pillL.Step);
                     }
                     else
                     {
@@ -221,13 +225,9 @@ public partial class ConsoleSettingsOverlay : UserControl
                 if (!_isSidebarFocused)
                 {
                     var focusedR = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-                    if (focusedR == VolumeRowBtn && MasterVolumePillSlider != null)
+                    if (focusedR is ConsolePillSlider pillR)
                     {
-                        MasterVolumePillSlider.Value = Math.Min(MasterVolumePillSlider.Maximum, MasterVolumePillSlider.Value + MasterVolumePillSlider.Step);
-                    }
-                    else if (focusedR == MicRowBtn && MicVolumePillSlider != null)
-                    {
-                        MicVolumePillSlider.Value = Math.Min(MicVolumePillSlider.Maximum, MicVolumePillSlider.Value + MicVolumePillSlider.Step);
+                        pillR.Value = Math.Min(pillR.Maximum, pillR.Value + pillR.Step);
                     }
                 }
                 else
@@ -244,6 +244,14 @@ public partial class ConsoleSettingsOverlay : UserControl
                     _isSidebarFocused = false;
                     FocusFirstControlInActivePanel();
                 }
+                else if (focusedC == VolumeRowBtn && MasterVolumePillSlider != null)
+                {
+                    MasterVolumePillSlider.Focus();
+                }
+                else if (focusedC == MicRowBtn && MicVolumePillSlider != null)
+                {
+                    MicVolumePillSlider.Focus();
+                }
                 else if (focusedC is Button btn)
                 {
                     btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
@@ -256,6 +264,18 @@ public partial class ConsoleSettingsOverlay : UserControl
                 break;
 
             case ControllerNavigationAction.Back:
+                var focusedB = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+                if (focusedB is ConsolePillSlider)
+                {
+                    if (focusedB == MasterVolumePillSlider && VolumeRowBtn != null) VolumeRowBtn.Focus();
+                    else if (focusedB == MicVolumePillSlider && MicRowBtn != null) MicRowBtn.Focus();
+                }
+                else
+                {
+                    HideOverlay();
+                }
+                break;
+
             case ControllerNavigationAction.QuickSettings:
                 HideOverlay();
                 break;
@@ -451,10 +471,10 @@ public partial class ConsoleSettingsOverlay : UserControl
         _activeTabIndex = Array.IndexOf(_tabNames, tabName);
         if (_activeTabIndex < 0) _activeTabIndex = 0;
 
-        AudioPanel.IsVisible = tabName == "Audio";
-        NetworkPanel.IsVisible = tabName == "Network";
-        ControlsPanel.IsVisible = tabName == "Controls";
-        SystemPanel.IsVisible = tabName == "System";
+        AudioPanel.Classes.Set("ActiveTab", tabName == "Audio");
+        NetworkPanel.Classes.Set("ActiveTab", tabName == "Network");
+        ControlsPanel.Classes.Set("ActiveTab", tabName == "Controls");
+        SystemPanel.Classes.Set("ActiveTab", tabName == "System");
 
         TabAudioBtn.Classes.Set("Active", tabName == "Audio");
         TabNetworkBtn.Classes.Set("Active", tabName == "Network");

@@ -46,6 +46,10 @@
     <Style Selector="Button.ArrowBtn:pointerover">
       <Setter Property="Background" Value="{DynamicResource ConsoleDividerBrush}" />
     </Style>
+
+    <Style Selector="UserControl:focus Border#FocusBorder">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
   </UserControl.Styles>
 
   <Panel ClipToBounds="False" HorizontalAlignment="Right" VerticalAlignment="Center">
