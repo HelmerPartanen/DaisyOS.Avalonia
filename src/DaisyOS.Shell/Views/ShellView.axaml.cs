@@ -311,7 +311,7 @@ namespace DaisyOS.Shell.Views
                     {
                         ConsoleSettings.Navigate(action);
                     }
-                    else if (action == ControllerNavigationAction.OpenConsole || action == ControllerNavigationAction.QuickSettings)
+                    else if (action == ControllerNavigationAction.OpenConsole)
                     {
                         ConsoleQuickMenu.ShowQuickMenu();
                     }

@@ -67,6 +67,14 @@ public sealed class LinuxControllerInputService : IControllerInputService
                     foreach (var kvp in defaults.XboxButtons) loaded.XboxButtons.TryAdd(kvp.Key, kvp.Value);
                     foreach (var kvp in defaults.PlayStationButtons) loaded.PlayStationButtons.TryAdd(kvp.Key, kvp.Value);
                     foreach (var kvp in defaults.EvdevKeys) loaded.EvdevKeys.TryAdd(kvp.Key, kvp.Value);
+
+                    // Ensure button 8 & 9 (Share/Options) never map to OpenConsole
+                    if (loaded.PlayStationButtons.TryGetValue(8, out var p8) && p8 == "OpenConsole") loaded.PlayStationButtons.Remove(8);
+                    if (loaded.PlayStationButtons.TryGetValue(9, out var p9) && p9 == "OpenConsole") loaded.PlayStationButtons.Remove(9);
+                    if (loaded.XboxButtons.TryGetValue(8, out var x8) && x8 == "OpenConsole") loaded.XboxButtons.Remove(8);
+                    loaded.PlayStationButtons[10] = "OpenConsole";
+                    loaded.XboxButtons[10] = "OpenConsole";
+
                     _keybindingsConfig = loaded;
                     return;
                 }
@@ -347,7 +355,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
                 2 => ControllerNavigationAction.Details, // Triangle (△)
                 4 => ControllerNavigationAction.PreviousSection, // L1
                 5 => ControllerNavigationAction.NextSection, // R1
-                8 or 9 or 10 => ControllerNavigationAction.OpenConsole, // Share / Options / PS Button
+                10 => ControllerNavigationAction.OpenConsole, // PS Logo Button ONLY
                 _ => null
             }
             : number switch
@@ -358,7 +366,7 @@ public sealed class LinuxControllerInputService : IControllerInputService
                 3 => ControllerNavigationAction.Details, // Y
                 4 => ControllerNavigationAction.PreviousSection, // LB
                 5 => ControllerNavigationAction.NextSection, // RB
-                8 or 10 => ControllerNavigationAction.OpenConsole, // Guide variants
+                10 => ControllerNavigationAction.OpenConsole, // Xbox Guide Button ONLY
                 _ => null
             };
     }

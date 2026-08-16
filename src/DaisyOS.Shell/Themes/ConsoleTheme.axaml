@@ -7,6 +7,9 @@
   <Color x:Key="ConsoleElevatedSurfaceColor">#181820</Color>
   <Color x:Key="ConsoleSubtleSurfaceColor">#20202A</Color>
 
+    <Color x:Key="ConsoleOverlayColor">#CC000000</Color>
+
+
   <!-- Accent Color: Pure White -->
   <Color x:Key="ConsoleAccentColor">#FFFFFF</Color>
   <Color x:Key="ConsoleOnAccentColor">#000000</Color>
@@ -22,6 +25,8 @@
   <SolidColorBrush x:Key="ConsoleSurfaceBrush" Color="{StaticResource ConsoleSurfaceColor}" />
   <SolidColorBrush x:Key="ConsoleElevatedSurfaceBrush" Color="{StaticResource ConsoleElevatedSurfaceColor}" />
   <SolidColorBrush x:Key="ConsoleSubtleSurfaceBrush" Color="{StaticResource ConsoleSubtleSurfaceColor}" />
+
+  <SolidColorBrush x:Key="ConsoleOverlayBrush" Color="{StaticResource ConsoleOverlayColor}" />
 
   <SolidColorBrush x:Key="ConsoleAccentBrush" Color="{StaticResource ConsoleAccentColor}" />
   <SolidColorBrush x:Key="ConsoleOnAccentBrush" Color="{StaticResource ConsoleOnAccentColor}" />

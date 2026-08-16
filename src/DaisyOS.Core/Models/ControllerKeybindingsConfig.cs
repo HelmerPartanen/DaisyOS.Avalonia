@@ -16,8 +16,7 @@ public sealed class ControllerKeybindingsConfig
         [3] = "Details",         // Y (Top)
         [4] = "PreviousSection", // LB
         [5] = "NextSection",     // RB
-        [8] = "OpenConsole",     // Guide
-        [10] = "OpenConsole"
+        [10] = "OpenConsole"     // Guide Button ONLY
     };
 
     public Dictionary<int, string> PlayStationButtons { get; set; } = new()
@@ -28,9 +27,7 @@ public sealed class ControllerKeybindingsConfig
         [2] = "Details",         // Triangle △ (Top)
         [4] = "PreviousSection", // L1
         [5] = "NextSection",     // R1
-        [8] = "OpenConsole",     // Share / Create
-        [9] = "OpenConsole",     // Options
-        [10] = "OpenConsole"     // PS Button
+        [10] = "OpenConsole"     // PS Button ONLY
     };
 
     public Dictionary<ushort, string> EvdevKeys { get; set; } = new()

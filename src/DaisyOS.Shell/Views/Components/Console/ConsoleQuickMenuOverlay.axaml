@@ -143,7 +143,7 @@
   </UserControl.Styles>
 
   <!-- Full-Screen Dark Overlay Canvas -->
-  <Grid Background="{DynamicResource ConsoleBackgroundBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+  <Grid Background="{DynamicResource ConsoleOverlayBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
     <!-- MAIN CONTENT AREA (Spacious Overlay Area with Action Buttons Outlined On Focus) -->
     <Grid x:Name="QuickCardBorder"

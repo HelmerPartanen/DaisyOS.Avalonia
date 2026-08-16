@@ -402,7 +402,7 @@ public partial class ConsoleHomeView : UserControl
                     break;
 
                 case ControllerNavigationAction.Right:
-                    _headerFocusIndex = Math.Min(1, _headerFocusIndex + 1);
+                    _headerFocusIndex = Math.Min(2, _headerFocusIndex + 1);
                     FocusHeaderButton(_headerFocusIndex);
                     break;
 
@@ -414,6 +414,7 @@ public partial class ConsoleHomeView : UserControl
                 case ControllerNavigationAction.Confirm:
                     if (_headerFocusIndex == 0) OnHeaderTabSelected(this, "Recents");
                     else if (_headerFocusIndex == 1) OnHeaderTabSelected(this, "Library");
+                    else if (_headerFocusIndex == 2) SettingsRequested?.Invoke(this, EventArgs.Empty);
                     break;
             }
             return;
@@ -509,6 +510,9 @@ public partial class ConsoleHomeView : UserControl
             case 1:
                 HeaderBar.LibraryButton?.Focus();
                 break;
+            case 2:
+                HeaderBar.SettingsButton?.Focus();
+                break;
         }
     }
 
@@ -598,7 +602,7 @@ public partial class ConsoleHomeView : UserControl
         if (bgImage != null)
         {
             nextLayer.Source = bgImage;
-            nextLayer.Opacity = 0.75;
+            nextLayer.Opacity = 0.30;
             currentLayer.Opacity = 0.0;
             _activeBgLayer = _activeBgLayer == 1 ? 2 : 1;
         }

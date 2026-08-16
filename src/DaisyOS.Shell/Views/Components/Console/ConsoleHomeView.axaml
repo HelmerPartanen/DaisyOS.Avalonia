@@ -283,14 +283,22 @@
 
   <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-    <!-- Dual-Layer Fullscreen Background Images (Permanently 0% Opacity) -->
-    <Grid x:Name="HeroBackgroundContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0.0" IsVisible="False">
-      <Image x:Name="HeroBackgroundImage1" Stretch="UniformToFill" Opacity="0.0" />
-      <Image x:Name="HeroBackgroundImage2" Stretch="UniformToFill" Opacity="0.0" />
-    </Grid>
+    <!-- Dual-Layer Fullscreen Background Hero Images (Low Opacity Ambient Background) -->
+    <Grid x:Name="HeroBackgroundContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="True">
+      <Image x:Name="HeroBackgroundImage1" Stretch="UniformToFill" Opacity="0.30" />
+      <Image x:Name="HeroBackgroundImage2" Stretch="UniformToFill" Opacity="0.30" />
 
-    <!-- OSTheme Surface Overlay for High Contrast Readability -->
-    <Border IsHitTestVisible="False" Background="{DynamicResource ConsoleBackgroundBrush}" />
+      <!-- Subtle Dark Gradient Vignette for UI Text Readability -->
+      <Border IsHitTestVisible="False">
+        <Border.Background>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+            <GradientStop Offset="0.0" Color="#CC0A0A0E" />
+            <GradientStop Offset="0.4" Color="#770A0A0E" />
+            <GradientStop Offset="1.0" Color="#E60A0A0E" />
+          </LinearGradientBrush>
+        </Border.Background>
+      </Border>
+    </Grid>
 
     <Grid Margin="64,24,64,24" ClipToBounds="False">
 
