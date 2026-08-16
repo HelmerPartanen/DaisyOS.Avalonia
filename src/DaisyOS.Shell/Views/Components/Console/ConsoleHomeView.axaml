@@ -342,11 +342,11 @@
 
         <!-- TAB 2: LIBRARY TAB CONTENT (Clean Multi-Row Scrollable Game Grid) -->
         <ScrollViewer x:Name="LibraryTabContent" IsVisible="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" ClipToBounds="False">
-          <StackPanel Spacing="20" Margin="8,12,0,40" ClipToBounds="False">
+          <StackPanel Spacing="20" Margin="24,16,24,40" ClipToBounds="False">
             
             <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <TextBlock Text="grid_view" Classes="ConsoleStatusIcon" FontSize="22" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <TextBlock Text="grid_view" Classes="ConsoleStatusIcon" FontSize="26" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
                 <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
               </StackPanel>
 
