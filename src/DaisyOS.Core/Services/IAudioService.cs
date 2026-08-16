@@ -8,6 +8,14 @@ public interface IAudioService
 
     Task SetVolumeAsync(double volume, CancellationToken cancellationToken = default);
 
+    Task<double?> GetInputVolumeAsync(CancellationToken cancellationToken = default);
+
+    Task SetInputVolumeAsync(double volume, CancellationToken cancellationToken = default);
+
+    Task<bool> GetInputMutedAsync(CancellationToken cancellationToken = default);
+
+    Task SetInputMutedAsync(bool muted, CancellationToken cancellationToken = default);
+
     Task<string> GetDefaultDeviceNameAsync(CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<AudioDeviceInfo>> GetAudioDevicesAsync(CancellationToken cancellationToken = default);

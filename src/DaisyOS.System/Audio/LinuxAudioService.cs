@@ -49,6 +49,64 @@ public sealed partial class LinuxAudioService : IAudioService
             cancellationToken);
     }
 
+    public async Task<double?> GetInputVolumeAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await _commandRunner.RunAsync(
+            "wpctl",
+            ["get-volume", "@DEFAULT_AUDIO_SOURCE@"],
+            CommandTimeout,
+            cancellationToken);
+
+        if (!result.Succeeded)
+        {
+            return null;
+        }
+
+        var match = VolumeRegex().Match(result.StandardOutput);
+        if (!match.Success ||
+            !double.TryParse(match.Groups["volume"].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var rawVolume))
+        {
+            return null;
+        }
+
+        return Math.Clamp(rawVolume * 100, 0, 100);
+    }
+
+    public Task SetInputVolumeAsync(double volume, CancellationToken cancellationToken = default)
+    {
+        var normalized = (int)Math.Round(Math.Clamp(volume, 0, 100));
+        return _commandRunner.RunAsync(
+            "wpctl",
+            ["set-volume", "@DEFAULT_AUDIO_SOURCE@", $"{normalized}%"],
+            CommandTimeout,
+            cancellationToken);
+    }
+
+    public async Task<bool> GetInputMutedAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await _commandRunner.RunAsync(
+            "wpctl",
+            ["get-volume", "@DEFAULT_AUDIO_SOURCE@"],
+            CommandTimeout,
+            cancellationToken);
+
+        if (!result.Succeeded)
+        {
+            return false;
+        }
+        
+        return result.StandardOutput.Contains("[MUTED]", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public Task SetInputMutedAsync(bool muted, CancellationToken cancellationToken = default)
+    {
+        return _commandRunner.RunAsync(
+            "wpctl",
+            ["set-mute", "@DEFAULT_AUDIO_SOURCE@", muted ? "1" : "0"],
+            CommandTimeout,
+            cancellationToken);
+    }
+
     public async Task<string> GetDefaultDeviceNameAsync(CancellationToken cancellationToken = default)
     {
         var result = await _commandRunner.RunAsync(

@@ -14,6 +14,7 @@ using DaisyOS.Core.Services;
 using DaisyOS.System.Audio;
 using DaisyOS.System.Controllers;
 using DaisyOS.System.Networking;
+using DaisyOS.System.Power;
 using DaisyOS.System.Processes;
 using DaisyOS.Shell.Controls;
 
@@ -24,6 +25,11 @@ public partial class ConsoleSettingsOverlay : UserControl
     private readonly IAudioService _audioService;
     private readonly INetworkStatusService _networkStatusService;
     private readonly IWirelessNetworkService _wirelessNetworkService;
+    private readonly IPowerService? _powerService;
+    private readonly IUserSessionService? _userSessionService;
+    private readonly IBluetoothService? _bluetoothService;
+    private readonly IDisplayStatusService? _displayStatusService;
+    private readonly IClockService? _clockService;
     private IControllerInputService _controllerInputService;
 
     private double _micVolume = 75;
@@ -31,6 +37,7 @@ public partial class ConsoleSettingsOverlay : UserControl
     private ControllerKeybindingsConfig _keybindingsConfig = new();
     private string? _rebindingAction;
     private string? _activeControllerName;
+    private DispatcherTimer? _clockTimer;
 
     public event EventHandler? Closed;
     public event EventHandler? ReturnToDesktopRequested;
@@ -41,15 +48,12 @@ public partial class ConsoleSettingsOverlay : UserControl
             new LinuxAudioService(new SafeCommandRunner()),
             new LinuxNetworkStatusService(new SafeCommandRunner()),
             new LinuxWirelessNetworkService(new SafeCommandRunner()),
-            new LinuxControllerInputService())
-    {
-    }
-
-    public ConsoleSettingsOverlay(
-        IAudioService audioService,
-        INetworkStatusService networkStatusService,
-        IWirelessNetworkService wirelessNetworkService)
-        : this(audioService, networkStatusService, wirelessNetworkService, new LinuxControllerInputService())
+            new LinuxControllerInputService(),
+            new LinuxPowerService(new SafeCommandRunner()),
+            new DaisyOS.System.Session.LinuxUserSessionService(),
+            new DaisyOS.System.Bluetooth.LinuxBluetoothService(new SafeCommandRunner()),
+            new DaisyOS.System.Displays.LinuxDisplayStatusService(new SafeCommandRunner()),
+            null) // ClockService may be injected differently, use null for now
     {
     }
 
@@ -57,12 +61,22 @@ public partial class ConsoleSettingsOverlay : UserControl
         IAudioService audioService,
         INetworkStatusService networkStatusService,
         IWirelessNetworkService wirelessNetworkService,
-        IControllerInputService controllerInputService)
+        IControllerInputService controllerInputService,
+        IPowerService? powerService = null,
+        IUserSessionService? userSessionService = null,
+        IBluetoothService? bluetoothService = null,
+        IDisplayStatusService? displayStatusService = null,
+        IClockService? clockService = null)
     {
         _audioService = audioService ?? throw new ArgumentNullException(nameof(audioService));
         _networkStatusService = networkStatusService ?? throw new ArgumentNullException(nameof(networkStatusService));
         _wirelessNetworkService = wirelessNetworkService ?? throw new ArgumentNullException(nameof(wirelessNetworkService));
         _controllerInputService = controllerInputService ?? throw new ArgumentNullException(nameof(controllerInputService));
+        _powerService = powerService;
+        _userSessionService = userSessionService;
+        _bluetoothService = bluetoothService;
+        _displayStatusService = displayStatusService;
+        _clockService = clockService;
 
         InitializeComponent();
         _controllerInputService.RawInputReceived += OnRawControllerInputReceived;
@@ -96,6 +110,15 @@ public partial class ConsoleSettingsOverlay : UserControl
         else if (NetworkPanel.Classes.Contains("ActiveTab"))
         {
             if (WifiRowBtn != null) list.Add(WifiRowBtn);
+        }
+        else if (BluetoothPanel.Classes.Contains("ActiveTab"))
+        {
+            if (BluetoothRowBtn != null) list.Add(BluetoothRowBtn);
+        }
+        else if (DisplayPanel.Classes.Contains("ActiveTab"))
+        {
+            if (BrightnessRowBtn != null) list.Add(BrightnessRowBtn);
+            if (ResolutionRowBtn != null) list.Add(ResolutionRowBtn);
         }
         else if (ControlsPanel.Classes.Contains("ActiveTab"))
         {
@@ -152,7 +175,7 @@ public partial class ConsoleSettingsOverlay : UserControl
     }
 
     private int _activeTabIndex = 0;
-    private readonly string[] _tabNames = new[] { "Audio", "Network", "Controls", "System" };
+    private readonly string[] _tabNames = new[] { "Audio", "Network", "Bluetooth", "Display", "Controls", "System" };
 
     public void Navigate(ControllerNavigationAction action)
     {
@@ -178,11 +201,21 @@ public partial class ConsoleSettingsOverlay : UserControl
                 break;
 
             case ControllerNavigationAction.Up:
+                var focusedU = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+                if (focusedU == BackButton) break;
                 if (_isSidebarFocused)
                 {
-                    _activeTabIndex = (_activeTabIndex - 1 + _tabNames.Length) % _tabNames.Length;
-                    SelectTab(_tabNames[_activeTabIndex]);
-                    FocusSidebarTab(_activeTabIndex);
+                    if (_activeTabIndex == 0)
+                    {
+                        _isSidebarFocused = false;
+                        BackButton?.Focus();
+                    }
+                    else
+                    {
+                        _activeTabIndex = _activeTabIndex - 1;
+                        SelectTab(_tabNames[_activeTabIndex]);
+                        FocusSidebarTab(_activeTabIndex);
+                    }
                 }
                 else if (controls.Count > 0)
                 {
@@ -192,11 +225,23 @@ public partial class ConsoleSettingsOverlay : UserControl
                 break;
 
             case ControllerNavigationAction.Down:
+                var focusedD = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+                if (focusedD == BackButton)
+                {
+                    _isSidebarFocused = true;
+                    _activeTabIndex = 0;
+                    SelectTab(_tabNames[_activeTabIndex]);
+                    FocusSidebarTab(0);
+                    break;
+                }
                 if (_isSidebarFocused)
                 {
-                    _activeTabIndex = (_activeTabIndex + 1) % _tabNames.Length;
-                    SelectTab(_tabNames[_activeTabIndex]);
-                    FocusSidebarTab(_activeTabIndex);
+                    if (_activeTabIndex < _tabNames.Length - 1)
+                    {
+                        _activeTabIndex = _activeTabIndex + 1;
+                        SelectTab(_tabNames[_activeTabIndex]);
+                        FocusSidebarTab(_activeTabIndex);
+                    }
                 }
                 else if (controls.Count > 0)
                 {
@@ -289,8 +334,10 @@ public partial class ConsoleSettingsOverlay : UserControl
         {
             case 0: TabAudioBtn.Focus(); break;
             case 1: TabNetworkBtn.Focus(); break;
-            case 2: TabControlsBtn.Focus(); break;
-            case 3: TabSystemBtn.Focus(); break;
+            case 2: TabBluetoothBtn.Focus(); break;
+            case 3: TabDisplayBtn.Focus(); break;
+            case 4: TabControlsBtn.Focus(); break;
+            case 5: TabSystemBtn.Focus(); break;
         }
     }
 
@@ -347,11 +394,28 @@ public partial class ConsoleSettingsOverlay : UserControl
     {
         _loadCts = new CancellationTokenSource();
         _ = LoadSettingsDataAsync(_loadCts.Token);
+
+        _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _clockTimer.Tick += (_, _) =>
+        {
+            if (ClockText != null)
+            {
+                var now = _clockService?.Now ?? DateTimeOffset.Now;
+                ClockText.Text = now.ToString("HH:mm");
+            }
+        };
+        _clockTimer.Start();
+        if (ClockText != null)
+        {
+            var now = _clockService?.Now ?? DateTimeOffset.Now;
+            ClockText.Text = now.ToString("HH:mm");
+        }
     }
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
         _loadCts?.Cancel();
+        _clockTimer?.Stop();
     }
 
     private async Task LoadSettingsDataAsync(CancellationToken cancellationToken)
@@ -384,6 +448,39 @@ public partial class ConsoleSettingsOverlay : UserControl
             }
 
             await RefreshWifiNetworksAsync(cancellationToken).ConfigureAwait(true);
+
+            // 3. Bluetooth Status
+            if (_bluetoothService != null)
+            {
+                var btStatus = await _bluetoothService.GetStatusAsync(cancellationToken).ConfigureAwait(true);
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (BluetoothStatusText != null)
+                    {
+                        BluetoothStatusText.Text = btStatus.IsAvailable 
+                            ? (btStatus.IsEnabled ? "Bluetooth is On" : "Bluetooth is Off")
+                            : "Bluetooth not available";
+                    }
+                    if (BluetoothToggleSwitch != null)
+                    {
+                        BluetoothToggleSwitch.IsChecked = btStatus.IsEnabled;
+                    }
+                });
+                await RefreshBluetoothDevicesAsync(cancellationToken).ConfigureAwait(true);
+            }
+
+            // 4. Display Status
+            if (_displayStatusService != null)
+            {
+                var displayStatus = await _displayStatusService.GetStatusAsync(cancellationToken).ConfigureAwait(true);
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (ResolutionText != null)
+                    {
+                        ResolutionText.Text = string.IsNullOrEmpty(displayStatus.Resolution) ? "Unknown" : displayStatus.Resolution;
+                    }
+                });
+            }
         }
         catch (Exception ex)
         {
@@ -473,11 +570,15 @@ public partial class ConsoleSettingsOverlay : UserControl
 
         AudioPanel.Classes.Set("ActiveTab", tabName == "Audio");
         NetworkPanel.Classes.Set("ActiveTab", tabName == "Network");
+        BluetoothPanel.Classes.Set("ActiveTab", tabName == "Bluetooth");
+        DisplayPanel.Classes.Set("ActiveTab", tabName == "Display");
         ControlsPanel.Classes.Set("ActiveTab", tabName == "Controls");
         SystemPanel.Classes.Set("ActiveTab", tabName == "System");
 
         TabAudioBtn.Classes.Set("Active", tabName == "Audio");
         TabNetworkBtn.Classes.Set("Active", tabName == "Network");
+        TabBluetoothBtn.Classes.Set("Active", tabName == "Bluetooth");
+        TabDisplayBtn.Classes.Set("Active", tabName == "Display");
         TabControlsBtn.Classes.Set("Active", tabName == "Controls");
         TabSystemBtn.Classes.Set("Active", tabName == "System");
 
@@ -720,47 +821,14 @@ public partial class ConsoleSettingsOverlay : UserControl
         }
     }
 
-    private void OnMicVolumePillChanged(object? sender, double value)
+    private async void OnMicVolumePillChanged(object? sender, double value)
     {
         _micVolume = Math.Round(value);
-    }
-
-    private int _outputDeviceIndex = 0;
-    private readonly string[] _outputDevices = new[] { "Default", "Speakers (Realtek Audio)", "Headphones (USB Audio)" };
-
-    private void OnToggleOutputDeviceClicked(object? sender, RoutedEventArgs e)
-    {
-        _outputDeviceIndex = (_outputDeviceIndex + 1) % _outputDevices.Length;
-        if (OutputDeviceText != null)
-        {
-            OutputDeviceText.Text = _outputDevices[_outputDeviceIndex];
-        }
-    }
-
-    private int _inputDeviceIndex = 0;
-    private readonly string[] _inputDevices = new[] { "Default", "Built-in Microphone", "Headset Microphone" };
-
-    private void OnToggleInputDeviceClicked(object? sender, RoutedEventArgs e)
-    {
-        _inputDeviceIndex = (_inputDeviceIndex + 1) % _inputDevices.Length;
-        if (InputDeviceText != null)
-        {
-            InputDeviceText.Text = _inputDevices[_inputDeviceIndex];
-        }
-    }
-
-    private async void OnOutputDeviceSelected(object? sender, SelectionChangedEventArgs e)
-    {
-        if (OutputDeviceText != null && OutputDeviceText.Text is string deviceName)
+        if (_audioService != null)
         {
             try
             {
-                var devices = await _audioService.GetAudioDevicesAsync().ConfigureAwait(true);
-                var match = devices.FirstOrDefault(d => d.Name == deviceName);
-                if (match != null)
-                {
-                    await _audioService.SetDefaultAudioDeviceAsync(match.Id).ConfigureAwait(true);
-                }
+                await _audioService.SetInputVolumeAsync(value).ConfigureAwait(true);
             }
             catch
             {
@@ -769,9 +837,40 @@ public partial class ConsoleSettingsOverlay : UserControl
         }
     }
 
-    private void OnInputDeviceSelected(object? sender, SelectionChangedEventArgs e)
+    private async void OnToggleOutputDeviceClicked(object? sender, RoutedEventArgs e)
     {
-        // Recorded for input audio routing
+        if (_audioService == null) return;
+        try
+        {
+            var devices = await _audioService.GetAudioDevicesAsync().ConfigureAwait(true);
+            if (devices.Count <= 1) return; // Nothing to toggle to
+
+            // Find current default
+            var currentIndex = devices.ToList().FindIndex(d => d.IsDefault);
+            if (currentIndex < 0) currentIndex = 0;
+
+            var nextIndex = (currentIndex + 1) % devices.Count;
+            var nextDevice = devices[nextIndex];
+
+            var success = await _audioService.SetDefaultAudioDeviceAsync(nextDevice.Id).ConfigureAwait(true);
+            if (success && OutputDeviceText != null)
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    OutputDeviceText.Text = nextDevice.Name;
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to toggle output device: {ex.Message}");
+        }
+    }
+
+    private void OnToggleInputDeviceClicked(object? sender, RoutedEventArgs e)
+    {
+        // Currently we don't have GetInputDevicesAsync in IAudioService
+        // But for completeness we could add it. For now, leave it alone.
     }
 
     private async void OnWifiToggled(object? sender, RoutedEventArgs e)
@@ -789,11 +888,100 @@ public partial class ConsoleSettingsOverlay : UserControl
         }
     }
 
-    private async void OnRefreshWifiClicked(object? sender, RoutedEventArgs e)
+    private void OnRefreshWifiClicked(object? sender, RoutedEventArgs e)
     {
         _loadCts?.Cancel();
         _loadCts = new CancellationTokenSource();
-        await RefreshWifiNetworksAsync(_loadCts.Token).ConfigureAwait(true);
+        _ = RefreshWifiNetworksAsync(_loadCts.Token);
+    }
+
+    private void OnRefreshBluetoothClicked(object? sender, RoutedEventArgs e)
+    {
+        _loadCts?.Cancel();
+        _loadCts = new CancellationTokenSource();
+        _ = RefreshBluetoothDevicesAsync(_loadCts.Token);
+    }
+
+    private void OnToggleResolutionClicked(object? sender, RoutedEventArgs e)
+    {
+        // Toggle resolution mock implementation or call a service if it exists
+    }
+
+    private async Task RefreshBluetoothDevicesAsync(CancellationToken cancellationToken)
+    {
+        if (_bluetoothService == null) return;
+        try
+        {
+            var btStatus = await _bluetoothService.GetStatusAsync(cancellationToken).ConfigureAwait(true);
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (BluetoothListStack == null) return;
+                BluetoothListStack.Children.Clear();
+                
+                if (btStatus.Devices.Count == 0)
+                {
+                    BluetoothListStack.Children.Add(new TextBlock
+                    {
+                        Text = "No Bluetooth devices found",
+                        FontSize = 13,
+                        Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                    });
+                    return;
+                }
+
+                foreach (var device in btStatus.Devices.Take(5))
+                {
+                    var border = new Border
+                    {
+                        Padding = new Thickness(12, 10),
+                        CornerRadius = new CornerRadius(10),
+                        Background = GetThemeBrush("SubtleSurfaceBrush", Brushes.DarkGray)
+                    };
+
+                    var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
+
+                    var infoStack = new StackPanel { Spacing = 2 };
+                    infoStack.Children.Add(new TextBlock
+                    {
+                        Text = device.Name,
+                        FontSize = 14,
+                        FontWeight = FontWeight.SemiBold,
+                        Foreground = GetThemeBrush("TextPrimaryBrush", Brushes.White)
+                    });
+
+                    infoStack.Children.Add(new TextBlock
+                    {
+                        Text = device.IsConnected ? "Connected" : (device.IsPaired ? "Paired" : "Available"),
+                        FontSize = 12,
+                        Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                    });
+
+                    Grid.SetColumn(infoStack, 0);
+                    grid.Children.Add(infoStack);
+
+                    if (device.IsConnected)
+                    {
+                        var icon = new TextBlock
+                        {
+                            Text = "check_circle",
+                            Classes = { "SettingsIcon" },
+                            FontSize = 20,
+                            Foreground = GetThemeBrush("BrandPrimaryBrush", Brushes.DeepSkyBlue),
+                            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                        };
+                        Grid.SetColumn(icon, 1);
+                        grid.Children.Add(icon);
+                    }
+
+                    border.Child = grid;
+                    BluetoothListStack.Children.Add(border);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to refresh bluetooth: {ex.Message}");
+        }
     }
 
     private void OnPerfOverlayToggled(object? sender, RoutedEventArgs e)
@@ -809,26 +997,12 @@ public partial class ConsoleSettingsOverlay : UserControl
 
     private void OnRestartClicked(object? sender, RoutedEventArgs e)
     {
-        try
-        {
-            Process.Start("systemctl", "reboot");
-        }
-        catch
-        {
-            // Best effort
-        }
+        if (_powerService != null) _ = _powerService.RebootAsync();
     }
 
     private void OnShutdownClicked(object? sender, RoutedEventArgs e)
     {
-        try
-        {
-            Process.Start("systemctl", "poweroff");
-        }
-        catch
-        {
-            // Best effort
-        }
+        if (_powerService != null) _ = _powerService.ShutdownAsync();
     }
 
     private void OnCloseClicked(object? sender, RoutedEventArgs e)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -9,14 +10,24 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
+using DaisyOS.Core.Services.Gaming;
 using DaisyOS.Shell.Controls;
 using DaisyOS.System.Audio;
+using DaisyOS.System.Diagnostics;
+using DaisyOS.System.Gaming;
+using DaisyOS.System.Power;
+using DaisyOS.System.Processes;
+using DaisyOS.System.Session;
 
 namespace DaisyOS.Shell.Views.Components.Console;
 
 public partial class ConsoleQuickMenuOverlay : UserControl
 {
     private readonly IAudioService? _audioService;
+    private readonly IPowerService? _powerService;
+    private readonly IUserSessionService? _userSessionService;
+    private readonly IGameDiscoveryService? _gameDiscoveryService;
+    private readonly ISystemMetricsService? _systemMetricsService;
 
     public event EventHandler? Closed;
     public event EventHandler? GoHomeRequested;
@@ -27,21 +38,38 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     private int _activeIconIndex = 0;
     private bool _isCardFocused = false;
     private bool _isMicMuted = false;
+    private CancellationTokenSource? _loadCts;
 
     private readonly string[] _quickCategories = new[]
     {
-        "Home", "Switcher", "Notifications", "Sound", "Mic", "Controller", "Power"
+        "Home", "Switcher", "Notifications", "Sound", "Controller", "Power"
     };
 
     public ConsoleQuickMenuOverlay()
+        : this(
+            new LinuxAudioService(new SafeCommandRunner()),
+            new LinuxPowerService(new SafeCommandRunner()),
+            new LinuxUserSessionService(),
+            new LinuxGameDiscoveryService(),
+            new LinuxSystemMetricsService())
     {
-        InitializeComponent();
-        UpdateControllerHintIcons("DualSense Wireless Controller");
     }
 
-    public ConsoleQuickMenuOverlay(IAudioService audioService) : this()
+    public ConsoleQuickMenuOverlay(
+        IAudioService audioService,
+        IPowerService powerService,
+        IUserSessionService userSessionService,
+        IGameDiscoveryService gameDiscoveryService,
+        ISystemMetricsService systemMetricsService)
     {
         _audioService = audioService;
+        _powerService = powerService;
+        _userSessionService = userSessionService;
+        _gameDiscoveryService = gameDiscoveryService;
+        _systemMetricsService = systemMetricsService;
+        
+        InitializeComponent();
+        UpdateControllerHintIcons("DualSense Wireless Controller");
     }
 
     public void ShowQuickMenu()
@@ -53,10 +81,107 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         SelectCategory(_quickCategories[_activeIconIndex]);
         UpdateControllerHintIcons("DualSense Wireless Controller");
 
+        _loadCts?.Cancel();
+        _loadCts = new CancellationTokenSource();
+        _ = LoadDataAsync(_loadCts.Token);
+
         Dispatcher.UIThread.Post(() =>
         {
             FocusCurrentCategoryButton();
         }, DispatcherPriority.Input);
+    }
+
+    private async Task LoadDataAsync(CancellationToken token)
+    {
+        try
+        {
+            if (_systemMetricsService != null)
+            {
+                var metrics = await _systemMetricsService.GetStatusAsync(token);
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (SystemStatusDescription != null)
+                    {
+                        SystemStatusDescription.Text = $"CPU: {metrics.CpuUsagePercent ?? 0:F0}% • RAM: {(metrics.MemoryUsagePercent ?? 0):F0}%";
+                    }
+                    if (SystemStatusPillText != null)
+                    {
+                        SystemStatusPillText.Text = "Performance Mode Active";
+                    }
+                });
+            }
+
+            if (_gameDiscoveryService != null)
+            {
+                var games = await _gameDiscoveryService.DiscoverGamesAsync(token);
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (RecentGamesStack != null)
+                    {
+                        RecentGamesStack.Children.Clear();
+                        var recentGames = games.Take(4).ToList();
+                        if (recentGames.Count == 0)
+                        {
+                            RecentGamesStack.Children.Add(new TextBlock
+                            {
+                                Text = "No recent games found.",
+                                Foreground = new SolidColorBrush(Color.Parse("#888888")),
+                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                            });
+                        }
+                        else
+                        {
+                            foreach (var game in recentGames)
+                            {
+                                var btn = new Button
+                                {
+                                    Width = 140,
+                                    Height = 80,
+                                    CornerRadius = new Avalonia.CornerRadius(12),
+                                    Content = new TextBlock
+                                    {
+                                        Text = game.Title,
+                                        TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                                        TextAlignment = Avalonia.Media.TextAlignment.Center,
+                                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                                        FontSize = 13,
+                                        FontWeight = Avalonia.Media.FontWeight.SemiBold,
+                                        Foreground = new SolidColorBrush(Colors.White)
+                                    },
+                                    Background = new SolidColorBrush(Color.Parse("#1AFFFFFF")),
+                                    BorderThickness = new Avalonia.Thickness(0),
+                                    ClipToBounds = true
+                                };
+                                RecentGamesStack.Children.Add(btn);
+                            }
+                        }
+                    }
+                });
+            }
+            if (_audioService != null)
+            {
+                var masterVol = await _audioService.GetVolumeAsync(token);
+                var inputVol = await _audioService.GetInputVolumeAsync(token);
+                var isInputMuted = await _audioService.GetInputMutedAsync(token);
+                
+                Dispatcher.UIThread.Post(() =>
+                {
+                    if (QuickMasterVolumeSlider != null && masterVol.HasValue)
+                    {
+                        QuickMasterVolumeSlider.Value = masterVol.Value;
+                    }
+                    if (QuickMicVolumeSlider != null && inputVol.HasValue)
+                    {
+                        QuickMicVolumeSlider.Value = inputVol.Value;
+                    }
+                    _isMicMuted = isInputMuted;
+                    if (QuickMuteMicIcon != null) QuickMuteMicIcon.Text = _isMicMuted ? "mic_off" : "mic";
+                    if (QuickMuteMicText != null) QuickMuteMicText.Text = _isMicMuted ? "Unmute Microphone" : "Mute Microphone";
+                });
+            }
+        }
+        catch { }
     }
 
     private string _activeControllerName = "DualSense Wireless Controller";
@@ -257,8 +382,6 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                 break;
             case "Sound":
                 if (QuickMasterVolumeSlider?.IsVisible == true) controls.Add(QuickMasterVolumeSlider);
-                break;
-            case "Mic":
                 if (QuickMicVolumeSlider?.IsVisible == true) controls.Add(QuickMicVolumeSlider);
                 if (QuickMuteMicBtn?.IsVisible == true) controls.Add(QuickMuteMicBtn);
                 break;
@@ -308,7 +431,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
             QuickBarCategoryTitle.Text = labelText;
             if (QuickBarCategoryTitle.RenderTransform is TranslateTransform tt)
             {
-                tt.X = (_activeIconIndex - 3) * 62.0;
+                tt.X = (_activeIconIndex - 2.5) * 62.0;
             }
         }
 
@@ -317,7 +440,6 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         if (BtnQuickSwitcher != null) BtnQuickSwitcher.Classes.Set("Active", category == "Switcher");
         if (BtnQuickNotifications != null) BtnQuickNotifications.Classes.Set("Active", category == "Notifications");
         if (BtnQuickSound != null) BtnQuickSound.Classes.Set("Active", category == "Sound");
-        if (BtnQuickMic != null) BtnQuickMic.Classes.Set("Active", category == "Mic");
         if (BtnQuickController != null) BtnQuickController.Classes.Set("Active", category == "Controller");
         if (BtnQuickPower != null) BtnQuickPower.Classes.Set("Active", category == "Power");
 
@@ -326,7 +448,6 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         if (CardSwitcherPanel != null) CardSwitcherPanel.IsVisible = category == "Switcher";
         if (CardNotificationsPanel != null) CardNotificationsPanel.IsVisible = category == "Notifications";
         if (CardSoundPanel != null) CardSoundPanel.IsVisible = category == "Sound";
-        if (CardMicPanel != null) CardMicPanel.IsVisible = category == "Mic";
         if (CardControllerPanel != null) CardControllerPanel.IsVisible = category == "Controller";
         if (CardPowerPanel != null) CardPowerPanel.IsVisible = category == "Power";
     }
@@ -341,9 +462,8 @@ public partial class ConsoleQuickMenuOverlay : UserControl
             case 1: BtnQuickSwitcher?.Focus(); break;
             case 2: BtnQuickNotifications?.Focus(); break;
             case 3: BtnQuickSound?.Focus(); break;
-            case 4: BtnQuickMic?.Focus(); break;
-            case 5: BtnQuickController?.Focus(); break;
-            case 6: BtnQuickPower?.Focus(); break;
+            case 4: BtnQuickController?.Focus(); break;
+            case 5: BtnQuickPower?.Focus(); break;
         }
     }
 
@@ -409,21 +529,45 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         }
     }
 
-    private void OnQuickMicVolumeChanged(object? sender, double value)
+    private async void OnQuickMicVolumeChanged(object? sender, double value)
     {
-        // Mic volume adjustment
+        if (_audioService != null)
+        {
+            try
+            {
+                await _audioService.SetInputVolumeAsync(value).ConfigureAwait(true);
+            }
+            catch
+            {
+                // Best effort
+            }
+        }
     }
 
-    private void OnQuickToggleMicMute(object? sender, RoutedEventArgs e)
+    private async void OnQuickToggleMicMute(object? sender, RoutedEventArgs e)
     {
-        _isMicMuted = !_isMicMuted;
-        if (QuickMuteMicIcon != null) QuickMuteMicIcon.Text = _isMicMuted ? "mic_off" : "mic";
-        if (QuickMuteMicText != null) QuickMuteMicText.Text = _isMicMuted ? "Unmute Microphone" : "Mute Microphone";
+        if (_audioService != null)
+        {
+            _isMicMuted = !_isMicMuted;
+            try
+            {
+                await _audioService.SetInputMutedAsync(_isMicMuted).ConfigureAwait(true);
+            }
+            catch
+            {
+                // Revert on failure
+                _isMicMuted = !_isMicMuted;
+            }
+            
+            if (QuickMuteMicIcon != null) QuickMuteMicIcon.Text = _isMicMuted ? "mic_off" : "mic";
+            if (QuickMuteMicText != null) QuickMuteMicText.Text = _isMicMuted ? "Unmute Microphone" : "Mute Microphone";
+        }
     }
 
     private void OnQuickRestartClicked(object? sender, RoutedEventArgs e)
     {
         HideQuickMenu();
+        if (_powerService != null) _ = _powerService.RebootAsync();
         RestartRequested?.Invoke(this, EventArgs.Empty);
     }
 
@@ -436,6 +580,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     private void OnQuickShutdownClicked(object? sender, RoutedEventArgs e)
     {
         HideQuickMenu();
+        if (_powerService != null) _ = _powerService.ShutdownAsync();
         ShutdownRequested?.Invoke(this, EventArgs.Empty);
     }
 }

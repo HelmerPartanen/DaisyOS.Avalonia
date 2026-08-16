@@ -47,8 +47,14 @@
                     BorderThickness="2.5"
                     CornerRadius="29"
                     Margin="-5"
-                    IsVisible="False"
-                    ClipToBounds="False" />
+                    Opacity="0"
+                    ClipToBounds="False">
+              <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </Border.Transitions>
+            </Border>
 
             <ContentPresenter x:Name="PART_ContentPresenter"
                               Background="{TemplateBinding Background}"
@@ -75,11 +81,11 @@
     </Style>
 
     <Style Selector="Button.QuickBarIconBtn:focus /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <Style Selector="Button.QuickBarIconBtn:pointerover /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <!-- Non-focusable Setting Row Container -->
@@ -114,8 +120,14 @@
                     BorderThickness="2.5"
                     CornerRadius="26"
                     Margin="-5"
-                    IsVisible="False"
-                    ClipToBounds="False" />
+                    Opacity="0"
+                    ClipToBounds="False">
+              <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </Border.Transitions>
+            </Border>
 
             <ContentPresenter x:Name="PART_ContentPresenter"
                               Background="{TemplateBinding Background}"
@@ -134,11 +146,11 @@
     </Style>
 
     <Style Selector="Button.ConsoleActionButton:focus /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <Style Selector="Button.ConsoleActionButton:pointerover /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <Style Selector="Border.ConsoleDevicePill">
@@ -206,28 +218,27 @@
         <Border Classes="ConsoleRowContainer">
           <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
             <StackPanel VerticalAlignment="Center" Spacing="2">
-              <TextBlock Text="DaisyOS System Status" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
-              <TextBlock Text="Controller connected • High Performance Mode Active" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+              <TextBlock x:Name="SystemStatusTitle" Text="DaisyOS System Status" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock x:Name="SystemStatusDescription" Text="Controller connected • High Performance Mode Active" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
             </StackPanel>
             <Border Grid.Column="1" Classes="ConsoleDevicePill">
-              <TextBlock Text="System Active" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <TextBlock x:Name="SystemStatusPillText" Text="System Active" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Border>
           </Grid>
         </Border>
       </StackPanel>
 
-      <!-- 4. SOUND PANEL -->
-      <StackPanel x:Name="CardSoundPanel" Spacing="12" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+      <!-- 4. SOUND & MIC PANEL -->
+      <StackPanel x:Name="CardSoundPanel" Spacing="4" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
         <Border Classes="ConsoleRowContainer">
           <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
             <TextBlock Text="Master Volume" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
             <controls:ConsolePillSlider Grid.Column="1" x:Name="QuickMasterVolumeSlider" Icon="volume_up" Value="50" ValueChanged="OnQuickMasterVolumeChanged" />
           </Grid>
         </Border>
-      </StackPanel>
 
-      <!-- 5. MIC PANEL -->
-      <StackPanel x:Name="CardMicPanel" Spacing="4" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <Border Height="1" Background="{DynamicResource ConsoleDividerBrush}" Margin="0,2" HorizontalAlignment="Stretch" />
+
         <Border Classes="ConsoleRowContainer">
           <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
             <TextBlock Text="Microphone Level" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
@@ -261,7 +272,7 @@
               <TextBlock Text="sports_esports" Classes="QuickIcon" FontSize="26" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
               <StackPanel VerticalAlignment="Center" Spacing="2">
                 <TextBlock x:Name="QuickControllerStatusText" Text="DualSense Wireless Controller" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
-                <TextBlock Text="Battery: 100% (Charging)" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                <TextBlock x:Name="QuickControllerBatteryText" Text="Battery: 100% (Charging)" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
               </StackPanel>
             </StackPanel>
             <Border Grid.Column="1" Classes="ConsoleDevicePill">
@@ -360,10 +371,7 @@
           <TextBlock Text="volume_up" Classes="QuickIcon" />
         </Button>
 
-        <!-- 4. Mic -->
-        <Button x:Name="BtnQuickMic" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Mic" ToolTip.Tip="Mic">
-          <TextBlock Text="mic" Classes="QuickIcon" />
-        </Button>
+
 
         <!-- 5. Controller -->
         <Button x:Name="BtnQuickController" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Controller" ToolTip.Tip="Accessories">

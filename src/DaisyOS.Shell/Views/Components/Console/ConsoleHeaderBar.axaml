@@ -21,12 +21,18 @@
           <Panel ClipToBounds="False">
             <!-- Outer Offsetted White Outline Ring (5px gap, 25px CornerRadius) -->
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="#FFFFFF"
+                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
                     BorderThickness="2"
                     CornerRadius="25"
                     Margin="-5"
-                    IsVisible="False"
-                    ClipToBounds="False" />
+                    Opacity="0"
+                    ClipToBounds="False">
+              <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </Border.Transitions>
+            </Border>
 
             <!-- Main Inner Pill ContentPresenter -->
             <ContentPresenter x:Name="PART_ContentPresenter"
@@ -64,7 +70,7 @@
 
     <!-- State 2: Focused State -> Show Outer Offsetted White Ring -->
     <Style Selector="Button.ConsoleHeaderNav:focus /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:focus TextBlock">
@@ -79,7 +85,7 @@
 
     <!-- State 3: Hover State -> Show Outer Offsetted White Ring -->
     <Style Selector="Button.ConsoleHeaderNav:pointerover:not(.Active) /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:pointerover:not(.Active) TextBlock">
@@ -102,12 +108,18 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="#FFFFFF"
+                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
                     BorderThickness="2"
                     CornerRadius="23"
                     Margin="-5"
-                    IsVisible="False"
-                    ClipToBounds="False" />
+                    Opacity="0"
+                    ClipToBounds="False">
+              <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </Border.Transitions>
+            </Border>
 
             <ContentPresenter x:Name="PART_ContentPresenter"
                               Background="{TemplateBinding Background}"
@@ -126,11 +138,11 @@
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon:focus /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon:pointerover /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon TextBlock">
