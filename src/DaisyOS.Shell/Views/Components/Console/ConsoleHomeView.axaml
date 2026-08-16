@@ -4,7 +4,40 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:console="clr-namespace:DaisyOS.Shell.Views.Components.Console"
+    xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
     Background="{DynamicResource ConsoleBackgroundBrush}">
+
+  <UserControl.Resources>
+    <DataTemplate x:Key="GameCardTemplate" DataType="vm:ConsoleGameItemViewModel">
+      <Button Classes="GameCoverTile" ToolTip.Tip="{Binding Title}" ClipToBounds="False" Click="OnGameTileClicked">
+        <Grid>
+          <Border Classes="ConsoleCardClipper" CornerRadius="16" ClipToBounds="True" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid>
+              <!-- 1. Cover Image Layer -->
+              <Image Stretch="UniformToFill" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                     Source="{Binding CoverImage}" IsVisible="{Binding HasCoverImage}" />
+
+              <!-- 2. Logo Card Layer -->
+              <Border Padding="16" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="{Binding IsLogoCard}">
+                <Image Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="174" MaxHeight="140"
+                       Source="{Binding LogoImage}" />
+              </Border>
+
+              <!-- 3. Fallback Layer -->
+              <Border Padding="14" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="{Binding ShowFallbackUI}">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
+                  <Image Width="48" Height="48" HorizontalAlignment="Center"
+                         Source="{Binding IconImage}" IsVisible="{Binding HasIconImage}" />
+                  <TextBlock Classes="ConsoleFallbackTitle" Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"
+                             TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" />
+                </StackPanel>
+              </Border>
+            </Grid>
+          </Border>
+        </Grid>
+      </Button>
+    </DataTemplate>
+  </UserControl.Resources>
 
   <UserControl.Styles>
 
@@ -73,6 +106,24 @@
 
     <Style Selector="Button.GameCoverTile:pressed">
       <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+
+    <!-- Fix for ItemsControl container Z-Index overlapping and clipping -->
+    <Style Selector="ItemsControl > ContentPresenter">
+      <Setter Property="ClipToBounds" Value="False" />
+    </Style>
+    
+    <Style Selector="ItemsControl > ContentPresenter:focus-within">
+      <Setter Property="ZIndex" Value="10" />
+    </Style>
+    
+    <Style Selector="ItemsControl > ContentPresenter:pointerover">
+      <Setter Property="ZIndex" Value="10" />
+    </Style>
+
+    <!-- Restore margins for library cards within WrapPanel -->
+    <Style Selector="ItemsControl#LibraryGrid > ContentPresenter">
+      <Setter Property="Margin" Value="0,0,28,32" />
     </Style>
 
     <!-- OSTheme Classes for Dynamically Created Tile Elements -->
@@ -285,16 +336,16 @@
 
     <!-- Dual-Layer Fullscreen Background Hero Images (Low Opacity Ambient Background) -->
     <Grid x:Name="HeroBackgroundContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsVisible="True">
-      <Image x:Name="HeroBackgroundImage1" Stretch="UniformToFill" Opacity="0.30" />
-      <Image x:Name="HeroBackgroundImage2" Stretch="UniformToFill" Opacity="0.30" />
+      <Image x:Name="HeroBackgroundImage1" Stretch="UniformToFill" Opacity="0.45" />
+      <Image x:Name="HeroBackgroundImage2" Stretch="UniformToFill" Opacity="0.45" />
 
       <!-- Subtle Dark Gradient Vignette for UI Text Readability -->
       <Border IsHitTestVisible="False">
         <Border.Background>
           <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
-            <GradientStop Offset="0.0" Color="#CC0A0A0E" />
-            <GradientStop Offset="0.4" Color="#770A0A0E" />
-            <GradientStop Offset="1.0" Color="#E60A0A0E" />
+            <GradientStop Offset="0.0" Color="#990A0A0E" />
+            <GradientStop Offset="0.4" Color="#440A0A0E" />
+            <GradientStop Offset="1.0" Color="#D90A0A0E" />
           </LinearGradientBrush>
         </Border.Background>
       </Border>
@@ -332,39 +383,39 @@
 
             <!-- Carousel Container (290px Height guarantees zero clipping) -->
             <Grid Height="290" Margin="0,10,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Center" ClipToBounds="False">
-              <StackPanel
-                  x:Name="CarouselTrack"
-                  Orientation="Horizontal"
-                  Spacing="28"
-                  Margin="24,0,0,0"
-                  VerticalAlignment="Center"
-                  ClipToBounds="False">
-
-                <!-- Dynamic recent game cards populated at runtime -->
-
-              </StackPanel>
+              <ItemsControl x:Name="RecentGamesList" ItemsSource="{Binding RecentGames}" ItemTemplate="{StaticResource GameCardTemplate}" ClipToBounds="False">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="28" Margin="24,0,0,0" VerticalAlignment="Center" ClipToBounds="False" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+              </ItemsControl>
             </Grid>
 
           </StackPanel>
         </Grid>
 
         <!-- TAB 2: LIBRARY TAB CONTENT (Clean Multi-Row Scrollable Game Grid) -->
-        <ScrollViewer x:Name="LibraryTabContent" IsVisible="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" ClipToBounds="False">
-          <StackPanel Spacing="20" Margin="24,16,24,40" ClipToBounds="False">
+        <ScrollViewer x:Name="LibraryTabContent" IsVisible="False" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" ClipToBounds="False" Padding="24,16,24,40">
+          <StackPanel Spacing="20" ClipToBounds="False">
             
             <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
               <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
                 <TextBlock Text="grid_view" Classes="ConsoleStatusIcon" FontSize="26" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
-                <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+                <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,2,0,0" />
               </StackPanel>
 
               <TextBlock Grid.Column="1" x:Name="LibraryCountText" Text="0 Games" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
             </Grid>
 
             <!-- Grid Container -->
-            <WrapPanel x:Name="LibraryGrid" Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Top" ClipToBounds="False">
-              <!-- Dynamic library cards populated at runtime -->
-            </WrapPanel>
+            <ItemsControl x:Name="LibraryGrid" ItemsSource="{Binding AllLibraryGames}" ItemTemplate="{StaticResource GameCardTemplate}" ClipToBounds="False" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel Orientation="Horizontal" ClipToBounds="False" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+            </ItemsControl>
 
           </StackPanel>
         </ScrollViewer>

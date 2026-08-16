@@ -137,6 +137,28 @@ namespace DaisyOS.Shell.Views
             _ = _controllerInputService.DisposeAsync();
         }
 
+        private readonly List<Control> _consoleControls = new();
+        private readonly List<Control> _desktopControls = new();
+        private bool _isFirstLoad = true;
+
+        private void InitializeResourceOptimization()
+        {
+            if (!_isFirstLoad) return;
+            _isFirstLoad = false;
+
+            // Cache controls so they can be removed/added from the visual tree
+            _desktopControls.Add(DesktopExperience);
+            _consoleControls.Add(ConsoleHome);
+            _consoleControls.Add(this.FindControl<Control>("ConsoleFeedbackHost")!);
+            _consoleControls.Add(ConsoleSettings);
+            _consoleControls.Add(ConsoleQuickMenu);
+
+            if (this.Content is Grid rootGrid)
+            {
+                foreach (var c in _consoleControls) rootGrid.Children.Remove(c);
+            }
+        }
+
         private async Task RefreshControllerStateAsync()
         {
             if (_checkingController || _controllerCancellation is null)
@@ -196,9 +218,9 @@ namespace DaisyOS.Shell.Views
             _consoleTransitionInProgress = true;
             try
             {
-                // Keep the black transition active while an input device settles. A controller
-                // may appear and disappear during a Bluetooth reconnect; only reveal a mode
-                // after the newest observed state has been applied.
+                InitializeResourceOptimization();
+                var rootGrid = this.Content as Grid;
+
                 while (_consoleMode != _controllerConnected)
                 {
                     var enteringConsoleMode = _controllerConnected;
@@ -214,10 +236,11 @@ namespace DaisyOS.Shell.Views
                     if (enteringConsoleMode)
                     {
                         (Application.Current as App)?.DismissTransientShellSurfaces();
-                        // Disable the entire desktop tree before revealing console mode. The black
-                        // screen above both roots makes this hand-off visually continuous.
-                        DesktopExperience.IsHitTestVisible = false;
-                        DesktopExperience.IsVisible = false;
+                        if (rootGrid != null)
+                        {
+                            foreach (var c in _desktopControls) rootGrid.Children.Remove(c);
+                            foreach (var c in _consoleControls) if (!rootGrid.Children.Contains(c)) rootGrid.Children.Add(c);
+                        }
                         ConsoleHome.IsVisible = true;
                         ShellWallpaper.SetConsoleParallaxEnabled(true);
                         Dispatcher.UIThread.Post(ConsoleHome.FocusInitialDestination, DispatcherPriority.Input);
@@ -228,8 +251,11 @@ namespace DaisyOS.Shell.Views
                         ConsoleSettings.HideOverlay();
                         ConsoleHome.IsVisible = false;
                         ShellWallpaper.SetConsoleParallaxEnabled(false);
-                        DesktopExperience.IsVisible = true;
-                        DesktopExperience.IsHitTestVisible = true;
+                        if (rootGrid != null)
+                        {
+                            foreach (var c in _consoleControls) rootGrid.Children.Remove(c);
+                            foreach (var c in _desktopControls) if (!rootGrid.Children.Contains(c)) rootGrid.Children.Add(c);
+                        }
                         await Task.Delay(DesktopRestoreDuration);
                     }
 
@@ -239,8 +265,19 @@ namespace DaisyOS.Shell.Views
                     if (enteringConsoleMode != _controllerConnected)
                     {
                         ConsoleHome.IsVisible = _consoleMode;
-                        DesktopExperience.IsVisible = !_consoleMode;
-                        DesktopExperience.IsHitTestVisible = !_consoleMode;
+                        if (rootGrid != null)
+                        {
+                            if (_consoleMode)
+                            {
+                                foreach (var c in _desktopControls) rootGrid.Children.Remove(c);
+                                foreach (var c in _consoleControls) if (!rootGrid.Children.Contains(c)) rootGrid.Children.Add(c);
+                            }
+                            else
+                            {
+                                foreach (var c in _consoleControls) rootGrid.Children.Remove(c);
+                                foreach (var c in _desktopControls) if (!rootGrid.Children.Contains(c)) rootGrid.Children.Add(c);
+                            }
+                        }
                         ShellWallpaper.SetConsoleParallaxEnabled(_consoleMode);
                     }
                     else

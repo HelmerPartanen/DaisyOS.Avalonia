@@ -26,7 +26,6 @@ public partial class ConsoleSettingsOverlay : UserControl
     private readonly IWirelessNetworkService _wirelessNetworkService;
     private IControllerInputService _controllerInputService;
 
-    private bool _isMicMuted;
     private double _micVolume = 75;
     private CancellationTokenSource? _loadCts;
     private ControllerKeybindingsConfig _keybindingsConfig = new();
