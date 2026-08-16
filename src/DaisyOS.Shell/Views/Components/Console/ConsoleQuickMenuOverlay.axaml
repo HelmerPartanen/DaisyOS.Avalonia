@@ -14,7 +14,7 @@
     <Style Selector="TextBlock.QuickIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
       <Setter Property="FontSize" Value="22" />
-      <Setter Property="Foreground" Value="#CCCCCC" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
@@ -24,7 +24,7 @@
       <Setter Property="Width" Value="48" />
       <Setter Property="Height" Value="48" />
       <Setter Property="Padding" Value="0" />
-      <Setter Property="Background" Value="#222228" />
+      <Setter Property="Background" Value="{DynamicResource ConsoleSubtleSurfaceBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="24" />
       <Setter Property="ClipToBounds" Value="False" />
@@ -35,8 +35,8 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="#FFFFFF"
-                    BorderThickness="2"
+                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderThickness="2.5"
                     CornerRadius="29"
                     Margin="-5"
                     IsVisible="False"
@@ -59,11 +59,11 @@
     </Style>
 
     <Style Selector="Button.QuickBarIconBtn.Active /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
     </Style>
 
     <Style Selector="Button.QuickBarIconBtn.Active TextBlock.QuickIcon">
-      <Setter Property="Foreground" Value="#000000" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
     </Style>
 
     <Style Selector="Button.QuickBarIconBtn:focus /template/ Border#PART_FocusRing">
@@ -74,25 +74,38 @@
       <Setter Property="IsVisible" Value="True" />
     </Style>
 
-    <!-- Action Button Inside Quick Cards -->
-    <Style Selector="Button.QuickCardActionBtn">
-      <Setter Property="Height" Value="40" />
-      <Setter Property="Padding" Value="20,0" />
-      <Setter Property="Background" Value="#33333D" />
-      <Setter Property="Foreground" Value="#FFFFFF" />
+    <!-- Non-focusable Setting Row Container -->
+    <Style Selector="Border.ConsoleRowContainer">
+      <Setter Property="Height" Value="64" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Padding" Value="28,0" />
+      <Setter Property="Margin" Value="0,2" />
+      <Setter Property="MaxWidth" Value="960" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <!-- Interactive Action Pill Button inside Row with Focus Ring -->
+    <Style Selector="Button.ConsoleActionButton">
+      <Setter Property="Height" Value="42" />
+      <Setter Property="Padding" Value="24,0" />
+      <Setter Property="Background" Value="{DynamicResource ConsoleSubtleSurfaceBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
       <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="CornerRadius" Value="20" />
-      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="CornerRadius" Value="21" />
+      <Setter Property="MinWidth" Value="140" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="ClipToBounds" Value="False" />
 
       <Setter Property="Template">
         <ControlTemplate>
           <Panel ClipToBounds="False">
+            <!-- White Offset Capsule Focus Ring Around Button Only -->
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="#FFFFFF"
-                    BorderThickness="2"
-                    CornerRadius="24"
-                    Margin="-4"
+                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderThickness="2.5"
+                    CornerRadius="26"
+                    Margin="-5"
                     IsVisible="False"
                     ClipToBounds="False" />
 
@@ -112,124 +125,219 @@
       </Setter>
     </Style>
 
-    <Style Selector="Button.QuickCardActionBtn:focus /template/ Border#PART_FocusRing">
+    <Style Selector="Button.ConsoleActionButton:focus /template/ Border#PART_FocusRing">
       <Setter Property="IsVisible" Value="True" />
     </Style>
 
-    <Style Selector="Button.QuickCardActionBtn:pointerover /template/ Border#PART_FocusRing">
+    <Style Selector="Button.ConsoleActionButton:pointerover /template/ Border#PART_FocusRing">
       <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <Style Selector="Border.ConsoleDevicePill">
+      <Setter Property="Background" Value="{DynamicResource ConsoleSubtleSurfaceBrush}" />
+      <Setter Property="CornerRadius" Value="20" />
+      <Setter Property="Padding" Value="22,8" />
+      <Setter Property="MinWidth" Value="150" />
     </Style>
 
   </UserControl.Styles>
 
-  <!-- Dark Backdrop Canvas -->
-  <Grid Background="#CC000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+  <!-- Full-Screen Dark Overlay Canvas -->
+  <Grid Background="{DynamicResource ConsoleBackgroundBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
     
-    <!-- DYNAMIC QUICK CARD (Positioned Above the Horizontal Bar) -->
-    <Border x:Name="QuickCardBorder"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Bottom"
-            Margin="0,0,0,130"
-            MinWidth="560"
-            Background="#1A1A22"
-            CornerRadius="24"
-            Padding="24,20"
-            BorderBrush="#33FFFFFF"
-            BorderThickness="1"
-            ClipToBounds="False">
-      <Grid ClipToBounds="False">
-        
-        <!-- 1. HOME CARD -->
-        <StackPanel x:Name="CardHomePanel" Spacing="8" IsVisible="True" HorizontalAlignment="Center" VerticalAlignment="Center">
-          <TextBlock Text="Console Home" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
-          <TextBlock Text="Press (X) / Select to return to main Console Dashboard" FontSize="13" Foreground="#88FFFFFF" HorizontalAlignment="Center" />
-          <Button Click="OnGoHomeClicked" Classes="QuickCardActionBtn" Margin="0,8,0,0" HorizontalAlignment="Center">
-            <TextBlock Text="Return to Home Screen" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" />
-          </Button>
-        </StackPanel>
+    <!-- TOP OVERLAY HEADER -->
+    <Grid VerticalAlignment="Top" Margin="48,32,48,0" ColumnDefinitions="Auto,*,Auto">
+      <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+        <TextBlock Text="sports_esports"
+                   FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled"
+                   FontSize="24" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center"/>
+        <TextBlock Text="QUICK MENU" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" LetterSpacing="2" VerticalAlignment="Center"/>
+      </StackPanel>
+    </Grid>
 
-        <!-- 2. SWITCHER CARD -->
-        <StackPanel x:Name="CardSwitcherPanel" Spacing="10" IsVisible="False" HorizontalAlignment="Center">
-          <TextBlock Text="Recent Games &amp; Apps" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
-          <StackPanel x:Name="RecentGamesStack" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,4,0,0" />
-        </StackPanel>
-
-        <!-- 3. NOTIFICATIONS CARD -->
-        <StackPanel x:Name="CardNotificationsPanel" Spacing="8" IsVisible="False" HorizontalAlignment="Center">
-          <TextBlock Text="Notifications" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
-          <Border Background="#242430" CornerRadius="12" Padding="16,10" Margin="0,4,0,0">
-            <StackPanel Spacing="2">
-              <TextBlock Text="DaisyOS System Ready" FontSize="14" FontWeight="Bold" Foreground="#00FF66" />
-              <TextBlock Text="Controller connected • High Performance Mode Active" FontSize="12" Foreground="#88FFFFFF" />
+    <!-- MAIN CONTENT AREA (Spacious Overlay Area with Action Buttons Outlined On Focus) -->
+    <Grid x:Name="QuickCardBorder"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          Margin="48,80,48,150">
+      
+      <!-- 1. HOME PANEL -->
+      <StackPanel x:Name="CardHomePanel" Spacing="4" IsVisible="True" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Return to Home Dashboard" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock Text="Exit quick overlay and return to main console launcher" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
             </StackPanel>
-          </Border>
-        </StackPanel>
+            <Button Grid.Column="1" x:Name="BtnGoHome" Classes="ConsoleActionButton" Click="OnGoHomeClicked">
+              <TextBlock Text="Go Home" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+          </Grid>
+        </Border>
 
-        <!-- 4. SOUND CARD -->
-        <StackPanel x:Name="CardSoundPanel" Spacing="10" IsVisible="False" HorizontalAlignment="Center">
-          <TextBlock Text="Sound Settings" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
-          <controls:ConsolePillSlider x:Name="QuickMasterVolumeSlider" Icon="volume_up" Value="50" ValueChanged="OnQuickMasterVolumeChanged" Margin="0,6,0,0" />
-        </StackPanel>
+        <Border Height="1" Background="{DynamicResource ConsoleDividerBrush}" Margin="0,2" HorizontalAlignment="Stretch" />
 
-        <!-- 5. MIC CARD -->
-        <StackPanel x:Name="CardMicPanel" Spacing="10" IsVisible="False" HorizontalAlignment="Center">
-          <TextBlock Text="Microphone Level" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
-          <controls:ConsolePillSlider x:Name="QuickMicVolumeSlider" Icon="mic" Value="50" ValueChanged="OnQuickMicVolumeChanged" Margin="0,6,0,0" />
-          <Button x:Name="QuickMuteMicBtn" Click="OnQuickToggleMicMute" Classes="QuickCardActionBtn" HorizontalAlignment="Center" Margin="0,4,0,0">
-            <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-              <TextBlock x:Name="QuickMuteMicIcon" Text="mic" Classes="QuickIcon" FontSize="18" VerticalAlignment="Center" />
-              <TextBlock x:Name="QuickMuteMicText" Text="Mute Microphone" FontSize="13" FontWeight="Bold" VerticalAlignment="Center" />
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Exit to DaisyOS Desktop" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock Text="Leave console mode and return to standard desktop session" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
             </StackPanel>
-          </Button>
-        </StackPanel>
+            <Button Grid.Column="1" x:Name="BtnExitDesktop" Classes="ConsoleActionButton" Click="OnQuickReturnDesktopClicked">
+              <TextBlock Text="Exit Desktop" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+          </Grid>
+        </Border>
+      </StackPanel>
 
-        <!-- 6. CONTROLLER / ACCESSORIES CARD -->
-        <StackPanel x:Name="CardControllerPanel" Spacing="8" IsVisible="False" HorizontalAlignment="Center">
-          <TextBlock Text="Accessories &amp; Controller" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
-          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,4,0,0">
-            <TextBlock Text="sports_esports" Classes="QuickIcon" FontSize="28" Foreground="#00E5FF" VerticalAlignment="Center" />
-            <StackPanel VerticalAlignment="Center">
-              <TextBlock x:Name="QuickControllerStatusText" Text="DualSense Wireless Controller" FontSize="14" FontWeight="Bold" Foreground="#FFFFFF" />
-              <TextBlock Text="Battery: 100% (Charging)" FontSize="12" Foreground="#88FFFFFF" />
+      <!-- 2. SWITCHER PANEL -->
+      <StackPanel x:Name="CardSwitcherPanel" Spacing="12" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Recent Games &amp; Applications" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock Text="Quickly switch to running or recent titles" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
             </StackPanel>
-          </StackPanel>
-        </StackPanel>
+            <StackPanel x:Name="RecentGamesStack" Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" />
+          </Grid>
+        </Border>
+      </StackPanel>
 
-        <!-- 7. POWER CARD -->
-        <StackPanel x:Name="CardPowerPanel" Spacing="10" IsVisible="False" HorizontalAlignment="Center">
-          <TextBlock Text="Power Options" FontSize="18" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" />
-          <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,6,0,0">
-            <Button Click="OnQuickRestartClicked" Classes="QuickCardActionBtn">
-              <TextBlock Text="Restart" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" />
-            </Button>
-            <Button Click="OnQuickReturnDesktopClicked" Classes="QuickCardActionBtn">
-              <TextBlock Text="Exit to Desktop" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" />
-            </Button>
-            <Button Click="OnQuickShutdownClicked" Classes="QuickCardActionBtn">
-              <TextBlock Text="Power Off" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF" />
-            </Button>
-          </StackPanel>
-        </StackPanel>
+      <!-- 3. NOTIFICATIONS PANEL -->
+      <StackPanel x:Name="CardNotificationsPanel" Spacing="12" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="DaisyOS System Status" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock Text="Controller connected • High Performance Mode Active" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+            </StackPanel>
+            <Border Grid.Column="1" Classes="ConsoleDevicePill">
+              <TextBlock Text="System Active" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+          </Grid>
+        </Border>
+      </StackPanel>
 
-      </Grid>
-    </Border>
+      <!-- 4. SOUND PANEL -->
+      <StackPanel x:Name="CardSoundPanel" Spacing="12" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <TextBlock Text="Master Volume" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+            <controls:ConsolePillSlider Grid.Column="1" x:Name="QuickMasterVolumeSlider" Icon="volume_up" Value="50" ValueChanged="OnQuickMasterVolumeChanged" />
+          </Grid>
+        </Border>
+      </StackPanel>
 
-    <!-- FOCUSED CATEGORY TITLE LABEL ABOVE ICON BAR -->
+      <!-- 5. MIC PANEL -->
+      <StackPanel x:Name="CardMicPanel" Spacing="4" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <TextBlock Text="Microphone Level" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+            <controls:ConsolePillSlider Grid.Column="1" x:Name="QuickMicVolumeSlider" Icon="mic" Value="50" ValueChanged="OnQuickMicVolumeChanged" />
+          </Grid>
+        </Border>
+
+        <Border Height="1" Background="{DynamicResource ConsoleDividerBrush}" Margin="0,2" HorizontalAlignment="Stretch" />
+
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Microphone Mute" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock Text="Toggle microphone audio input" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="QuickMuteMicBtn" Classes="ConsoleActionButton" Click="OnQuickToggleMicMute">
+              <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock x:Name="QuickMuteMicIcon" Text="mic" Classes="QuickIcon" FontSize="18" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+                <TextBlock x:Name="QuickMuteMicText" Text="Mute Mic" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Button>
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <!-- 6. CONTROLLER / ACCESSORIES PANEL -->
+      <StackPanel x:Name="CardControllerPanel" Spacing="12" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+              <TextBlock Text="sports_esports" Classes="QuickIcon" FontSize="26" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+              <StackPanel VerticalAlignment="Center" Spacing="2">
+                <TextBlock x:Name="QuickControllerStatusText" Text="DualSense Wireless Controller" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                <TextBlock Text="Battery: 100% (Charging)" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+              </StackPanel>
+            </StackPanel>
+            <Border Grid.Column="1" Classes="ConsoleDevicePill">
+              <TextBlock Text="Connected" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+          </Grid>
+        </Border>
+      </StackPanel>
+
+      <!-- 7. POWER PANEL -->
+      <StackPanel x:Name="CardPowerPanel" Spacing="4" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Restart System" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock Text="Reboot DaisyOS completely" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="BtnPowerRestart" Classes="ConsoleActionButton" Click="OnQuickRestartClicked">
+              <TextBlock Text="Restart" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+          </Grid>
+        </Border>
+
+        <Border Height="1" Background="{DynamicResource ConsoleDividerBrush}" Margin="0,2" HorizontalAlignment="Stretch" />
+
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Exit to Desktop" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock Text="Switch back to DaisyOS Desktop mode" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="BtnPowerDesktop" Classes="ConsoleActionButton" Click="OnQuickReturnDesktopClicked">
+              <TextBlock Text="Exit Desktop" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+          </Grid>
+        </Border>
+
+        <Border Height="1" Background="{DynamicResource ConsoleDividerBrush}" Margin="0,2" HorizontalAlignment="Stretch" />
+
+        <Border Classes="ConsoleRowContainer">
+          <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+            <StackPanel VerticalAlignment="Center" Spacing="2">
+              <TextBlock Text="Power Off" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+              <TextBlock Text="Turn off system power completely" FontSize="13" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="BtnPowerShutdown" Classes="ConsoleActionButton" Click="OnQuickShutdownClicked">
+              <TextBlock Text="Power Off" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Button>
+          </Grid>
+        </Border>
+      </StackPanel>
+
+    </Grid>
+
+    <!-- FOCUSED CATEGORY TITLE LABEL FLOATING ABOVE ICON BAR -->
     <TextBlock x:Name="QuickBarCategoryTitle"
                Text="Home"
                FontSize="13"
                FontWeight="SemiBold"
-               Foreground="#FFFFFF"
+               Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
                HorizontalAlignment="Center"
                VerticalAlignment="Bottom"
-               Margin="0,0,0,96" />
+               Margin="0,0,0,118">
+      <TextBlock.RenderTransform>
+        <TranslateTransform X="-186" />
+      </TextBlock.RenderTransform>
+    </TextBlock>
 
     <!-- PS5-STYLE BOTTOM HORIZONTAL ICON BAR -->
     <Border HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
-            Margin="0,0,0,36"
-            Background="#121216"
-            CornerRadius="30"
+            Margin="0,0,0,38"
+            Background="{DynamicResource ConsoleSurfaceBrush}"
+            CornerRadius="100"
             Padding="14,10"
             ClipToBounds="False">
       <StackPanel x:Name="IconBarStack" Orientation="Horizontal" Spacing="14" ClipToBounds="False">
@@ -272,8 +380,31 @@
       </StackPanel>
     </Border>
 
-    <!-- BOTTOM CONTROLLER TIPS -->
-    <TextBlock Text="Press (PS / Guide) or (O) to Close" FontSize="11" FontWeight="Medium" Foreground="#66FFFFFF" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,12" />
+    <!-- BOTTOM CONTROLLER HINTS WITH PLAYSTATION / XBOX ASSETS -->
+    <Border HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,12">
+      <StackPanel Orientation="Horizontal" Spacing="24" RenderOptions.BitmapInterpolationMode="HighQuality">
+        
+        <!-- Change Category / Navigate -->
+        <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <Image x:Name="HintCategoryDpadImage" Width="18" Height="18" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" IsVisible="False" />
+          <Image x:Name="HintTabLeftImage" Width="24" Height="18" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+          <TextBlock x:Name="HintSlashText" Text="/" FontSize="12" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+          <Image x:Name="HintTabRightImage" Width="24" Height="18" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+          <TextBlock x:Name="HintNavText" Text="Change Category" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" Margin="2,0,0,0" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Image x:Name="HintConfirmImage" Width="18" Height="18" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+          <TextBlock x:Name="HintConfirmText" Text="Open Section" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+        </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+          <Image x:Name="HintBackImage" Width="18" Height="18" VerticalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality" />
+          <TextBlock x:Name="HintBackText" Text="Close" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+        </StackPanel>
+
+      </StackPanel>
+    </Border>
 
   </Grid>
 

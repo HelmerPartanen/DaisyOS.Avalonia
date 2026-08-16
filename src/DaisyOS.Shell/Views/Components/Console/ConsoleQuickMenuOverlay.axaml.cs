@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
@@ -33,6 +36,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     public ConsoleQuickMenuOverlay()
     {
         InitializeComponent();
+        UpdateControllerHintIcons("DualSense Wireless Controller");
     }
 
     public ConsoleQuickMenuOverlay(IAudioService audioService) : this()
@@ -44,11 +48,72 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     {
         IsVisible = true;
         SelectCategory(_quickCategories[_activeIconIndex]);
+        UpdateControllerHintIcons("DualSense Wireless Controller");
 
         Dispatcher.UIThread.Post(() =>
         {
             FocusCurrentCategoryButton();
         }, DispatcherPriority.Input);
+    }
+
+    private string _activeControllerName = "DualSense Wireless Controller";
+
+    public void UpdateControllerHintIcons(string? name = null)
+    {
+        if (!string.IsNullOrEmpty(name))
+        {
+            _activeControllerName = name;
+        }
+
+        var type = ControllerConnectionStatus.DetectType(_activeControllerName);
+        var isPlayStation = type == ControllerType.PlayStation;
+        var prefix = isPlayStation
+            ? "avares://DaisyOS.Shell/Assets/PlaystationController/"
+            : "avares://DaisyOS.Shell/Assets/XboxController/";
+
+        try
+        {
+            if (HintTabLeftImage != null)
+                HintTabLeftImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-L1.png" : "left-bumper.png"))));
+
+            if (HintTabRightImage != null)
+                HintTabRightImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-R1.png" : "right-bumper.png"))));
+
+            if (HintCategoryDpadImage != null)
+                HintCategoryDpadImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-bottom.png" : "dpad.png"))));
+
+            if (HintConfirmImage != null)
+                HintConfirmImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-blue-cross.png" : "a-filled-green.png"))));
+
+            if (HintBackImage != null)
+                HintBackImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "outline-red-circle.png" : "b-filled red.png"))));
+        }
+        catch
+        {
+            // Graceful fallback
+        }
+
+        bool onBottomBar = !_isCardFocused;
+
+        if (HintTabLeftImage != null) HintTabLeftImage.IsVisible = onBottomBar;
+        if (HintTabRightImage != null) HintTabRightImage.IsVisible = onBottomBar;
+        if (HintSlashText != null) HintSlashText.IsVisible = onBottomBar;
+        if (HintCategoryDpadImage != null) HintCategoryDpadImage.IsVisible = !onBottomBar;
+
+        if (HintNavText != null)
+        {
+            HintNavText.Text = onBottomBar ? "Change Category" : "Navigate";
+        }
+
+        if (HintConfirmText != null)
+        {
+            HintConfirmText.Text = onBottomBar ? "Open Section" : "Select Action";
+        }
+
+        if (HintBackText != null)
+        {
+            HintBackText.Text = onBottomBar ? "Close" : "Back to Tabs";
+        }
     }
 
     public void HideQuickMenu()
@@ -61,6 +126,32 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     {
         switch (action)
         {
+            case ControllerNavigationAction.PreviousSection:
+                _activeIconIndex = (_activeIconIndex - 1 + _quickCategories.Length) % _quickCategories.Length;
+                SelectCategory(_quickCategories[_activeIconIndex]);
+                if (_isCardFocused)
+                {
+                    FocusFirstControlInActiveCard();
+                }
+                else
+                {
+                    FocusCurrentCategoryButton();
+                }
+                break;
+
+            case ControllerNavigationAction.NextSection:
+                _activeIconIndex = (_activeIconIndex + 1) % _quickCategories.Length;
+                SelectCategory(_quickCategories[_activeIconIndex]);
+                if (_isCardFocused)
+                {
+                    FocusFirstControlInActiveCard();
+                }
+                else
+                {
+                    FocusCurrentCategoryButton();
+                }
+                break;
+
             case ControllerNavigationAction.Left:
                 var focusedL = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
                 if (!_isCardFocused)
@@ -72,6 +163,10 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                 else if (focusedL is ConsolePillSlider pillL)
                 {
                     pillL.Value = Math.Max(pillL.Minimum, pillL.Value - pillL.Step);
+                }
+                else
+                {
+                    MoveCardFocus(-1);
                 }
                 break;
 
@@ -87,6 +182,10 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                 {
                     pillR.Value = Math.Min(pillR.Maximum, pillR.Value + pillR.Step);
                 }
+                else
+                {
+                    MoveCardFocus(1);
+                }
                 break;
 
             case ControllerNavigationAction.Up:
@@ -95,13 +194,20 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                     _isCardFocused = true;
                     FocusFirstControlInActiveCard();
                 }
+                else
+                {
+                    MoveCardFocus(-1);
+                }
                 break;
 
             case ControllerNavigationAction.Down:
-                if (_isCardFocused)
+                if (!_isCardFocused)
                 {
-                    _isCardFocused = false;
-                    FocusCurrentCategoryButton();
+                    // Already on bottom category bar
+                }
+                else
+                {
+                    MoveCardFocus(1);
                 }
                 break;
 
@@ -109,7 +215,8 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                 var focused = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
                 if (!_isCardFocused)
                 {
-                    ExecuteCategoryAction(_quickCategories[_activeIconIndex]);
+                    _isCardFocused = true;
+                    FocusFirstControlInActiveCard();
                 }
                 else if (focused is Button btn)
                 {
@@ -119,16 +226,83 @@ public partial class ConsoleQuickMenuOverlay : UserControl
 
             case ControllerNavigationAction.Back:
             case ControllerNavigationAction.OpenConsole:
-                HideQuickMenu();
+                if (_isCardFocused)
+                {
+                    FocusCurrentCategoryButton();
+                }
+                else
+                {
+                    HideQuickMenu();
+                }
                 break;
+        }
+    }
+
+    private List<IInputElement> GetFocusableControlsInActiveCard()
+    {
+        var controls = new List<IInputElement>();
+        var category = _quickCategories[_activeIconIndex];
+        switch (category)
+        {
+            case "Home":
+                if (BtnGoHome?.IsVisible == true) controls.Add(BtnGoHome);
+                if (BtnExitDesktop?.IsVisible == true) controls.Add(BtnExitDesktop);
+                break;
+            case "Sound":
+                if (QuickMasterVolumeSlider?.IsVisible == true) controls.Add(QuickMasterVolumeSlider);
+                break;
+            case "Mic":
+                if (QuickMicVolumeSlider?.IsVisible == true) controls.Add(QuickMicVolumeSlider);
+                if (QuickMuteMicBtn?.IsVisible == true) controls.Add(QuickMuteMicBtn);
+                break;
+            case "Power":
+                if (BtnPowerRestart?.IsVisible == true) controls.Add(BtnPowerRestart);
+                if (BtnPowerDesktop?.IsVisible == true) controls.Add(BtnPowerDesktop);
+                if (BtnPowerShutdown?.IsVisible == true) controls.Add(BtnPowerShutdown);
+                break;
+        }
+        return controls;
+    }
+
+    private void MoveCardFocus(int direction)
+    {
+        var controls = GetFocusableControlsInActiveCard();
+        if (controls.Count == 0) return;
+
+        var focused = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
+        int currentIndex = controls.FindIndex(c => ReferenceEquals(c, focused));
+
+        if (currentIndex < 0)
+        {
+            controls[0].Focus();
+            return;
+        }
+
+        int newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < controls.Count)
+        {
+            controls[newIndex].Focus();
+        }
+        else if (direction > 0 && newIndex >= controls.Count)
+        {
+            FocusCurrentCategoryButton();
+        }
+        else if (direction < 0 && newIndex < 0)
+        {
+            FocusCurrentCategoryButton();
         }
     }
 
     private void SelectCategory(string category)
     {
+        var labelText = category == "Controller" ? "Accessories" : category;
         if (QuickBarCategoryTitle != null)
         {
-            QuickBarCategoryTitle.Text = category;
+            QuickBarCategoryTitle.Text = labelText;
+            if (QuickBarCategoryTitle.RenderTransform is TranslateTransform tt)
+            {
+                tt.X = (_activeIconIndex - 3) * 62.0;
+            }
         }
 
         // Highlight Active Icon Button
@@ -153,6 +327,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     private void FocusCurrentCategoryButton()
     {
         _isCardFocused = false;
+        UpdateControllerHintIcons();
         switch (_activeIconIndex)
         {
             case 0: BtnQuickHome?.Focus(); break;
@@ -168,14 +343,15 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     private void FocusFirstControlInActiveCard()
     {
         _isCardFocused = true;
-        var category = _quickCategories[_activeIconIndex];
-        switch (category)
+        UpdateControllerHintIcons();
+        var controls = GetFocusableControlsInActiveCard();
+        if (controls.Count > 0)
         {
-            case "Sound": QuickMasterVolumeSlider?.Focus(); break;
-            case "Mic": QuickMicVolumeSlider?.Focus(); break;
-            case "MicMute": QuickMuteMicBtn?.Focus(); break;
-            case "Power": OnQuickRestartClicked(null, new RoutedEventArgs()); break;
-            default: FocusCurrentCategoryButton(); break;
+            controls[0].Focus();
+        }
+        else
+        {
+            FocusCurrentCategoryButton();
         }
     }
 

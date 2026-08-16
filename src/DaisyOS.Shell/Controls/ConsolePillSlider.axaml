@@ -2,13 +2,14 @@
              x:Name="Root"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Focusable="True">
+             Focusable="True"
+             ClipToBounds="False">
 
   <UserControl.Styles>
     <Style Selector="TextBlock.SliderIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
       <Setter Property="FontSize" Value="20" />
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
@@ -19,7 +20,7 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="14" />
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="ClipToBounds" Value="False" />
@@ -28,44 +29,55 @@
     <Style Selector="Button.ArrowBtn TextBlock">
       <Setter Property="FontSize" Value="20" />
       <Setter Property="FontWeight" Value="Bold" />
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.ArrowBtn:pointerover">
-      <Setter Property="Background" Value="#33FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource ConsoleDividerBrush}" />
     </Style>
   </UserControl.Styles>
 
-  <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-    <!-- Icon e.g. volume_up or mic -->
-    <TextBlock x:Name="IconTextBlock" Text="volume_up" Classes="SliderIcon" Margin="0,0,4,0" />
+  <Panel ClipToBounds="False" HorizontalAlignment="Right" VerticalAlignment="Center">
+    <!-- White Focus Capsule Outline around the Pill Slider when Selected/Focused -->
+    <Border x:Name="FocusBorder"
+            BorderBrush="{DynamicResource ConsoleAccentBrush}"
+            BorderThickness="2.5"
+            CornerRadius="20"
+            Margin="-12,-6"
+            IsVisible="False"
+            ClipToBounds="False" />
 
-    <!-- Decrement Arrow Button < -->
-    <Button x:Name="DecrementBtn" Classes="ArrowBtn" Click="OnDecrementClicked">
-      <TextBlock Text="‹" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-2,0,0" />
-    </Button>
+    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+      <!-- Icon e.g. volume_up or mic -->
+      <TextBlock x:Name="IconTextBlock" Text="volume_up" Classes="SliderIcon" Margin="0,0,4,0" />
 
-    <!-- 10 Pill Segment Stack -->
-    <StackPanel x:Name="PillContainer" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#33FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#33FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#33FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#33FFFFFF" />
-      <Border Width="26" Height="7" CornerRadius="3.5" Background="#33FFFFFF" />
+      <!-- Decrement Arrow Button < -->
+      <Button x:Name="DecrementBtn" Classes="ArrowBtn" Click="OnDecrementClicked">
+        <TextBlock Text="‹" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-2,0,0" />
+      </Button>
+
+      <!-- 10 Pill Segment Stack -->
+      <StackPanel x:Name="PillContainer" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
+        <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
+      </StackPanel>
+
+      <!-- Increment Arrow Button > -->
+      <Button x:Name="IncrementBtn" Classes="ArrowBtn" Click="OnIncrementClicked">
+        <TextBlock Text="›" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-2,0,0" />
+      </Button>
+
+      <!-- Percentage Value Text e.g. 50% -->
+      <TextBlock x:Name="ValueText" Text="50%" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
     </StackPanel>
-
-    <!-- Increment Arrow Button > -->
-    <Button x:Name="IncrementBtn" Classes="ArrowBtn" Click="OnIncrementClicked">
-      <TextBlock Text="›" FontSize="22" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-2,0,0" />
-    </Button>
-
-    <!-- Percentage Value Text e.g. 50% -->
-    <TextBlock x:Name="ValueText" Text="50%" FontSize="14" FontWeight="SemiBold" Foreground="#88FFFFFF" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
-  </StackPanel>
+  </Panel>
 
 </UserControl>

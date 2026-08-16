@@ -26,9 +26,6 @@ public partial class ConsolePillSlider : UserControl
 
     public event EventHandler<double>? ValueChanged;
 
-    private static readonly IBrush FilledBrush = new SolidColorBrush(Color.Parse("#FFFFFF"));
-    private static readonly IBrush EmptyBrush = new SolidColorBrush(Color.Parse("#33FFFFFF")); // 20% white fill
-
     public string Icon
     {
         get => GetValue(IconProperty);
@@ -80,6 +77,20 @@ public partial class ConsolePillSlider : UserControl
         }
     }
 
+    private IBrush GetFilledBrush()
+    {
+        if (Application.Current?.TryGetResource("ConsoleTextPrimaryBrush", null, out var res) == true && res is IBrush b)
+            return b;
+        return Brushes.White;
+    }
+
+    private IBrush GetEmptyBrush()
+    {
+        if (Application.Current?.TryGetResource("ConsoleDividerBrush", null, out var res) == true && res is IBrush b)
+            return b;
+        return new SolidColorBrush(Color.Parse("#33FFFFFF"));
+    }
+
     public void UpdatePills()
     {
         if (PillContainer == null || ValueText == null) return;
@@ -90,11 +101,14 @@ public partial class ConsolePillSlider : UserControl
 
         var filledCount = Math.Clamp((int)Math.Round((val - Minimum) / ((Maximum - Minimum) / 10.0)), 0, 10);
 
+        var filled = GetFilledBrush();
+        var empty = GetEmptyBrush();
+
         for (int i = 0; i < PillContainer.Children.Count; i++)
         {
             if (PillContainer.Children[i] is Border pill)
             {
-                pill.Background = i < filledCount ? FilledBrush : EmptyBrush;
+                pill.Background = i < filledCount ? filled : empty;
             }
         }
 
@@ -109,6 +123,18 @@ public partial class ConsolePillSlider : UserControl
     private void OnIncrementClicked(object? sender, RoutedEventArgs e)
     {
         Value = Math.Min(Maximum, Value + Step);
+    }
+
+    protected override void OnGotFocus(GotFocusEventArgs e)
+    {
+        base.OnGotFocus(e);
+        if (FocusBorder != null) FocusBorder.IsVisible = true;
+    }
+
+    protected override void OnLostFocus(RoutedEventArgs e)
+    {
+        base.OnLostFocus(e);
+        if (FocusBorder != null) FocusBorder.IsVisible = false;
     }
 
     protected override void OnKeyDown(KeyEventArgs e)

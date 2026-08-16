@@ -355,6 +355,43 @@ public partial class ConsoleHomeView : UserControl
 
     public void Navigate(ControllerNavigationAction action)
     {
+        if (action == ControllerNavigationAction.PreviousSection)
+        {
+            var tabs = new[] { "Recents", "Library", "Settings" };
+            int idx = Array.IndexOf(tabs, _activeTab);
+            if (idx < 0) idx = 0;
+            int nextIdx = (idx - 1 + tabs.Length) % tabs.Length;
+            OnHeaderTabSelected(this, tabs[nextIdx]);
+            _headerFocusIndex = nextIdx;
+            if (_isHeaderFocused)
+            {
+                FocusHeaderButton(_headerFocusIndex);
+            }
+            else
+            {
+                FocusActiveTabContent();
+            }
+            return;
+        }
+        else if (action == ControllerNavigationAction.NextSection)
+        {
+            var tabs = new[] { "Recents", "Library", "Settings" };
+            int idx = Array.IndexOf(tabs, _activeTab);
+            if (idx < 0) idx = 0;
+            int nextIdx = (idx + 1) % tabs.Length;
+            OnHeaderTabSelected(this, tabs[nextIdx]);
+            _headerFocusIndex = nextIdx;
+            if (_isHeaderFocused)
+            {
+                FocusHeaderButton(_headerFocusIndex);
+            }
+            else
+            {
+                FocusActiveTabContent();
+            }
+            return;
+        }
+
         if (_isHeaderFocused)
         {
             switch (action)

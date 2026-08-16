@@ -3,9 +3,9 @@
 
   <!-- Core Palette Tokens for Console UI -->
   <Color x:Key="ConsoleBackgroundColor">#000000</Color>
-  <Color x:Key="ConsoleSurfaceColor">#0A0A0E</Color>
-  <Color x:Key="ConsoleElevatedSurfaceColor">#14141C</Color>
-  <Color x:Key="ConsoleSubtleSurfaceColor">#1E1E28</Color>
+  <Color x:Key="ConsoleSurfaceColor">#121216</Color>
+  <Color x:Key="ConsoleElevatedSurfaceColor">#181820</Color>
+  <Color x:Key="ConsoleSubtleSurfaceColor">#20202A</Color>
 
   <!-- Accent Color: Pure White -->
   <Color x:Key="ConsoleAccentColor">#FFFFFF</Color>
