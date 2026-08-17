@@ -314,9 +314,9 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         }
 
         // Recent Games (dynamic)
-        if (RecentGamesStack != null && RecentGamesStack.Children.Contains(focused as Control))
+        if (RecentGamesStack != null && focused is Control focusedCtrl && RecentGamesStack.Children.Contains(focusedCtrl))
         {
-            int idx = RecentGamesStack.Children.IndexOf(focused as Control);
+            int idx = RecentGamesStack.Children.IndexOf(focusedCtrl);
             if (action == ControllerNavigationAction.Left && idx > 0)
                 next = RecentGamesStack.Children[idx - 1] as IInputElement;
             else if (action == ControllerNavigationAction.Right && idx < RecentGamesStack.Children.Count - 1)
