@@ -1,7 +1,8 @@
 <UserControl
     x:Class="DaisyOS.Shell.Views.Components.Console.ConsoleHeaderBar"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:DaisyOS.Shell.Views.Components.Console">
 
   <UserControl.Styles>
     <!-- Top Header Tab Navigation Buttons -->
@@ -165,10 +166,13 @@
   </UserControl.Styles>
 
   <!-- Top System Bar Header -->
-  <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Top" Margin="0,0,0,16" ZIndex="20" ClipToBounds="False">
+  <Grid ColumnDefinitions="1*,Auto,1*" VerticalAlignment="Top" Margin="0,0,0,16" ZIndex="20" ClipToBounds="False">
     
+    <!-- Left Media Widget -->
+    <local:ConsoleMediaWidget Grid.Column="0" HorizontalAlignment="Left" Margin="16,0,0,0" />
+
     <!-- Header Navigation Tabs -->
-    <StackPanel Orientation="Horizontal" Spacing="20" VerticalAlignment="Center" Margin="8,8" ClipToBounds="False">
+    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20" VerticalAlignment="Center" Margin="8,8" ClipToBounds="False" HorizontalAlignment="Center">
       
       <Button x:Name="HeaderRecentButton" Classes="ConsoleHeaderNav Active" Click="OnHeaderRecentClicked" ToolTip.Tip="Recents">
         <TextBlock Text="Recents" />
@@ -181,7 +185,7 @@
     </StackPanel>
 
     <!-- Right System Status Icons & Settings Gear -->
-    <Border Grid.Column="1" VerticalAlignment="Center" Margin="8,8" ClipToBounds="False">
+    <Border Grid.Column="2" VerticalAlignment="Center" Margin="8,8" ClipToBounds="False" HorizontalAlignment="Right">
       <StackPanel Orientation="Horizontal" Spacing="18" VerticalAlignment="Center" Margin="0,0,8,0" ClipToBounds="False">
         <TextBlock Text="wifi" Classes="ConsoleStatusIcon" VerticalAlignment="Center" />
         <TextBlock Text="battery_full" Classes="ConsoleStatusIcon" VerticalAlignment="Center" />

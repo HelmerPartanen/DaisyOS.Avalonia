@@ -391,7 +391,7 @@
       </Border>
     </Grid>
 
-    <Grid Margin="64,24,64,24" ClipToBounds="False">
+    <Grid Margin="16,16,16,16" ClipToBounds="False">
 
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />

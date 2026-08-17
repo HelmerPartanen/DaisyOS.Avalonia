@@ -42,7 +42,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
 
     private readonly string[] _quickCategories = new[]
     {
-        "Home", "Switcher", "Notifications", "Sound", "Controller", "Power"
+        "Home", "Switcher", "Notifications", "Sound", "Media", "Controller", "Power"
     };
 
     public ConsoleQuickMenuOverlay()
@@ -385,6 +385,21 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                 if (QuickMicVolumeSlider?.IsVisible == true) controls.Add(QuickMicVolumeSlider);
                 if (QuickMuteMicBtn?.IsVisible == true) controls.Add(QuickMuteMicBtn);
                 break;
+            case "Media":
+                if (CardMediaPanel?.IsVisible == true)
+                {
+                    var mediaWidget = CardMediaPanel.Children.OfType<ConsoleMediaWidget>().FirstOrDefault();
+                    if (mediaWidget != null)
+                    {
+                        var prev = mediaWidget.FindControl<Button>("PreviousButton");
+                        var play = mediaWidget.FindControl<Button>("PlayPauseButton");
+                        var next = mediaWidget.FindControl<Button>("NextButton");
+                        if (prev != null) controls.Add(prev);
+                        if (play != null) controls.Add(play);
+                        if (next != null) controls.Add(next);
+                    }
+                }
+                break;
             case "Power":
                 if (BtnPowerRestart?.IsVisible == true) controls.Add(BtnPowerRestart);
                 if (BtnPowerDesktop?.IsVisible == true) controls.Add(BtnPowerDesktop);
@@ -440,6 +455,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         if (BtnQuickSwitcher != null) BtnQuickSwitcher.Classes.Set("Active", category == "Switcher");
         if (BtnQuickNotifications != null) BtnQuickNotifications.Classes.Set("Active", category == "Notifications");
         if (BtnQuickSound != null) BtnQuickSound.Classes.Set("Active", category == "Sound");
+        if (BtnQuickMedia != null) BtnQuickMedia.Classes.Set("Active", category == "Media");
         if (BtnQuickController != null) BtnQuickController.Classes.Set("Active", category == "Controller");
         if (BtnQuickPower != null) BtnQuickPower.Classes.Set("Active", category == "Power");
 
@@ -448,6 +464,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         if (CardSwitcherPanel != null) CardSwitcherPanel.IsVisible = category == "Switcher";
         if (CardNotificationsPanel != null) CardNotificationsPanel.IsVisible = category == "Notifications";
         if (CardSoundPanel != null) CardSoundPanel.IsVisible = category == "Sound";
+        if (CardMediaPanel != null) CardMediaPanel.IsVisible = category == "Media";
         if (CardControllerPanel != null) CardControllerPanel.IsVisible = category == "Controller";
         if (CardPowerPanel != null) CardPowerPanel.IsVisible = category == "Power";
     }
@@ -462,8 +479,9 @@ public partial class ConsoleQuickMenuOverlay : UserControl
             case 1: BtnQuickSwitcher?.Focus(); break;
             case 2: BtnQuickNotifications?.Focus(); break;
             case 3: BtnQuickSound?.Focus(); break;
-            case 4: BtnQuickController?.Focus(); break;
-            case 5: BtnQuickPower?.Focus(); break;
+            case 4: BtnQuickMedia?.Focus(); break;
+            case 5: BtnQuickController?.Focus(); break;
+            case 6: BtnQuickPower?.Focus(); break;
         }
     }
 

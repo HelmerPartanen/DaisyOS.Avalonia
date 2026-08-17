@@ -4,6 +4,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+    xmlns:local="clr-namespace:DaisyOS.Shell.Views.Components.Console"
     IsVisible="False"
     IsHitTestVisible="False"
     Opacity="0"
@@ -228,6 +229,11 @@
         </Border>
       </StackPanel>
 
+      <!-- 3.5 MEDIA PANEL -->
+      <StackPanel x:Name="CardMediaPanel" Spacing="12" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
+        <local:ConsoleMediaWidget HorizontalAlignment="Center" />
+      </StackPanel>
+
       <!-- 4. SOUND & MIC PANEL -->
       <StackPanel x:Name="CardSoundPanel" Spacing="4" IsVisible="False" HorizontalAlignment="Stretch" MaxWidth="960" VerticalAlignment="Center">
         <Border Classes="ConsoleRowContainer">
@@ -369,6 +375,11 @@
         <!-- 3. Sound -->
         <Button x:Name="BtnQuickSound" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Sound" ToolTip.Tip="Sound">
           <TextBlock Text="volume_up" Classes="QuickIcon" />
+        </Button>
+
+        <!-- 4. Media -->
+        <Button x:Name="BtnQuickMedia" Classes="QuickBarIconBtn" Click="OnIconBarItemClicked" Tag="Media" ToolTip.Tip="Media">
+          <TextBlock Text="music_note" Classes="QuickIcon" />
         </Button>
 
 
