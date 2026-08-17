@@ -389,7 +389,7 @@
       <Setter Property="Opacity" Value="0" />
       <Setter Property="Transitions">
         <Transitions>
-          <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="LinearEasing" />
+          <DoubleTransition Property="Opacity" Duration="0:0:0.08" Easing="QuadraticEaseOut" />
         </Transitions>
       </Setter>
     </Style>
@@ -475,23 +475,23 @@
         <ScrollViewer x:Name="LibraryTabContent" Classes="HomeTabContent" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" ClipToBounds="False" Padding="24,16,24,40">
           <StackPanel Spacing="20" ClipToBounds="False">
             
-            <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
-              <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                <TextBlock Text="grid_view" Classes="ConsoleStatusIcon" FontSize="26" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
-                <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,2,0,0" />
-              </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" Margin="0,0,0,16">
+              <TextBlock Text="grid_view" Classes="ConsoleStatusIcon" FontSize="26" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+              <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,2,0,0" />
+            </StackPanel>
 
-              <TextBlock Grid.Column="1" x:Name="LibraryCountText" Text="0 Games" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
-            </Grid>
-
-            <!-- Grid Container -->
-            <ItemsControl x:Name="LibraryGrid" ItemsSource="{Binding AllLibraryGames}" ItemTemplate="{StaticResource GameCardTemplate}" ClipToBounds="False" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel Orientation="Horizontal" ClipToBounds="False" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-            </ItemsControl>
+            <StackPanel Spacing="12" ClipToBounds="False">
+              <TextBlock x:Name="LibraryCountText" Text="0 Games" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" Margin="4,0,0,0" />
+              
+              <!-- Grid Container -->
+              <ItemsControl x:Name="LibraryGrid" ItemsSource="{Binding AllLibraryGames}" ItemTemplate="{StaticResource GameCardTemplate}" ClipToBounds="False" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" ClipToBounds="False" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+              </ItemsControl>
+            </StackPanel>
 
           </StackPanel>
         </ScrollViewer>

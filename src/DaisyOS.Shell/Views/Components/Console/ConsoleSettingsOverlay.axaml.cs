@@ -586,6 +586,13 @@ public partial class ConsoleSettingsOverlay : UserControl
         {
             BuildKeybindingsListUI();
         }
+
+        CategoryTitleText.Text = tabName switch
+        {
+            "Audio" => "Sound",
+            "Controls" => "Controller",
+            _ => tabName
+        };
     }
 
     private void LoadKeybindingsConfig()
