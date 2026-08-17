@@ -3,4 +3,5 @@
   <!-- Wallpaper analysis may adjust only the desktop-label contrast.
        All shell materials and accents live in OSTheme.axaml. -->
   <SolidColorBrush x:Key="DesktopItemLabelBrush" Color="#FFF5F5F5"/>
+  <DropShadowEffect x:Key="DesktopItemLabelShadow" OffsetX="0" OffsetY="1" BlurRadius="2" Color="Black" Opacity="0.30"/>
 </ResourceDictionary>

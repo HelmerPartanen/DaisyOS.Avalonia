@@ -89,6 +89,8 @@
           HorizontalAlignment="Right"
           VerticalAlignment="Bottom"
           Padding="6"
+                      Background="{DynamicResource PrimarySurfaceBrush}"
+            CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="0">
 
@@ -165,7 +167,7 @@
           </Grid>
           <Grid ColumnDefinitions="*,1,40">
             <controls:QuickSettingsSlider x:Name="VolumeSlider" Grid.Column="0" Icon="volume_up"
-                                          Minimum="0" Maximum="100" ValueChanged="OnVolumeChanged" />
+                                          Minimum="0" Maximum="100" ValueChanged="OnVolumeChanged" ShowThumb="False" />
             <Border Grid.Column="1" Background="{DynamicResource DividerBrush}" IsHitTestVisible="False"/>
             <Button Grid.Column="2" Classes="ShellButton VolumeOutputDetails" ToolTip.Tip="Choose output device"
                     Click="OnOutputDevicesButtonClicked">

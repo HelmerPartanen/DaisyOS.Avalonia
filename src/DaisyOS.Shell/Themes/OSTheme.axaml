@@ -39,6 +39,9 @@ OPACITY VALUES
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CC000000" />
       <SolidColorBrush x:Key="TextTertiaryBrush" Color="#99000000" />
 
+      <SolidColorBrush x:Key="PrimaryButtonTextPrimaryBrush" Color="{StaticResource GlobalPrimaryButtonTextPrimaryColor}" />
+      <SolidColorBrush x:Key="PrimaryButtonTextSecondaryBrush" Color="{StaticResource GlobalPrimaryButtonTextSecondaryColor}" />
+
       <SolidColorBrush x:Key="GhostHoverBrush" Color="#26000000" />
       <SolidColorBrush x:Key="GhostPressedBrush" Color="#33000000" />
       <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="#26000000" />
@@ -74,31 +77,35 @@ OPACITY VALUES
 
     <ResourceDictionary x:Key="Dark">
       <!-- Surface roles retain contrast over the #FF000000 base without a grey washout. -->
-      <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="#FF121216" />
-      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#991C1C1C" />
-      <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#F2262628" />
+      <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="{StaticResource GlobalSurfaceColor}" />
+      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="{StaticResource GlobalSecondaryButtonBgColor}" />
+      <!-- Add opacity to ElevatedSurfaceColor which is #181820 -->
+      <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="{StaticResource GlobalElevatedSurfaceColor}" Opacity="0.95" />
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1AFFFFFF" />
-      <SolidColorBrush x:Key="DividerBrush" Color="#26FFFFFF" />
+      <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource GlobalDividerColor}" />
 
-      <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFF5F5F7" />
-      <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CCF5F5F7" />
-      <SolidColorBrush x:Key="TextTertiaryBrush" Color="#99F5F5F7" />
+      <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource GlobalTextPrimaryColor}" />
+      <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource GlobalTextSecondaryColor}" />
+      <SolidColorBrush x:Key="TextTertiaryBrush" Color="{StaticResource GlobalTextMutedColor}" />
+
+      <SolidColorBrush x:Key="PrimaryButtonTextPrimaryBrush" Color="{StaticResource GlobalPrimaryButtonTextPrimaryColor}" />
+      <SolidColorBrush x:Key="PrimaryButtonTextSecondaryBrush" Color="{StaticResource GlobalPrimaryButtonTextSecondaryColor}" />
 
       <SolidColorBrush x:Key="GhostHoverBrush" Color="#26FFFFFF" />
       <SolidColorBrush x:Key="GhostPressedBrush" Color="#33FFFFFF" />
-      <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="#26FFFFFF" />
+      <SolidColorBrush x:Key="SubtleSurfaceBrush" Color="{StaticResource GlobalSubtleSurfaceColor}" />
       <SolidColorBrush x:Key="SubtleHoverBrush" Color="#33FFFFFF" />
       <SolidColorBrush x:Key="SubtlePressedBrush" Color="#40FFFFFF" />
 
-      <Color x:Key="AccentColor">#FFC8C8CC</Color>
-      <SolidColorBrush x:Key="AccentBrush" Color="#FFC8C8CC" />
-      <SolidColorBrush x:Key="AccentHoverBrush" Color="#FFBABABE" />
-      <SolidColorBrush x:Key="AccentPressedBrush" Color="#FFACACB0" />
-      <SolidColorBrush x:Key="OnAccentBrush" Color="#FF161618" />
+      <Color x:Key="AccentColor">#FFFFFFFF</Color>
+      <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource GlobalAccentColor}" />
+      <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource GlobalPrimaryButtonHoverColor}" />
+      <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource GlobalPrimaryButtonPressedColor}" />
+      <SolidColorBrush x:Key="OnAccentBrush" Color="{StaticResource GlobalOnAccentColor}" />
       <SolidColorBrush x:Key="AccentSurfaceBrush" Color="#FF3D3D42" />
       <SolidColorBrush x:Key="AccentSurfaceHoverBrush" Color="#FF4A4A50" />
       <SolidColorBrush x:Key="AccentSurfacePressedBrush" Color="#FF56565D" />
-      <SolidColorBrush x:Key="OnAccentSurfaceBrush" Color="#FFF5F5F7" />
+      <SolidColorBrush x:Key="OnAccentSurfaceBrush" Color="{StaticResource GlobalTextPrimaryColor}" />
       <SolidColorBrush x:Key="AccentDividerBrush" Color="#FFAFAFB5" />
 
       <SolidColorBrush x:Key="WarningBrush" Color="#FFFF9230" />

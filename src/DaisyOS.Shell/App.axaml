@@ -139,12 +139,27 @@
       <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
     </Style>
     <!--
-      Active buttons communicate state through their container color, never by
-      recoloring labels. Quick Settings is the sole exception: its glyphs are
-      status indicators, so only explicitly marked icons receive the on-primary color.
+      Active buttons must ensure high contrast over the pure white background.
     -->
+    <Style Selector="Button.Active TextBlock, ToggleButton.Active TextBlock, ToggleButton:checked TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.Active TextBlock.SecondaryText, ToggleButton.Active TextBlock.SecondaryText, ToggleButton:checked TextBlock.SecondaryText">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextSecondaryBrush}" />
+    </Style>
+    <Style Selector="Button.Active TextBlock.AccentText, ToggleButton.Active TextBlock.AccentText, ToggleButton:checked TextBlock.AccentText">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.SecondaryText">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.AccentText">
+      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
     <Style Selector="ToggleButton.QuickSetting:checked > TextBlock.QuickSettingIcon, Button.QuickSettingDetails.Active > TextBlock.QuickSettingIcon">
-      <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
     </Style>
     <Style Selector="Button.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />

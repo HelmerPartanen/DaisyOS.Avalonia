@@ -49,7 +49,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Border Background="{DynamicResource SecondarySurfaceBrush}"
+  <Border Background="{DynamicResource PrimarySurfaceBrush}"
           BorderThickness="0"
           PointerPressed="OnTitleBarPointerPressed"
           DoubleTapped="OnTitleBarDoubleTapped">

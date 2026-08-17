@@ -35,6 +35,15 @@
       <Setter Property="Margin" Value="12,0,0,0" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
+    <Style Selector="Button.Active TextBlock.NavLabel">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.Active TextBlock.SecondaryText">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextSecondaryBrush}" />
+    </Style>
+    <Style Selector="Button.Active TextBlock.AccentText">
+      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+    </Style>
 
     <!-- Seamless Editor TextBoxes -->
     <Style Selector="TextBox.EditorTextBox">
@@ -53,7 +62,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid ColumnDefinitions="240,*" Background="{DynamicResource SecondarySurfaceBrush}">
+  <Grid ColumnDefinitions="240,*" Background="{DynamicResource PrimarySurfaceBrush}">
     <!-- Transparent Sidebar Container (matching Settings 240px sidebar) -->
     <Border Grid.Column="0" Background="Transparent" Padding="12,12,8,12">
       <Grid RowDefinitions="Auto,Auto,*">
@@ -137,9 +146,9 @@
                             <TextBlock Text="New Note" Classes="NavLabel" Margin="0" FontStyle="{Binding FontStyle}" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
                             <TextBlock Text="{Binding Title}" Classes="NavLabel" Margin="0" FontStyle="{Binding FontStyle}" TextTrimming="CharacterEllipsis" IsVisible="{Binding Title, Converter={x:Static ObjectConverters.IsNotNull}}" />
                           </Panel>
-                          <TextBlock Grid.Row="1" Text="{Binding LastModified, StringFormat='MMM d, yyyy  HH:mm'}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,2,0,0" />
+                          <TextBlock Grid.Row="1" Text="{Binding LastModified, StringFormat='MMM d, yyyy  HH:mm'}" FontSize="11" Classes="SecondaryText" Margin="0,2,0,0" />
                         </Grid>
-                        <TextBlock Text="keep" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="14" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" IsVisible="{Binding IsPinned}" />
+                        <TextBlock Text="keep" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="14" Classes="AccentText" HorizontalAlignment="Right" VerticalAlignment="Center" IsVisible="{Binding IsPinned}" />
                       </Grid>
                     </Button>
                     <Rectangle Height="1" Fill="{DynamicResource DividerBrush}" Margin="12,4,12,4" IsVisible="{Binding ShowDivider}" />

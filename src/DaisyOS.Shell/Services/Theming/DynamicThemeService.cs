@@ -54,11 +54,28 @@ public sealed class DynamicThemeService
     {
         Set(resources, "DesktopItemLabelBrush", desktopLabelColor);
 
+        if (desktopLabelColor == WallpaperLabelContrast.DarkLabel)
+        {
+            resources["DesktopItemLabelShadow"] = null;
+        }
+        else
+        {
+            resources["DesktopItemLabelShadow"] = new DropShadowEffect
+            {
+                OffsetX = 0,
+                OffsetY = 1,
+                BlurRadius = 2,
+                Color = Colors.Black,
+                Opacity = 0.30
+            };
+        }
+
         if (scheme is null)
         {
             return;
         }
 
+        /*
         resources["AccentColor"] = scheme.Primary;
         Set(resources, "AccentBrush", scheme.Primary);
         Set(resources, "AccentHoverBrush", Blend(scheme.Primary, scheme.OnPrimary, 0.08));
@@ -68,6 +85,7 @@ public sealed class DynamicThemeService
         Set(resources, "AccentSurfaceHoverBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.08));
         Set(resources, "AccentSurfacePressedBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.16));
         Set(resources, "OnAccentSurfaceBrush", scheme.OnPrimaryContainer);
+        */
     }
 
     private static void Set(IResourceDictionary resources, string key, Color color) =>

@@ -9,7 +9,7 @@ public static class WallpaperLabelContrast
     public static readonly Color DarkLabel = Color.Parse("#FF1A1A1A");
 
     public static Color ForWallpaper(Color wallpaperAverage) =>
-        RelativeLuminance(wallpaperAverage) >= 0.42 ? DarkLabel : LightLabel;
+        RelativeLuminance(wallpaperAverage) >= 0.60 ? DarkLabel : LightLabel;
 
     private static double RelativeLuminance(Color color) =>
         0.2126 * Linear(color.R) +
