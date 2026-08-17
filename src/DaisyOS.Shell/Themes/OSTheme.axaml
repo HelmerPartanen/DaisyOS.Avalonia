@@ -74,7 +74,7 @@ OPACITY VALUES
 
     <ResourceDictionary x:Key="Dark">
       <!-- Surface roles retain contrast over the #FF000000 base without a grey washout. -->
-      <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="#FF000000" />
+      <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="#FF121216" />
       <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#991C1C1C" />
       <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#F2262628" />
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1AFFFFFF" />

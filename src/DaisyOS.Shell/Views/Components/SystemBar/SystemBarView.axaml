@@ -83,8 +83,6 @@
           HorizontalAlignment="Right"
           VerticalAlignment="Bottom"
           Padding="6"
-          Background="{DynamicResource PrimarySurfaceBrush}"
-          CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="0">
 

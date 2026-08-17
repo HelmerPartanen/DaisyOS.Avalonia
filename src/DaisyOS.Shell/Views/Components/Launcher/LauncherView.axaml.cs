@@ -41,11 +41,7 @@ public partial class LauncherView : UserControl
         }
     }
 
-    private void OnSetViewAlphabetical(object? sender, RoutedEventArgs e) =>
-        ViewModel.SetViewAlphabetical();
 
-    private void OnSetViewCategory(object? sender, RoutedEventArgs e) =>
-        ViewModel.SetViewCategory();
 
     private void OnPointerPressed(object? sender, PointerEventArgs e)
     {

@@ -61,12 +61,6 @@
     </Style>
   </UserControl.Styles>
 
-  <!--
-    Floating Island - no explicit Width set here.
-    The Border auto-sizes to its StackPanel child + Padding,
-    guaranteeing perfectly symmetric edge spacing on both sides.
-    The Width Transition animates smoothly as the Canvas inside resizes.
-  -->
   <Grid HorizontalAlignment="Center" ClipToBounds="False">
     <!-- Canvas does not participate in desired-size measurement; the dock body remains dynamic-width. -->
     <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="False" IsHitTestVisible="False">
