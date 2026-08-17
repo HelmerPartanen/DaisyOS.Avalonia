@@ -28,6 +28,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     private readonly IUserSessionService? _userSessionService;
     private readonly IGameDiscoveryService? _gameDiscoveryService;
     private readonly ISystemMetricsService? _systemMetricsService;
+    private readonly IGameArtworkResolver? _gameArtworkResolver;
 
     public event EventHandler? Closed;
     public event EventHandler? GoHomeRequested;
@@ -44,7 +45,8 @@ public partial class ConsoleQuickMenuOverlay : UserControl
             new LinuxPowerService(new SafeCommandRunner()),
             new LinuxUserSessionService(),
             new LinuxGameDiscoveryService(),
-            new LinuxSystemMetricsService())
+            new LinuxSystemMetricsService(),
+            new GameArtworkResolver())
     {
     }
 
@@ -53,13 +55,15 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         IPowerService powerService,
         IUserSessionService userSessionService,
         IGameDiscoveryService gameDiscoveryService,
-        ISystemMetricsService systemMetricsService)
+        ISystemMetricsService systemMetricsService,
+        IGameArtworkResolver gameArtworkResolver)
     {
         _audioService = audioService;
         _powerService = powerService;
         _userSessionService = userSessionService;
         _gameDiscoveryService = gameDiscoveryService;
         _systemMetricsService = systemMetricsService;
+        _gameArtworkResolver = gameArtworkResolver;
         
         InitializeComponent();
         UpdateControllerHintIcons("DualSense Wireless Controller");
@@ -118,40 +122,42 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                 var games = await _gameDiscoveryService.DiscoverGamesAsync(token);
                 Dispatcher.UIThread.Post(() =>
                 {
-                    if (RecentGamesStack != null)
+                    if (CurrentGameTitle != null && CurrentGamePanel != null)
                     {
-                        RecentGamesStack.Children.Clear();
-                        var recentGames = games.Take(6).ToList();
-                        if (recentGames.Count == 0)
+                        var currentGame = games.FirstOrDefault();
+                        // TODO: Implement actual active game tracking logic. For now, pretend no game is running.
+                        bool isGameRunning = false; 
+
+                        if (isGameRunning && currentGame != null)
                         {
-                            RecentGamesStack.Children.Add(new TextBlock
+                            CurrentGamePanel.IsVisible = true;
+                            CurrentGameTitle.Text = currentGame.Title;
+                            
+                            // Load Cover Image
+                            if (_gameArtworkResolver != null)
                             {
-                                Text = "No recent games found.",
-                                Foreground = new SolidColorBrush(Color.Parse("#888888")),
-                                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-                            });
+                                Task.Run(async () =>
+                                {
+                                    var assets = await _gameArtworkResolver.GetArtworkAsync(currentGame, token);
+                                    var coverUrl = assets.CoverPath;
+                                    if (!string.IsNullOrEmpty(coverUrl))
+                                    {
+                                        try
+                                        {
+                                            var bmp = new Bitmap(coverUrl);
+                                            Dispatcher.UIThread.Post(() =>
+                                            {
+                                                if (CurrentGameIcon != null) CurrentGameIcon.Source = bmp;
+                                            });
+                                        }
+                                        catch { }
+                                    }
+                                });
+                            }
                         }
                         else
                         {
-                            foreach (var game in recentGames)
-                            {
-                                var btn = new Button
-                                {
-                                    Classes = { "RecentGameBtn" },
-                                    Content = new TextBlock
-                                    {
-                                        Text = game.Title,
-                                        TextWrapping = Avalonia.Media.TextWrapping.Wrap,
-                                        TextAlignment = Avalonia.Media.TextAlignment.Center,
-                                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                                        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                                        FontSize = 13,
-                                        FontWeight = Avalonia.Media.FontWeight.SemiBold,
-                                        Foreground = new SolidColorBrush(Colors.White)
-                                    }
-                                };
-                                RecentGamesStack.Children.Add(btn);
-                            }
+                            CurrentGamePanel.IsVisible = false;
                         }
                     }
                 });
@@ -297,49 +303,41 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         {
             if (action == ControllerNavigationAction.Right) next = play;
             else if (action == ControllerNavigationAction.Up) next = QuickMicVolumeSlider;
-            else if (action == ControllerNavigationAction.Down) next = GetFirstRecentGame();
+            else if (action == ControllerNavigationAction.Down) next = BtnRestartGame;
         }
         else if (focused == play)
         {
             if (action == ControllerNavigationAction.Left) next = prev;
             else if (action == ControllerNavigationAction.Right) next = nextBtn;
             else if (action == ControllerNavigationAction.Up) next = QuickMicVolumeSlider;
-            else if (action == ControllerNavigationAction.Down) next = GetFirstRecentGame();
+            else if (action == ControllerNavigationAction.Down) next = BtnRestartGame;
         }
         else if (focused == nextBtn)
         {
             if (action == ControllerNavigationAction.Left) next = play;
             else if (action == ControllerNavigationAction.Up) next = QuickMicVolumeSlider;
-            else if (action == ControllerNavigationAction.Down) next = GetFirstRecentGame();
+            else if (action == ControllerNavigationAction.Down) next = BtnCloseGame;
         }
 
-        // Recent Games (dynamic)
-        if (RecentGamesStack != null && focused is Control focusedCtrl && RecentGamesStack.Children.Contains(focusedCtrl))
+        if (focused == BtnRestartGame)
         {
-            int idx = RecentGamesStack.Children.IndexOf(focusedCtrl);
-            if (action == ControllerNavigationAction.Left && idx > 0)
-                next = RecentGamesStack.Children[idx - 1] as IInputElement;
-            else if (action == ControllerNavigationAction.Right && idx < RecentGamesStack.Children.Count - 1)
-                next = RecentGamesStack.Children[idx + 1] as IInputElement;
-            else if (action == ControllerNavigationAction.Up)
-                next = play;
+            if (action == ControllerNavigationAction.Right) next = BtnCloseGame;
+            else if (action == ControllerNavigationAction.Up) next = play;
+        }
+        else if (focused == BtnCloseGame)
+        {
+            if (action == ControllerNavigationAction.Left) next = BtnRestartGame;
+            else if (action == ControllerNavigationAction.Up) next = nextBtn;
         }
 
         if (next != null)
         {
             next.Focus();
-            if (next is Control c && PanelScrollViewer != null)
+            if (next is Control c)
             {
                 Dispatcher.UIThread.Post(() => c.BringIntoView(), DispatcherPriority.Render);
             }
         }
-    }
-
-    private IInputElement? GetFirstRecentGame()
-    {
-        if (RecentGamesStack != null && RecentGamesStack.Children.Count > 0)
-            return RecentGamesStack.Children[0] as IInputElement;
-        return null;
     }
 
     private void OnGoHomeClicked(object? sender, RoutedEventArgs e)

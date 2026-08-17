@@ -52,7 +52,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Panel ClipToBounds="False" HorizontalAlignment="Right" VerticalAlignment="Center">
+  <Panel ClipToBounds="False" HorizontalAlignment="Stretch" VerticalAlignment="Center">
     <!-- White Focus Capsule Outline around the Pill Slider (Matching Normal Action Buttons) -->
     <Border x:Name="FocusBorder"
             BorderBrush="{DynamicResource ConsoleAccentBrush}"
@@ -62,43 +62,44 @@
             IsVisible="False"
             ClipToBounds="False" />
 
-    <!-- Container Pill Background (Height 42, CornerRadius 21, Padding 20,0) -->
+    <!-- Container Pill Background (Height 42, CornerRadius 21) -->
     <Border Background="Transparent"
             CornerRadius="21"
             Height="42"
-            Padding="20,0"
+            Padding="12,0"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Center">
-      <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+      <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto">
         <!-- Icon e.g. volume_up or mic -->
-        <TextBlock x:Name="IconTextBlock" Text="volume_up" Classes="SliderIcon" Margin="0,0,4,0" />
+        <TextBlock x:Name="IconTextBlock" Grid.Column="0" Text="volume_up" Classes="SliderIcon" Margin="0,0,4,0" />
 
         <!-- Decrement Arrow Button < -->
-        <Button x:Name="DecrementBtn" Classes="ArrowBtn" Click="OnDecrementClicked">
+        <Button x:Name="DecrementBtn" Grid.Column="1" Classes="ArrowBtn" Click="OnDecrementClicked">
           <TextBlock Text="chevron_left" Classes="ArrowIcon" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="-2,0,0,0" />
         </Button>
 
         <!-- 10 Pill Segment Stack -->
-        <StackPanel x:Name="PillContainer" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
-          <Border Width="26" Height="7" CornerRadius="3.5" Background="{DynamicResource ConsoleDividerBrush}" />
-        </StackPanel>
+        <UniformGrid x:Name="PillContainer" Grid.Column="2" Columns="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="8,0">
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleTextPrimaryBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleDividerBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleDividerBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleDividerBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleDividerBrush}" />
+          <Border Height="7" CornerRadius="3.5" Margin="2,0" Background="{DynamicResource ConsoleDividerBrush}" />
+        </UniformGrid>
 
         <!-- Increment Arrow Button > -->
-        <Button x:Name="IncrementBtn" Classes="ArrowBtn" Click="OnIncrementClicked">
+        <Button x:Name="IncrementBtn" Grid.Column="3" Classes="ArrowBtn" Click="OnIncrementClicked">
           <TextBlock Text="chevron_right" Classes="ArrowIcon" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2,0,0,0" />
         </Button>
 
         <!-- Percentage Value Text e.g. 50% -->
-        <TextBlock x:Name="ValueText" Text="50%" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
-      </StackPanel>
+        <TextBlock x:Name="ValueText" Grid.Column="4" Text="50%" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" Width="44" TextAlignment="Right" VerticalAlignment="Center" />
+      </Grid>
     </Border>
   </Panel>
 
