@@ -127,10 +127,10 @@
   <!-- Darkened Backdrop -->
   <Grid Background="{DynamicResource ConsoleOverlayBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-    <Grid HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,0,0,0">
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0,0,0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="16" />
+        <ColumnDefinition Width="12" />
         <ColumnDefinition Width="Auto" />
       </Grid.ColumnDefinitions>
       
