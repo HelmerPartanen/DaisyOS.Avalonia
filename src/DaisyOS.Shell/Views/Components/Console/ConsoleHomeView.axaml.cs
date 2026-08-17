@@ -289,7 +289,7 @@ public partial class ConsoleHomeView : UserControl
                     break;
 
                 case ControllerNavigationAction.Right:
-                    _headerFocusIndex = Math.Min(2, _headerFocusIndex + 1);
+                    _headerFocusIndex = Math.Min(5, _headerFocusIndex + 1);
                     FocusHeaderButton(_headerFocusIndex);
                     break;
 
@@ -299,9 +299,12 @@ public partial class ConsoleHomeView : UserControl
                     break;
 
                 case ControllerNavigationAction.Confirm:
-                    if (_headerFocusIndex == 0) OnHeaderTabSelected(this, "Recents");
-                    else if (_headerFocusIndex == 1) OnHeaderTabSelected(this, "Library");
-                    else if (_headerFocusIndex == 2) SettingsRequested?.Invoke(this, EventArgs.Empty);
+                    if (_headerFocusIndex == 0) HeaderBar?.MediaPrevButton?.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+                    else if (_headerFocusIndex == 1) HeaderBar?.MediaPlayButton?.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+                    else if (_headerFocusIndex == 2) HeaderBar?.MediaNextButton?.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+                    else if (_headerFocusIndex == 3) OnHeaderTabSelected(this, "Recents");
+                    else if (_headerFocusIndex == 4) OnHeaderTabSelected(this, "Library");
+                    else if (_headerFocusIndex == 5) SettingsRequested?.Invoke(this, EventArgs.Empty);
                     break;
             }
             return;
@@ -325,7 +328,7 @@ public partial class ConsoleHomeView : UserControl
 
                 case ControllerNavigationAction.Up:
                     _isHeaderFocused = true;
-                    _headerFocusIndex = 0;
+                    _headerFocusIndex = 3;
                     FocusHeaderButton(_headerFocusIndex);
                     break;
 
@@ -365,7 +368,7 @@ public partial class ConsoleHomeView : UserControl
                     {
                         // Moving up from top row focuses Header
                         _isHeaderFocused = true;
-                        _headerFocusIndex = 1;
+                        _headerFocusIndex = 4;
                         FocusHeaderButton(_headerFocusIndex);
                     }
                     else
@@ -392,12 +395,21 @@ public partial class ConsoleHomeView : UserControl
         switch (index)
         {
             case 0:
-                HeaderBar.RecentButton?.Focus();
+                HeaderBar.MediaPrevButton?.Focus();
                 break;
             case 1:
-                HeaderBar.LibraryButton?.Focus();
+                HeaderBar.MediaPlayButton?.Focus();
                 break;
             case 2:
+                HeaderBar.MediaNextButton?.Focus();
+                break;
+            case 3:
+                HeaderBar.RecentButton?.Focus();
+                break;
+            case 4:
+                HeaderBar.LibraryButton?.Focus();
+                break;
+            case 5:
                 HeaderBar.SettingsButton?.Focus();
                 break;
         }

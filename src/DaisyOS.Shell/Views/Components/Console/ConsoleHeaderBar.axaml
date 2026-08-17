@@ -169,7 +169,7 @@
   <Grid ColumnDefinitions="1*,Auto,1*" VerticalAlignment="Top" Margin="0,0,0,16" ZIndex="20" ClipToBounds="False">
     
     <!-- Left Media Widget -->
-    <local:ConsoleMediaWidget Grid.Column="0" HorizontalAlignment="Left" Margin="16,0,0,0" />
+    <local:ConsoleMediaWidget x:Name="HeaderMediaWidget" Grid.Column="0" HorizontalAlignment="Left" Margin="16,0,0,0" />
 
     <!-- Header Navigation Tabs -->
     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="20" VerticalAlignment="Center" Margin="8,8" ClipToBounds="False" HorizontalAlignment="Center">

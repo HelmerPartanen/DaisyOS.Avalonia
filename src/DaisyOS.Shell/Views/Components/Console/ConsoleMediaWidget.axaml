@@ -105,7 +105,7 @@
       </StackPanel>
 
       <!-- Buttons -->
-      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" ClipToBounds="False">
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" ClipToBounds="False">
         <Button x:Name="PreviousButton" Classes="ConsoleMediaIconBtn" Focusable="True" Click="OnPreviousClicked" ToolTip.Tip="Previous track">
           <TextBlock x:Name="PreviousGlyph" Text="skip_previous" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" FontSize="18"/>
         </Button>

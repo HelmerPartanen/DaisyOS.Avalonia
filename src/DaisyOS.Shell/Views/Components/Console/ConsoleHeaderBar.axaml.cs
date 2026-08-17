@@ -16,6 +16,10 @@ public partial class ConsoleHeaderBar : UserControl
     public Button LibraryButton => HeaderLibraryButton;
     public Button SettingsButton => HeaderSettingsIconButton;
 
+    public Button? MediaPrevButton => HeaderMediaWidget?.FindControl<Button>("PreviousButton");
+    public Button? MediaPlayButton => HeaderMediaWidget?.FindControl<Button>("PlayPauseButton");
+    public Button? MediaNextButton => HeaderMediaWidget?.FindControl<Button>("NextButton");
+
     public ConsoleHeaderBar()
     {
         InitializeComponent();
