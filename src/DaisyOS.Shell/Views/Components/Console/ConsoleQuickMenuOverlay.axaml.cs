@@ -35,15 +35,8 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     public event EventHandler? RestartRequested;
     public event EventHandler? ShutdownRequested;
 
-    private int _activeIconIndex = 0;
-    private bool _isCardFocused = false;
-    private bool _isMicMuted = false;
     private CancellationTokenSource? _loadCts;
-
-    private readonly string[] _quickCategories = new[]
-    {
-        "Home", "Switcher", "Notifications", "Sound", "Media", "Controller", "Power"
-    };
+    private DispatcherTimer? _clockTimer;
 
     public ConsoleQuickMenuOverlay()
         : this(
@@ -70,6 +63,17 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         
         InitializeComponent();
         UpdateControllerHintIcons("DualSense Wireless Controller");
+
+        _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _clockTimer.Tick += (s, e) => UpdateClock();
+    }
+
+    private void UpdateClock()
+    {
+        if (ClockText != null)
+        {
+            ClockText.Text = DateTime.Now.ToString("HH:mm");
+        }
     }
 
     public void ShowQuickMenu()
@@ -78,7 +82,9 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         Opacity = 1;
         IsHitTestVisible = true;
 
-        SelectCategory(_quickCategories[_activeIconIndex]);
+        UpdateClock();
+        _clockTimer?.Start();
+
         UpdateControllerHintIcons("DualSense Wireless Controller");
 
         _loadCts?.Cancel();
@@ -87,7 +93,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
 
         Dispatcher.UIThread.Post(() =>
         {
-            FocusCurrentCategoryButton();
+            BtnGoHome?.Focus();
         }, DispatcherPriority.Input);
     }
 
@@ -104,10 +110,6 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                     {
                         SystemStatusDescription.Text = $"CPU: {metrics.CpuUsagePercent ?? 0:F0}% • RAM: {(metrics.MemoryUsagePercent ?? 0):F0}%";
                     }
-                    if (SystemStatusPillText != null)
-                    {
-                        SystemStatusPillText.Text = "Performance Mode Active";
-                    }
                 });
             }
 
@@ -119,7 +121,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                     if (RecentGamesStack != null)
                     {
                         RecentGamesStack.Children.Clear();
-                        var recentGames = games.Take(4).ToList();
+                        var recentGames = games.Take(6).ToList();
                         if (recentGames.Count == 0)
                         {
                             RecentGamesStack.Children.Add(new TextBlock
@@ -135,9 +137,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                             {
                                 var btn = new Button
                                 {
-                                    Width = 140,
-                                    Height = 80,
-                                    CornerRadius = new Avalonia.CornerRadius(12),
+                                    Classes = { "RecentGameBtn" },
                                     Content = new TextBlock
                                     {
                                         Text = game.Title,
@@ -148,10 +148,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                                         FontSize = 13,
                                         FontWeight = Avalonia.Media.FontWeight.SemiBold,
                                         Foreground = new SolidColorBrush(Colors.White)
-                                    },
-                                    Background = new SolidColorBrush(Color.Parse("#1AFFFFFF")),
-                                    BorderThickness = new Avalonia.Thickness(0),
-                                    ClipToBounds = true
+                                    }
                                 };
                                 RecentGamesStack.Children.Add(btn);
                             }
@@ -163,7 +160,6 @@ public partial class ConsoleQuickMenuOverlay : UserControl
             {
                 var masterVol = await _audioService.GetVolumeAsync(token);
                 var inputVol = await _audioService.GetInputVolumeAsync(token);
-                var isInputMuted = await _audioService.GetInputMutedAsync(token);
                 
                 Dispatcher.UIThread.Post(() =>
                 {
@@ -175,9 +171,6 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                     {
                         QuickMicVolumeSlider.Value = inputVol.Value;
                     }
-                    _isMicMuted = isInputMuted;
-                    if (QuickMuteMicIcon != null) QuickMuteMicIcon.Text = _isMicMuted ? "mic_off" : "mic";
-                    if (QuickMuteMicText != null) QuickMuteMicText.Text = _isMicMuted ? "Unmute Microphone" : "Mute Microphone";
                 });
             }
         }
@@ -201,12 +194,6 @@ public partial class ConsoleQuickMenuOverlay : UserControl
 
         try
         {
-            if (HintTabLeftImage != null)
-                HintTabLeftImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-L1.png" : "left-bumper.png"))));
-
-            if (HintTabRightImage != null)
-                HintTabRightImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-R1.png" : "right-bumper.png"))));
-
             if (HintCategoryDpadImage != null)
                 HintCategoryDpadImage.Source = new Bitmap(AssetLoader.Open(new Uri(prefix + (isPlayStation ? "plain-bottom.png" : "dpad.png"))));
 
@@ -220,32 +207,11 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         {
             // Graceful fallback
         }
-
-        bool onBottomBar = !_isCardFocused;
-
-        if (HintTabLeftImage != null) HintTabLeftImage.IsVisible = onBottomBar;
-        if (HintTabRightImage != null) HintTabRightImage.IsVisible = onBottomBar;
-        if (HintSlashText != null) HintSlashText.IsVisible = onBottomBar;
-        if (HintCategoryDpadImage != null) HintCategoryDpadImage.IsVisible = !onBottomBar;
-
-        if (HintNavText != null)
-        {
-            HintNavText.Text = onBottomBar ? "Change Category" : "Navigate";
-        }
-
-        if (HintConfirmText != null)
-        {
-            HintConfirmText.Text = onBottomBar ? "Open Section" : "Select Action";
-        }
-
-        if (HintBackText != null)
-        {
-            HintBackText.Text = onBottomBar ? "Close" : "Back to Tabs";
-        }
     }
 
     public async void HideQuickMenu()
     {
+        _clockTimer?.Stop();
         Opacity = 0;
         IsHitTestVisible = false;
         Closed?.Invoke(this, EventArgs.Empty);
@@ -256,274 +222,124 @@ public partial class ConsoleQuickMenuOverlay : UserControl
 
     public void Navigate(ControllerNavigationAction action)
     {
-        switch (action)
-        {
-            case ControllerNavigationAction.PreviousSection:
-                _activeIconIndex = (_activeIconIndex - 1 + _quickCategories.Length) % _quickCategories.Length;
-                SelectCategory(_quickCategories[_activeIconIndex]);
-                if (_isCardFocused)
-                {
-                    FocusFirstControlInActiveCard();
-                }
-                else
-                {
-                    FocusCurrentCategoryButton();
-                }
-                break;
-
-            case ControllerNavigationAction.NextSection:
-                _activeIconIndex = (_activeIconIndex + 1) % _quickCategories.Length;
-                SelectCategory(_quickCategories[_activeIconIndex]);
-                if (_isCardFocused)
-                {
-                    FocusFirstControlInActiveCard();
-                }
-                else
-                {
-                    FocusCurrentCategoryButton();
-                }
-                break;
-
-            case ControllerNavigationAction.Left:
-                var focusedL = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-                if (!_isCardFocused)
-                {
-                    _activeIconIndex = (_activeIconIndex - 1 + _quickCategories.Length) % _quickCategories.Length;
-                    SelectCategory(_quickCategories[_activeIconIndex]);
-                    FocusCurrentCategoryButton();
-                }
-                else if (focusedL is ConsolePillSlider pillL)
-                {
-                    pillL.Value = Math.Max(pillL.Minimum, pillL.Value - pillL.Step);
-                }
-                else
-                {
-                    MoveCardFocus(-1);
-                }
-                break;
-
-            case ControllerNavigationAction.Right:
-                var focusedR = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-                if (!_isCardFocused)
-                {
-                    _activeIconIndex = (_activeIconIndex + 1) % _quickCategories.Length;
-                    SelectCategory(_quickCategories[_activeIconIndex]);
-                    FocusCurrentCategoryButton();
-                }
-                else if (focusedR is ConsolePillSlider pillR)
-                {
-                    pillR.Value = Math.Min(pillR.Maximum, pillR.Value + pillR.Step);
-                }
-                else
-                {
-                    MoveCardFocus(1);
-                }
-                break;
-
-            case ControllerNavigationAction.Up:
-                if (!_isCardFocused)
-                {
-                    _isCardFocused = true;
-                    FocusFirstControlInActiveCard();
-                }
-                else
-                {
-                    MoveCardFocus(-1);
-                }
-                break;
-
-            case ControllerNavigationAction.Down:
-                if (!_isCardFocused)
-                {
-                    // Already on bottom category bar
-                }
-                else
-                {
-                    MoveCardFocus(1);
-                }
-                break;
-
-            case ControllerNavigationAction.Confirm:
-                var focused = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-                if (!_isCardFocused)
-                {
-                    _isCardFocused = true;
-                    FocusFirstControlInActiveCard();
-                }
-                else if (focused is Button btn)
-                {
-                    btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-                }
-                break;
-
-            case ControllerNavigationAction.Back:
-            case ControllerNavigationAction.OpenConsole:
-                if (_isCardFocused)
-                {
-                    FocusCurrentCategoryButton();
-                }
-                else
-                {
-                    HideQuickMenu();
-                }
-                break;
-        }
-    }
-
-    private List<IInputElement> GetFocusableControlsInActiveCard()
-    {
-        var controls = new List<IInputElement>();
-        var category = _quickCategories[_activeIconIndex];
-        switch (category)
-        {
-            case "Home":
-                if (BtnGoHome?.IsVisible == true) controls.Add(BtnGoHome);
-                if (BtnExitDesktop?.IsVisible == true) controls.Add(BtnExitDesktop);
-                break;
-            case "Sound":
-                if (QuickMasterVolumeSlider?.IsVisible == true) controls.Add(QuickMasterVolumeSlider);
-                if (QuickMicVolumeSlider?.IsVisible == true) controls.Add(QuickMicVolumeSlider);
-                if (QuickMuteMicBtn?.IsVisible == true) controls.Add(QuickMuteMicBtn);
-                break;
-            case "Media":
-                if (CardMediaPanel?.IsVisible == true)
-                {
-                    var mediaWidget = CardMediaPanel.Children.OfType<ConsoleMediaWidget>().FirstOrDefault();
-                    if (mediaWidget != null)
-                    {
-                        var prev = mediaWidget.FindControl<Button>("PreviousButton");
-                        var play = mediaWidget.FindControl<Button>("PlayPauseButton");
-                        var next = mediaWidget.FindControl<Button>("NextButton");
-                        if (prev != null) controls.Add(prev);
-                        if (play != null) controls.Add(play);
-                        if (next != null) controls.Add(next);
-                    }
-                }
-                break;
-            case "Power":
-                if (BtnPowerRestart?.IsVisible == true) controls.Add(BtnPowerRestart);
-                if (BtnPowerDesktop?.IsVisible == true) controls.Add(BtnPowerDesktop);
-                if (BtnPowerShutdown?.IsVisible == true) controls.Add(BtnPowerShutdown);
-                break;
-        }
-        return controls;
-    }
-
-    private void MoveCardFocus(int direction)
-    {
-        var controls = GetFocusableControlsInActiveCard();
-        if (controls.Count == 0) return;
-
         var focused = TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement();
-        int currentIndex = controls.FindIndex(c => ReferenceEquals(c, focused));
 
-        if (currentIndex < 0)
+        if (action == ControllerNavigationAction.Confirm)
         {
-            controls[0].Focus();
+            if (focused is Button btn)
+            {
+                btn.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            }
             return;
         }
 
-        int newIndex = currentIndex + direction;
-        if (newIndex >= 0 && newIndex < controls.Count)
-        {
-            controls[newIndex].Focus();
-        }
-        else if (direction > 0 && newIndex >= controls.Count)
-        {
-            FocusCurrentCategoryButton();
-        }
-        else if (direction < 0 && newIndex < 0)
-        {
-            FocusCurrentCategoryButton();
-        }
-    }
-
-    private void SelectCategory(string category)
-    {
-        var labelText = category == "Controller" ? "Accessories" : category;
-        if (QuickBarCategoryTitle != null)
-        {
-            QuickBarCategoryTitle.Text = labelText;
-            if (QuickBarCategoryTitle.RenderTransform is TranslateTransform tt)
-            {
-                tt.X = (_activeIconIndex - 2.5) * 62.0;
-            }
-        }
-
-        // Highlight Active Icon Button
-        if (BtnQuickHome != null) BtnQuickHome.Classes.Set("Active", category == "Home");
-        if (BtnQuickSwitcher != null) BtnQuickSwitcher.Classes.Set("Active", category == "Switcher");
-        if (BtnQuickNotifications != null) BtnQuickNotifications.Classes.Set("Active", category == "Notifications");
-        if (BtnQuickSound != null) BtnQuickSound.Classes.Set("Active", category == "Sound");
-        if (BtnQuickMedia != null) BtnQuickMedia.Classes.Set("Active", category == "Media");
-        if (BtnQuickController != null) BtnQuickController.Classes.Set("Active", category == "Controller");
-        if (BtnQuickPower != null) BtnQuickPower.Classes.Set("Active", category == "Power");
-
-        // Toggle Dynamic Cards
-        if (CardHomePanel != null) CardHomePanel.IsVisible = category == "Home";
-        if (CardSwitcherPanel != null) CardSwitcherPanel.IsVisible = category == "Switcher";
-        if (CardNotificationsPanel != null) CardNotificationsPanel.IsVisible = category == "Notifications";
-        if (CardSoundPanel != null) CardSoundPanel.IsVisible = category == "Sound";
-        if (CardMediaPanel != null) CardMediaPanel.IsVisible = category == "Media";
-        if (CardControllerPanel != null) CardControllerPanel.IsVisible = category == "Controller";
-        if (CardPowerPanel != null) CardPowerPanel.IsVisible = category == "Power";
-    }
-
-    private void FocusCurrentCategoryButton()
-    {
-        _isCardFocused = false;
-        UpdateControllerHintIcons();
-        switch (_activeIconIndex)
-        {
-            case 0: BtnQuickHome?.Focus(); break;
-            case 1: BtnQuickSwitcher?.Focus(); break;
-            case 2: BtnQuickNotifications?.Focus(); break;
-            case 3: BtnQuickSound?.Focus(); break;
-            case 4: BtnQuickMedia?.Focus(); break;
-            case 5: BtnQuickController?.Focus(); break;
-            case 6: BtnQuickPower?.Focus(); break;
-        }
-    }
-
-    private void FocusFirstControlInActiveCard()
-    {
-        _isCardFocused = true;
-        UpdateControllerHintIcons();
-        var controls = GetFocusableControlsInActiveCard();
-        if (controls.Count > 0)
-        {
-            controls[0].Focus();
-        }
-        else
-        {
-            FocusCurrentCategoryButton();
-        }
-    }
-
-    private void ExecuteCategoryAction(string category)
-    {
-        if (category == "Home")
+        if (action == ControllerNavigationAction.Back || action == ControllerNavigationAction.OpenConsole)
         {
             HideQuickMenu();
-            GoHomeRequested?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        if (focused == null) return;
+        
+        if (action == ControllerNavigationAction.Left && focused is ConsolePillSlider pillL)
+        {
+            pillL.Value = Math.Max(pillL.Minimum, pillL.Value - pillL.Step);
+            return;
+        }
+        if (action == ControllerNavigationAction.Right && focused is ConsolePillSlider pillR)
+        {
+            pillR.Value = Math.Min(pillR.Maximum, pillR.Value + pillR.Step);
+            return;
+        }
+
+        IInputElement? next = null;
+
+        // Custom grid mapping
+        if (focused == BtnGoHome)
+        {
+            if (action == ControllerNavigationAction.Right) next = BtnExitDesktop;
+            else if (action == ControllerNavigationAction.Down) next = BtnRestart;
+        }
+        else if (focused == BtnExitDesktop)
+        {
+            if (action == ControllerNavigationAction.Left) next = BtnGoHome;
+            else if (action == ControllerNavigationAction.Down) next = BtnPowerOff;
+        }
+        else if (focused == BtnRestart)
+        {
+            if (action == ControllerNavigationAction.Right) next = BtnPowerOff;
+            else if (action == ControllerNavigationAction.Up) next = BtnGoHome;
+            else if (action == ControllerNavigationAction.Down) next = QuickMasterVolumeSlider;
+        }
+        else if (focused == BtnPowerOff)
+        {
+            if (action == ControllerNavigationAction.Left) next = BtnRestart;
+            else if (action == ControllerNavigationAction.Up) next = BtnExitDesktop;
+            else if (action == ControllerNavigationAction.Down) next = QuickMasterVolumeSlider;
+        }
+        else if (focused == QuickMasterVolumeSlider)
+        {
+            if (action == ControllerNavigationAction.Up) next = BtnRestart;
+            else if (action == ControllerNavigationAction.Down) next = QuickMicVolumeSlider;
+        }
+        else if (focused == QuickMicVolumeSlider)
+        {
+            if (action == ControllerNavigationAction.Up) next = QuickMasterVolumeSlider;
+            else if (action == ControllerNavigationAction.Down) next = PanelMediaWidget?.FindControl<Button>("PlayPauseButton");
+        }
+        
+        // Media buttons
+        var prev = PanelMediaWidget?.FindControl<Button>("PreviousButton");
+        var play = PanelMediaWidget?.FindControl<Button>("PlayPauseButton");
+        var nextBtn = PanelMediaWidget?.FindControl<Button>("NextButton");
+
+        if (focused == prev)
+        {
+            if (action == ControllerNavigationAction.Right) next = play;
+            else if (action == ControllerNavigationAction.Up) next = QuickMicVolumeSlider;
+            else if (action == ControllerNavigationAction.Down) next = GetFirstRecentGame();
+        }
+        else if (focused == play)
+        {
+            if (action == ControllerNavigationAction.Left) next = prev;
+            else if (action == ControllerNavigationAction.Right) next = nextBtn;
+            else if (action == ControllerNavigationAction.Up) next = QuickMicVolumeSlider;
+            else if (action == ControllerNavigationAction.Down) next = GetFirstRecentGame();
+        }
+        else if (focused == nextBtn)
+        {
+            if (action == ControllerNavigationAction.Left) next = play;
+            else if (action == ControllerNavigationAction.Up) next = QuickMicVolumeSlider;
+            else if (action == ControllerNavigationAction.Down) next = GetFirstRecentGame();
+        }
+
+        // Recent Games (dynamic)
+        if (RecentGamesStack != null && RecentGamesStack.Children.Contains(focused as Control))
+        {
+            int idx = RecentGamesStack.Children.IndexOf(focused as Control);
+            if (action == ControllerNavigationAction.Left && idx > 0)
+                next = RecentGamesStack.Children[idx - 1] as IInputElement;
+            else if (action == ControllerNavigationAction.Right && idx < RecentGamesStack.Children.Count - 1)
+                next = RecentGamesStack.Children[idx + 1] as IInputElement;
+            else if (action == ControllerNavigationAction.Up)
+                next = play;
+        }
+
+        if (next != null)
+        {
+            next.Focus();
+            if (next is Control c && PanelScrollViewer != null)
+            {
+                Dispatcher.UIThread.Post(() => c.BringIntoView(), DispatcherPriority.Render);
+            }
         }
     }
 
-    private void OnIconBarItemClicked(object? sender, RoutedEventArgs e)
+    private IInputElement? GetFirstRecentGame()
     {
-        if (sender is Button btn && btn.Tag is string tag)
-        {
-            for (int i = 0; i < _quickCategories.Length; i++)
-            {
-                if (_quickCategories[i] == tag)
-                {
-                    _activeIconIndex = i;
-                    SelectCategory(tag);
-                    FocusCurrentCategoryButton();
-                    break;
-                }
-            }
-        }
+        if (RecentGamesStack != null && RecentGamesStack.Children.Count > 0)
+            return RecentGamesStack.Children[0] as IInputElement;
+        return null;
     }
 
     private void OnGoHomeClicked(object? sender, RoutedEventArgs e)
@@ -536,14 +352,8 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     {
         if (_audioService != null)
         {
-            try
-            {
-                await _audioService.SetVolumeAsync(value).ConfigureAwait(true);
-            }
-            catch
-            {
-                // Best effort
-            }
+            try { await _audioService.SetVolumeAsync(value).ConfigureAwait(true); }
+            catch { }
         }
     }
 
@@ -551,34 +361,8 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     {
         if (_audioService != null)
         {
-            try
-            {
-                await _audioService.SetInputVolumeAsync(value).ConfigureAwait(true);
-            }
-            catch
-            {
-                // Best effort
-            }
-        }
-    }
-
-    private async void OnQuickToggleMicMute(object? sender, RoutedEventArgs e)
-    {
-        if (_audioService != null)
-        {
-            _isMicMuted = !_isMicMuted;
-            try
-            {
-                await _audioService.SetInputMutedAsync(_isMicMuted).ConfigureAwait(true);
-            }
-            catch
-            {
-                // Revert on failure
-                _isMicMuted = !_isMicMuted;
-            }
-            
-            if (QuickMuteMicIcon != null) QuickMuteMicIcon.Text = _isMicMuted ? "mic_off" : "mic";
-            if (QuickMuteMicText != null) QuickMuteMicText.Text = _isMicMuted ? "Unmute Microphone" : "Mute Microphone";
+            try { await _audioService.SetInputVolumeAsync(value).ConfigureAwait(true); }
+            catch { }
         }
     }
 
