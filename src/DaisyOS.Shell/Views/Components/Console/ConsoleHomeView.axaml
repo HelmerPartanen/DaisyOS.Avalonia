@@ -480,8 +480,8 @@
               <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,2,0,0" />
             </StackPanel>
 
-            <StackPanel Spacing="12" ClipToBounds="False">
-              <TextBlock x:Name="LibraryCountText" Text="0 Games" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" Margin="4,0,0,0" />
+            <StackPanel Spacing="0" ClipToBounds="False">
+              <TextBlock x:Name="LibraryCountText" Text="0 Games" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" Margin="0,0,0,24" />
               
               <!-- Grid Container -->
               <ItemsControl x:Name="LibraryGrid" ItemsSource="{Binding AllLibraryGames}" ItemTemplate="{StaticResource GameCardTemplate}" ClipToBounds="False" HorizontalAlignment="Stretch" VerticalAlignment="Top">
