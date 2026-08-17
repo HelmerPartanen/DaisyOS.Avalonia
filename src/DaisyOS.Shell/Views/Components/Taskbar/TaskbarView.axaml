@@ -68,6 +68,8 @@
             VerticalAlignment="Center"
             Padding="6"
             Background="{DynamicResource PrimarySurfaceBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="2"
             CornerRadius="{DynamicResource RoundedXL}"
             ClipToBounds="True">
       <Border.Transitions>

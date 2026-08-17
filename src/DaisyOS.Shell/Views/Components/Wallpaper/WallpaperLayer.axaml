@@ -6,7 +6,7 @@
     IsHitTestVisible="False">
   <!-- Layout overscan, rather than a scale transform, keeps the image continuous during parallax. -->
   <Image x:Name="WallpaperImage"
-         Source="avares://DaisyOS.Shell/Assets/Wallpapers/Dusk.png"
+         Source="avares://DaisyOS.Shell/Assets/Wallpapers/Wallpaper.jpg"
          Stretch="UniformToFill"
          HorizontalAlignment="Center"
          VerticalAlignment="Center"

@@ -16,11 +16,13 @@
   <Border x:Name="MediaFrame"
           Height="52"
           Background="{DynamicResource PrimarySurfaceBrush}"
+          BorderBrush="{DynamicResource BorderBrush}"
+          BorderThickness="2"
           CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
     <Grid>
       <!-- The adaptive artwork color sits above the shared System Bar material. -->
-      <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False"/>
+      <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False" CornerRadius="{DynamicResource RoundedXL}"/>
       <Grid Margin="4" ColumnDefinitions="44,*,120,28">
       <Border Width="44" Height="44" CornerRadius="{DynamicResource RoundedLG}" ClipToBounds="True">
         <Grid>

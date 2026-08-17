@@ -34,6 +34,7 @@ OPACITY VALUES
       <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#F2FFFFFF" />
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1A000000" />
       <SolidColorBrush x:Key="DividerBrush" Color="#26000000" />
+      <SolidColorBrush x:Key="BorderBrush" Color="#0D000000" />
 
       <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FF000000" />
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CC000000" />
@@ -83,6 +84,7 @@ OPACITY VALUES
       <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="{StaticResource GlobalElevatedSurfaceColor}" Opacity="0.95" />
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1AFFFFFF" />
       <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource GlobalDividerColor}" />
+      <SolidColorBrush x:Key="BorderBrush" Color="#0DFFFFFF" />
 
       <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource GlobalTextPrimaryColor}" />
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource GlobalTextSecondaryColor}" />
