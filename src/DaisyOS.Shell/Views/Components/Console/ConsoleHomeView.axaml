@@ -88,7 +88,13 @@
                               Content="{TemplateBinding Content}"
                               ContentTemplate="{TemplateBinding ContentTemplate}"
                               Padding="{TemplateBinding Padding}"
-                              ClipToBounds="True" />
+                              ClipToBounds="True">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
           </Panel>
         </ControlTemplate>
       </Setter>
@@ -195,7 +201,13 @@
                               Padding="{TemplateBinding Padding}"
                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                              ClipToBounds="True" />
+                              ClipToBounds="True">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
           </Panel>
         </ControlTemplate>
       </Setter>
@@ -269,8 +281,14 @@
                     BorderThickness="2"
                     CornerRadius="16"
                     Margin="-5"
-                    IsVisible="False"
-                    ClipToBounds="False" />
+                    Opacity="0"
+                    ClipToBounds="False">
+              <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </Border.Transitions>
+            </Border>
 
             <ContentPresenter x:Name="PART_ContentPresenter"
                               Background="{TemplateBinding Background}"
@@ -282,7 +300,13 @@
                               Padding="{TemplateBinding Padding}"
                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                              ClipToBounds="True" />
+                              ClipToBounds="True">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
           </Panel>
         </ControlTemplate>
       </Setter>
@@ -320,8 +344,14 @@
                     BorderThickness="2"
                     CornerRadius="16"
                     Margin="-5"
-                    IsVisible="False"
-                    ClipToBounds="False" />
+                    Opacity="0"
+                    ClipToBounds="False">
+              <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </Border.Transitions>
+            </Border>
 
             <ContentPresenter x:Name="PART_ContentPresenter"
                               Background="{TemplateBinding Background}"
@@ -333,7 +363,13 @@
                               Padding="{TemplateBinding Padding}"
                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                              ClipToBounds="True" />
+                              ClipToBounds="True">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
           </Panel>
         </ControlTemplate>
       </Setter>

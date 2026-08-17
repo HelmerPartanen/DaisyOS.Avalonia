@@ -50,7 +50,13 @@
                               Padding="{TemplateBinding Padding}"
                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                              ClipToBounds="True" />
+                              ClipToBounds="True">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
           </Panel>
         </ControlTemplate>
       </Setter>

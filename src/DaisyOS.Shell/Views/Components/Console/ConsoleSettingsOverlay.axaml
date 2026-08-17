@@ -48,6 +48,11 @@
                     Margin="-5"
                     Opacity="0"
                     ClipToBounds="False">
+              <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </Border.Transitions>
             </Border>
 
             <ContentPresenter x:Name="PART_ContentPresenter"
@@ -60,14 +65,20 @@
                               Padding="{TemplateBinding Padding}"
                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                              ClipToBounds="True" />
+                              ClipToBounds="True">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
           </Panel>
         </ControlTemplate>
       </Setter>
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon:focus /template/ Border#PART_FocusRing">
-      <Setter Property="IsVisible" Value="True" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon:pointerover /template/ Border#PART_FocusRing">
@@ -97,6 +108,11 @@
                     Margin="-4"
                     Opacity="0"
                     ClipToBounds="False">
+              <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </Border.Transitions>
             </Border>
 
             <ContentPresenter x:Name="PART_ContentPresenter"
@@ -109,7 +125,13 @@
                               Padding="{TemplateBinding Padding}"
                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                              ClipToBounds="True" />
+                              ClipToBounds="True">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
           </Panel>
         </ControlTemplate>
       </Setter>
@@ -167,6 +189,9 @@
                     Opacity="0"
                     ClipToBounds="False">
               <Border.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
               </Border.Transitions>
             </Border>
 
@@ -180,7 +205,13 @@
                               Padding="{TemplateBinding Padding}"
                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                              ClipToBounds="True" />
+                              ClipToBounds="True">
+              <ContentPresenter.Transitions>
+                <Transitions>
+                  <BrushTransition Property="Background" Duration="0:0:0.15" Easing="QuadraticEaseOut" />
+                </Transitions>
+              </ContentPresenter.Transitions>
+            </ContentPresenter>
           </Panel>
         </ControlTemplate>
       </Setter>
@@ -222,7 +253,7 @@
 
     <!-- Top Header Row -->
     <Grid Grid.Row="0"
-          Margin="32,24,36,8"
+          Margin="32,36,36,24"
           ColumnDefinitions="Auto,*,Auto"
           VerticalAlignment="Center">
 
@@ -272,9 +303,11 @@
       <!-- Full Height Categories Sidebar -->
       <Border Grid.Column="0"
               Background="{DynamicResource ConsoleSurfaceBrush}"
-              CornerRadius="20"
+              CornerRadius="32"
+              BorderBrush="{DynamicResource ConsoleDividerBrush}"
+              BorderThickness="1"
               Padding="12,16"
-              VerticalAlignment="Stretch"
+              VerticalAlignment="Top"
               ClipToBounds="False">
 
         <StackPanel Spacing="6" ClipToBounds="False">
@@ -391,6 +424,7 @@
                                                 x:Name="MasterVolumePillSlider"
                                                 Icon="volume_up"
                                                 Value="50"
+                                                Width="360"
                                                 ValueChanged="OnMasterVolumePillChanged" />
                   </Grid>
                 </Button>
@@ -408,6 +442,7 @@
                                                 x:Name="MicVolumePillSlider"
                                                 Icon="mic"
                                                 Value="50"
+                                                Width="360"
                                                 ValueChanged="OnMicVolumePillChanged" />
                   </Grid>
                 </Button>
@@ -594,7 +629,8 @@
                     <controls:ConsolePillSlider Grid.Column="1"
                                                 x:Name="BrightnessPillSlider"
                                                 Icon="light_mode"
-                                                Value="100" />
+                                                Value="100"
+                                                Width="360" />
 
                   </Grid>
                 </Button>
