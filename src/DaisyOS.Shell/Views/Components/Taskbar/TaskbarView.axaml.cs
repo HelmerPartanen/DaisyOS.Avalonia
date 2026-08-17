@@ -32,7 +32,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private Canvas? _canvas;
         private Button? _startButton;
         private Border? _taskbarBody;
-        private Avalonia.Controls.Shapes.Path? _bottomEdgeBridge;
+
         private readonly List<Button> _order = new();
         private readonly Dictionary<string, NativeAppWindowState> _windowStates = new(StringComparer.Ordinal);
         private readonly Dictionary<string, string> _appNames = new(StringComparer.Ordinal);
@@ -61,8 +61,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
 
             _canvas = this.FindControl<Canvas>("AppIconsCanvas");
             _taskbarBody = this.FindControl<Border>("TaskbarBody");
-            _bottomEdgeBridge = this.FindControl<Avalonia.Controls.Shapes.Path>("BottomEdgeBridge");
-            _taskbarBody?.SizeChanged += (_, _) => UpdateBottomEdgeBridge();
+
 
             if (_canvas != null)
             {
@@ -212,46 +211,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             button.SetValue(AutomationProperties.NameProperty, accessibleName);
         }
 
-        private void UpdateBottomEdgeBridge()
-        {
-            if (_taskbarBody is null || _bottomEdgeBridge is null)
-            {
-                return;
-            }
 
-            var width = _taskbarBody.Bounds.Width;
-            var height = _taskbarBody.Bounds.Height;
-            if (width <= 0 || height <= 0)
-            {
-                _bottomEdgeBridge.Data = null;
-                return;
-            }
-
-            var center = width / 2;
-            var bodyHalfWidth = width / 2;
-            var edgeHalfWidth = bodyHalfWidth + BottomEdgeFlare;
-            // Start at the visual midpoint, leaving the upper half calm while
-            // the lower half flares into the physical bottom bezel.
-            var joinY = height / 2;
-
-            var geometry = new StreamGeometry();
-            using var context = geometry.Open();
-            context.BeginFigure(new Point(center - edgeHalfWidth, height), isFilled: true);
-            context.LineTo(new Point(center + edgeHalfWidth, height), isStroked: false);
-            context.CubicBezierTo(
-                new Point(center + edgeHalfWidth, height),
-                new Point(center + bodyHalfWidth, height),
-                new Point(center + bodyHalfWidth, joinY),
-                isStroked: false);
-            context.LineTo(new Point(center - bodyHalfWidth, joinY), isStroked: false);
-            context.CubicBezierTo(
-                new Point(center - bodyHalfWidth, height),
-                new Point(center - edgeHalfWidth, height),
-                new Point(center - edgeHalfWidth, height),
-                isStroked: false);
-            context.EndFigure(isClosed: true);
-            _bottomEdgeBridge.Data = geometry;
-        }
 
         public void AddTestApp()
         {

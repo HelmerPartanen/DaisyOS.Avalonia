@@ -5,7 +5,7 @@
     xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia"
     HorizontalAlignment="Center"
     VerticalAlignment="Bottom"
-    Margin="0"
+    Margin="0,0,0,4"
     ClipToBounds="False">
 
   <UserControl.Styles>
@@ -62,11 +62,6 @@
   </UserControl.Styles>
 
   <Grid HorizontalAlignment="Center" ClipToBounds="False">
-    <!-- Canvas does not participate in desired-size measurement; the dock body remains dynamic-width. -->
-    <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ClipToBounds="False" IsHitTestVisible="False">
-      <Path x:Name="BottomEdgeBridge"
-            Fill="{DynamicResource PrimarySurfaceBrush}" />
-    </Canvas>
     <Border x:Name="TaskbarBody"
             Height="52"
             HorizontalAlignment="Center"
