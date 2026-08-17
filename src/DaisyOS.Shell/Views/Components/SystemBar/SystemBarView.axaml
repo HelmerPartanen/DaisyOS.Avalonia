@@ -18,6 +18,12 @@
   </UserControl.Resources>
 
   <UserControl.Styles>
+    <!-- Subtle shadow for the System Bar button glyphs and clock text. -->
+    <Style Selector="Border#SystemBarFrame Button TextBlock">
+      <Setter Property="Effect">
+        <DropShadowEffect OffsetX="0" OffsetY="1" BlurRadius="2" Color="Black" Opacity="0.30"/>
+      </Setter>
+    </Style>
     <Style Selector="Button.VolumeOutputDetails">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
