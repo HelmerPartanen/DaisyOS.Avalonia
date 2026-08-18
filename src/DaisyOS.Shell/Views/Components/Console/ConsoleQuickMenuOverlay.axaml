@@ -151,7 +151,7 @@
         <Border Grid.Row="1" 
                 Width="6" 
                 CornerRadius="3" 
-                Background="{DynamicResource ConsoleTextTertiaryBrush}" />
+                Background="{DynamicResource ConsoleTextSecondaryBrush}" />
       </Grid>
 
       <!-- Floating Dashboard Island -->
