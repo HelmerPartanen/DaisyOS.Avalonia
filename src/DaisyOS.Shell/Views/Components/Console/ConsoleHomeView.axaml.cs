@@ -69,7 +69,7 @@ public partial class ConsoleHomeView : UserControl
     }
 
     public event EventHandler<string>? DestinationRequested;
-    public event EventHandler<GameIdentity>? GameLaunchRequested;
+    public event EventHandler<ConsoleGameItemViewModel>? GameLaunchRequested;
     public event EventHandler<double>? SelectionChanged;
     public event EventHandler? SettingsRequested;
 
@@ -234,9 +234,11 @@ public partial class ConsoleHomeView : UserControl
             {
                 _librarySelectedIndex = _allLibraryGames.IndexOf(vm);
             }
-            
-            GameLaunchRequested?.Invoke(this, vm.Game);
-            DestinationRequested?.Invoke(this, vm.Title);
+            if (vm != null)
+            {
+                GameLaunchRequested?.Invoke(this, vm);
+                DestinationRequested?.Invoke(this, vm.Title);
+            }
         }
     }
 
@@ -335,8 +337,9 @@ public partial class ConsoleHomeView : UserControl
                 case ControllerNavigationAction.Confirm:
                     if (_selectedIndex < _recentGames.Count)
                     {
-                        GameLaunchRequested?.Invoke(this, _recentGames[_selectedIndex].Game);
-                        DestinationRequested?.Invoke(this, _recentGames[_selectedIndex].Title);
+                        var vm = _recentGames[_selectedIndex];
+                        GameLaunchRequested?.Invoke(this, vm);
+                        DestinationRequested?.Invoke(this, vm.Title);
                     }
                     break;
             }
@@ -381,8 +384,9 @@ public partial class ConsoleHomeView : UserControl
                 case ControllerNavigationAction.Confirm:
                     if (_librarySelectedIndex < _allLibraryGames.Count)
                     {
-                        GameLaunchRequested?.Invoke(this, _allLibraryGames[_librarySelectedIndex].Game);
-                        DestinationRequested?.Invoke(this, _allLibraryGames[_librarySelectedIndex].Title);
+                        var vm = _allLibraryGames[_librarySelectedIndex];
+                        GameLaunchRequested?.Invoke(this, vm);
+                        DestinationRequested?.Invoke(this, vm.Title);
                     }
                     break;
             }
@@ -502,11 +506,23 @@ public partial class ConsoleHomeView : UserControl
         SelectionChanged?.Invoke(this, ParallaxPosition);
     }
 
-    private void UpdateSelectedGameSpotlight(ConsoleGameItemViewModel vm)
+    public void UpdateSelectedGameSpotlight(ConsoleGameItemViewModel vm)
     {
         SelectedGameTitleText.Text = vm.Title;
         SelectedGameSourceText.Text = vm.SourceText.ToUpperInvariant();
-        SelectedGameSubtext.Text = "Recently Played • Ready to play";
+        
+        string prefix = _activeTab == "Recents" ? "Recently Played • " : "Library • ";
+        
+        if (vm.IsRunning)
+        {
+            SelectedGameSubtext.Text = prefix + "Running";
+            SelectedGameSubtext.Foreground = Avalonia.Media.Brushes.LimeGreen;
+        }
+        else
+        {
+            SelectedGameSubtext.Text = prefix + "Ready to play";
+            SelectedGameSubtext.Foreground = Avalonia.Media.Brushes.White;
+        }
 
         var bgImage = vm.HeroImage ?? vm.CoverImage ?? vm.LogoImage;
         

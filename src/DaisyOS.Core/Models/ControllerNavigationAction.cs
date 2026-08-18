@@ -13,5 +13,6 @@ public enum ControllerNavigationAction
     PreviousSection,
     NextSection,
     OpenConsole,
+    OpenConsoleHold,
     Details
 }

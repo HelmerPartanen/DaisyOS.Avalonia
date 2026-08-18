@@ -23,6 +23,20 @@ public sealed class ConsoleGameItemViewModel : INotifyPropertyChanged
     public string SourceText => Game.Source.ToString();
     public string SourceIdText => Game.SourceId ?? string.Empty;
 
+    private bool _isLaunching;
+    public bool IsLaunching
+    {
+        get => _isLaunching;
+        set { _isLaunching = value; OnPropertyChanged(); }
+    }
+
+    private bool _isRunning;
+    public bool IsRunning
+    {
+        get => _isRunning;
+        set { _isRunning = value; OnPropertyChanged(); }
+    }
+
     public IImage? CoverImage
     {
         get => _coverImage;

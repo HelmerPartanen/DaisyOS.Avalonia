@@ -6,7 +6,8 @@
     Title="DaisyOS Shell"
     WindowState="FullScreen"
     WindowDecorations="None"
-    Background="Black">
+    Background="Transparent"
+    TransparencyLevelHint="Transparent">
     <Grid>
         <views:ShellView x:Name="Shell" />
     </Grid>

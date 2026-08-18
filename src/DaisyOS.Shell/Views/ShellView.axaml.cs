@@ -8,6 +8,7 @@ using DaisyOS.Core.Services;
 using DaisyOS.Core.Models.Gaming;
 using DaisyOS.System.Controllers;
 using DaisyOS.System.Processes;
+using DaisyOS.Shell.ViewModels;
 using DaisyOS.Shell.Views.Components.Console;
 using DaisyOS.Shell.Views.Components.Launcher;
 using DaisyOS.Shell.Views.Components.SystemBar;
@@ -31,6 +32,7 @@ namespace DaisyOS.Shell.Views
         private bool _checkingController;
         private bool _consoleMode;
         private bool _consoleTransitionInProgress;
+        private bool _lastInputWasController;
 
         public ShellView()
             : this(new LinuxControllerService(), new LinuxControllerInputService())
@@ -49,6 +51,7 @@ namespace DaisyOS.Shell.Views
             InitializeComponent();
             ConsoleSettings.SetInputService(_controllerInputService);
             AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, Avalonia.Interactivity.RoutingStrategies.Tunnel);
+            AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, Avalonia.Interactivity.RoutingStrategies.Tunnel);
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
             _controllerInputService.NavigationRequested += OnControllerNavigationRequested;
@@ -62,6 +65,9 @@ namespace DaisyOS.Shell.Views
                 _controllerConnected = false;
                 await ReconcileConsoleModeAsync();
             };
+
+            ConsoleQuickMenu.Closed += (_, _) => SetOverlayMode(false);
+            
             ConsoleQuickMenu.GoHomeRequested += (_, _) =>
             {
                 ConsoleSettings.HideOverlay();
@@ -148,6 +154,7 @@ namespace DaisyOS.Shell.Views
 
             // Cache controls so they can be removed/added from the visual tree
             _desktopControls.Add(DesktopExperience);
+            _consoleControls.Clear();
             _consoleControls.Add(ConsoleHome);
             _consoleControls.Add(this.FindControl<Control>("ConsoleFeedbackHost")!);
             _consoleControls.Add(ConsoleSettings);
@@ -286,6 +293,14 @@ namespace DaisyOS.Shell.Views
                         if (_consoleMode)
                         {
                             ShellWallpaper.SetConsoleNavigationParallax(ConsoleHome.ParallaxPosition);
+                            if (_lastInputWasController)
+                            {
+                                Cursor = new Cursor(StandardCursorType.None);
+                            }
+                        }
+                        else
+                        {
+                            Cursor = Cursor.Default;
                         }
                     }
 
@@ -314,8 +329,23 @@ namespace DaisyOS.Shell.Views
 
         public void HideLauncher() => LauncherContent.IsVisible = false;
 
+        private void OnPointerMoved(object? sender, PointerEventArgs e)
+        {
+            if (_lastInputWasController)
+            {
+                _lastInputWasController = false;
+                Cursor = Cursor.Default;
+            }
+        }
+
         private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
         {
+            if (_lastInputWasController)
+            {
+                _lastInputWasController = false;
+                Cursor = Cursor.Default;
+            }
+
             if (e.Source is not Visual source)
             {
                 return;
@@ -338,6 +368,15 @@ namespace DaisyOS.Shell.Views
         {
             Dispatcher.UIThread.Post(() =>
             {
+                if (!_lastInputWasController)
+                {
+                    _lastInputWasController = true;
+                    if (_consoleMode)
+                    {
+                        Cursor = new Cursor(StandardCursorType.None);
+                    }
+                }
+
                 if (_consoleMode)
                 {
                     if (ConsoleQuickMenu.IsVisible)
@@ -348,9 +387,17 @@ namespace DaisyOS.Shell.Views
                     {
                         ConsoleSettings.Navigate(action);
                     }
+                    else if (action == ControllerNavigationAction.OpenConsoleHold)
+                    {
+                        SetOverlayMode(true);
+                        ConsoleQuickMenu.ShowQuickMenu();
+                    }
                     else if (action == ControllerNavigationAction.OpenConsole)
                     {
-                        ConsoleQuickMenu.ShowQuickMenu();
+                        if (ConsoleQuickMenu.IsVisible)
+                        {
+                            ConsoleQuickMenu.HideQuickMenu();
+                        }
                     }
                     else
                     {
@@ -372,8 +419,9 @@ namespace DaisyOS.Shell.Views
             }
         }
 
-        private static void LaunchConsoleGame(GameIdentity game)
+        private async void LaunchConsoleGame(ConsoleGameItemViewModel vm)
         {
+            var game = vm.Game;
             var launcher = new SafeProcessLauncher();
             var result = game.Source == GameStoreSource.Steam && !string.IsNullOrWhiteSpace(game.SourceId)
                 ? launcher.Launch("xdg-open", [$"steam://rungameid/{game.SourceId}"])
@@ -383,9 +431,40 @@ namespace DaisyOS.Shell.Views
                         ? launcher.Launch(game.ExecutablePath)
                         : new AppLaunchResult(false, $"{game.Title} has no launch target.");
 
-            (Application.Current as App)?.Feedback.Show(result.Succeeded
-                ? $"Launching {game.Title}…"
-                : $"DaisyOS could not launch {game.Title}.");
+            if (!result.Succeeded)
+            {
+                (Application.Current as App)?.Feedback.Show($"DaisyOS could not launch {game.Title}.");
+                return;
+            }
+
+            vm.IsLaunching = true;
+
+            if (_consoleMode)
+            {
+                var text = this.FindControl<TextBlock>("ConsoleFeedbackText");
+                var host = this.FindControl<Control>("ConsoleFeedbackHost");
+                if (text != null && host != null)
+                {
+                    text.Text = $"Launching {game.Title}…";
+                    host.IsVisible = true;
+                }
+            }
+            else
+            {
+                (Application.Current as App)?.Feedback.Show($"Launching {game.Title}…");
+            }
+
+            await global::System.Threading.Tasks.Task.Delay(3000);
+
+            vm.IsLaunching = false;
+            vm.IsRunning = true;
+            ConsoleHome.UpdateSelectedGameSpotlight(vm);
+
+            if (_consoleMode)
+            {
+                var host = this.FindControl<Control>("ConsoleFeedbackHost");
+                if (host != null) host.IsVisible = false;
+            }
         }
 
         private static bool IsWithin(Visual source, Visual container) =>
@@ -402,6 +481,30 @@ namespace DaisyOS.Shell.Views
                 _feedbackTimer.Stop();
                 _feedbackTimer.Start();
             });
+        }
+
+        private void SetOverlayMode(bool isOverlay)
+        {
+            var window = TopLevel.GetTopLevel(this) as Window;
+            if (window != null)
+            {
+                window.Topmost = isOverlay;
+            }
+
+            if (isOverlay)
+            {
+                RootGrid.Background = Avalonia.Media.Brushes.Transparent;
+                ConsoleHome.Opacity = 0;
+                DesktopExperience.Opacity = 0;
+                ShellWallpaper.Opacity = 0;
+            }
+            else
+            {
+                RootGrid.Background = Avalonia.Media.Brushes.Black;
+                ConsoleHome.Opacity = 1;
+                DesktopExperience.Opacity = 1;
+                ShellWallpaper.Opacity = 1;
+            }
         }
 
     }

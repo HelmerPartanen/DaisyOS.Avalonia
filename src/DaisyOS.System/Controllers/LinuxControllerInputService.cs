@@ -24,6 +24,8 @@ public sealed class LinuxControllerInputService : IControllerInputService
     private string? _activeDevicePath;
     private bool _playStationLayout;
     private ControllerKeybindingsConfig _keybindingsConfig = new();
+    private CancellationTokenSource? _openConsoleHoldCts;
+    private bool _openConsoleHoldFired;
 
     public LinuxControllerInputService(bool loadUserConfig = true)
     {
@@ -175,10 +177,10 @@ public sealed class LinuxControllerInputService : IControllerInputService
                     received += read;
                 }
 
-                var action = DecodeNavigation(buffer[6], BitConverter.ToInt16(buffer, 4), buffer[7], _playStationLayout);
-                if (action is { } navigationAction && !IsRebinding)
+                var state = DecodeNavigationWithState(buffer[6], BitConverter.ToInt16(buffer, 4), buffer[7], _playStationLayout);
+                if (state is { } parsedState)
                 {
-                    NavigationRequested?.Invoke(this, navigationAction);
+                    ProcessAction(parsedState.Action, parsedState.IsPressed);
                 }
             }
         }
@@ -219,13 +221,13 @@ public sealed class LinuxControllerInputService : IControllerInputService
                     received += read;
                 }
 
-                var action = DecodeEvdevNavigation(
+                var state = DecodeEvdevNavigationWithState(
                     BitConverter.ToUInt16(buffer, 16),
                     BitConverter.ToUInt16(buffer, 18),
                     BitConverter.ToInt32(buffer, 20));
-                if (action is { } navigationAction && !IsRebinding)
+                if (state is { } parsedState)
                 {
-                    NavigationRequested?.Invoke(this, navigationAction);
+                    ProcessAction(parsedState.Action, parsedState.IsPressed);
                 }
             }
         }
@@ -240,19 +242,61 @@ public sealed class LinuxControllerInputService : IControllerInputService
         }
     }
 
-    /// <summary>Maps a Linux js_event into a shell action. Kept public for deterministic tests.</summary>
-    public ControllerNavigationAction? DecodeNavigation(byte rawType, short value, byte number, bool playStationLayout = false)
+    private void ProcessAction(ControllerNavigationAction action, bool isPressed)
     {
-        if ((rawType & InitialStateFlag) != 0)
-        {
-            return null;
-        }
+        if (IsRebinding) return;
 
+        if (action == ControllerNavigationAction.OpenConsole)
+        {
+            if (isPressed)
+            {
+                _openConsoleHoldCts?.Cancel();
+                _openConsoleHoldCts = new CancellationTokenSource();
+                _openConsoleHoldFired = false;
+                var token = _openConsoleHoldCts.Token;
+                Task.Run(async () => 
+                {
+                    try
+                    {
+                        await Task.Delay(500, token);
+                        _openConsoleHoldFired = true;
+                        NavigationRequested?.Invoke(this, ControllerNavigationAction.OpenConsoleHold);
+                    }
+                    catch (TaskCanceledException)
+                    {
+                    }
+                });
+            }
+            else
+            {
+                if (_openConsoleHoldCts != null)
+                {
+                    _openConsoleHoldCts.Cancel();
+                    if (!_openConsoleHoldFired)
+                    {
+                        NavigationRequested?.Invoke(this, ControllerNavigationAction.OpenConsole);
+                    }
+                }
+                _openConsoleHoldCts = null;
+                _openConsoleHoldFired = false;
+            }
+        }
+        else if (isPressed)
+        {
+            NavigationRequested?.Invoke(this, action);
+        }
+    }
+
+    /// <summary>Maps a Linux js_event into a shell action. Kept public for deterministic tests.</summary>
+    public (ControllerNavigationAction Action, bool IsPressed)? DecodeNavigationWithState(byte rawType, short value, byte number, bool playStationLayout = false)
+    {
         var eventType = (byte)(rawType & ~InitialStateFlag);
         if (eventType == ButtonEvent)
         {
             RawInputReceived?.Invoke(this, new RawControllerInputEventArgs(eventType, number, value));
-            return value == 1 ? MapButton(number, playStationLayout) : null;
+            var mapped = MapButton(number, playStationLayout);
+            if (mapped.HasValue) return (mapped.Value, value == 1);
+            return null;
         }
 
         if (eventType != AxisEvent)
@@ -273,34 +317,45 @@ public sealed class LinuxControllerInputService : IControllerInputService
         }
 
         _activeAxes[number] = action.Value;
-        return action;
+        return (action.Value, true);
+    }
+
+    public ControllerNavigationAction? DecodeNavigation(byte rawType, short value, byte number, bool playStationLayout = false)
+    {
+        var state = DecodeNavigationWithState(rawType, value, number, playStationLayout);
+        return state is { IsPressed: true } ? state.Value.Action : null;
     }
 
     /// <summary>Maps the evdev fallback protocol used by event-only controllers.</summary>
-    public ControllerNavigationAction? DecodeEvdevNavigation(ushort type, ushort code, int value)
+    public (ControllerNavigationAction Action, bool IsPressed)? DecodeEvdevNavigationWithState(ushort type, ushort code, int value)
     {
         if (type == EvdevKeyEvent)
         {
             RawInputReceived?.Invoke(this, new RawControllerInputEventArgs(1, (byte)code, (short)value, code));
-            if (value != 1) return null;
 
+            ControllerNavigationAction? mappedAction = null;
             if (_keybindingsConfig.EvdevKeys.TryGetValue(code, out var actionName) &&
-                Enum.TryParse<ControllerNavigationAction>(actionName, ignoreCase: true, out var mappedAction))
+                Enum.TryParse<ControllerNavigationAction>(actionName, ignoreCase: true, out var parsedAction))
             {
-                return mappedAction;
+                mappedAction = parsedAction;
             }
-
-            return code switch
+            else
             {
-                0x130 => ControllerNavigationAction.Confirm,         // BTN_SOUTH / A / Cross
-                0x131 => ControllerNavigationAction.Back,            // BTN_EAST / B / Circle
-                0x133 => ControllerNavigationAction.QuickSettings,   // BTN_WEST / X / Square
-                0x134 => ControllerNavigationAction.Details,         // BTN_NORTH / Y / Triangle
-                0x136 => ControllerNavigationAction.PreviousSection, // BTN_TL / LB
-                0x137 => ControllerNavigationAction.NextSection,     // BTN_TR / RB
-                0x13c or 0x13d => ControllerNavigationAction.OpenConsole, // BTN_MODE variants
-                _ => null
-            };
+                mappedAction = code switch
+                {
+                    0x130 => ControllerNavigationAction.Confirm,         // BTN_SOUTH / A / Cross
+                    0x131 => ControllerNavigationAction.Back,            // BTN_EAST / B / Circle
+                    0x133 => ControllerNavigationAction.QuickSettings,   // BTN_WEST / X / Square
+                    0x134 => ControllerNavigationAction.Details,         // BTN_NORTH / Y / Triangle
+                    0x136 => ControllerNavigationAction.PreviousSection, // BTN_TL / LB
+                    0x137 => ControllerNavigationAction.NextSection,     // BTN_TR / RB
+                    0x13c or 0x13d => ControllerNavigationAction.OpenConsole, // BTN_MODE variants
+                    _ => null
+                };
+            }
+            
+            if (mappedAction.HasValue) return (mappedAction.Value, value == 1);
+            return null;
         }
 
         if (type != EvdevAbsoluteAxisEvent) return null;
@@ -325,7 +380,13 @@ public sealed class LinuxControllerInputService : IControllerInputService
         }
 
         _activeAxes[(byte)code] = action.Value;
-        return action;
+        return (action.Value, true);
+    }
+
+    public ControllerNavigationAction? DecodeEvdevNavigation(ushort type, ushort code, int value)
+    {
+        var state = DecodeEvdevNavigationWithState(type, code, value);
+        return state is { IsPressed: true } ? state.Value.Action : null;
     }
 
     private static ControllerNavigationAction? MapAxis(short value, byte axis) => axis switch
