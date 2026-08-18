@@ -1,10 +1,7 @@
 <Window x:Class="DaisyOS.Shell.Apps.Files.FilesWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
         Title="Files" Width="980" Height="640" MinWidth="620" MinHeight="420"
-        compositor:KWinBlur.IsEnabled="True"
-        compositor:KWinBlur.CornerRadius="{DynamicResource RoundedLGValue}"
         TextOptions.TextRenderingMode="SubpixelAntialias"
         Background="{DynamicResource PrimarySurfaceBrush}">
   <Grid RowDefinitions="Auto,*,Auto" Margin="20" RowSpacing="14">

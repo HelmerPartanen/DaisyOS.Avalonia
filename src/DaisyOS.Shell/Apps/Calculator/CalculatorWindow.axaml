@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:calculator="clr-namespace:DaisyOS.Shell.Apps.Calculator"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
-    xmlns:compositor="clr-namespace:DaisyOS.Shell.Services.Compositor"
     Title="Calculator"
     Width="360"
     Height="560"
@@ -23,9 +22,7 @@
             Margin="12"
             Background="{DynamicResource DividerBrush}"
             Padding="1"
-            CornerRadius="{DynamicResource RoundedLG}"
-            compositor:KWinBlur.IsEnabled="True"
-            compositor:KWinBlur.CornerRadius="{DynamicResource RoundedLGValue}">
+            CornerRadius="{DynamicResource RoundedLG}">
       <Border Background="{DynamicResource PrimarySurfaceBrush}"
               CornerRadius="{DynamicResource RoundedLGInset}"
               ClipToBounds="True">

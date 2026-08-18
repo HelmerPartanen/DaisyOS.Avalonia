@@ -7,7 +7,6 @@ using Avalonia.Styling;
 using DaisyOS.Core.Models;
 using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.Services;
-using DaisyOS.Shell.Services.Compositor;
 using DaisyOS.Shell.Services.Theming;
 using DaisyOS.Shell.Apps.System.Settings;
 using DaisyOS.Shell.Views;
@@ -22,7 +21,6 @@ namespace DaisyOS.Shell;
 
 public partial class App : Application
 {
-    private const int DefaultKWinBlurStrength = 8;
     private IWallpaperService? _wallpaperService;
     private readonly DynamicThemeService _dynamicThemeService = new(
         new WallpaperColorExtractor(),
@@ -58,13 +56,9 @@ public partial class App : Application
         {
             var mainWindow = new MainWindow();
             desktop.MainWindow = mainWindow;
-            mainWindow.Opened += async (_, _) =>
+            mainWindow.Opened += (_, _) =>
             {
                 ConfigureShellOverlays(mainWindow.ShellContent);
-
-                // This is a compositor-level setting shared by all KWin blur
-                // regions. Do not delay first paint while KWin updates it.
-                await KWinBlur.SetStrengthAsync(DefaultKWinBlurStrength);
             };
 
             try
