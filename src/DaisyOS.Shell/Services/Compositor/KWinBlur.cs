@@ -380,71 +380,75 @@ internal static class KWinNativeBlurRegion
         return window != IntPtr.Zero;
     }
 
+    private static readonly object _x11Lock = new();
+    private static IntPtr _sharedDisplay = IntPtr.Zero;
+    private static IntPtr _cachedBlurAtom = IntPtr.Zero;
+    private static bool _x11Failed;
+
+    private static (IntPtr display, IntPtr blurAtom) GetX11Context()
+    {
+        if (_x11Failed) return (IntPtr.Zero, IntPtr.Zero);
+        if (_sharedDisplay != IntPtr.Zero && _cachedBlurAtom != IntPtr.Zero)
+            return (_sharedDisplay, _cachedBlurAtom);
+
+        lock (_x11Lock)
+        {
+            if (_x11Failed) return (IntPtr.Zero, IntPtr.Zero);
+            if (_sharedDisplay != IntPtr.Zero && _cachedBlurAtom != IntPtr.Zero)
+                return (_sharedDisplay, _cachedBlurAtom);
+
+            try
+            {
+                _sharedDisplay = XOpenDisplay(IntPtr.Zero);
+                if (_sharedDisplay != IntPtr.Zero)
+                {
+                    _cachedBlurAtom = XInternAtom(_sharedDisplay, "_KDE_NET_WM_BLUR_BEHIND_REGION", false);
+                }
+                if (_sharedDisplay == IntPtr.Zero || _cachedBlurAtom == IntPtr.Zero)
+                {
+                    _x11Failed = true;
+                }
+            }
+            catch
+            {
+                _x11Failed = true;
+            }
+
+            return (_sharedDisplay, _cachedBlurAtom);
+        }
+    }
+
     private static bool TryChangeProperty(IntPtr window, IntPtr[] data)
     {
-        IntPtr display = IntPtr.Zero;
+        var (display, blurAtom) = GetX11Context();
+        if (display == IntPtr.Zero || blurAtom == IntPtr.Zero) return false;
+
         try
         {
-            display = XOpenDisplay(IntPtr.Zero);
-            if (display == IntPtr.Zero)
-            {
-                return false;
-            }
-
-            var blurAtom = XInternAtom(display, "_KDE_NET_WM_BLUR_BEHIND_REGION", false);
-            if (blurAtom == IntPtr.Zero)
-            {
-                return false;
-            }
-
             XChangeProperty(display, window, blurAtom, (IntPtr)XcbAtomCardinal, 32, PropModeReplace, data, data.Length);
             XFlush(display);
             return true;
         }
-        catch (DllNotFoundException)
+        catch
         {
             return false;
-        }
-        finally
-        {
-            if (display != IntPtr.Zero)
-            {
-                XCloseDisplay(display);
-            }
         }
     }
 
     private static bool TryClear(IntPtr window)
     {
-        IntPtr display = IntPtr.Zero;
+        var (display, blurAtom) = GetX11Context();
+        if (display == IntPtr.Zero || blurAtom == IntPtr.Zero) return false;
+
         try
         {
-            display = XOpenDisplay(IntPtr.Zero);
-            if (display == IntPtr.Zero)
-            {
-                return false;
-            }
-
-            var blurAtom = XInternAtom(display, "_KDE_NET_WM_BLUR_BEHIND_REGION", false);
-            if (blurAtom == IntPtr.Zero)
-            {
-                return false;
-            }
-
             XDeleteProperty(display, window, blurAtom);
             XFlush(display);
             return true;
         }
-        catch (DllNotFoundException)
+        catch
         {
             return false;
-        }
-        finally
-        {
-            if (display != IntPtr.Zero)
-            {
-                XCloseDisplay(display);
-            }
         }
     }
 

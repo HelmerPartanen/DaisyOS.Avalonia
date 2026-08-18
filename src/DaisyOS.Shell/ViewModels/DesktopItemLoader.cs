@@ -10,9 +10,16 @@ namespace DaisyOS.Shell.ViewModels;
 public static class DesktopItemLoader
 {
     private static readonly ConcurrentDictionary<string, Avalonia.Media.IImage?> _imageCache = new();
+    private static readonly ConcurrentDictionary<string, string> _iconPathCache = new();
+
     public static string ResolveIconPath(string iconName)
     {
         if (string.IsNullOrWhiteSpace(iconName)) return string.Empty;
+        return _iconPathCache.GetOrAdd(iconName, ResolveIconPathUncached);
+    }
+
+    private static string ResolveIconPathUncached(string iconName)
+    {
         if (File.Exists(iconName)) return iconName;
 
         var extensions = new[] { ".png", ".svg", ".xpm" };

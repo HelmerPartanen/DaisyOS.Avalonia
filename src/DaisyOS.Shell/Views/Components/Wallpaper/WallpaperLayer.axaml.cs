@@ -121,10 +121,16 @@ public partial class WallpaperLayer : UserControl
             return;
         }
 
-        // Give the Image genuine layout bleed rather than relying on a scale render transform.
-        // Avalonia can then paint its whole enlarged bitmap before the parent clips it.
-        WallpaperImage.Width = Bounds.Width * WallpaperScale;
-        WallpaperImage.Height = Bounds.Height * WallpaperScale;
+        double targetW = Bounds.Width * WallpaperScale;
+        double targetH = Bounds.Height * WallpaperScale;
+
+        if (Math.Abs(WallpaperImage.Width - targetW) < 0.5 && Math.Abs(WallpaperImage.Height - targetH) < 0.5)
+        {
+            return;
+        }
+
+        WallpaperImage.Width = targetW;
+        WallpaperImage.Height = targetH;
         _horizontalTravelLimit = Math.Max(0, Math.Min(
             MaximumParallaxOffset,
             (WallpaperImage.Width - Bounds.Width) / 2 - EdgeSafetyInset));

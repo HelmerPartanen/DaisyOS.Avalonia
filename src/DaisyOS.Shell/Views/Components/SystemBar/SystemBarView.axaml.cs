@@ -179,7 +179,7 @@ public partial class SystemBarView : UserControl
     private void QueueQuickSettingsRefresh(bool force = false)
     {
         if (_quickSettingsRefreshTask is { IsCompleted: false }) return;
-        if (!force && DateTimeOffset.UtcNow - _lastQuickSettingsRefresh < QuickSettingsRefreshInterval) return;
+        if (!force && (!IsQuickSettingsVisible || DateTimeOffset.UtcNow - _lastQuickSettingsRefresh < QuickSettingsRefreshInterval)) return;
         _quickSettingsRefreshTask = RefreshQuickSettingsStateAsync();
     }
 
