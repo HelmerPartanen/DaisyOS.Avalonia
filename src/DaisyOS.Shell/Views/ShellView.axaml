@@ -10,7 +10,7 @@
     xmlns:console="clr-namespace:DaisyOS.Shell.Views.Components.Console"
     xmlns:wallpaper="clr-namespace:DaisyOS.Shell.Views.Components.Wallpaper"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
-    <Grid x:Name="RootGrid" Background="Black">
+    <Grid>
         <wallpaper:WallpaperLayer x:Name="ShellWallpaper" />
 
         <Grid x:Name="DesktopExperience">
@@ -54,9 +54,6 @@
 
         <!-- Console Mode Fullscreen Settings Overlay -->
         <console:ConsoleSettingsOverlay x:Name="ConsoleSettings" IsVisible="False" ZIndex="700" />
-
-        <!-- Console Mode PS5-Style Quick Menu (Command Center) Overlay -->
-        <console:ConsoleQuickMenuOverlay x:Name="ConsoleQuickMenu" IsVisible="False" ZIndex="800" />
 
         <!-- A fully opaque transition makes desktop dismissal and console loading visually atomic. -->
         <Border x:Name="ConsoleTransition" ZIndex="600" IsVisible="False" Opacity="0" Background="#090A0F"

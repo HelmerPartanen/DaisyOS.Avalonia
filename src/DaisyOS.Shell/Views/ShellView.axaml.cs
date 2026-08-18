@@ -13,6 +13,7 @@ using DaisyOS.Shell.Views.Components.Console;
 using DaisyOS.Shell.Views.Components.Launcher;
 using DaisyOS.Shell.Views.Components.SystemBar;
 using DaisyOS.Shell.Views.Components.Taskbar;
+using DaisyOS.Shell.Views.Windows;
 
 namespace DaisyOS.Shell.Views
 {
@@ -64,31 +65,6 @@ namespace DaisyOS.Shell.Views
                 _consoleModeRequested = false;
                 _controllerConnected = false;
                 await ReconcileConsoleModeAsync();
-            };
-
-            ConsoleQuickMenu.Closed += (_, _) => SetOverlayMode(false);
-            
-            ConsoleQuickMenu.GoHomeRequested += (_, _) =>
-            {
-                ConsoleSettings.HideOverlay();
-                ConsoleHome.FocusInitialDestination();
-            };
-            ConsoleQuickMenu.ReturnToDesktopRequested += async (_, _) =>
-            {
-                ConsoleSettings.HideOverlay();
-                _consoleModeRequested = false;
-                _controllerConnected = false;
-                await ReconcileConsoleModeAsync();
-            };
-            ConsoleQuickMenu.RestartRequested += (_, _) =>
-            {
-                var launcher = new SafeProcessLauncher();
-                launcher.Launch("systemctl", ["reboot"]);
-            };
-            ConsoleQuickMenu.ShutdownRequested += (_, _) =>
-            {
-                var launcher = new SafeProcessLauncher();
-                launcher.Launch("systemctl", ["poweroff"]);
             };
 
             if (Application.Current is App feedbackApp)
@@ -158,7 +134,6 @@ namespace DaisyOS.Shell.Views
             _consoleControls.Add(ConsoleHome);
             _consoleControls.Add(this.FindControl<Control>("ConsoleFeedbackHost")!);
             _consoleControls.Add(ConsoleSettings);
-            _consoleControls.Add(ConsoleQuickMenu);
 
             if (this.Content is Grid rootGrid)
             {
@@ -379,9 +354,9 @@ namespace DaisyOS.Shell.Views
 
                 if (_consoleMode)
                 {
-                    if (ConsoleQuickMenu.IsVisible)
+                    if (_quickMenuWindow != null && _quickMenuWindow.IsVisible)
                     {
-                        ConsoleQuickMenu.Navigate(action);
+                        _quickMenuWindow.Overlay.Navigate(action);
                     }
                     else if (ConsoleSettings.IsVisible)
                     {
@@ -389,14 +364,13 @@ namespace DaisyOS.Shell.Views
                     }
                     else if (action == ControllerNavigationAction.OpenConsoleHold)
                     {
-                        SetOverlayMode(true);
-                        ConsoleQuickMenu.ShowQuickMenu();
+                        ShowQuickMenu();
                     }
                     else if (action == ControllerNavigationAction.OpenConsole)
                     {
-                        if (ConsoleQuickMenu.IsVisible)
+                        if (_quickMenuWindow != null && _quickMenuWindow.IsVisible)
                         {
-                            ConsoleQuickMenu.HideQuickMenu();
+                            _quickMenuWindow.Overlay.HideQuickMenu();
                         }
                     }
                     else
@@ -483,28 +457,56 @@ namespace DaisyOS.Shell.Views
             });
         }
 
-        private void SetOverlayMode(bool isOverlay)
-        {
-            var window = TopLevel.GetTopLevel(this) as Window;
-            if (window != null)
-            {
-                window.Topmost = isOverlay;
-            }
+        private ConsoleQuickMenuWindow? _quickMenuWindow;
 
-            if (isOverlay)
+        private void ShowQuickMenu()
+        {
+            if (_quickMenuWindow != null) return;
+
+            _quickMenuWindow = new ConsoleQuickMenuWindow();
+            
+            _quickMenuWindow.Closed += (_, _) =>
             {
-                RootGrid.Background = Avalonia.Media.Brushes.Transparent;
-                ConsoleHome.Opacity = 0;
-                DesktopExperience.Opacity = 0;
-                ShellWallpaper.Opacity = 0;
-            }
-            else
+                _quickMenuWindow = null;
+            };
+
+            _quickMenuWindow.Overlay.Closed += (_, _) =>
             {
-                RootGrid.Background = Avalonia.Media.Brushes.Black;
-                ConsoleHome.Opacity = 1;
-                DesktopExperience.Opacity = 1;
-                ShellWallpaper.Opacity = 1;
-            }
+                _quickMenuWindow?.Close();
+            };
+
+            _quickMenuWindow.Overlay.GoHomeRequested += (_, _) =>
+            {
+                ConsoleSettings.HideOverlay();
+                var window = TopLevel.GetTopLevel(this) as Window;
+                window?.Activate();
+                ConsoleHome.FocusInitialDestination();
+            };
+            
+            _quickMenuWindow.Overlay.ReturnToDesktopRequested += async (_, _) =>
+            {
+                ConsoleSettings.HideOverlay();
+                _consoleModeRequested = false;
+                _controllerConnected = false;
+                await ReconcileConsoleModeAsync();
+            };
+            
+            _quickMenuWindow.Overlay.RestartRequested += (_, _) =>
+            {
+                var launcher = new SafeProcessLauncher();
+                launcher.Launch("systemctl", ["reboot"]);
+            };
+            
+            _quickMenuWindow.Overlay.ShutdownRequested += (_, _) =>
+            {
+                var launcher = new SafeProcessLauncher();
+                launcher.Launch("systemctl", ["poweroff"]);
+            };
+
+            _quickMenuWindow.Show();
+            _quickMenuWindow.Activate();
+            _quickMenuWindow.Focus();
+            _quickMenuWindow.Overlay.ShowQuickMenu();
         }
 
     }

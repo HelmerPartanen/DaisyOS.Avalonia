@@ -137,7 +137,7 @@
   </UserControl.Styles>
 
   <!-- Darkened Backdrop -->
-  <Grid Background="{DynamicResource ConsoleOverlayBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+  <Grid Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
     <Grid HorizontalAlignment="Left" VerticalAlignment="Center" Margin="12,0,0,0">
       <Grid.ColumnDefinitions>
@@ -161,6 +161,7 @@
               CornerRadius="32"
               BorderBrush="{DynamicResource ConsoleDividerBrush}"
               BorderThickness="1"
+              BoxShadow="8 12 36 0 #B0000000"
               ClipToBounds="False">
         
         <Grid RowDefinitions="Auto,Auto,Auto" Margin="24">

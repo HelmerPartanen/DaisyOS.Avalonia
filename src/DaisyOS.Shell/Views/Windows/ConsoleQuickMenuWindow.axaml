@@ -1,0 +1,15 @@
+<Window x:Class="DaisyOS.Shell.Views.Windows.ConsoleQuickMenuWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:console="clr-namespace:DaisyOS.Shell.Views.Components.Console"
+        Title="Console Quick Menu"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        WindowDecorations="None"
+        ShowInTaskbar="False"
+        CanResize="False"
+        Topmost="True"
+        TextOptions.TextRenderingMode="SubpixelAntialias"
+        WindowState="FullScreen">
+    <console:ConsoleQuickMenuOverlay x:Name="Overlay" />
+</Window>

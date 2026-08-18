@@ -14,7 +14,7 @@
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
     ExtendClientAreaTitleBarHeightHint="44"
-    TextOptions.TextRenderingMode="Antialias"
+    TextOptions.TextRenderingMode="SubpixelAntialias"
     Background="Transparent"
     PointerPressed="OnWindowPointerPressed">
   <Grid>

@@ -5,7 +5,7 @@
         Title="Files" Width="980" Height="640" MinWidth="620" MinHeight="420"
         compositor:KWinBlur.IsEnabled="True"
         compositor:KWinBlur.CornerRadius="{DynamicResource RoundedLGValue}"
-        TextOptions.TextRenderingMode="Antialias"
+        TextOptions.TextRenderingMode="SubpixelAntialias"
         Background="{DynamicResource PrimarySurfaceBrush}">
   <Grid RowDefinitions="Auto,*,Auto" Margin="20" RowSpacing="14">
     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">

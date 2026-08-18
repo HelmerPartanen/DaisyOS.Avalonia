@@ -87,9 +87,9 @@
           Height="48"
           Background="Transparent"
           ClipToBounds="False">
-    <Grid Margin="0,0,16,0" ColumnDefinitions="Auto,*,Auto,Auto">
+    <Grid Margin="0,0,16,0" ColumnDefinitions="40,*,Auto,Auto">
       <!-- Artwork -->
-      <Border Width="40" Height="40" CornerRadius="{DynamicResource RoundedMD}" ClipToBounds="True" Margin="0,0,12,0" VerticalAlignment="Center">
+      <Border Grid.Column="0" Width="40" Height="40" CornerRadius="{DynamicResource RoundedMD}" ClipToBounds="True" VerticalAlignment="Center">
         <Grid>
           <Image x:Name="Artwork" Stretch="UniformToFill" IsVisible="False" RenderOptions.BitmapInterpolationMode="HighQuality"/>
           <Border x:Name="SourceFallback" Background="{DynamicResource ConsoleSubtleSurfaceBrush}">
@@ -105,7 +105,7 @@
       </Border>
 
       <!-- Track Info -->
-      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="0" Width="180" Margin="0,0,16,0">
+      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="12,0,16,0">
         <TextBlock x:Name="MediaTitle" Text="Not playing" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
         <TextBlock x:Name="MediaArtist" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
       </StackPanel>
