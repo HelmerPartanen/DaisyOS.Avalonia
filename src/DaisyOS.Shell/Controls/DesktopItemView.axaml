@@ -5,7 +5,9 @@
              x:Class="DaisyOS.Shell.Controls.DesktopItemView"
              Width="74" Height="88">
   <UserControl.Styles>
-    <Style Selector="Grid#ContainerGrid">
+    <Style Selector="Border#CellCard">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
       <Setter Property="Transitions">
         <Transitions>
           <DoubleTransition Property="Opacity" Duration="0:0:0.1" Easing="QuadraticEaseOut" />
@@ -14,37 +16,38 @@
       </Setter>
     </Style>
 
-    <Style Selector="controls|DesktopItemView[IsHiddenPlaceholder=True] Grid#ContainerGrid">
+    <Style Selector="controls|DesktopItemView[IsHiddenPlaceholder=True] Border#CellCard">
       <Setter Property="Opacity" Value="0.0" />
     </Style>
 
+    <Style Selector="Border#CellCard:pointerover">
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+    </Style>
 
-    <Style Selector="Grid#ContainerGrid:pointerover Border#IconWrapper">
-      <Setter Property="Opacity" Value="0.85" />
+    <Style Selector="Border#CellCard:pressed">
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
     </Style>
   </UserControl.Styles>
 
-  <Grid Name="ContainerGrid" Background="Transparent" RowDefinitions="Auto,*">
-
-    <Border Name="IconWrapper" Grid.Row="0" Width="48" Height="48" Margin="0,4,0,0" HorizontalAlignment="Center">
-      <Panel>
-        <!-- Standard Icon -->
+  <Border Name="CellCard" Padding="4,4,4,2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid RowDefinitions="Auto,*">
+      <Border Name="IconWrapper" Grid.Row="0" Width="48" Height="48" HorizontalAlignment="Center">
         <Image Name="AppIcon" 
                Source="{Binding IconBitmap}" 
                RenderOptions.BitmapInterpolationMode="HighQuality" />
-      </Panel>
-    </Border>
+      </Border>
 
-    <!-- Label below the icon -->
-    <TextBlock Grid.Row="1"
-               Text="{Binding Label}"
-               TextAlignment="Center"
-               TextWrapping="Wrap"
-               TextTrimming="CharacterEllipsis"
-               MaxLines="2"
-               Margin="2,4,2,0"
-               FontSize="11"
-               Foreground="{DynamicResource DesktopItemLabelBrush}"
-               Effect="{DynamicResource DesktopItemLabelShadow}" />
-  </Grid>
+      <!-- Label below the icon -->
+      <TextBlock Grid.Row="1"
+                 Text="{Binding Label}"
+                 TextAlignment="Center"
+                 TextWrapping="Wrap"
+                 TextTrimming="CharacterEllipsis"
+                 MaxLines="2"
+                 Margin="0,4,0,0"
+                 FontSize="11"
+                 Foreground="{DynamicResource DesktopItemLabelBrush}"
+                 Effect="{DynamicResource DesktopItemLabelShadow}" />
+    </Grid>
+  </Border>
 </UserControl>
