@@ -112,22 +112,8 @@
       <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
     </Style>
 
-    <!-- Floating Tab Button Style -->
-    <Style Selector="Button.FloatingTabButton">
-      <Setter Property="Padding" Value="10,0,8,0" />
-      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
-      <Setter Property="Background" Value="Transparent" />
-      <Setter Property="BorderThickness" Value="0" />
-      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-      <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Button.FloatingTabButton /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent" />
-    </Style>
-    <Style Selector="Button.FloatingTabButton.TabActive:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Transparent" />
-    </Style>
-    <Style Selector="Button.FloatingTabButton:not(.TabActive):pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <!-- Tab Active State -->
+    <Style Selector="Button.ShellButton.TabActive /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
   </Window.Styles>
@@ -149,81 +135,65 @@
           <Panel Grid.Row="0" Background="#000000" PointerPressed="OnTitleBarPointerPressed" DoubleTapped="OnTitleBarDoubleTapped">
             <Grid ColumnDefinitions="*,Auto">
 
-              <!-- Tabs Area (Tight symmetrical layout with 4px flare overlap) -->
-              <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="4,0,0,0">
+              <!-- Tabs Area (Tight symmetrical layout with 6px margins) -->
+              <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="6,0,0,0">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" Spacing="0">
                   <ItemsControl x:Name="TabsControl" ItemsSource="{Binding Tabs}">
                     <ItemsControl.ItemsPanel>
                       <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" Spacing="-12" />
+                        <StackPanel Orientation="Horizontal" Spacing="6" />
                       </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                       <DataTemplate x:DataType="files:FilesTabViewModel">
-                        <Grid Width="160" Height="44" VerticalAlignment="Stretch" Classes.TabActive="{Binding IsActive}">
-                          <Grid.Styles>
-                            <!-- Ensure the active tab and its flares render ON TOP of adjacent hovered tabs -->
-                            <Style Selector="Grid.TabActive">
-                              <Setter Property="ZIndex" Value="1" />
-                            </Style>
-                          </Grid.Styles>
+                        <!-- Tab Interactive Button -->
+                        <Button Classes="ShellButton"
+                                Classes.TabActive="{Binding IsActive}"
+                                Width="160"
+                                Height="32"
+                                Padding="10,0,8,0"
+                                HorizontalContentAlignment="Stretch"
+                                Click="OnTabClicked"
+                                Tag="{Binding}">
+                          <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                            <!-- Folder Icon -->
+                            <TextBlock Text="folder"
+                                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                       FontSize="16"
+                                       Foreground="{DynamicResource AccentBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,8,0"/>
 
-                          <!-- The fully parametric metaball background! You can freely change FlareRadius="12" etc here -->
-                          <controls:MetaballTabPanel FlareRadius="8"
-                                                     CornerRadius="8">
-                            
-                            <!-- The dynamic path driven by the Panel -->
-                            <Path Data="{Binding $parent[controls:MetaballTabPanel].MetaballGeometry}"
-                                  Fill="{DynamicResource PrimarySurfaceBrush}"
-                                  IsHitTestVisible="False"
-                                  IsVisible="{Binding IsActive}" />
+                            <!-- Left Aligned Tab Title -->
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Title}"
+                                       FontSize="12"
+                                       FontWeight="Medium"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Left"
+                                       TextTrimming="CharacterEllipsis"
+                                       Margin="0,0,6,0"/>
 
-                            <!-- Tab Interactive Button -->
-                            <Button Classes="FloatingTabButton"
-                                    Classes.TabActive="{Binding IsActive}"
-                                    Click="OnTabClicked"
-                                    Tag="{Binding}">
-                              <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                              <!-- Folder Icon -->
-                              <TextBlock Text="folder"
+                            <!-- Right Aligned Close Button -->
+                            <Button Grid.Column="2"
+                                    Classes="ShellButton"
+                                    Width="18"
+                                    Height="18"
+                                    Padding="0"
+                                    CornerRadius="9"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Click="OnCloseTabClicked"
+                                    Tag="{Binding}"
+                                    ToolTip.Tip="Close Tab">
+                              <TextBlock Text="close"
                                          FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                         FontSize="16"
-                                         Foreground="{DynamicResource AccentBrush}"
-                                         VerticalAlignment="Center"
-                                         Margin="0,0,8,0"/>
-
-                              <!-- Left Aligned Tab Title -->
-                              <TextBlock Grid.Column="1"
-                                         Text="{Binding Title}"
                                          FontSize="12"
-                                         FontWeight="Medium"
-                                         Foreground="{DynamicResource TextPrimaryBrush}"
-                                         VerticalAlignment="Center"
-                                         HorizontalAlignment="Left"
-                                         TextTrimming="CharacterEllipsis"
-                                         Margin="0,0,6,0"/>
-
-                              <!-- Right Aligned Close Button -->
-                              <Button Grid.Column="2"
-                                      Classes="ShellButton"
-                                      Width="18"
-                                      Height="18"
-                                      Padding="0"
-                                      CornerRadius="9"
-                                      HorizontalAlignment="Right"
-                                      VerticalAlignment="Center"
-                                      Click="OnCloseTabClicked"
-                                      Tag="{Binding}"
-                                      ToolTip.Tip="Close Tab">
-                                <TextBlock Text="close"
-                                           FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                           FontSize="12"
-                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
-                              </Button>
-                            </Grid>
-                          </Button>
-                          </controls:MetaballTabPanel>
-                        </Grid>
+                                         Foreground="{DynamicResource TextSecondaryBrush}"/>
+                            </Button>
+                          </Grid>
+                        </Button>
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>
@@ -232,7 +202,7 @@
                   <Button Classes="ShellButton"
                           Width="32"
                           Height="32"
-                          Margin="4,0,0,0"
+                          Margin="6,0,0,0"
                           CornerRadius="{DynamicResource RoundedMD}"
                           VerticalAlignment="Center"
                           Click="OnNewTabClicked"

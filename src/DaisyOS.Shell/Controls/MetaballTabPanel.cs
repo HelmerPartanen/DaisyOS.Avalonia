@@ -44,7 +44,7 @@ public class MetaballTabPanel : Panel
         double fr = FlareRadius;
         
         Size childAvailable = new Size(
-            global::System.Math.Max(0, availableSize.Width - (fr * 2)),
+            global::System.Math.Max(0, availableSize.Width),
             global::System.Math.Max(0, availableSize.Height - 12)
         );
 
@@ -67,7 +67,7 @@ public class MetaballTabPanel : Panel
     {
         double fr = FlareRadius;
         
-        double childWidth = global::System.Math.Max(0, finalSize.Width - (fr * 2));
+        double childWidth = global::System.Math.Max(0, finalSize.Width);
         double childHeight = global::System.Math.Max(0, finalSize.Height - 12);
         
         foreach (var child in Children)
@@ -78,8 +78,8 @@ public class MetaballTabPanel : Panel
             }
             else
             {
-                // Center the child horizontally inside the main rectangular body, preserving 6px margins top and bottom.
-                child.Arrange(new Rect(fr, 6, childWidth, childHeight));
+                // Align the child over the full width, preserving 6px margins top and bottom.
+                child.Arrange(new Rect(0, 6, childWidth, childHeight));
             }
         }
 
