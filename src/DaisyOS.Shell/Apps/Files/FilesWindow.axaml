@@ -258,14 +258,43 @@
                       Background="{DynamicResource TertiarySurfaceBrush}"
                       CornerRadius="{DynamicResource RoundedSM}"
                       Height="38"
-                      Padding="12,0">
-                <Grid ColumnDefinitions="Auto,*">
+                      Padding="12,0"
+                      PointerPressed="OnBreadcrumbBackgroundPressed">
+                <Grid ColumnDefinitions="Auto,*,Auto">
                   <TextBlock Text="folder_open"
                              FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                              FontSize="18"
                              Foreground="{DynamicResource TextSecondaryBrush}"
                              VerticalAlignment="Center"
                              Margin="0,0,8,0"/>
+                             
+                  <ItemsControl Grid.Column="1" ItemsSource="{Binding ActiveTab.Breadcrumbs}" IsVisible="{Binding !#PathBox.IsVisible}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center"/>
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                          <Button Classes="ShellButton" 
+                                  Padding="6,4" 
+                                  CornerRadius="{DynamicResource RoundedSM}"
+                                  Content="{Binding Name}"
+                                  Tag="{Binding Path}"
+                                  Click="OnBreadcrumbClicked"
+                                  Background="Transparent"/>
+                          <TextBlock Text="chevron_right" 
+                                     FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                     FontSize="16" 
+                                     Foreground="{DynamicResource DividerBrush}"
+                                     VerticalAlignment="Center"/>
+                        </StackPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                  
+                  <!-- Fallback raw path input -->
                   <TextBox x:Name="PathBox"
                            Grid.Column="1"
                            Background="Transparent"
@@ -274,7 +303,9 @@
                            FontSize="13"
                            Foreground="{DynamicResource TextPrimaryBrush}"
                            Text="{Binding ActiveTab.CurrentPath, Mode=OneWay}"
-                           KeyDown="OnPathKeyDown"/>
+                           KeyDown="OnPathKeyDown"
+                           LostFocus="OnPathBoxLostFocus"
+                           IsVisible="False"/>
                 </Grid>
               </Border>
 
@@ -315,6 +346,12 @@
 
               <!-- Sort & View Mode Switcher Group -->
               <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <ToggleButton Classes="ShellToggleButton" Height="32" Padding="10,0" CornerRadius="{DynamicResource RoundedSM}" IsChecked="{Binding ActiveTab.ShowHiddenFiles, Mode=TwoWay}" ToolTip.Tip="Show hidden files">
+                  <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock Text="visibility" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"/>
+                  </StackPanel>
+                </ToggleButton>
+                <Rectangle Width="1" Height="18" Fill="{DynamicResource DividerBrush}" Margin="2,0"/>
                 <Button Classes="ShellButton" Height="32" Padding="10,0" CornerRadius="{DynamicResource RoundedSM}" Click="OnSortNameClicked" ToolTip.Tip="Sort by Name">
                   <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                     <TextBlock Text="sort" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"/>
@@ -446,7 +483,8 @@
                 <ListBox x:Name="EntriesList"
                          Grid.Row="1"
                          ItemsSource="{Binding ActiveTab.FilteredEntries}"
-                         SelectedItem="{Binding ActiveTab.SelectedItem, Mode=TwoWay}"
+                         SelectedItems="{Binding ActiveTab.SelectedItems}"
+                         SelectionMode="Multiple, Toggle"
                          DoubleTapped="OnEntryDoubleTapped"
                          Background="Transparent"
                          BorderThickness="0"
@@ -461,7 +499,7 @@
                             <TextBlock Text="{Binding MaterialIcon}"
                                        FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                                        FontSize="20"
-                                       Foreground="{Binding IconBrush}"
+                                       Foreground="{Binding IconColor}"
                                        VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding Name}"
                                        FontSize="13"
@@ -502,7 +540,8 @@
               <!-- VIEW MODE 2: ICON GRID VIEW (CARDS WRAP PANEL) -->
               <ListBox x:Name="EntriesGrid"
                        ItemsSource="{Binding ActiveTab.FilteredEntries}"
-                       SelectedItem="{Binding ActiveTab.SelectedItem, Mode=TwoWay}"
+                       SelectedItems="{Binding ActiveTab.SelectedItems}"
+                       SelectionMode="Multiple, Toggle"
                        DoubleTapped="OnEntryDoubleTapped"
                        Background="Transparent"
                        BorderThickness="0"
@@ -526,7 +565,7 @@
                         <TextBlock Text="{Binding MaterialIcon}"
                                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                                    FontSize="40"
-                                   Foreground="{Binding IconBrush}"
+                                   Foreground="{Binding IconColor}"
                                    HorizontalAlignment="Center"/>
                         <TextBlock Text="{Binding Name}"
                                    FontSize="12"

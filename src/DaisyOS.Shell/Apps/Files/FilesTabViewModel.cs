@@ -1,14 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Directory = global::System.IO.Directory;
-using File = global::System.IO.File;
-using Path = global::System.IO.Path;
-using System.Linq;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
+using Avalonia.Threading;
+using DaisyOS.Shell.Apps.Files.Services;
+using Directory = System.IO.Directory;
+using File = System.IO.File;
+using Path = System.IO.Path;
 
 namespace DaisyOS.Shell.Apps.Files;
+
+public record BreadcrumbSegment(string Name, string Path);
 
 public sealed class FilesTabViewModel : INotifyPropertyChanged
 {
@@ -19,8 +25,11 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
     private bool _sortAscending = true;
     private bool _isGridView;
     private bool _isActive;
-    private FileEntryViewModel? _selectedItem;
+    private bool _isLoading;
+    private bool _showHiddenFiles;
     private string _statusText = string.Empty;
+
+    private CancellationTokenSource? _loadCts;
 
     public bool IsActive
     {
@@ -28,13 +37,28 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
         set => SetProperty(ref _isActive, value);
     }
 
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            if (SetProperty(ref _isLoading, value))
+            {
+                UpdateStatusText();
+            }
+        }
+    }
+
     private readonly Stack<string> _history = new();
     private readonly Stack<string> _forwardHistory = new();
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public ObservableCollection<FileEntryViewModel> Entries { get; } = [];
-    public ObservableCollection<FileEntryViewModel> FilteredEntries { get; } = [];
+    public ObservableCollection<FileEntryViewModel> Entries { get; } = new();
+    public ObservableCollection<FileEntryViewModel> FilteredEntries { get; } = new();
+    
+    public ObservableCollection<FileEntryViewModel> SelectedItems { get; } = new();
+    public ObservableCollection<BreadcrumbSegment> Breadcrumbs { get; } = new();
 
     public string CurrentPath
     {
@@ -43,8 +67,9 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
         {
             if (SetProperty(ref _currentPath, value))
             {
-                var folderName = global::System.IO.Path.GetFileName(value);
+                var folderName = Path.GetFileName(value);
                 Title = string.IsNullOrEmpty(folderName) ? value : folderName;
+                UpdateBreadcrumbs();
                 OnPropertyChanged(nameof(CanGoUp));
             }
         }
@@ -105,14 +130,14 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
         set => SetProperty(ref _isGridView, value);
     }
 
-    public FileEntryViewModel? SelectedItem
+    public bool ShowHiddenFiles
     {
-        get => _selectedItem;
+        get => _showHiddenFiles;
         set
         {
-            if (SetProperty(ref _selectedItem, value))
+            if (SetProperty(ref _showHiddenFiles, value))
             {
-                UpdateStatusText();
+                ApplyFilterAndSort();
             }
         }
     }
@@ -129,14 +154,32 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
 
     public FilesTabViewModel(string initialPath)
     {
-        NavigateTo(initialPath, addHistory: false);
+        SelectedItems.CollectionChanged += (s, e) => UpdateStatusText();
+        NavigateToAsync(initialPath, addHistory: false);
     }
 
-    public void NavigateTo(string path, bool addHistory = true)
+    private void UpdateBreadcrumbs()
+    {
+        Breadcrumbs.Clear();
+        if (string.IsNullOrEmpty(CurrentPath)) return;
+
+        var parts = CurrentPath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+        
+        string currentBuiltPath = "/";
+        Breadcrumbs.Add(new BreadcrumbSegment("Root", currentBuiltPath));
+
+        foreach (var part in parts)
+        {
+            currentBuiltPath = Path.Combine(currentBuiltPath, part);
+            Breadcrumbs.Add(new BreadcrumbSegment(part, currentBuiltPath));
+        }
+    }
+
+    public async void NavigateToAsync(string path, bool addHistory = true)
     {
         try
         {
-            var fullPath = global::System.IO.Path.GetFullPath(path);
+            var fullPath = Path.GetFullPath(path);
             if (!Directory.Exists(fullPath))
             {
                 StatusText = "Folder does not exist.";
@@ -145,32 +188,64 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
 
             if (addHistory && !string.Equals(fullPath, CurrentPath, StringComparison.OrdinalIgnoreCase))
             {
-                _history.Push(CurrentPath);
+                if (!string.IsNullOrEmpty(CurrentPath)) _history.Push(CurrentPath);
                 _forwardHistory.Clear();
                 OnPropertyChanged(nameof(CanGoBack));
                 OnPropertyChanged(nameof(CanGoForward));
             }
 
             CurrentPath = fullPath;
+            
+            _loadCts?.Cancel();
+            _loadCts = new CancellationTokenSource();
+            var token = _loadCts.Token;
+
+            IsLoading = true;
             Entries.Clear();
+            FilteredEntries.Clear();
+            SelectedItems.Clear();
 
-            try
+            await Task.Run(() =>
             {
-                foreach (var entryPath in Directory.EnumerateFileSystemEntries(fullPath))
+                try
                 {
-                    Entries.Add(new FileEntryViewModel(entryPath));
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                StatusText = "Permission denied.";
-            }
+                    var items = Directory.EnumerateFileSystemEntries(fullPath).ToList();
+                    
+                    const int ChunkSize = 50;
+                    for (int i = 0; i < items.Count; i += ChunkSize)
+                    {
+                        if (token.IsCancellationRequested) break;
 
-            ApplyFilterAndSort();
+                        var chunk = items.Skip(i).Take(ChunkSize).Select(p => new FileEntryViewModel(p)).ToList();
+                        
+                        Dispatcher.UIThread.Post(() =>
+                        {
+                            if (token.IsCancellationRequested) return;
+                            foreach (var item in chunk) Entries.Add(item);
+                            ApplyFilterAndSort(); 
+                        });
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Dispatcher.UIThread.Post(() => StatusText = "Permission denied.");
+                }
+                catch (Exception ex)
+                {
+                    Dispatcher.UIThread.Post(() => StatusText = $"Error: {ex.Message}");
+                }
+            }, token);
+
+            if (!token.IsCancellationRequested)
+            {
+                IsLoading = false;
+                Dispatcher.UIThread.Post(ApplyFilterAndSort);
+            }
         }
         catch (Exception ex)
         {
-            StatusText = $"Error: {ex.Message}";
+            StatusText = $"Navigation Error: {ex.Message}";
+            IsLoading = false;
         }
     }
 
@@ -179,7 +254,7 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
         if (_history.TryPop(out var previousPath))
         {
             _forwardHistory.Push(CurrentPath);
-            NavigateTo(previousPath, addHistory: false);
+            NavigateToAsync(previousPath, addHistory: false);
             OnPropertyChanged(nameof(CanGoBack));
             OnPropertyChanged(nameof(CanGoForward));
         }
@@ -190,7 +265,7 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
         if (_forwardHistory.TryPop(out var nextPath))
         {
             _history.Push(CurrentPath);
-            NavigateTo(nextPath, addHistory: false);
+            NavigateToAsync(nextPath, addHistory: false);
             OnPropertyChanged(nameof(CanGoBack));
             OnPropertyChanged(nameof(CanGoForward));
         }
@@ -201,22 +276,94 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
         var parent = Directory.GetParent(CurrentPath);
         if (parent != null)
         {
-            NavigateTo(parent.FullName);
+            NavigateToAsync(parent.FullName);
         }
     }
 
-    public void Refresh() => NavigateTo(CurrentPath, addHistory: false);
+    public void Refresh() => NavigateToAsync(CurrentPath, addHistory: false);
+
+    public async Task CreateNewFolderAsync()
+    {
+        string newFolderPath = "New Folder";
+        int count = 1;
+        while (Directory.Exists(Path.Combine(CurrentPath, newFolderPath)))
+        {
+            newFolderPath = $"New Folder ({count++})";
+        }
+        
+        if (await FileSystemService.CreateFolderAsync(CurrentPath, newFolderPath))
+        {
+            Refresh();
+        }
+    }
+
+    public async Task DeleteSelectedAsync()
+    {
+        var items = SelectedItems.ToList();
+        foreach (var item in items)
+        {
+            await FileSystemService.MoveToTrashAsync(item.Path);
+        }
+        Refresh();
+    }
+
+    public async Task CopySelectedAsync()
+    {
+        var paths = SelectedItems.Select(x => x.Path).ToList();
+        if (paths.Any())
+        {
+            await ClipboardService.SetFilesAsync(paths, ClipboardOperation.Copy);
+        }
+    }
+
+    public async Task CutSelectedAsync()
+    {
+        var paths = SelectedItems.Select(x => x.Path).ToList();
+        if (paths.Any())
+        {
+            await ClipboardService.SetFilesAsync(paths, ClipboardOperation.Cut);
+        }
+    }
+
+    public async Task PasteAsync()
+    {
+        var (files, op) = await ClipboardService.GetFilesAsync();
+        if (!files.Any()) return;
+
+        foreach (var file in files)
+        {
+            var destPath = Path.Combine(CurrentPath, Path.GetFileName(file));
+            if (op == ClipboardOperation.Cut)
+            {
+                await FileSystemService.MoveAsync(file, destPath, async (path) => ConflictResolution.Replace);
+            }
+            else
+            {
+                await FileSystemService.CopyAsync(file, destPath, async (path) => ConflictResolution.Replace);
+            }
+        }
+        
+        if (op == ClipboardOperation.Cut)
+        {
+            ClipboardService.ClearInternal();
+        }
+        Refresh();
+    }
 
     public void ApplyFilterAndSort()
     {
         IEnumerable<FileEntryViewModel> query = Entries;
+
+        if (!ShowHiddenFiles)
+        {
+            query = query.Where(e => !e.IsHidden);
+        }
 
         if (!string.IsNullOrWhiteSpace(SearchQuery))
         {
             query = query.Where(e => e.Name.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase));
         }
 
-        // Always put directories first, then apply column sort
         query = SortColumn switch
         {
             "Date" => SortAscending
@@ -244,13 +391,29 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
 
     private void UpdateStatusText()
     {
+        if (IsLoading)
+        {
+            StatusText = "Loading...";
+            return;
+        }
+
         int count = FilteredEntries.Count;
         string itemsText = count == 1 ? "1 item" : $"{count} items";
 
-        if (SelectedItem != null)
+        if (SelectedItems.Count > 0)
         {
-            string detail = SelectedItem.IsDirectory ? "Folder" : SelectedItem.DisplaySize;
-            StatusText = $"{itemsText}  |  Selected: {SelectedItem.Name} ({detail})";
+            if (SelectedItems.Count == 1)
+            {
+                var sel = SelectedItems[0];
+                string detail = sel.IsDirectory ? "Folder" : sel.DisplaySize;
+                StatusText = $"{itemsText}  |  Selected: {sel.Name} ({detail})";
+            }
+            else
+            {
+                long totalSize = SelectedItems.Where(i => !i.IsDirectory).Sum(i => i.Length);
+                string sizeStr = FormatFileSize(totalSize);
+                StatusText = $"{SelectedItems.Count} items selected • {sizeStr}";
+            }
         }
         else
         {
@@ -258,9 +421,17 @@ public sealed class FilesTabViewModel : INotifyPropertyChanged
         }
     }
 
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        if (bytes < 1024 * 1024 * 1024) return $"{bytes / (1024.0 * 1024.0):F1} MB";
+        return $"{bytes / (1024.0 * 1024.0 * 1024.0):F1} GB";
+    }
+
     private bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
-        if (global::System.Collections.Generic.EqualityComparer<T>.Default.Equals(field, value)) return false;
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
         OnPropertyChanged(propertyName);
         return true;

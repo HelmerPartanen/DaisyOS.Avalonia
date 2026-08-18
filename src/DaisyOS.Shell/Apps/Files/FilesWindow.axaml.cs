@@ -61,8 +61,8 @@ public partial class FilesWindow : Window
     {
         if (e.Source is Visual source &&
             source is not TextBox &&
-            source is not Controls.SearchBar &&
-            !source.GetVisualAncestors().Any(v => v is Controls.SearchBar || v is TextBox))
+            source is not DaisyOS.Shell.Controls.SearchBar &&
+            !source.GetVisualAncestors().Any(v => v is DaisyOS.Shell.Controls.SearchBar || v is TextBox))
         {
             FocusManager?.Focus(null);
         }
@@ -99,16 +99,39 @@ public partial class FilesWindow : Window
     private void OnPathKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key != Key.Enter || sender is not TextBox textBox || _viewModel.ActiveTab is null) return;
-        _viewModel.ActiveTab.NavigateTo(textBox.Text ?? _viewModel.ActiveTab.CurrentPath);
+        _viewModel.ActiveTab.NavigateToAsync(textBox.Text ?? _viewModel.ActiveTab.CurrentPath);
+        PathBox.IsVisible = false;
         e.Handled = true;
+    }
+
+    private void OnPathBoxLostFocus(object? sender, RoutedEventArgs e)
+    {
+        PathBox.IsVisible = false;
+    }
+
+    private void OnBreadcrumbBackgroundPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            PathBox.IsVisible = true;
+            PathBox.Focus();
+        }
+    }
+
+    private void OnBreadcrumbClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string path && _viewModel.ActiveTab != null)
+        {
+            _viewModel.ActiveTab.NavigateToAsync(path);
+        }
     }
 
     private void OnEntryDoubleTapped(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel.ActiveTab?.SelectedItem is not FileEntryViewModel entry) return;
+        if (_viewModel.ActiveTab?.SelectedItems.FirstOrDefault() is not FileEntryViewModel entry) return;
         if (entry.IsDirectory)
         {
-            _viewModel.ActiveTab.NavigateTo(entry.Path);
+            _viewModel.ActiveTab.NavigateToAsync(entry.Path);
             return;
         }
 
@@ -120,25 +143,25 @@ public partial class FilesWindow : Window
     }
 
     private void OnHomeClicked(object? sender, RoutedEventArgs e) =>
-        _viewModel.ActiveTab?.NavigateTo(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+        _viewModel.ActiveTab?.NavigateToAsync(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 
     private void OnDesktopClicked(object? sender, RoutedEventArgs e) =>
-        _viewModel.ActiveTab?.NavigateTo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"));
+        _viewModel.ActiveTab?.NavigateToAsync(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop"));
 
     private void OnDownloadsClicked(object? sender, RoutedEventArgs e) =>
-        _viewModel.ActiveTab?.NavigateTo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"));
+        _viewModel.ActiveTab?.NavigateToAsync(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"));
 
     private void OnDocumentsClicked(object? sender, RoutedEventArgs e) =>
-        _viewModel.ActiveTab?.NavigateTo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"));
+        _viewModel.ActiveTab?.NavigateToAsync(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Documents"));
 
     private void OnPicturesClicked(object? sender, RoutedEventArgs e) =>
-        _viewModel.ActiveTab?.NavigateTo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"));
+        _viewModel.ActiveTab?.NavigateToAsync(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Pictures"));
 
     private void OnMusicClicked(object? sender, RoutedEventArgs e) =>
-        _viewModel.ActiveTab?.NavigateTo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"));
+        _viewModel.ActiveTab?.NavigateToAsync(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"));
 
     private void OnRootClicked(object? sender, RoutedEventArgs e) =>
-        _viewModel.ActiveTab?.NavigateTo("/");
+        _viewModel.ActiveTab?.NavigateToAsync("/");
 
     private void OnSortNameClicked(object? sender, RoutedEventArgs e)
     {
@@ -168,44 +191,35 @@ public partial class FilesWindow : Window
         }
     }
 
-    private void OnNewFolderClicked(object? sender, RoutedEventArgs e)
+    private async void OnNewFolderClicked(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel.ActiveTab is null) return;
-        try
-        {
-            string basePath = _viewModel.ActiveTab.CurrentPath;
-            string newFolderPath = Path.Combine(basePath, "New Folder");
-            int count = 1;
-            while (Directory.Exists(newFolderPath))
-            {
-                newFolderPath = Path.Combine(basePath, $"New Folder ({count++})");
-            }
-            Directory.CreateDirectory(newFolderPath);
-            _viewModel.ActiveTab.Refresh();
-        }
-        catch { }
+        if (_viewModel.ActiveTab is not null)
+            await _viewModel.ActiveTab.CreateNewFolderAsync();
     }
 
-    private void OnDeleteClicked(object? sender, RoutedEventArgs e)
+    private async void OnDeleteClicked(object? sender, RoutedEventArgs e)
     {
-        if (_viewModel.ActiveTab?.SelectedItem is not FileEntryViewModel entry) return;
-        try
-        {
-            if (entry.IsDirectory)
-            {
-                Directory.Delete(entry.Path, recursive: true);
-            }
-            else
-            {
-                File.Delete(entry.Path);
-            }
-            _viewModel.ActiveTab.Refresh();
-        }
-        catch { }
+        if (_viewModel.ActiveTab is not null)
+            await _viewModel.ActiveTab.DeleteSelectedAsync();
     }
 
-    private void OnCutClicked(object? sender, RoutedEventArgs e) { }
-    private void OnCopyClicked(object? sender, RoutedEventArgs e) { }
+    private async void OnCutClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel.ActiveTab is not null)
+            await _viewModel.ActiveTab.CutSelectedAsync();
+    }
+
+    private async void OnCopyClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel.ActiveTab is not null)
+            await _viewModel.ActiveTab.CopySelectedAsync();
+    }
+
+    private async void OnPasteClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_viewModel.ActiveTab is not null)
+            await _viewModel.ActiveTab.PasteAsync();
+    }
 
     private void OnResizeTopPressed(object? sender, PointerPressedEventArgs e)
     {

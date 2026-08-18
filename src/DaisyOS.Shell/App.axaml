@@ -102,6 +102,14 @@
       <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
 
+    <!-- Disabled ghost buttons should remain transparent but dimmed, overriding Avalonia's default grey disabled background -->
+    <Style Selector="Button.ShellButton:disabled /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.ShellButton:disabled, ToggleButton.ShellButton:disabled">
+      <Setter Property="Opacity" Value="0.4" />
+    </Style>
+
     <!-- Reusable Material You Quick Settings container buttons. -->
     <Style Selector="ToggleButton.QuickSetting, Button.QuickSettingDetails">
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />

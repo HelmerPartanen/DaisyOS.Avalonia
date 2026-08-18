@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Directory = global::System.IO.Directory;
 using File = global::System.IO.File;
 using FileInfo = global::System.IO.FileInfo;
@@ -8,10 +10,34 @@ using Avalonia.Media;
 
 namespace DaisyOS.Shell.Apps.Files;
 
-public sealed class FileEntryViewModel
+public sealed class FileEntryViewModel : INotifyPropertyChanged
 {
-    public string Path { get; }
-    public string Name { get; }
+    private bool _isSelected;
+    private bool _isRenaming;
+    private string _name;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    public string Path { get; private set; }
+    
+    public string Name
+    {
+        get => _name;
+        set => SetProperty(ref _name, value);
+    }
+
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => SetProperty(ref _isSelected, value);
+    }
+
+    public bool IsRenaming
+    {
+        get => _isRenaming;
+        set => SetProperty(ref _isRenaming, value);
+    }
+
     public string Extension { get; }
     public bool IsDirectory { get; }
     public DateTime LastWriteTime { get; }
@@ -21,15 +47,16 @@ public sealed class FileEntryViewModel
     public string DisplaySize => IsDirectory ? string.Empty : FormatFileSize(Length);
     public string DisplayType { get; }
     public string MaterialIcon { get; }
-    public IBrush IconBrush { get; }
+    public string IconColor { get; }
+    public bool IsHidden => Name.StartsWith(".");
 
     public FileEntryViewModel(string path)
     {
         Path = path;
-        Name = global::System.IO.Path.GetFileName(path);
-        if (string.IsNullOrEmpty(Name))
+        _name = global::System.IO.Path.GetFileName(path);
+        if (string.IsNullOrEmpty(_name))
         {
-            Name = path; // Root paths like "/"
+            _name = path; // Root paths like "/"
         }
 
         try
@@ -48,7 +75,7 @@ public sealed class FileEntryViewModel
             Length = 0;
             DisplayType = "File folder";
             MaterialIcon = "folder";
-            IconBrush = SolidColorBrush.Parse("#F59E0B"); // Folder warm yellow accent
+            IconColor = "#F59E0B"; // Folder warm yellow accent
             try
             {
                 LastWriteTime = Directory.GetLastWriteTime(path);
@@ -74,8 +101,14 @@ public sealed class FileEntryViewModel
             }
 
             DisplayType = GetDisplayType(Extension);
-            (MaterialIcon, IconBrush) = GetIconAndBrush(Extension);
+            (MaterialIcon, IconColor) = GetIconAndColor(Extension);
         }
+    }
+
+    public void UpdatePathAfterRename(string newPath)
+    {
+        Path = newPath;
+        Name = global::System.IO.Path.GetFileName(newPath);
     }
 
     private static string GetDisplayType(string ext) => ext switch
@@ -99,17 +132,17 @@ public sealed class FileEntryViewModel
         _ => $"{ext.TrimStart('.').ToUpperInvariant()} File"
     };
 
-    private static (string icon, IBrush brush) GetIconAndBrush(string ext) => ext switch
+    private static (string icon, string color) GetIconAndColor(string ext) => ext switch
     {
-        ".txt" or ".md" => ("description", SolidColorBrush.Parse("#9CA3AF")),
-        ".cs" or ".json" or ".xml" or ".html" or ".css" or ".js" or ".ts" => ("code", SolidColorBrush.Parse("#10B981")),
-        ".png" or ".jpg" or ".jpeg" or ".gif" or ".bmp" or ".webp" or ".svg" => ("image", SolidColorBrush.Parse("#3B82F6")),
-        ".mp3" or ".wav" or ".flac" or ".ogg" or ".aac" => ("music_note", SolidColorBrush.Parse("#EC4899")),
-        ".mp4" or ".mkv" or ".avi" or ".mov" or ".webm" => ("movie", SolidColorBrush.Parse("#8B5CF6")),
-        ".zip" or ".tar" or ".gz" or ".7z" or ".rar" => ("folder_zip", SolidColorBrush.Parse("#F59E0B")),
-        ".pdf" => ("picture_as_pdf", SolidColorBrush.Parse("#EF4444")),
-        ".sh" or ".bash" => ("terminal", SolidColorBrush.Parse("#10B981")),
-        _ => ("insert_drive_file", SolidColorBrush.Parse("#9CA3AF"))
+        ".txt" or ".md" => ("description", "#9CA3AF"),
+        ".cs" or ".json" or ".xml" or ".html" or ".css" or ".js" or ".ts" => ("code", "#10B981"),
+        ".png" or ".jpg" or ".jpeg" or ".gif" or ".bmp" or ".webp" or ".svg" => ("image", "#3B82F6"),
+        ".mp3" or ".wav" or ".flac" or ".ogg" or ".aac" => ("music_note", "#EC4899"),
+        ".mp4" or ".mkv" or ".avi" or ".mov" or ".webm" => ("movie", "#8B5CF6"),
+        ".zip" or ".tar" or ".gz" or ".7z" or ".rar" => ("folder_zip", "#F59E0B"),
+        ".pdf" => ("picture_as_pdf", "#EF4444"),
+        ".sh" or ".bash" => ("terminal", "#10B981"),
+        _ => ("insert_drive_file", "#9CA3AF")
     };
 
     private static string FormatFileSize(long bytes)
@@ -118,5 +151,13 @@ public sealed class FileEntryViewModel
         if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
         if (bytes < 1024 * 1024 * 1024) return $"{bytes / (1024.0 * 1024.0):F1} MB";
         return $"{bytes / (1024.0 * 1024.0 * 1024.0):F1} GB";
+    }
+
+    private bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (global::System.Collections.Generic.EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        return true;
     }
 }
