@@ -1,9 +1,0 @@
-<UserControl
-    x:Class="UIKit.Components.Slider"
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <Slider
-      Minimum="{Binding Minimum, RelativeSource={RelativeSource AncestorType=UserControl}}"
-      Maximum="{Binding Maximum, RelativeSource={RelativeSource AncestorType=UserControl}}"
-      Value="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}" />
-</UserControl>

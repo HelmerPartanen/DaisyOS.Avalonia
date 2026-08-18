@@ -1,42 +1,609 @@
-<Window x:Class="DaisyOS.Shell.Apps.Files.FilesWindow"
-        xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Files" Width="980" Height="640" MinWidth="620" MinHeight="420"
-        TextOptions.TextRenderingMode="SubpixelAntialias"
-        Background="{DynamicResource PrimarySurfaceBrush}">
-  <Grid RowDefinitions="Auto,*,Auto" Margin="20" RowSpacing="14">
-    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
-      <Button Classes="ShellButton" Width="40" Height="40" ToolTip.Tip="Go back" Click="OnBackClicked">
-        <TextBlock Text="arrow_back" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-      </Button>
-      <TextBox x:Name="PathBox" Grid.Column="1" Height="40" VerticalContentAlignment="Center"
-               AutomationProperties.Name="Current folder path" KeyDown="OnPathKeyDown"/>
-      <Button Grid.Column="2" Classes="ShellButton" Width="40" Height="40" ToolTip.Tip="Refresh" Click="OnRefreshClicked">
-        <TextBlock Text="refresh" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
-      </Button>
-    </Grid>
-    <Grid Grid.Row="1" ColumnDefinitions="210,*" ColumnSpacing="16">
-      <StackPanel Spacing="4">
-        <TextBlock Text="Locations" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,0,0,6"/>
-        <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnHomeClicked">Home</Button>
-        <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnDesktopClicked">Desktop</Button>
-        <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnDownloadsClicked">Downloads</Button>
-        <Button Classes="ShellButton" HorizontalContentAlignment="Left" Click="OnDocumentsClicked">Documents</Button>
-      </StackPanel>
-      <Border Grid.Column="1" Background="{DynamicResource PrimarySurfaceBrush}" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedLGInset}" ClipToBounds="True">
-        <ListBox x:Name="EntriesList" AutomationProperties.Name="Folder contents" DoubleTapped="OnEntryDoubleTapped">
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              <Grid ColumnDefinitions="32,*,Auto" Margin="12,7" ColumnSpacing="10">
-                <TextBlock Text="{Binding Icon}" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="19"/>
-                <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                <TextBlock Grid.Column="2" Text="{Binding Detail}" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"/>
+<Window
+    x:Class="DaisyOS.Shell.Apps.Files.FilesWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:files="clr-namespace:DaisyOS.Shell.Apps.Files"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+    Title="Files"
+    Width="1040"
+    Height="680"
+    MinWidth="740"
+    MinHeight="480"
+    CanResize="True"
+    WindowStartupLocation="CenterScreen"
+    WindowDecorations="None"
+    ExtendClientAreaToDecorationsHint="True"
+    ExtendClientAreaTitleBarHeightHint="44"
+    TextOptions.TextRenderingMode="SubpixelAntialias"
+    Background="Transparent"
+    PointerPressed="OnWindowPointerPressed">
+
+  <Window.Styles>
+    <!-- Window Caption Buttons (Minimize, Maximize, Close) -->
+    <Style Selector="Button.CaptionButton">
+      <Setter Property="Width" Value="42" />
+      <Setter Property="Height" Value="44" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedNone}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.CaptionButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+    </Style>
+    <Style Selector="Button.CaptionButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+    </Style>
+    <Style Selector="Button.CaptionClose:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource DangerHoverBrush}" />
+    </Style>
+    <Style Selector="Button.CaptionClose:pointerover TextBlock.CaptionIcon">
+      <Setter Property="Foreground" Value="{DynamicResource OnDangerBrush}" />
+    </Style>
+    <Style Selector="Button.CaptionClose:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource DangerPressedBrush}" />
+    </Style>
+    <Style Selector="Button.CaptionClose:pressed TextBlock.CaptionIcon">
+      <Setter Property="Foreground" Value="{DynamicResource OnDangerBrush}" />
+    </Style>
+    <Style Selector="TextBlock.CaptionIcon">
+      <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
+      <Setter Property="FontSize" Value="18" />
+      <Setter Property="FontWeight" Value="Normal" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.CaptionIcon.CaptionMaximizeIcon">
+      <Setter Property="FontSize" Value="15" />
+    </Style>
+
+    <!-- Universal Sidebar Item Style (SettingsNavItem) -->
+    <Style Selector="Button.SettingsNavItem">
+      <Setter Property="Height" Value="36" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Padding" Value="12,0" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+    </Style>
+
+    <!-- Flat Column Header Buttons -->
+    <Style Selector="Button.ColumnHeader">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="4,0" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedNone}" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.ColumnHeader:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.ColumnHeader:pointerover TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <!-- Clean ListBox Item Style -->
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,1" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+    </Style>
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+    </Style>
+
+    <!-- Floating Tab Button Style -->
+    <Style Selector="Button.FloatingTabButton">
+      <Setter Property="Padding" Value="10,0,8,0" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.FloatingTabButton /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.FloatingTabButton.TabActive:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.FloatingTabButton:not(.TabActive):pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+    </Style>
+  </Window.Styles>
+
+  <Grid>
+    <!-- Outer App Frame -->
+    <Border x:Name="AppFrame"
+            Classes="AppWindowFrame"
+            Margin="12"
+            Background="{DynamicResource DividerBrush}"
+            Padding="1"
+            CornerRadius="{DynamicResource RoundedLG}">
+      <Border Background="{DynamicResource PrimarySurfaceBrush}"
+              CornerRadius="{DynamicResource RoundedLGInset}"
+              ClipToBounds="True">
+        <Grid RowDefinitions="44,52,42,*,26" Background="{DynamicResource PrimarySurfaceBrush}">
+
+          <!-- ROW 0: PURE BLACK TITLEBAR WITH METABALL MORPHING TABS EXTENDING TO BOTTOM EDGE -->
+          <Panel Grid.Row="0" Background="#000000" PointerPressed="OnTitleBarPointerPressed" DoubleTapped="OnTitleBarDoubleTapped">
+            <Grid ColumnDefinitions="*,Auto">
+
+              <!-- Tabs Area (Tight symmetrical layout with 4px flare overlap) -->
+              <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Margin="4,0,0,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" Spacing="0">
+                  <ItemsControl x:Name="TabsControl" ItemsSource="{Binding Tabs}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="-12" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="files:FilesTabViewModel">
+                        <Grid Width="160" Height="44" VerticalAlignment="Stretch" Classes.TabActive="{Binding IsActive}">
+                          <Grid.Styles>
+                            <!-- Ensure the active tab and its flares render ON TOP of adjacent hovered tabs -->
+                            <Style Selector="Grid.TabActive">
+                              <Setter Property="ZIndex" Value="1" />
+                            </Style>
+                          </Grid.Styles>
+
+                          <!-- The fully parametric metaball background! You can freely change FlareRadius="12" etc here -->
+                          <controls:MetaballTabPanel FlareRadius="8"
+                                                     CornerRadius="8">
+                            
+                            <!-- The dynamic path driven by the Panel -->
+                            <Path Data="{Binding $parent[controls:MetaballTabPanel].MetaballGeometry}"
+                                  Fill="{DynamicResource PrimarySurfaceBrush}"
+                                  IsHitTestVisible="False"
+                                  IsVisible="{Binding IsActive}" />
+
+                            <!-- Tab Interactive Button -->
+                            <Button Classes="FloatingTabButton"
+                                    Classes.TabActive="{Binding IsActive}"
+                                    Click="OnTabClicked"
+                                    Tag="{Binding}">
+                              <Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                              <!-- Folder Icon -->
+                              <TextBlock Text="folder"
+                                         FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                         FontSize="16"
+                                         Foreground="{DynamicResource AccentBrush}"
+                                         VerticalAlignment="Center"
+                                         Margin="0,0,8,0"/>
+
+                              <!-- Left Aligned Tab Title -->
+                              <TextBlock Grid.Column="1"
+                                         Text="{Binding Title}"
+                                         FontSize="12"
+                                         FontWeight="Medium"
+                                         Foreground="{DynamicResource TextPrimaryBrush}"
+                                         VerticalAlignment="Center"
+                                         HorizontalAlignment="Left"
+                                         TextTrimming="CharacterEllipsis"
+                                         Margin="0,0,6,0"/>
+
+                              <!-- Right Aligned Close Button -->
+                              <Button Grid.Column="2"
+                                      Classes="ShellButton"
+                                      Width="18"
+                                      Height="18"
+                                      Padding="0"
+                                      CornerRadius="9"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      Click="OnCloseTabClicked"
+                                      Tag="{Binding}"
+                                      ToolTip.Tip="Close Tab">
+                                <TextBlock Text="close"
+                                           FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"/>
+                              </Button>
+                            </Grid>
+                          </Button>
+                          </controls:MetaballTabPanel>
+                        </Grid>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+
+                  <!-- Standard Shell Ghost New Tab Button (Transparent at rest, GhostHoverBrush on hover) -->
+                  <Button Classes="ShellButton"
+                          Width="32"
+                          Height="32"
+                          Margin="4,0,0,0"
+                          CornerRadius="{DynamicResource RoundedMD}"
+                          VerticalAlignment="Center"
+                          Click="OnNewTabClicked"
+                          ToolTip.Tip="New Tab (Ctrl+T)">
+                    <TextBlock Text="add"
+                               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                               FontSize="18"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                  </Button>
+                </StackPanel>
+              </ScrollViewer>
+
+              <!-- Window Caption Controls -->
+              <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Classes="CaptionButton" Click="OnTogglePerformanceClicked" ToolTip.Tip="Toggle Performance Overlay">
+                  <TextBlock Text="analytics" Classes="CaptionIcon" />
+                </Button>
+                <Button Classes="CaptionButton" Click="OnMinimizeClicked" ToolTip.Tip="Minimize">
+                  <TextBlock Text="remove" Classes="CaptionIcon" />
+                </Button>
+                <Button Classes="CaptionButton" Click="OnMaximizeClicked" ToolTip.Tip="Maximize or restore">
+                  <TextBlock Text="crop_square" Classes="CaptionIcon CaptionMaximizeIcon" />
+                </Button>
+                <Button Classes="CaptionButton CaptionClose" Click="OnCloseClicked" ToolTip.Tip="Close">
+                  <TextBlock Text="close" Classes="CaptionIcon" />
+                </Button>
+              </StackPanel>
+            </Grid>
+          </Panel>
+
+          <!-- ROW 1: NAVIGATION TOOLBAR (ALL 4 BUTTONS ARE STANDARD SHELL GHOST BUTTONS) -->
+          <Panel Grid.Row="1" Background="{DynamicResource PrimarySurfaceBrush}">
+            <Grid ColumnDefinitions="Auto,*,260" ColumnSpacing="12" Margin="14,7" VerticalAlignment="Center">
+
+              <!-- All 4 Nav Controls (Back, Forward, Up, Refresh) using identical ShellButton ghost style -->
+              <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <Button Classes="ShellButton" Width="36" Height="36" Click="OnBackClicked" IsEnabled="{Binding ActiveTab.CanGoBack}" ToolTip.Tip="Back">
+                  <TextBlock Text="arrow_back" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+                </Button>
+                <Button Classes="ShellButton" Width="36" Height="36" Click="OnForwardClicked" IsEnabled="{Binding ActiveTab.CanGoForward}" ToolTip.Tip="Forward">
+                  <TextBlock Text="arrow_forward" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+                </Button>
+                <Button Classes="ShellButton" Width="36" Height="36" Click="OnUpClicked" IsEnabled="{Binding ActiveTab.CanGoUp}" ToolTip.Tip="Up one level">
+                  <TextBlock Text="arrow_upward" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+                </Button>
+                <Button Classes="ShellButton" Width="36" Height="36" Click="OnRefreshClicked" ToolTip.Tip="Refresh (F5)">
+                  <TextBlock Text="refresh" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+                </Button>
+              </StackPanel>
+
+              <!-- Breadcrumb Address Box -->
+              <Border Grid.Column="1"
+                      Background="{DynamicResource TertiarySurfaceBrush}"
+                      CornerRadius="{DynamicResource RoundedSM}"
+                      Height="38"
+                      Padding="12,0">
+                <Grid ColumnDefinitions="Auto,*">
+                  <TextBlock Text="folder_open"
+                             FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                             FontSize="18"
+                             Foreground="{DynamicResource TextSecondaryBrush}"
+                             VerticalAlignment="Center"
+                             Margin="0,0,8,0"/>
+                  <TextBox x:Name="PathBox"
+                           Grid.Column="1"
+                           Background="Transparent"
+                           BorderThickness="0"
+                           VerticalContentAlignment="Center"
+                           FontSize="13"
+                           Foreground="{DynamicResource TextPrimaryBrush}"
+                           Text="{Binding ActiveTab.CurrentPath, Mode=OneWay}"
+                           KeyDown="OnPathKeyDown"/>
+                </Grid>
+              </Border>
+
+              <!-- Reusable DaisyOS SearchBar -->
+              <controls:SearchBar Grid.Column="2"
+                                  Text="{Binding ActiveTab.SearchQuery, Mode=TwoWay}"
+                                  PlaceholderText="Search folder..."
+                                  CornerRadius="{DynamicResource RoundedSM}"
+                                  Height="38" />
+            </Grid>
+          </Panel>
+
+          <!-- ROW 2: ACTION COMMAND STRIP (PrimarySurfaceBrush) -->
+          <Panel Grid.Row="2" Background="{DynamicResource PrimarySurfaceBrush}">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="12" Margin="14,4" VerticalAlignment="Center">
+
+              <!-- New Folder Button -->
+              <Button Classes="ShellButton" Height="32" Padding="12,0" CornerRadius="{DynamicResource RoundedSM}" Click="OnNewFolderClicked" ToolTip.Tip="Create new folder">
+                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                  <TextBlock Text="create_new_folder" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16" Foreground="{DynamicResource AccentBrush}"/>
+                  <TextBlock Text="New folder" FontSize="12" FontWeight="Medium"/>
+                </StackPanel>
+              </Button>
+
+              <!-- Edit Action Group -->
+              <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <Rectangle Width="1" Height="18" Fill="{DynamicResource DividerBrush}" Margin="2,0,6,0"/>
+                <Button Classes="ShellButton" Width="32" Height="32" Click="OnCutClicked" ToolTip.Tip="Cut (Ctrl+X)">
+                  <TextBlock Text="content_cut" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"/>
+                </Button>
+                <Button Classes="ShellButton" Width="32" Height="32" Click="OnCopyClicked" ToolTip.Tip="Copy (Ctrl+C)">
+                  <TextBlock Text="content_copy" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"/>
+                </Button>
+                <Button Classes="ShellButton" Width="32" Height="32" Click="OnDeleteClicked" ToolTip.Tip="Delete (Del)">
+                  <TextBlock Text="delete" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16" Foreground="#F38BA8"/>
+                </Button>
+              </StackPanel>
+
+              <!-- Sort & View Mode Switcher Group -->
+              <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <Button Classes="ShellButton" Height="32" Padding="10,0" CornerRadius="{DynamicResource RoundedSM}" Click="OnSortNameClicked" ToolTip.Tip="Sort by Name">
+                  <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock Text="sort" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"/>
+                    <TextBlock Text="Sort" FontSize="12" FontWeight="Medium"/>
+                  </StackPanel>
+                </Button>
+                <Rectangle Width="1" Height="18" Fill="{DynamicResource DividerBrush}" Margin="2,0"/>
+                <Button Classes="ShellButton" Width="32" Height="32" Click="OnToggleViewModeClicked" ToolTip.Tip="Toggle Grid / Details View">
+                  <TextBlock Text="grid_view" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"/>
+                </Button>
+              </StackPanel>
+            </Grid>
+          </Panel>
+
+          <!-- ROW 3: SIDEBAR & MAIN CONTENT AREA -->
+          <Grid Grid.Row="3" ColumnDefinitions="240,*">
+
+            <!-- 240PX SIDEBAR (PrimarySurfaceBrush) -->
+            <Border Background="{DynamicResource PrimarySurfaceBrush}" Padding="10,12">
+              <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="16">
+
+                  <!-- Favorites Section -->
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="FAVORITES"
+                               FontWeight="Bold"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               Margin="12,0,0,4"/>
+
+                    <Button Classes="SettingsNavItem" Click="OnHomeClicked">
+                      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="home" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Width="24" Foreground="#89B4FA" VerticalAlignment="Center"/>
+                        <TextBlock Text="Home" FontSize="13" FontWeight="Medium" Margin="12,0,0,0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                      </StackPanel>
+                    </Button>
+
+                    <Button Classes="SettingsNavItem" Click="OnDesktopClicked">
+                      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="desktop_windows" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Width="24" Foreground="#A6E3A1" VerticalAlignment="Center"/>
+                        <TextBlock Text="Desktop" FontSize="13" FontWeight="Medium" Margin="12,0,0,0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                      </StackPanel>
+                    </Button>
+
+                    <Button Classes="SettingsNavItem" Click="OnDownloadsClicked">
+                      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="download" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Width="24" Foreground="#FAB387" VerticalAlignment="Center"/>
+                        <TextBlock Text="Downloads" FontSize="13" FontWeight="Medium" Margin="12,0,0,0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                      </StackPanel>
+                    </Button>
+
+                    <Button Classes="SettingsNavItem" Click="OnDocumentsClicked">
+                      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="folder_special" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Width="24" Foreground="#F9E2AF" VerticalAlignment="Center"/>
+                        <TextBlock Text="Documents" FontSize="13" FontWeight="Medium" Margin="12,0,0,0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                      </StackPanel>
+                    </Button>
+
+                    <Button Classes="SettingsNavItem" Click="OnPicturesClicked">
+                      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="image" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Width="24" Foreground="#74C7EC" VerticalAlignment="Center"/>
+                        <TextBlock Text="Pictures" FontSize="13" FontWeight="Medium" Margin="12,0,0,0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                      </StackPanel>
+                    </Button>
+
+                    <Button Classes="SettingsNavItem" Click="OnMusicClicked">
+                      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="library_music" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Width="24" Foreground="#F5C2E7" VerticalAlignment="Center"/>
+                        <TextBlock Text="Music" FontSize="13" FontWeight="Medium" Margin="12,0,0,0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                      </StackPanel>
+                    </Button>
+                  </StackPanel>
+
+                  <!-- System Locations Section -->
+                  <StackPanel Spacing="4">
+                    <TextBlock Text="LOCATIONS"
+                               FontWeight="Bold"
+                               FontSize="11"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               Margin="12,0,0,4"/>
+
+                    <Button Classes="SettingsNavItem" Click="OnRootClicked">
+                      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="hard_drive" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" Width="24" Foreground="#CBA6F7" VerticalAlignment="Center"/>
+                        <TextBlock Text="System Root (/)" FontSize="13" FontWeight="Medium" Margin="12,0,0,0" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                      </StackPanel>
+                    </Button>
+                  </StackPanel>
+
+                </StackPanel>
+              </ScrollViewer>
+            </Border>
+
+            <!-- Vertical Divider separating sidebar and content -->
+            <Rectangle Grid.Column="0"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Stretch"
+                       Width="1"
+                       Fill="{DynamicResource DividerBrush}" />
+
+            <!-- MAIN FILE CONTENT AREA (PrimarySurfaceBrush) -->
+            <Grid Grid.Column="1" Background="{DynamicResource PrimarySurfaceBrush}">
+
+              <!-- VIEW MODE 1: DETAILS LIST VIEW -->
+              <Grid RowDefinitions="36,*" IsVisible="{Binding !ActiveTab.IsGridView}">
+
+                <!-- Table Header Bar -->
+                <Panel Grid.Row="0" Background="Transparent">
+                  <Grid ColumnDefinitions="*,180,140,100" Margin="16,0" VerticalAlignment="Center">
+                    <Button Classes="ColumnHeader" Click="OnSortNameClicked">
+                      <TextBlock Text="Name" FontWeight="Regular" FontSize="12"/>
+                    </Button>
+                    <Button Grid.Column="1" Classes="ColumnHeader" Click="OnSortDateClicked">
+                      <TextBlock Text="Date modified" FontWeight="Regular" FontSize="12"/>
+                    </Button>
+                    <Button Grid.Column="2" Classes="ColumnHeader" Click="OnSortTypeClicked">
+                      <TextBlock Text="Type" FontWeight="Regular" FontSize="12"/>
+                    </Button>
+                    <Button Grid.Column="3" Classes="ColumnHeader" HorizontalAlignment="Right" Click="OnSortSizeClicked">
+                      <TextBlock Text="Size" FontWeight="Regular" FontSize="12"/>
+                    </Button>
+                  </Grid>
+
+                  <!-- Divider beneath Table Header -->
+                  <Rectangle VerticalAlignment="Bottom" Height="1" Fill="{DynamicResource DividerBrush}" />
+                </Panel>
+
+                <!-- Details File List -->
+                <ListBox x:Name="EntriesList"
+                         Grid.Row="1"
+                         ItemsSource="{Binding ActiveTab.FilteredEntries}"
+                         SelectedItem="{Binding ActiveTab.SelectedItem, Mode=TwoWay}"
+                         DoubleTapped="OnEntryDoubleTapped"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Padding="12,8">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="files:FileEntryViewModel">
+                      <Border Padding="8,6">
+                        <Grid ColumnDefinitions="*,180,140,100" VerticalAlignment="Center">
+
+                          <!-- Name & Icon -->
+                          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding MaterialIcon}"
+                                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                       FontSize="20"
+                                       Foreground="{Binding IconBrush}"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding Name}"
+                                       FontSize="13"
+                                       Foreground="{DynamicResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"/>
+                          </StackPanel>
+
+                          <!-- Date Modified -->
+                          <TextBlock Grid.Column="1"
+                                     Text="{Binding LastWriteTimeDisplay}"
+                                     FontSize="12"
+                                     Foreground="{DynamicResource TextSecondaryBrush}"
+                                     VerticalAlignment="Center"/>
+
+                          <!-- Type -->
+                          <TextBlock Grid.Column="2"
+                                     Text="{Binding DisplayType}"
+                                     FontSize="12"
+                                     Foreground="{DynamicResource TextSecondaryBrush}"
+                                     VerticalAlignment="Center"/>
+
+                          <!-- Size -->
+                          <TextBlock Grid.Column="3"
+                                     Text="{Binding DisplaySize}"
+                                     FontSize="12"
+                                     Foreground="{DynamicResource TextSecondaryBrush}"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Center"/>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+
               </Grid>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
+
+              <!-- VIEW MODE 2: ICON GRID VIEW (CARDS WRAP PANEL) -->
+              <ListBox x:Name="EntriesGrid"
+                       ItemsSource="{Binding ActiveTab.FilteredEntries}"
+                       SelectedItem="{Binding ActiveTab.SelectedItem, Mode=TwoWay}"
+                       DoubleTapped="OnEntryDoubleTapped"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       Padding="16"
+                       IsVisible="{Binding ActiveTab.IsGridView}">
+                <ListBox.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" Width="{Binding $parent[ScrollViewer].Bounds.Width}" />
+                  </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                  <DataTemplate x:DataType="files:FileEntryViewModel">
+                    <Border Width="110"
+                            Height="104"
+                            Margin="6"
+                            Padding="8"
+                            CornerRadius="{DynamicResource RoundedMD}"
+                            Background="Transparent"
+                            ToolTip.Tip="{Binding Name}">
+                      <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
+                        <TextBlock Text="{Binding MaterialIcon}"
+                                   FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                                   FontSize="40"
+                                   Foreground="{Binding IconBrush}"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding Name}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextTrimming="CharacterEllipsis"
+                                   MaxLines="2"
+                                   TextWrapping="Wrap"/>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+
+            </Grid>
+          </Grid>
+
+          <!-- ROW 4: BOTTOM STATUS BAR (PrimarySurfaceBrush) -->
+          <Panel Grid.Row="4" Background="{DynamicResource PrimarySurfaceBrush}">
+            <!-- Divider above Status Bar -->
+            <Rectangle VerticalAlignment="Top" Height="1" Fill="{DynamicResource DividerBrush}" />
+
+            <Grid Margin="14,0" VerticalAlignment="Center">
+              <TextBlock Text="{Binding ActiveTab.StatusText}"
+                         FontSize="11"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         VerticalAlignment="Center"/>
+            </Grid>
+          </Panel>
+
+        </Grid>
       </Border>
-    </Grid>
-    <TextBlock x:Name="StatusText" Grid.Row="2" Foreground="{DynamicResource TextSecondaryBrush}"/>
+    </Border>
+
+    <!-- App Performance Overlay Layer -->
+    <controls:AppPerformanceOverlay x:Name="PerfOverlay" AppName="Files" IsOverlayVisible="True" Margin="0,48,16,0" />
+
+    <!-- Edge resize handles matching NotesWindow and SettingsWindow -->
+    <Border Name="ResizeTop" Height="8" Margin="10,10,10,0" VerticalAlignment="Top" Background="Transparent" Cursor="TopSide" PointerPressed="OnResizeTopPressed" />
+    <Border Name="ResizeBottom" Height="8" Margin="10,0,10,10" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomSide" PointerPressed="OnResizeBottomPressed" />
+    <Border Name="ResizeLeft" Width="8" Margin="10,10,0,10" HorizontalAlignment="Left" Background="Transparent" Cursor="LeftSide" PointerPressed="OnResizeLeftPressed" />
+    <Border Name="ResizeRight" Width="8" Margin="0,10,10,10" HorizontalAlignment="Right" Background="Transparent" Cursor="RightSide" PointerPressed="OnResizeRightPressed" />
+
+    <Border Name="ResizeTopLeft" Width="10" Height="10" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Cursor="TopLeftCorner" PointerPressed="OnResizeTopLeftPressed" />
+    <Border Name="ResizeTopRight" Width="10" Height="10" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" Cursor="TopRightCorner" PointerPressed="OnResizeTopRightPressed" />
+    <Border Name="ResizeBottomLeft" Width="10" Height="10" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomLeftCorner" PointerPressed="OnResizeBottomLeftPressed" />
+    <Border Name="ResizeBottomRight" Width="10" Height="10" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Transparent" Cursor="BottomRightCorner" PointerPressed="OnResizeBottomRightPressed" />
   </Grid>
 </Window>
