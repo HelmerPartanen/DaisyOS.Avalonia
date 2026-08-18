@@ -446,15 +446,17 @@
           <StackPanel Spacing="24" ClipToBounds="False">
 
             <!-- Active Game Spotlight Header -->
-            <StackPanel Spacing="6" Margin="8,0,0,0">
-              <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                <Border Background="#33FFFFFF" CornerRadius="{DynamicResource RoundedSM}" Padding="10,3" VerticalAlignment="Center">
-                  <TextBlock x:Name="SelectedGameSourceText" Text="STEAM" FontSize="12" FontWeight="Bold" Foreground="White" />
+            <StackPanel Spacing="8" Margin="8,0,0,0">
+              <!-- Title + Badge Row -->
+              <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+                <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="42" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
+                <Border Background="#33FFFFFF" CornerRadius="999" Padding="14,6" VerticalAlignment="Center" Margin="0,4,0,0">
+                  <TextBlock x:Name="SelectedGameSourceText" Text="STEAM" FontSize="15" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
                 </Border>
-                <TextBlock x:Name="SelectedGameSubtext" Text="Recently Played • Ready to play" FontSize="14" FontWeight="Medium" Foreground="White" VerticalAlignment="Center" />
               </StackPanel>
 
-              <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="42" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" />
+              <!-- Subtext Row (Optically Aligned) -->
+              <TextBlock x:Name="SelectedGameSubtext" Text="Recently Played • Ready to play" FontSize="14" FontWeight="Medium" Foreground="White" VerticalAlignment="Center" Margin="2,0,0,0" />
             </StackPanel>
 
             <!-- Carousel Container (290px Height guarantees zero clipping) -->
