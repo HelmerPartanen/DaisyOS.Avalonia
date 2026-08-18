@@ -503,6 +503,24 @@ namespace DaisyOS.Shell.Views
                 launcher.Launch("systemctl", ["poweroff"]);
             };
 
+            var runningGame = ConsoleHome.RecentGames.FirstOrDefault(g => g.IsRunning)
+                           ?? ConsoleHome.AllLibraryGames.FirstOrDefault(g => g.IsRunning);
+
+            _quickMenuWindow.Overlay.SetActiveGame(runningGame);
+
+            _quickMenuWindow.Overlay.CloseGameRequested += (_, gameVm) =>
+            {
+                gameVm.IsRunning = false;
+                ConsoleHome.UpdateSelectedGameSpotlight(gameVm);
+                (Application.Current as App)?.Feedback.Show($"Closed {gameVm.Title}.");
+            };
+
+            _quickMenuWindow.Overlay.RestartGameRequested += (_, gameVm) =>
+            {
+                _quickMenuWindow.Close();
+                LaunchConsoleGame(gameVm);
+            };
+
             _quickMenuWindow.Show();
             _quickMenuWindow.Activate();
             _quickMenuWindow.Focus();

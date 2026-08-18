@@ -12,6 +12,7 @@ using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
 using DaisyOS.Core.Services.Gaming;
 using DaisyOS.Shell.Controls;
+using DaisyOS.Shell.ViewModels;
 using DaisyOS.System.Audio;
 using DaisyOS.System.Diagnostics;
 using DaisyOS.System.Gaming;
@@ -30,11 +31,28 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     private readonly ISystemMetricsService? _systemMetricsService;
     private readonly IGameArtworkResolver? _gameArtworkResolver;
 
+    private CancellationTokenSource? _refreshCancellation;
+    private IAudioSpectrumService? _audioSpectrumService;
+    private Bitmap? _artwork;
+    private string? _artworkPath;
+    private Color? _artworkTint;
+    private bool _isPlaying;
+    private bool _spectrumIsIdle = true;
+    private ConsoleGameItemViewModel? _activeRunningGame;
+
     public event EventHandler? Closed;
     public event EventHandler? GoHomeRequested;
     public event EventHandler? ReturnToDesktopRequested;
     public event EventHandler? RestartRequested;
     public event EventHandler? ShutdownRequested;
+    public event EventHandler<ConsoleGameItemViewModel>? RestartGameRequested;
+    public event EventHandler<ConsoleGameItemViewModel>? CloseGameRequested;
+
+    public void SetActiveGame(ConsoleGameItemViewModel? runningGame)
+    {
+        _activeRunningGame = runningGame;
+        UpdateCurrentGamePanel();
+    }
 
     private CancellationTokenSource? _loadCts;
     private DispatcherTimer? _clockTimer;
@@ -117,51 +135,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
                 });
             }
 
-            if (_gameDiscoveryService != null)
-            {
-                var games = await _gameDiscoveryService.DiscoverGamesAsync(token);
-                Dispatcher.UIThread.Post(() =>
-                {
-                    if (CurrentGameTitle != null && CurrentGamePanel != null)
-                    {
-                        var currentGame = games.FirstOrDefault();
-                        // TODO: Implement actual active game tracking logic. For now, pretend no game is running.
-                        bool isGameRunning = false; 
-
-                        if (isGameRunning && currentGame != null)
-                        {
-                            CurrentGamePanel.IsVisible = true;
-                            CurrentGameTitle.Text = currentGame.Title;
-                            
-                            // Load Cover Image
-                            if (_gameArtworkResolver != null)
-                            {
-                                Task.Run(async () =>
-                                {
-                                    var assets = await _gameArtworkResolver.GetArtworkAsync(currentGame, token);
-                                    var coverUrl = assets.CoverPath;
-                                    if (!string.IsNullOrEmpty(coverUrl))
-                                    {
-                                        try
-                                        {
-                                            var bmp = new Bitmap(coverUrl);
-                                            Dispatcher.UIThread.Post(() =>
-                                            {
-                                                if (CurrentGameIcon != null) CurrentGameIcon.Source = bmp;
-                                            });
-                                        }
-                                        catch { }
-                                    }
-                                });
-                            }
-                        }
-                        else
-                        {
-                            CurrentGamePanel.IsVisible = false;
-                        }
-                    }
-                });
-            }
+            Dispatcher.UIThread.Post(UpdateCurrentGamePanel);
             if (_audioService != null)
             {
                 var masterVol = await _audioService.GetVolumeAsync(token);
@@ -382,5 +356,46 @@ public partial class ConsoleQuickMenuOverlay : UserControl
         HideQuickMenu();
         if (_powerService != null) _ = _powerService.ShutdownAsync();
         ShutdownRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void UpdateCurrentGamePanel()
+    {
+        if (CurrentGamePanel == null) return;
+
+        if (_activeRunningGame != null && _activeRunningGame.IsRunning)
+        {
+            CurrentGamePanel.IsVisible = true;
+            if (CurrentGameTitle != null) CurrentGameTitle.Text = _activeRunningGame.Title;
+            if (CurrentGameIcon != null)
+            {
+                CurrentGameIcon.Source = _activeRunningGame.CoverImage ?? _activeRunningGame.HeroImage ?? _activeRunningGame.LogoImage;
+            }
+        }
+        else
+        {
+            CurrentGamePanel.IsVisible = false;
+        }
+    }
+
+    private void OnRestartGameClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_activeRunningGame != null)
+        {
+            HideQuickMenu();
+            RestartGameRequested?.Invoke(this, _activeRunningGame);
+        }
+    }
+
+    private void OnCloseGameClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_activeRunningGame != null)
+        {
+            var game = _activeRunningGame;
+            game.IsRunning = false;
+            _activeRunningGame = null;
+            UpdateCurrentGamePanel();
+            HideQuickMenu();
+            CloseGameRequested?.Invoke(this, game);
+        }
     }
 }
