@@ -13,6 +13,15 @@
     <ItemsControl
         x:Name="ItemsControl"
         ItemsSource="{Binding Items}">
+      <ItemsControl.Styles>
+        <Style Selector="ItemsControl > ContentPresenter">
+          <Setter Property="Transitions">
+            <Transitions>
+              <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.22" Easing="CubicEaseOut" />
+            </Transitions>
+          </Setter>
+        </Style>
+      </ItemsControl.Styles>
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
           <controls:DesktopReorderPanel

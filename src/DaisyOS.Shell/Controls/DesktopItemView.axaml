@@ -11,13 +11,21 @@
       <Setter Property="Transitions">
         <Transitions>
           <DoubleTransition Property="Opacity" Duration="0:0:0.1" Easing="QuadraticEaseOut" />
-          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" Easing="CubicEaseOut" />
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut" />
         </Transitions>
       </Setter>
     </Style>
 
     <Style Selector="controls|DesktopItemView[IsHiddenPlaceholder=True] Border#CellCard">
       <Setter Property="Opacity" Value="0.0" />
+    </Style>
+
+    <Style Selector="controls|DesktopItemView[IsDragProxy=True]">
+      <Setter Property="ZIndex" Value="100" />
+    </Style>
+    <Style Selector="controls|DesktopItemView[IsDragProxy=True] Border#CellCard">
+      <Setter Property="RenderTransform" Value="scale(1.08)" />
+      <Setter Property="Opacity" Value="0.98" />
     </Style>
 
     <Style Selector="Border#CellCard:pointerover">

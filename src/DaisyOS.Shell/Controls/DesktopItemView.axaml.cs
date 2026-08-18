@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using DaisyOS.Shell.ViewModels;
 
@@ -27,10 +28,13 @@ public partial class DesktopItemView : UserControl
         set => SetValue(IsHiddenPlaceholderProperty, value);
     }
 
+    private DesktopItemViewModel? _subscribedVm;
+
     public DesktopItemView()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
+        Unloaded += OnUnloaded;
     }
 
     private void InitializeComponent()
@@ -40,11 +44,26 @@ public partial class DesktopItemView : UserControl
 
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
+        if (_subscribedVm != null)
+        {
+            _subscribedVm.PropertyChanged -= OnViewModelPropertyChanged;
+            _subscribedVm = null;
+        }
+
         if (DataContext is DesktopItemViewModel vm)
         {
-            vm.PropertyChanged -= OnViewModelPropertyChanged;
+            _subscribedVm = vm;
             vm.PropertyChanged += OnViewModelPropertyChanged;
- SyncProperties(vm);
+            SyncProperties(vm);
+        }
+    }
+
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        if (_subscribedVm != null)
+        {
+            _subscribedVm.PropertyChanged -= OnViewModelPropertyChanged;
+            _subscribedVm = null;
         }
     }
 
@@ -58,13 +77,7 @@ public partial class DesktopItemView : UserControl
 
     private void SyncProperties(DesktopItemViewModel vm)
     {
-        if (IsDragProxy)
-        {
-            IsHiddenPlaceholder = false;
-        }
-        else
-        {
-            IsHiddenPlaceholder = vm.IsHiddenPlaceholder;
-        }
+        IsDragProxy = vm.IsDragging;
+        IsHiddenPlaceholder = vm.IsDragging ? false : vm.IsHiddenPlaceholder;
     }
 }

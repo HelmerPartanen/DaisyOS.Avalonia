@@ -55,6 +55,27 @@ public class DesktopItemViewModel : INotifyPropertyChanged
         set => SetField(ref _y, value);
     }
 
+    private double _dragX;
+    public double DragX
+    {
+        get => _dragX;
+        set => SetField(ref _dragX, value);
+    }
+
+    private double _dragY;
+    public double DragY
+    {
+        get => _dragY;
+        set => SetField(ref _dragY, value);
+    }
+
+    private bool _isEditMode;
+    public bool IsEditMode
+    {
+        get => _isEditMode;
+        set => SetField(ref _isEditMode, value);
+    }
+
     private bool _isDragging;
     public bool IsDragging
     {
@@ -95,6 +116,22 @@ public class DesktopViewModel : INotifyPropertyChanged
     private readonly Dictionary<DesktopItemId, DesktopItemViewModel> _itemMap = new();
     private readonly Dictionary<DesktopItemId, GridCell> _committedCells = new();
 
+    private bool _isEditMode;
+    public bool IsEditMode
+    {
+        get => _isEditMode;
+        set
+        {
+            if (SetField(ref _isEditMode, value))
+            {
+                foreach (var item in Items)
+                {
+                    item.IsEditMode = value;
+                }
+            }
+        }
+    }
+
     public DesktopViewModel()
     {
         LoadDesktopItems();
@@ -121,6 +158,7 @@ public class DesktopViewModel : INotifyPropertyChanged
     public void AddItem(DesktopItemViewModel item)
     {
         if (_itemMap.ContainsKey(item.Id)) return;
+        item.IsEditMode = IsEditMode;
         _itemMap[item.Id] = item;
         Items.Add(item);
         var cell = new GridCell(item.State.Column, item.State.Row);
@@ -148,6 +186,62 @@ public class DesktopViewModel : INotifyPropertyChanged
     {
         var keys = _committedCells.Keys.ToList();
         return keys.IndexOf(id);
+    }
+
+    public bool ReorderItem(DesktopItemId sourceId, GridCell targetCell, DesktopGridMetrics? metrics)
+    {
+        if (metrics == null || !_itemMap.TryGetValue(sourceId, out var sourceItem))
+            return false;
+
+        if (!metrics.IsValid(targetCell))
+            return false;
+
+        var currentCell = GetCommittedCell(sourceId);
+        if (currentCell.Equals(targetCell))
+            return false;
+
+        var occupant = Items.FirstOrDefault(i => !i.Id.Equals(sourceId) && GetCommittedCell(i.Id).Equals(targetCell));
+
+        if (occupant != null)
+        {
+            _committedCells[occupant.Id] = currentCell;
+            occupant.State.Column = currentCell.Column;
+            occupant.State.Row = currentCell.Row;
+            occupant.State.SortOrder = metrics.GetSlotIndex(currentCell);
+            var occupantOrigin = metrics.GetCellOrigin(currentCell);
+            occupant.X = occupantOrigin.X;
+            occupant.Y = occupantOrigin.Y;
+        }
+
+        _committedCells[sourceId] = targetCell;
+        sourceItem.State.Column = targetCell.Column;
+        sourceItem.State.Row = targetCell.Row;
+        sourceItem.State.SortOrder = metrics.GetSlotIndex(targetCell);
+        var targetOrigin = metrics.GetCellOrigin(targetCell);
+        sourceItem.X = targetOrigin.X;
+        sourceItem.Y = targetOrigin.Y;
+
+        return true;
+    }
+
+    public void UpdateCommittedCells(DesktopGridMetrics metrics)
+    {
+        for (int i = 0; i < Items.Count; i++)
+        {
+            var item = Items[i];
+            var cell = metrics.GetCellForSlot(i);
+            item.State.Column = cell.Column;
+            item.State.Row = cell.Row;
+            item.State.SortOrder = i;
+            _committedCells[item.Id] = cell;
+
+            if (metrics.IsValid(cell))
+            {
+                var origin = metrics.GetCellOrigin(cell);
+                item.X = origin.X;
+                item.Y = origin.Y;
+            }
+        }
     }
 
     public void CalculateLayout(DesktopGridMetrics metrics)
