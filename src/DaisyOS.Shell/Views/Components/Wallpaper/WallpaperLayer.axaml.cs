@@ -1,24 +1,35 @@
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using DaisyOS.Shell.Services.Wallpaper;
+using DaisyOS.Shell.Services.Wallpaper.VideoWallpaper;
 
 namespace DaisyOS.Shell.Views.Components.Wallpaper;
 
-/// <summary>The one wallpaper visual shared by the desktop and console shell experiences.</summary>
+/// <summary>The wallpaper visual shared by the desktop and console shell experiences.</summary>
 public partial class WallpaperLayer : UserControl
 {
-    // Travel is capped by each dimension's actual layout overscan, preventing exposed edges
-    // on portrait and narrow displays without making the image zoom further.
     private const double MaximumParallaxOffset = 0;
     private const double WallpaperScale = 1.0;
     private const double EdgeSafetyInset = 0;
     private readonly DispatcherTimer _parallaxTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
+    private readonly DispatcherTimer _videoFrameTimer = new(DispatcherPriority.Render) { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly TranslateTransform _parallaxTranslation = new();
     private readonly SemaphoreSlim _refreshGate = new(1, 1);
     private App? _app;
     private WallpaperImageService? _wallpaperImageService;
+    private VideoWallpaperService? _videoWallpaperService;
+    private WriteableBitmap? _videoBitmapA;
+    private WriteableBitmap? _videoBitmapB;
+    private bool _useBitmapA;
     private WallpaperRenderMetrics _wallpaperMetrics;
     private double _targetOffsetX;
     private double _targetOffsetY;
@@ -41,16 +52,15 @@ public partial class WallpaperLayer : UserControl
             RequestWallpaperRefresh();
         };
         _parallaxTimer.Tick += (_, _) => AdvanceParallax();
+        _videoFrameTimer.Tick += OnVideoFrameTick;
     }
 
-    /// <summary>Updates console parallax from the selected position in the controller carousel.</summary>
     public void SetConsoleNavigationParallax(double position)
     {
         _targetOffsetX = 0;
         _targetOffsetY = 0;
     }
 
-    /// <summary>Enables console motion or eases the wallpaper back to its desktop position.</summary>
     public void SetConsoleParallaxEnabled(bool enabled)
     {
         _targetOffsetX = 0;
@@ -76,16 +86,21 @@ public partial class WallpaperLayer : UserControl
         _isLoaded = false;
         Interlocked.Increment(ref _refreshRequestVersion);
         _parallaxTimer.Stop();
+        _videoFrameTimer.Stop();
         if (_app is not null)
         {
             _app.WallpaperChanged -= OnWallpaperChanged;
         }
 
-        // The service owns its rendered bitmap. Drop the Image reference before disposal so
-        // Avalonia never measures a bitmap whose native render target has been released.
         WallpaperImage.Source = null;
         _wallpaperImageService?.Dispose();
         _wallpaperImageService = null;
+        _videoWallpaperService?.Dispose();
+        _videoWallpaperService = null;
+        _videoBitmapA?.Dispose();
+        _videoBitmapA = null;
+        _videoBitmapB?.Dispose();
+        _videoBitmapB = null;
     }
 
     private void OnWallpaperChanged(object? sender, string wallpaperUri) => _ = LoadWallpaperAsync(wallpaperUri);
@@ -95,20 +110,134 @@ public partial class WallpaperLayer : UserControl
         try
         {
             var requestVersion = Interlocked.Increment(ref _refreshRequestVersion);
+            _videoFrameTimer.Stop();
             WallpaperImage.Source = null;
+
             _wallpaperImageService?.Dispose();
+            _wallpaperImageService = null;
+
+            _videoWallpaperService?.Dispose();
+            _videoWallpaperService = null;
+
+            _videoBitmapA?.Dispose();
+            _videoBitmapA = null;
+            _videoBitmapB?.Dispose();
+            _videoBitmapB = null;
+
+            string resolvedPath = ResolveWallpaperPath(wallpaperUri);
+
+            if (!string.IsNullOrEmpty(resolvedPath) && (resolvedPath.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) || File.Exists(resolvedPath)))
+            {
+                _videoWallpaperService = new VideoWallpaperService();
+                if (_videoWallpaperService.Load(resolvedPath))
+                {
+                    _videoWallpaperService.Play();
+                    _videoFrameTimer.Start();
+                    return;
+                }
+            }
+
             _wallpaperImageService = new WallpaperImageService(wallpaperUri);
             await RefreshWallpaperAsync(requestVersion);
         }
         catch (ArgumentException)
         {
-            // Retain the embedded fallback wallpaper if the persisted value is unusable.
+            // Fallback
         }
+    }
+
+    private static string ResolveWallpaperPath(string uri)
+    {
+        if (string.IsNullOrWhiteSpace(uri))
+            return "src/DaisyOS.Shell/Assets/Wallpapers/Green Field.mp4";
+
+        if (File.Exists(uri))
+            return uri;
+
+        string relativePath = uri.Replace("avares://DaisyOS.Shell/", "src/DaisyOS.Shell/");
+        if (File.Exists(relativePath))
+            return relativePath;
+
+        string defaultTarget = "src/DaisyOS.Shell/Assets/Wallpapers/Green Field.mp4";
+        if (File.Exists(defaultTarget))
+            return defaultTarget;
+
+        return uri;
+    }
+
+    private void OnVideoFrameTick(object? sender, EventArgs e)
+    {
+        if (_videoWallpaperService is null || !_videoWallpaperService.IsLoaded)
+            return;
+
+        if (_videoWallpaperService.TryGetFrame(out var frame))
+        {
+            try
+            {
+                int width = frame.Width;
+                int height = frame.Height;
+
+                if (width > 0 && height > 0)
+                {
+                    ulong ptrVal = (ulong)frame.Stride0 | ((ulong)frame.Stride1 << 32);
+                    if (ptrVal != 0)
+                    {
+                        if (_videoBitmapA is null || _videoBitmapA.PixelSize.Width != width || _videoBitmapA.PixelSize.Height != height)
+                        {
+                            _videoBitmapA?.Dispose();
+                            _videoBitmapB?.Dispose();
+                            _videoBitmapA = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Opaque);
+                            _videoBitmapB = new WriteableBitmap(new PixelSize(width, height), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Opaque);
+                        }
+
+                        _useBitmapA = !_useBitmapA;
+                        var targetBitmap = _useBitmapA ? _videoBitmapA : _videoBitmapB;
+
+                        if (targetBitmap is not null)
+                        {
+                            using (var lockedBuf = targetBitmap.Lock())
+                            {
+                                unsafe
+                                {
+                                    long bytesToCopy = (long)width * height * 4;
+                                    Buffer.MemoryCopy((void*)ptrVal, (void*)lockedBuf.Address, bytesToCopy, bytesToCopy);
+                                    NativeMemory.Free((void*)ptrVal);
+                                }
+                            }
+
+                            WallpaperImage.Source = targetBitmap;
+                            WallpaperImage.InvalidateVisual();
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                for (int i = 0; i < 4; ++i)
+                {
+                    int fd = frame.Fd[i];
+                    if (fd >= 0)
+                    {
+                        try { LibC.close(fd); } catch { }
+                    }
+                }
+                if (frame.AcquireFence >= 0)
+                {
+                    try { LibC.close(frame.AcquireFence); } catch { }
+                }
+            }
+        }
+    }
+
+    private static class LibC
+    {
+        [DllImport("libc", SetLastError = true)]
+        public static extern int close(int fd);
     }
 
     private void RequestWallpaperRefresh()
     {
-        if (_isLoaded)
+        if (_isLoaded && _wallpaperImageService is not null)
         {
             _ = RefreshWallpaperAsync(Interlocked.Increment(ref _refreshRequestVersion));
         }
@@ -164,8 +293,6 @@ public partial class WallpaperLayer : UserControl
                 return;
             }
 
-            // A new render replaces and disposes the previous cached bitmap in the service.
-            // Release the old visual reference before requesting that replacement.
             WallpaperImage.Source = null;
             var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
             _wallpaperMetrics = WallpaperRenderMetrics.FromPixelSize(
@@ -184,7 +311,7 @@ public partial class WallpaperLayer : UserControl
         }
         catch
         {
-            // Wallpaper refresh is cosmetic; preserve the last successfully rendered bitmap.
+            // Cosmetic fallback.
         }
         finally
         {
