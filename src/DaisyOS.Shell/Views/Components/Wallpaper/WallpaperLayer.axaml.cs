@@ -131,6 +131,13 @@ public partial class WallpaperLayer : UserControl
                 _videoWallpaperService = new VideoWallpaperService();
                 if (_videoWallpaperService.Load(resolvedPath))
                 {
+                    double targetFps = 30.0;
+                    if (_videoWallpaperService.GetStats(out var stats) && stats.SrcFps > 0)
+                    {
+                        targetFps = stats.SrcFps;
+                    }
+
+                    _videoFrameTimer.Interval = TimeSpan.FromMilliseconds(1000.0 / targetFps);
                     _videoWallpaperService.Play();
                     _videoFrameTimer.Start();
                     return;

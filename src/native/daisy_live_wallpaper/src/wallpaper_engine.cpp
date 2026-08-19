@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <chrono>
+#include <algorithm>
 #include <unistd.h>
 #include <drm_fourcc.h>
 
@@ -96,15 +97,16 @@ void WallpaperEngine::decoder_thread_loop() {
             continue;
         }
 
-        int target_fps = fps_cap_.load();
-        if (target_fps <= 0) target_fps = 60;
-        auto frame_interval = std::chrono::microseconds(1000000 / target_fps);
+        double src_fps = stats_.src_fps > 0 ? stats_.src_fps : 30.0;
+        int cap = fps_cap_.load();
+        double effective_fps = (cap > 0 && cap < src_fps) ? cap : src_fps;
+        auto frame_interval = std::chrono::microseconds(static_cast<int64_t>(1000000.0 / effective_fps));
 
         bool eof = false;
         AVFrame *raw_frame = decoder_.decode_next_frame(&eof);
 
         if (eof || !raw_frame) {
-            // Seamless Looping (§12): seek to start without dropping the current on-screen buffer
+            // Seamless Looping (§12): seek to start without dropping current buffer
             decoder_.seek_to_start();
             if (raw_frame) av_frame_free(&raw_frame);
             continue;
@@ -122,7 +124,6 @@ void WallpaperEngine::decoder_thread_loop() {
         {
             std::unique_lock<std::mutex> lock(queue_mutex_);
             if (frame_queue_.size() >= kMaxQueueDepth) {
-                // Drop oldest frame to maintain bounded queue depth (§11, §20)
                 DaisyVideoFrame oldest = frame_queue_.front();
                 frame_queue_.pop();
                 for (int i = 0; i < DAISY_MAX_PLANES; ++i) {
@@ -172,7 +173,7 @@ void WallpaperEngine::get_stats(DaisyWallpaperStats *out) const {
     out->src_width          = stats_.src_width;
     out->src_height         = stats_.src_height;
     out->src_fps            = stats_.src_fps;
-    out->displayed_fps      = stats_.src_fps; // Driven frame rate
+    out->displayed_fps      = stats_.src_fps;
     out->decoded_frames     = stats_.decoded_frames.load(std::memory_order_relaxed);
     out->dropped_frames     = stats_.dropped_frames.load(std::memory_order_relaxed);
     out->decode_time_us     = stats_.decode_time_us.load(std::memory_order_relaxed);
