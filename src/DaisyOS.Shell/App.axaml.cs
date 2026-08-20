@@ -201,6 +201,12 @@ public partial class App : Application
             return true;
         }
 
+        if (_shellView?.SystemBar.IsCalendarPanelVisible == true)
+        {
+            _shellView.SystemBar.HideCalendarPanel();
+            return true;
+        }
+
         if (_shellView?.SystemBar.IsNotificationPanelVisible == true)
         {
             _shellView.SystemBar.HideNotificationPanel();

@@ -1,0 +1,56 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Views.Components.SystemBar.CustomCalendarView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:systemBar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar">
+  
+  <StackPanel Spacing="16">
+    <!-- Header -->
+    <Grid ColumnDefinitions="*,Auto,Auto">
+      <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+        <TextBlock x:Name="MonthText" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+        <TextBlock x:Name="YearText" FontSize="16" FontWeight="Regular" Foreground="{DynamicResource TextSecondaryBrush}" />
+      </StackPanel>
+      <Button Grid.Column="1" Classes="ShellButton" Width="32" Height="32" CornerRadius="16" Padding="0" Margin="0,0,8,0" Click="OnPreviousMonthClicked">
+        <TextBlock Text="chevron_left" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                   FontSize="16" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      </Button>
+      <Button Grid.Column="2" Classes="ShellButton" Width="32" Height="32" CornerRadius="16" Padding="0" Click="OnNextMonthClicked">
+        <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                   FontSize="16" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      </Button>
+    </Grid>
+
+    <StackPanel Spacing="8">
+      <!-- Weekday Headers -->
+      <UniformGrid Columns="7" Margin="0,0,0,4">
+        <TextBlock Text="Mo" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+        <TextBlock Text="Tu" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+        <TextBlock Text="We" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+        <TextBlock Text="Th" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+        <TextBlock Text="Fr" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+        <TextBlock Text="Sa" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+        <TextBlock Text="Su" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" />
+      </UniformGrid>
+
+      <!-- Days Grid -->
+      <UniformGrid x:Name="DaysGrid" Columns="7" Rows="6" />
+    </StackPanel>
+
+    <!-- Divider -->
+    <Border Height="1" Background="{DynamicResource DividerBrush}" Margin="0,4" />
+
+    <!-- Footer -->
+    <Grid ColumnDefinitions="Auto,*">
+      <TextBlock Grid.Column="0" Text="Today" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource TextMutedBrush}" VerticalAlignment="Center" />
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right" VerticalAlignment="Center">
+        <TextBlock x:Name="TodayDayText" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+        <TextBlock Text="/" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource TextMutedBrush}" />
+        <TextBlock x:Name="TodayMonthText" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+        <TextBlock Text="/" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource TextMutedBrush}" />
+        <TextBlock x:Name="TodayYearText" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+      </StackPanel>
+    </Grid>
+
+  </StackPanel>
+</UserControl>

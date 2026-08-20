@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     xmlns:notifications="clr-namespace:DaisyOS.Shell.Views.Components.Notifications"
+    xmlns:systemBar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
     HorizontalAlignment="Right"
     VerticalAlignment="Bottom"
     Margin="0,0,4,4">
@@ -114,26 +115,11 @@
           </Grid>
         </Border>
       </Button>
-      <Button x:Name="CalendarButton" Classes="ShellButton" Height="40" Padding="10,0" ToolTip.Tip="Calendar">
+      <Button x:Name="CalendarButton" Classes="ShellButton" Height="40" Padding="10,0" ToolTip.Tip="Calendar" Click="OnCalendarRequested">
         <Border Background="Transparent" CornerRadius="{DynamicResource RoundedSM}">
           <TextBlock x:Name="ClockText" FontSize="13" FontWeight="Regular" TextAlignment="Center"
                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Border>
-        <Button.Flyout>
-          <Flyout Placement="TopEdgeAlignedRight" FlyoutPresenterTheme="{DynamicResource SystemBarFlyoutPresenter}"
-                  Opened="OnCalendarFlyoutOpened" Closed="OnCalendarFlyoutClosed">
-            <Border Padding="16" Background="{DynamicResource ElevatedSurfaceBrush}"
-                    BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1"
-                    CornerRadius="{DynamicResource RoundedXL}"
-                    Margin="0,0,0,16">
-              <StackPanel Spacing="10">
-                <TextBlock x:Name="CalendarHeading" FontSize="16" FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
-                <Calendar IsTodayHighlighted="True" HorizontalAlignment="Center" />
-              </StackPanel>
-            </Border>
-          </Flyout>
-        </Button.Flyout>
       </Button>
       <Button x:Name="NotificationsButton" Classes="ShellButton" Width="40" Height="40" Padding="0" ToolTip.Tip="Notifications" Click="OnNotificationsRequested">
         <Border Background="Transparent" CornerRadius="{DynamicResource RoundedSM}">
@@ -230,5 +216,14 @@
   
   <notifications:NotificationCenterView x:Name="NotificationDrawer" IsVisible="False"
           HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,64"/>
+          
+    <!-- Calendar Overlay -->
+  <Border x:Name="CalendarPanel" IsVisible="False"
+          Padding="16" Background="{DynamicResource PrimarySurfaceBrush}"
+          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
+          CornerRadius="{DynamicResource RoundedXL}"
+          HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,64">
+    <systemBar:CustomCalendarView x:Name="CalendarView" />
+  </Border>
   </Grid>
 </UserControl>

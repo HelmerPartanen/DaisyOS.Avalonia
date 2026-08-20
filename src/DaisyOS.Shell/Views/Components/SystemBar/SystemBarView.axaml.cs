@@ -31,9 +31,7 @@ public partial class SystemBarView : UserControl
     private readonly ShellSessionState _sessionState = (Application.Current as App)?.SessionState ?? new ShellSessionState();
     private CancellationTokenSource? _volumeUpdateCancellation;
     private TextBlock? _clockText;
-    private TextBlock? _calendarHeading;
     private string? _lastClockValue;
-    private string? _lastCalendarHeading;
     private string? _demoConnectedWifi = "DottOS Guest";
     private Task? _quickSettingsRefreshTask;
     private DateTimeOffset _lastQuickSettingsRefresh = DateTimeOffset.MinValue;
@@ -55,6 +53,7 @@ public partial class SystemBarView : UserControl
 
     public bool IsQuickSettingsVisible => this.FindControl<Control>("QuickSettingsPanel")?.IsVisible == true;
     public bool IsNotificationPanelVisible => this.FindControl<Control>("NotificationDrawer")?.IsVisible == true;
+    public bool IsCalendarPanelVisible => this.FindControl<Control>("CalendarPanel")?.IsVisible == true;
 
     /// <summary>Shows Quick Settings as an overlay within the shell window.</summary>
     public void ShowQuickSettingsPanel()
@@ -63,6 +62,7 @@ public partial class SystemBarView : UserControl
         if (qsPanel != null) qsPanel.IsVisible = true;
         SetQuickSettingsPage(QuickSettingsPage.Main);
         HideNotificationPanel();
+        HideCalendarPanel();
         QueueQuickSettingsRefresh(force: true);
         SetFlyoutButtonActive("QuickSettingsButton", true);
     }
@@ -80,6 +80,7 @@ public partial class SystemBarView : UserControl
         var notifPanel = this.FindControl<Control>("NotificationDrawer");
         if (notifPanel != null) notifPanel.IsVisible = true;
         HideQuickSettingsPanel();
+        HideCalendarPanel();
         SetFlyoutButtonActive("NotificationsButton", true);
     }
 
@@ -90,7 +91,21 @@ public partial class SystemBarView : UserControl
         SetFlyoutButtonActive("NotificationsButton", false);
     }
 
+    public void ShowCalendarPanel()
+    {
+        var calPanel = this.FindControl<Control>("CalendarPanel");
+        if (calPanel != null) calPanel.IsVisible = true;
+        HideQuickSettingsPanel();
+        HideNotificationPanel();
+        SetFlyoutButtonActive("CalendarButton", true);
+    }
 
+    public void HideCalendarPanel()
+    {
+        var calPanel = this.FindControl<Control>("CalendarPanel");
+        if (calPanel != null) calPanel.IsVisible = false;
+        SetFlyoutButtonActive("CalendarButton", false);
+    }
 
     private void OnNotificationsRequested(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
@@ -98,10 +113,15 @@ public partial class SystemBarView : UserControl
         else ShowNotificationPanel();
     }
 
+    private void OnCalendarRequested(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (IsCalendarPanelVisible) HideCalendarPanel();
+        else ShowCalendarPanel();
+    }
+
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         _clockText ??= this.FindControl<TextBlock>("ClockText");
-        _calendarHeading ??= this.FindControl<TextBlock>("CalendarHeading");
         UpdateClock();
         _clockTimer.Start();
         if (Application.Current is App app)
@@ -174,13 +194,6 @@ public partial class SystemBarView : UserControl
         {
             _lastClockValue = clockValue;
             _clockText.Text = clockValue;
-        }
-
-        var calendarValue = now.ToString("D", culture);
-        if (_calendarHeading is not null && !string.Equals(calendarValue, _lastCalendarHeading, StringComparison.Ordinal))
-        {
-            _lastCalendarHeading = calendarValue;
-            _calendarHeading.Text = calendarValue;
         }
     }
 
@@ -358,12 +371,6 @@ public partial class SystemBarView : UserControl
 
     private void OnNotificationsFlyoutClosed(object? sender, EventArgs e) =>
         SetFlyoutButtonActive("NotificationsButton", false);
-
-    private void OnCalendarFlyoutOpened(object? sender, EventArgs e) =>
-        SetFlyoutButtonActive("CalendarButton", true);
-
-    private void OnCalendarFlyoutClosed(object? sender, EventArgs e) =>
-        SetFlyoutButtonActive("CalendarButton", false);
 
     private void SetFlyoutButtonActive(string buttonName, bool isActive) =>
         this.FindControl<Button>(buttonName)?.Classes.Set("ShellButtonActive", isActive);
