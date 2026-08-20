@@ -16,6 +16,7 @@ using DaisyOS.Shell.Apps.Notes;
 using DaisyOS.Shell.Apps.Calculator;
 using DaisyOS.Shell.Apps.Files;
 using DaisyOS.Shell.Services.Windows;
+using DaisyOS.Shell.Services.Notifications;
 
 namespace DaisyOS.Shell;
 
@@ -34,6 +35,7 @@ public partial class App : Application
 
     public ShellSessionState SessionState { get; } = new();
     public ShellFeedbackService Feedback { get; } = new();
+    public NotificationService Notifications { get; } = new();
     public NativeAppWindowTracker WindowTracker => _nativeWindowTracker;
     public string CurrentWallpaperUri => _wallpaperService?.CurrentWallpaperUri ?? ShellSettings.DefaultWallpaperUri;
 

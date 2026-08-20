@@ -136,6 +136,12 @@ namespace DaisyOS.Shell.Views
                 customCpuWeightProvider: () => 0.7);
 
             _metricsMonitor.RegisterComponent(
+                "notifications", "Notification Center", "notifications", "Overlay",
+                () => NotificationToastOverlay,
+                activeCheck: () => true,
+                customCpuWeightProvider: () => 0.5);
+
+            _metricsMonitor.RegisterComponent(
                 "console_home", "Console Mode UI", "sports_esports", "Console Mode",
                 () => ConsoleHome,
                 activeCheck: () => _consoleMode,

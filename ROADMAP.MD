@@ -1217,6 +1217,7 @@ Implement a custom notification system.
 
 ## Notes
 
+- 2026-08-20: Expanded Phase 9 Notification Center & Actionable Toast Banners with slide-in toast overlay (`NotificationToastHost`), auto-dismiss timers, NotificationCenterView drawer in SystemBar calendar flyout, unread badge indicators, Quick Settings Focus Mode DND synchronization, action button triggers, and automated tests.
 - 2026-07-11: Removed dismissed-notification history in favor of one active-only panel, unified panel/toast presentation, and added urgency, sounds, gaming quiet mode, plus deduplicated network, battery, and update events.
 
 - 2026-07-06: Notification center now updates from service changes, supports per-notification dismiss, clear all, timestamps, and an empty state. Toast popups and persisted history are still future work.

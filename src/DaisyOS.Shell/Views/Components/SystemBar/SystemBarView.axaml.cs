@@ -72,6 +72,16 @@ public partial class SystemBarView : UserControl
         _calendarHeading ??= this.FindControl<TextBlock>("CalendarHeading");
         UpdateClock();
         _clockTimer.Start();
+        if (Application.Current is App app)
+        {
+            app.Notifications.UnreadCountChanged += OnUnreadNotificationsCountChanged;
+            app.Notifications.DoNotDisturbChanged += OnDndStateChanged;
+            UpdateNotificationBadge(app.Notifications.UnreadCount);
+            if (this.FindControl<QuickSettingTile>("FocusTile") is { } focusTile)
+            {
+                focusTile.IsChecked = app.Notifications.IsDoNotDisturb;
+            }
+        }
         // Let first paint win. Fast adapter state preloads after the shell is interactive so
         // opening Quick Settings never waits behind a Wi-Fi scan or paired-device enumeration.
         Dispatcher.UIThread.Post(() => QueueQuickSettingsRefresh(), DispatcherPriority.Background);
@@ -81,6 +91,44 @@ public partial class SystemBarView : UserControl
     {
         _clockTimer.Stop();
         _volumeUpdateCancellation?.Cancel();
+        if (Application.Current is App app)
+        {
+            app.Notifications.UnreadCountChanged -= OnUnreadNotificationsCountChanged;
+            app.Notifications.DoNotDisturbChanged -= OnDndStateChanged;
+        }
+    }
+
+    private void OnUnreadNotificationsCountChanged(object? sender, int count)
+    {
+        Dispatcher.UIThread.Post(() => UpdateNotificationBadge(count));
+    }
+
+    private void UpdateNotificationBadge(int count)
+    {
+        if (this.FindControl<Border>("NotificationBadge") is { } badge)
+        {
+            badge.IsVisible = count > 0;
+        }
+    }
+
+    private void OnDndStateChanged(object? sender, bool isDnd)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (this.FindControl<QuickSettingTile>("FocusTile") is { } focusTile)
+            {
+                focusTile.IsChecked = isDnd;
+            }
+        });
+    }
+
+    private void OnFocusTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is QuickSettingTile tile)
+        {
+            _sessionState.DoNotDisturb = tile.IsChecked;
+            (Application.Current as App)?.Notifications.SetDoNotDisturb(tile.IsChecked);
+        }
     }
 
     private void UpdateClock()
@@ -134,11 +182,6 @@ public partial class SystemBarView : UserControl
             ReportFailure("DaisyOS could not change Bluetooth. Check that Bluetooth is available.");
         }
         QueueQuickSettingsRefresh(force: true);
-    }
-
-    private void OnFocusTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (sender is QuickSettingTile tile) _sessionState.DoNotDisturb = tile.IsChecked;
     }
 
     private void OnGamingTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

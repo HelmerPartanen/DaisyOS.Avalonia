@@ -9,10 +9,12 @@
     xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
     xmlns:console="clr-namespace:DaisyOS.Shell.Views.Components.Console"
     xmlns:wallpaper="clr-namespace:DaisyOS.Shell.Views.Components.Wallpaper"
+    xmlns:notifications="clr-namespace:DaisyOS.Shell.Views.Components.Notifications"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
         <wallpaper:WallpaperLayer x:Name="ShellWallpaper" />
+        <notifications:NotificationToastHost x:Name="NotificationToastOverlay" />
 
         <Grid x:Name="DesktopExperience">
             <desktop:DesktopView x:Name="Desktop" />

@@ -1,0 +1,89 @@
+<UserControl
+    x:Class="DaisyOS.Shell.Views.Components.Notifications.NotificationToastHost"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    HorizontalAlignment="Right"
+    VerticalAlignment="Top"
+    Margin="0,16,16,0"
+    ZIndex="900"
+    IsHitTestVisible="True">
+
+  <UserControl.Styles>
+    <Style Selector="Border.ToastCard">
+      <Setter Property="Width" Value="380" />
+      <Setter Property="Background" Value="{DynamicResource PrimarySurfaceBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="24" />
+      <Setter Property="Padding" Value="14,12" />
+      <Setter Property="Margin" Value="0,0,0,12" />
+      <Setter Property="Effect">
+        <DropShadowEffect OffsetX="0" OffsetY="6" BlurRadius="16" Color="Black" Opacity="0.25" />
+      </Setter>
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="0:0:0.25" Easing="CubicEaseOut" />
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.25" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+  </UserControl.Styles>
+
+  <ItemsControl x:Name="ToastList">
+    <ItemsControl.ItemTemplate>
+      <DataTemplate>
+        <Border Classes="ToastCard">
+          <Grid ColumnDefinitions="Auto,*">
+            <!-- Left Column: App Icon Tile -->
+            <Panel Grid.Column="0" Width="40" Height="40" VerticalAlignment="Top" Margin="0,2,14,0">
+              <Border CornerRadius="12" ClipToBounds="True">
+                <Panel>
+                  <!-- Fallback System Icon (only visible if Icon is null/empty) -->
+                  <Border IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+                    <TextBlock Text="{Binding SystemIconGlyph, FallbackValue='notifications'}"
+                               FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                               FontSize="32" Foreground="{DynamicResource AccentBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+                  <!-- App Icon (visible if Icon is provided) -->
+                  <Image Source="{Binding Icon}" Stretch="UniformToFill"
+                         IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </Panel>
+              </Border>
+            </Panel>
+
+            <!-- Right Column: Header, Title & Body -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Top" Spacing="2">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Grid.Column="0" Text="{Binding SourceAppId, FallbackValue='System'}"
+                           FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                <Button Grid.Column="1" Classes="ShellButton" Width="24" Height="24" Padding="0" Margin="4,0,0,0"
+                        ToolTip.Tip="Dismiss" Click="OnDismissToastClicked" Tag="{Binding Id}">
+                  <TextBlock Text="close" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+                             FontSize="16" Foreground="{DynamicResource TextSecondaryBrush}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Button>
+              </Grid>
+
+              <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="Bold"
+                         Foreground="{DynamicResource TextPrimaryBrush}"
+                         TextWrapping="Wrap" MaxLines="1" TextTrimming="CharacterEllipsis" Margin="0,0,0,2" />
+
+              <TextBlock Text="{Binding Body}" FontSize="13" FontWeight="Regular"
+                         Foreground="{DynamicResource TextSecondaryBrush}"
+                         TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" LineHeight="18" />
+
+              <!-- Optional Action Button -->
+              <Button Classes="SubtleButton" Height="28" Padding="12,4" HorizontalAlignment="Left" Margin="0,8,0,0"
+                      IsVisible="{Binding ActionLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                      Click="OnToastActionClicked" Tag="{Binding}">
+                <TextBlock Text="{Binding ActionLabel}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+              </Button>
+            </StackPanel>
+          </Grid>
+        </Border>
+      </DataTemplate>
+    </ItemsControl.ItemTemplate>
+  </ItemsControl>
+</UserControl>

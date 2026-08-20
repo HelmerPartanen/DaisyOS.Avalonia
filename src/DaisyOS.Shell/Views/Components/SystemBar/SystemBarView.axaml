@@ -3,6 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
+    xmlns:notifications="clr-namespace:DaisyOS.Shell.Views.Components.Notifications"
     HorizontalAlignment="Right"
     VerticalAlignment="Bottom"
     Margin="0,0,4,4">
@@ -115,19 +116,18 @@
       </Button>
       <Button x:Name="CalendarButton" Classes="ShellButton" Height="40" Padding="10,0" ToolTip.Tip="Calendar and notifications">
         <Border Background="Transparent" CornerRadius="{DynamicResource RoundedSM}">
-          <TextBlock x:Name="ClockText" FontSize="13" FontWeight="Regular" TextAlignment="Center"
-                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+            <TextBlock x:Name="ClockText" FontSize="13" FontWeight="Regular" TextAlignment="Center"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Border x:Name="NotificationBadge" Width="8" Height="8" CornerRadius="4"
+                    Background="{DynamicResource AccentBrush}" IsVisible="False"
+                    VerticalAlignment="Center" ToolTip.Tip="Unread notifications" />
+          </StackPanel>
         </Border>
         <Button.Flyout>
           <Flyout Placement="TopEdgeAlignedRight" FlyoutPresenterTheme="{DynamicResource SystemBarFlyoutPresenter}"
                   Opened="OnCalendarFlyoutOpened" Closed="OnCalendarFlyoutClosed">
-            <Border Padding="16" Background="{DynamicResource ElevatedSurfaceBrush}"
-                    BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedLG}">
-              <StackPanel Spacing="12">
-                <TextBlock x:Name="CalendarHeading" FontWeight="Regular"/>
-                <Calendar IsTodayHighlighted="True"/>
-              </StackPanel>
-            </Border>
+            <notifications:NotificationCenterView x:Name="NotificationDrawer" />
           </Flyout>
         </Button.Flyout>
       </Button>
