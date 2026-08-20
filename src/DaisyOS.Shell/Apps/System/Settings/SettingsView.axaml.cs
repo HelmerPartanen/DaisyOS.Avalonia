@@ -130,7 +130,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
             var pageTitle = new TextBlock
             {
                 Text = title,
-                FontSize = 24,
+                FontSize = 26,
                 FontWeight = FontWeight.SemiBold
             };
             pageTitle.Classes.Add("SettingsPageTitle");
@@ -347,11 +347,11 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 });
             }
 
-            var section = new StackPanel { Spacing = 10 };
+            var section = new StackPanel { Spacing = 12 };
             section.Children.Add(new TextBlock
             {
                 Text = label,
-                FontSize = 11,
+                FontSize = 12,
                 FontWeight = FontWeight.SemiBold,
                 Foreground = TryBrush("TextTertiaryBrush")
             });
@@ -359,7 +359,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
             // Match Appearance: section labels and spacing establish structure, without
             // introducing another card surface around ordinary settings.
-            var rowsHost = new StackPanel { Spacing = 14 };
+            var rowsHost = new StackPanel { Spacing = 16 };
             foreach (var row in rows)
             {
                 rowsHost.Children.Add(row);
@@ -447,7 +447,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
         {
             var content = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 16 };
             var copy = new StackPanel { Spacing = 2, VerticalAlignment = VerticalAlignment.Center };
-            copy.Children.Add(new TextBlock { Text = title, FontSize = 13, FontWeight = FontWeight.Medium });
+            copy.Children.Add(new TextBlock { Text = title, FontSize = 14, FontWeight = FontWeight.SemiBold });
             if (!string.IsNullOrWhiteSpace(description)) copy.Children.Add(Secondary(description));
             content.Children.Add(copy);
             if (trailing is not null)
@@ -459,6 +459,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
             var row = new Border
             {
                 Padding = new Thickness(0),
+                MinHeight = 40,
                 Background = Brushes.Transparent,
                 Child = content
             };
@@ -483,7 +484,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
         private static TextBlock Secondary(string text) => new()
         {
             Text = text,
-            FontSize = 12,
+            FontSize = 13,
             Foreground = TryBrush("TextSecondaryBrush"),
             TextWrapping = TextWrapping.Wrap
         };

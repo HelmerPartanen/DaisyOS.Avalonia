@@ -5,7 +5,7 @@
   <UserControl.Styles>
     <!-- Sidebar navigation button layout -->
     <Style Selector="Button.SettingsNavItem">
-      <Setter Property="Height" Value="40" />
+      <Setter Property="Height" Value="44" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -21,7 +21,7 @@
     </Style>
 
     <Style Selector="TextBlock.NavLabel">
-      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontSize" Value="14" />
       <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Margin" Value="12,0,0,0" />
@@ -43,7 +43,7 @@
     <!-- The Settings app uses a single content width at every window size so pages
          remain comfortably readable instead of stretching across a full display. -->
     <Style Selector="TextBlock.SettingsPageTitle">
-      <Setter Property="FontSize" Value="24" />
+      <Setter Property="FontSize" Value="26" />
       <Setter Property="FontWeight" Value="SemiBold" />
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
@@ -78,6 +78,7 @@
       <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="14" />
     </Style>
     <Style Selector="ComboBox.ThemeModePicker /template/ Border#Background">
       <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
@@ -368,8 +369,8 @@
           <StackPanel Spacing="10">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24">
               <StackPanel Spacing="3">
-                <TextBlock Text="THEME" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
-                <TextBlock Text="Switch between light and dark mode" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="THEME" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
+                <TextBlock Text="Switch between light and dark mode" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
               </StackPanel>
               <ComboBox x:Name="ThemeModePicker" Grid.Column="1" Classes="ThemeModePicker" VerticalAlignment="Center" SelectionChanged="OnThemeModeSelectionChanged">
                 <ComboBoxItem Classes="ThemeModeOption" Tag="Light">Light</ComboBoxItem>
@@ -377,31 +378,31 @@
                 <ComboBoxItem Classes="ThemeModeOption" Tag="Automatic">Automatic</ComboBoxItem>
               </ComboBox>
             </Grid>
-            <TextBlock x:Name="AutomaticThemeInfo" IsVisible="False" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,0" />
+            <TextBlock x:Name="AutomaticThemeInfo" IsVisible="False" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,0" />
           </StackPanel>
 
           <StackPanel Spacing="10">
-            <TextBlock Text="WALLPAPER" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
+            <TextBlock Text="WALLPAPER" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
             <Border Height="116" Background="{DynamicResource SecondarySurfaceBrush}" CornerRadius="{DynamicResource RoundedMD}" ClipToBounds="True">
               <Grid>
                 <Image x:Name="WallpaperPreviewImage" Source="avares://DaisyOS.Shell/Assets/Wallpapers/Wallpaper.jpg" Stretch="UniformToFill" />
                 <Border Background="#4D000000" />
                 <StackPanel Margin="16" VerticalAlignment="Bottom" Spacing="2">
-                  <TextBlock x:Name="WallpaperNameText" Text="DaisyOS wallpaper" FontSize="13" FontWeight="SemiBold" />
-                  <TextBlock Text="Shown across desktop and console mode" FontSize="12" Foreground="#CCFFFFFF" />
+                  <TextBlock x:Name="WallpaperNameText" Text="DaisyOS wallpaper" FontSize="14" FontWeight="SemiBold" />
+                  <TextBlock Text="Shown across desktop and console mode" FontSize="13" Foreground="#CCFFFFFF" />
                 </StackPanel>
               </Grid>
             </Border>
             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-              <TextBlock Text="Images and video wallpapers are supported." VerticalAlignment="Center" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
-              <Button Grid.Column="1" Classes="SubtleButton" Height="36" Padding="12,0" VerticalContentAlignment="Center" Click="OnPickWallpaperClicked"><StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="6"><TextBlock Text="folder_open" Classes="NavIcon" FontSize="18" /><TextBlock Text="Choose file" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center" /></StackPanel></Button>
+              <TextBlock Text="Images and video wallpapers are supported." VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+              <Button Grid.Column="1" Classes="SubtleButton" Height="36" Padding="12,0" VerticalContentAlignment="Center" Click="OnPickWallpaperClicked"><StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="6"><TextBlock Text="folder_open" Classes="NavIcon" FontSize="18" /><TextBlock Text="Choose file" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" /></StackPanel></Button>
               <Button Grid.Column="2" Classes="ShellButton" Padding="8,7" Click="OnResetWallpaperClicked" ToolTip.Tip="Restore DaisyOS wallpaper"><TextBlock Text="restart_alt" Classes="NavIcon" FontSize="18" /></Button>
             </Grid>
           </StackPanel>
 
           <Border Background="{DynamicResource DividerBrush}" Height="1" />
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
-            <StackPanel Spacing="3"><TextBlock Text="Accent color" FontSize="15" FontWeight="SemiBold" /><TextBlock Text="Applied to controls and focus states." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+            <StackPanel Spacing="3"><TextBlock Text="Accent color" FontSize="15" FontWeight="SemiBold" /><TextBlock Text="Applied to controls and focus states." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
               <Button x:Name="AccentDefaultButton" Classes="AccentSwatch" Tag="Default" Click="OnAccentColorClicked" Background="#FFFFFFFF" ToolTip.Tip="Default" />
               <Button x:Name="AccentBlueButton" Classes="AccentSwatch" Tag="Blue" Click="OnAccentColorClicked" Background="#FF75A7FF" ToolTip.Tip="Blue" />
@@ -416,11 +417,11 @@
 
           <Border Background="{DynamicResource DividerBrush}" Height="1" />
           <StackPanel Spacing="12">
-            <TextBlock Text="ACCESSIBILITY" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
+            <TextBlock Text="ACCESSIBILITY" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="14" ColumnSpacing="20">
-              <StackPanel Spacing="2"><TextBlock Text="High contrast" FontSize="13" FontWeight="Medium" /><TextBlock Text="Increase contrast between text and surfaces." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+              <StackPanel Spacing="2"><TextBlock Text="High contrast" FontSize="14" FontWeight="SemiBold" /><TextBlock Text="Increase contrast between text and surfaces." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
               <ToggleSwitch x:Name="HighContrastToggle" Grid.Column="1" VerticalAlignment="Center" Click="OnHighContrastToggled" />
-              <StackPanel Grid.Row="1" Spacing="2"><TextBlock Text="Reduce desktop motion" FontSize="13" FontWeight="Medium" /><TextBlock Text="Turn off desktop item movement animations." FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+              <StackPanel Grid.Row="1" Spacing="2"><TextBlock Text="Reduce desktop motion" FontSize="14" FontWeight="SemiBold" /><TextBlock Text="Turn off desktop item movement animations." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
               <ToggleSwitch x:Name="ReduceMotionToggle" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Click="OnReduceMotionToggled" />
             </Grid>
           </StackPanel>
