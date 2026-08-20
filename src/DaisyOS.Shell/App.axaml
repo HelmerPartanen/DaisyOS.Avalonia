@@ -134,6 +134,26 @@
       <Setter Property="Opacity" Value="0.48" />
     </Style>
 
+    <!-- Native switches follow the selected shell accent, with a stable black thumb for contrast. -->
+    <Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
+      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked /template/ Ellipse#SwitchKnobOn">
+      <Setter Property="Fill" Value="#FF000000" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked:pointerover /template/ Border#SwitchKnobBounds">
+      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked:pointerover /template/ Ellipse#SwitchKnobOn, ToggleSwitch:checked:pressed /template/ Ellipse#SwitchKnobOn">
+      <Setter Property="Fill" Value="#FF000000" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked:pressed /template/ Border#SwitchKnobBounds">
+      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentPressedBrush}" />
+    </Style>
+
     <!-- Owned app windows reserve a transparent edge for this restrained elevation cue. -->
     <Style Selector="Border.AppWindowFrame">
       <Setter Property="BoxShadow" Value="0 1 5 0 #16000000" />

@@ -32,6 +32,7 @@ OPACITY VALUES
       <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="#FFF5F5F5" />
       <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#99F5F5F5" />
       <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="#F2FFFFFF" />
+      <SolidColorBrush x:Key="MenuSurfaceBrush" Color="#FFFFFFFF" />
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1A000000" />
       <SolidColorBrush x:Key="DividerBrush" Color="#26000000" />
       <SolidColorBrush x:Key="BorderBrush" Color="#0D000000" />
@@ -83,6 +84,7 @@ OPACITY VALUES
       <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="{StaticResource GlobalSecondaryButtonBgColor}" />
       <!-- Add opacity to ElevatedSurfaceColor which is #181820 -->
       <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="{StaticResource GlobalElevatedSurfaceColor}" Opacity="0.95" />
+      <SolidColorBrush x:Key="MenuSurfaceBrush" Color="{StaticResource GlobalElevatedSurfaceColor}" />
       <SolidColorBrush x:Key="TertiarySurfaceBrush" Color="#1AFFFFFF" />
       <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource GlobalDividerColor}" />
       <SolidColorBrush x:Key="BorderBrush" Color="#0DFFFFFF" />

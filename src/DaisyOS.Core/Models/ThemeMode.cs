@@ -3,6 +3,6 @@ namespace DaisyOS.Core.Models;
 public enum ThemeMode
 {
     Light,
-    Dark
+    Dark,
+    Automatic
 }
-

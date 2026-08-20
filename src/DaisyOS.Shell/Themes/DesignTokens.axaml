@@ -3,7 +3,7 @@
   <!-- Global Shared Palette Colors -->
   <Color x:Key="GlobalBackgroundColor">#000000</Color>
   <Color x:Key="GlobalSurfaceColor">#1a1a1a</Color>
-  <Color x:Key="GlobalElevatedSurfaceColor">#181820</Color>
+  <Color x:Key="GlobalElevatedSurfaceColor">#242424</Color>
   <Color x:Key="GlobalSubtleSurfaceColor">#26FFFFFF</Color>
   <Color x:Key="GlobalAccentColor">#FFFFFF</Color>
   <Color x:Key="GlobalOnAccentColor">#000000</Color>

@@ -1,7 +1,9 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Rendering.Composition;
 using Avalonia.Rendering.Composition.Animations;
+using DaisyOS.Shell;
 
 namespace DaisyOS.Shell.Services.Desktop;
 
@@ -9,6 +11,12 @@ public static class ItemMotionAnimator
 {
     public static void Attach(Control control, TimeSpan duration)
     {
+        if ((Application.Current as App)?.ReduceMotionEnabled == true)
+        {
+            Detach(control);
+            return;
+        }
+
         var visual = ElementComposition.GetElementVisual(control);
         if (visual is null)
         {
@@ -35,6 +43,11 @@ public static class ItemMotionAnimator
 
     private static void ConfigureImplicitAnimations(Control control, CompositionVisual visual, TimeSpan duration)
     {
+        if ((Application.Current as App)?.ReduceMotionEnabled == true)
+        {
+            visual.ImplicitAnimations = null;
+            return;
+        }
         try
         {
             var compositor = visual.Compositor;
