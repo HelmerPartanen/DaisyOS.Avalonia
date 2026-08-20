@@ -23,7 +23,6 @@ public partial class NotificationCenterView : UserControl
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        CalendarHeading.Text = DateTime.Now.ToString("D");
         _app = Application.Current as App;
         if (_app is not null)
         {

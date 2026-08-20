@@ -2,7 +2,7 @@
     x:Class="DaisyOS.Shell.Views.Components.Notifications.NotificationCenterView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Width="380" MaxHeight="600"
+    Width="320" MaxHeight="600"
     ClipToBounds="True">
 
   <UserControl.Styles>
@@ -10,8 +10,8 @@
       <Setter Property="Background" Value="{DynamicResource PrimarySurfaceBrush}" />
       <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
       <Setter Property="BorderThickness" Value="2" />
-      <Setter Property="CornerRadius" Value="20" />
-      <Setter Property="Padding" Value="12,10" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="10,8" />
       <Setter Property="Margin" Value="0,0,0,10" />
     </Style>
     <Style Selector="Border.NotificationItemCard:pointerover">
@@ -25,19 +25,10 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
       <StackPanel Spacing="16">
 
-        <!-- 1. Calendar Header Widget -->
-        <StackPanel Spacing="10">
-          <TextBlock x:Name="CalendarHeading" FontSize="16" FontWeight="Bold"
-                     Foreground="{DynamicResource TextPrimaryBrush}" />
-          <Calendar IsTodayHighlighted="True" HorizontalAlignment="Center" />
-        </StackPanel>
-
-        <Border Height="1" Background="{DynamicResource DividerBrush}" Opacity="0.6" />
-
-        <!-- 2. Notification Center Header -->
+        <!-- 1. Notification Center Header -->
         <Grid ColumnDefinitions="*,Auto,Auto">
           <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-            <TextBlock Text="notifications" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
+            <TextBlock Text="notifications" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded"
                        FontSize="18" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
             <TextBlock Text="Notifications" FontSize="15" FontWeight="Bold"
                        Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
@@ -107,14 +98,14 @@
               <Border Classes="NotificationItemCard">
                 <Grid ColumnDefinitions="Auto,*">
                   <!-- Left Column: App Icon Tile -->
-                  <Panel Grid.Column="0" Width="40" Height="40" VerticalAlignment="Top" Margin="0,2,14,0">
-                    <Border CornerRadius="12" ClipToBounds="True">
+                  <Panel Grid.Column="0" Width="32" Height="32" VerticalAlignment="Top" Margin="0,2,12,0">
+                    <Border CornerRadius="8" ClipToBounds="True">
                       <Panel>
                         <!-- Fallback System Icon (only visible if Icon is null/empty) -->
                         <Border IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNullOrEmpty}}">
                           <TextBlock Text="{Binding SystemIconGlyph, FallbackValue='notifications'}"
                                      FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                     FontSize="32" Foreground="{DynamicResource AccentBrush}"
+                                     FontSize="24" Foreground="{DynamicResource AccentBrush}"
                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <!-- App Icon (visible if Icon is provided) -->
@@ -128,31 +119,31 @@
                   <StackPanel Grid.Column="1" VerticalAlignment="Top" Spacing="2">
                     <Grid ColumnDefinitions="*,Auto,Auto">
                       <TextBlock Grid.Column="0" Text="{Binding SourceAppId, FallbackValue='System'}"
-                                 FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}"
+                                 FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}"
                                  TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                       <TextBlock Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:HH:mm}'}"
-                                 FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="8,0,8,0" VerticalAlignment="Center" />
-                      <Button Grid.Column="2" Classes="ShellButton" Width="24" Height="24" Padding="0"
+                                 FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="8,0,8,0" VerticalAlignment="Center" />
+                      <Button Grid.Column="2" Classes="ShellButton" Width="20" Height="20" Padding="0"
                               ToolTip.Tip="Dismiss" Click="OnDismissItemClicked" Tag="{Binding Id}">
                         <TextBlock Text="close" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                                   FontSize="16" Foreground="{DynamicResource TextSecondaryBrush}"
+                                   FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}"
                                    HorizontalAlignment="Center" VerticalAlignment="Center" />
                       </Button>
                     </Grid>
 
-                    <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="Bold"
+                    <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="Bold"
                                Foreground="{DynamicResource TextPrimaryBrush}"
                                TextWrapping="Wrap" MaxLines="1" TextTrimming="CharacterEllipsis" Margin="0,0,0,2" />
 
-                    <TextBlock Text="{Binding Body}" FontSize="12" FontWeight="Regular"
+                    <TextBlock Text="{Binding Body}" FontSize="11" FontWeight="Regular"
                                Foreground="{DynamicResource TextSecondaryBrush}"
-                               TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" LineHeight="18" />
+                               TextWrapping="Wrap" MaxLines="3" TextTrimming="CharacterEllipsis" LineHeight="16" />
 
                     <!-- Optional Action Button -->
-                    <Button Classes="SubtleButton" Height="28" Padding="12,4" HorizontalAlignment="Left" Margin="0,8,0,0"
+                    <Button Classes="SubtleButton" Height="24" Padding="10,4" HorizontalAlignment="Left" Margin="0,6,0,0"
                             IsVisible="{Binding ActionLabel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                             Click="OnItemActionClicked" Tag="{Binding}">
-                      <TextBlock Text="{Binding ActionLabel}" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                      <TextBlock Text="{Binding ActionLabel}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
                     </Button>
                   </StackPanel>
                 </Grid>

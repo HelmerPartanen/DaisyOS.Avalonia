@@ -321,6 +321,12 @@ public partial class SystemBarView : UserControl
         QuickSettingsRequested?.Invoke(this, EventArgs.Empty);
     }
 
+    private void OnNotificationsFlyoutOpened(object? sender, EventArgs e) =>
+        SetFlyoutButtonActive("NotificationsButton", true);
+
+    private void OnNotificationsFlyoutClosed(object? sender, EventArgs e) =>
+        SetFlyoutButtonActive("NotificationsButton", false);
+
     private void OnCalendarFlyoutOpened(object? sender, EventArgs e) =>
         SetFlyoutButtonActive("CalendarButton", true);
 
