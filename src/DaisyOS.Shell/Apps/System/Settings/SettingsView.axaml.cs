@@ -336,6 +336,17 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
         private void AddSection(string label, string? description, params Control[] rows)
         {
+            // Appearance separates its top-level sections with a full-width hairline and
+            // generous surrounding rhythm. Preserve that hierarchy without carding rows.
+            if (CategoryContent.Children.Count > 1)
+            {
+                CategoryContent.Children.Add(new Border
+                {
+                    Height = 1,
+                    Background = TryBrush("DividerBrush")
+                });
+            }
+
             var section = new StackPanel { Spacing = 10 };
             section.Children.Add(new TextBlock
             {
@@ -346,8 +357,14 @@ namespace DaisyOS.Shell.Apps.System.Settings
             });
             if (!string.IsNullOrWhiteSpace(description)) section.Children.Add(Secondary(description));
 
-            var rowsHost = new StackPanel { Spacing = 1 };
-            foreach (var row in rows) rowsHost.Children.Add(row);
+            // Match Appearance: section labels and spacing establish structure, without
+            // introducing another card surface around ordinary settings.
+            var rowsHost = new StackPanel { Spacing = 14 };
+            foreach (var row in rows)
+            {
+                rowsHost.Children.Add(row);
+            }
+
             section.Children.Add(rowsHost);
             CategoryContent.Children.Add(section);
         }
@@ -441,9 +458,8 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
             var row = new Border
             {
-                Padding = new Thickness(16, 12),
-                Background = TryBrush("TertiarySurfaceBrush"),
-                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(0),
+                Background = Brushes.Transparent,
                 Child = content
             };
             return row;
@@ -451,9 +467,10 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
         private void UpdateContentWidth()
         {
-            // ContentArea has already accounted for the responsive outer margins.  Cap the
-            // column on large displays, while using all available width in a compact window.
-            var width = Math.Min(900, ContentArea.Bounds.Width);
+            // Reserve a stable gutter for the overlay scrollbar so it never obscures the
+            // last column of a grouped row or moves content when it becomes visible.
+            const double scrollbarGutter = 16;
+            var width = Math.Min(900, ContentArea.Bounds.Width - scrollbarGutter);
             if (width <= 0)
             {
                 return;

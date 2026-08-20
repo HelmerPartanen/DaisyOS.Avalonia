@@ -136,8 +136,9 @@
     <Border Grid.Column="0"
             Background="{DynamicResource PrimarySurfaceBrush}"
             Padding="12,14,10,14">
-      <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Spacing="6">
+      <ScrollViewer VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Spacing="6" Margin="0,0,16,0">
           <Button x:Name="NavSystem" Classes="SettingsNavItem Active" Click="OnNavCategoryClicked" Tag="System">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
               <TextBlock Text="computer" Classes="NavIcon SecondaryText" />
@@ -256,8 +257,8 @@
     <!-- Main Content Area -->
     <Grid x:Name="ContentArea" Grid.Column="1" Background="Transparent" Margin="28,24,36,24" HorizontalAlignment="Stretch">
       <!-- SYSTEM CATEGORY MAIN LIST -->
-      <ScrollViewer x:Name="SystemListView" IsVisible="True" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-        <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="1240">
+      <ScrollViewer x:Name="SystemListView" IsVisible="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
+        <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="1240" Margin="0,0,16,0">
           <!-- Page Header -->
           <Border Height="40" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -333,8 +334,8 @@
       </ScrollViewer>
 
       <!-- SYSTEM SUB-PAGE DETAIL VIEW -->
-      <ScrollViewer x:Name="SystemDetailView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-        <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="1240">
+      <ScrollViewer x:Name="SystemDetailView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
+        <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="1240" Margin="0,0,16,0">
           <!-- Breadcrumb Navigation Bar -->
           <Border Height="40" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="2">
@@ -350,13 +351,16 @@
 
       <!-- Every category except Appearance is composed into this shared surface at runtime. Keeping
            the page shell here ensures the same compact hierarchy, spacing and focus behavior. -->
-      <ScrollViewer x:Name="CategoryView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-        <StackPanel x:Name="CategoryContent" Spacing="24" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36" />
+      <ScrollViewer x:Name="CategoryView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
+        <Grid Margin="0,0,16,0">
+          <StackPanel x:Name="CategoryContent" Spacing="24" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36" />
+        </Grid>
       </ScrollViewer>
 
       <!-- APPEARANCE -->
-      <ScrollViewer x:Name="AppearanceView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-        <StackPanel x:Name="AppearanceContent" Spacing="24" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36">
+      <ScrollViewer x:Name="AppearanceView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
+        <Grid Margin="0,0,16,0">
+          <StackPanel x:Name="AppearanceContent" Spacing="24" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36">
           <StackPanel Spacing="3">
             <TextBlock Text="Appearance" Classes="SettingsPageTitle" />
           </StackPanel>
@@ -420,7 +424,8 @@
               <ToggleSwitch x:Name="ReduceMotionToggle" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Click="OnReduceMotionToggled" />
             </Grid>
           </StackPanel>
-        </StackPanel>
+          </StackPanel>
+        </Grid>
       </ScrollViewer>
     </Grid>
   </Grid>
