@@ -50,6 +50,16 @@ public partial class App : Application
     public bool HighContrastEnabled => _appearanceSettings.HighContrast;
     public bool ReduceMotionEnabled => _appearanceSettings.ReduceMotion;
 
+    public string GetPreference(string key, string fallback = "") => SessionState.GetPreference(key, fallback);
+
+    public void SetPreference(string key, string value) => SessionState.SetPreference(key, value);
+
+    public void SetDoNotDisturb(bool enabled)
+    {
+        SessionState.DoNotDisturb = enabled;
+        Notifications.SetDoNotDisturb(enabled);
+    }
+
     public event EventHandler<string>? WallpaperChanged;
     public event EventHandler<bool>? LauncherVisibilityChanged;
     public event EventHandler? AppearanceChanged;
@@ -58,6 +68,7 @@ public partial class App : Application
     {
         _appearanceSettings = _appearanceSettingsStore.Load();
         _automaticThemeScheduler = new AutomaticThemeScheduler(theme => _ = ApplyThemeVariantAsync(theme));
+        Notifications.SetDoNotDisturb(SessionState.DoNotDisturb);
         _nativeWindowTracker.StateChanged += (_, args) =>
             _shellView?.Taskbar.SetAppWindowState(args.AppId, args.State);
     }

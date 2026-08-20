@@ -191,6 +191,48 @@
             </StackPanel>
           </Button>
 
+          <Button x:Name="NavAccessibility" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Accessibility">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="accessibility_new" Classes="NavIcon SecondaryText" />
+              <TextBlock Text="Accessibility" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavPrivacy" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Privacy">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="shield" Classes="NavIcon SecondaryText" />
+              <TextBlock Text="Privacy &amp; security" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavAccounts" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Accounts">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="person" Classes="NavIcon SecondaryText" />
+              <TextBlock Text="Accounts" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavInput" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Input">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="keyboard" Classes="NavIcon SecondaryText" />
+              <TextBlock Text="Keyboard &amp; mouse" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavDateTime" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="DateTime">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="schedule" Classes="NavIcon SecondaryText" />
+              <TextBlock Text="Date &amp; time" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
+          <Button x:Name="NavGaming" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="Gaming">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+              <TextBlock Text="stadia_controller" Classes="NavIcon SecondaryText" />
+              <TextBlock Text="Gaming" Classes="NavLabel" />
+            </StackPanel>
+          </Button>
+
           <Button x:Name="NavAbout" Classes="SettingsNavItem" Click="OnNavCategoryClicked" Tag="About">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
               <TextBlock Text="info" Classes="NavIcon SecondaryText" />
@@ -294,6 +336,12 @@
             </StackPanel>
           </Border>
         </StackPanel>
+      </ScrollViewer>
+
+      <!-- Every category except Appearance is composed into this shared surface at runtime. Keeping
+           the page shell here ensures the same compact hierarchy, spacing and focus behavior. -->
+      <ScrollViewer x:Name="CategoryView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
+        <StackPanel x:Name="CategoryContent" Spacing="20" HorizontalAlignment="Left" Width="680" Margin="0,4,0,32" />
       </ScrollViewer>
 
       <!-- APPEARANCE -->

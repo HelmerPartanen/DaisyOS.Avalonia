@@ -31,6 +31,25 @@ public sealed class ShellSessionState
     public double? LastKnownVolume { get => _state.LastKnownVolume; set => Update(s => s.LastKnownVolume = value is null ? null : Math.Clamp(value.Value, 0, 100)); }
     public IReadOnlyList<string> DockOrder => _state.DockOrder;
 
+    /// <summary>
+    /// Stores lightweight, shell-owned settings without treating hardware state as a preference.
+    /// Values are strings so new settings can be introduced without making an older state file invalid.
+    /// </summary>
+    public string GetPreference(string key, string fallback = "")
+    {
+        if (string.IsNullOrWhiteSpace(key)) return fallback;
+        lock (_sync)
+        {
+            return _state.Preferences.TryGetValue(key, out var value) ? value : fallback;
+        }
+    }
+
+    public void SetPreference(string key, string value)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return;
+        Update(s => s.Preferences[key] = value ?? string.Empty);
+    }
+
     public void SetDockOrder(IEnumerable<string> order) => Update(s => s.DockOrder = order.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.Ordinal).ToList());
 
     /// <summary>Returns application ids ordered by real launch frequency, then most recent use.</summary>
@@ -131,6 +150,7 @@ public sealed class ShellSessionState
         public bool ShowDateInSystemBar { get; set; }
         public double? LastKnownVolume { get; set; }
         public List<string> DockOrder { get; set; } = [];
+        public Dictionary<string, string> Preferences { get; set; } = new(StringComparer.Ordinal);
         public Dictionary<string, ApplicationUsageState> ApplicationUsage { get; set; } = new(StringComparer.Ordinal);
     }
 
