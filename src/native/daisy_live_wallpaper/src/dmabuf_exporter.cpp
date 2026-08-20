@@ -16,7 +16,22 @@ extern "C" {
 
 namespace daisy {
 
+DmabufExporter::~DmabufExporter() {
+    reset_sws_context();
+}
+
+void DmabufExporter::reset_sws_context() {
+    if (sws_ctx_) {
+        sws_freeContext(sws_ctx_);
+        sws_ctx_ = nullptr;
+    }
+    sws_src_w_ = 0;
+    sws_src_h_ = 0;
+    sws_src_fmt_ = -1;
+}
+
 void DmabufExporter::init(AVHWDeviceType hw_type, StatsCollector &stats) {
+    reset_sws_context();
     // Detect multi-GPU topology once per session (§3)
     struct stat render_st{}, card_st{};
     bool has_render = (stat("/dev/dri/renderD128", &render_st) == 0);
@@ -135,16 +150,22 @@ bool DmabufExporter::export_frame(AVFrame *src_frame, DaisyVideoFrame *out, Stat
         int buf_size = out->width * out->height * 4;
         uint8_t *bgra_buffer = static_cast<uint8_t *>(std::malloc(buf_size));
         if (bgra_buffer) {
-            SwsContext *sws = sws_getContext(
-                out->width, out->height, static_cast<AVPixelFormat>(sw_frame->format),
-                out->width, out->height, AV_PIX_FMT_BGRA,
-                SWS_FAST_BILINEAR, nullptr, nullptr, nullptr);
+            int src_fmt = static_cast<int>(sw_frame->format);
+            if (!sws_ctx_ || sws_src_w_ != out->width || sws_src_h_ != out->height || sws_src_fmt_ != src_fmt) {
+                if (sws_ctx_) sws_freeContext(sws_ctx_);
+                sws_ctx_ = sws_getContext(
+                    out->width, out->height, static_cast<AVPixelFormat>(src_fmt),
+                    out->width, out->height, AV_PIX_FMT_BGRA,
+                    SWS_FAST_BILINEAR, nullptr, nullptr, nullptr);
+                sws_src_w_   = out->width;
+                sws_src_h_   = out->height;
+                sws_src_fmt_ = src_fmt;
+            }
 
-            if (sws) {
+            if (sws_ctx_) {
                 uint8_t *dst[4] = { bgra_buffer, nullptr, nullptr, nullptr };
                 int dst_stride[4] = { out->width * 4, 0, 0, 0 };
-                sws_scale(sws, sw_frame->data, sw_frame->linesize, 0, out->height, dst, dst_stride);
-                sws_freeContext(sws);
+                sws_scale(sws_ctx_, sw_frame->data, sw_frame->linesize, 0, out->height, dst, dst_stride);
 
                 // Store BGRA pointer in stride[0]/stride[1] (with fd[0] = -2 sentinel if pure SW or software buffer accessor)
                 uintptr_t ptr = reinterpret_cast<uintptr_t>(bgra_buffer);

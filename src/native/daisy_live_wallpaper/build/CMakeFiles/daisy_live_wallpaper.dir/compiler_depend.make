@@ -921,9 +921,11 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
   /usr/include/bits/wchar.h \
   /usr/include/bits/wordsize.h \
   /usr/include/bits/xopen_lim.h \
+  /usr/include/c++/16/algorithm \
   /usr/include/c++/16/atomic \
   /usr/include/c++/16/backward/binders.h \
   /usr/include/c++/16/bit \
+  /usr/include/c++/16/bits/algorithmfwd.h \
   /usr/include/c++/16/bits/alloc_traits.h \
   /usr/include/c++/16/bits/allocated_ptr.h \
   /usr/include/c++/16/bits/allocator.h \
@@ -971,6 +973,7 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
   /usr/include/c++/16/bits/std_thread.h \
   /usr/include/c++/16/bits/stdexcept_throw.h \
   /usr/include/c++/16/bits/stdexcept_throwfwd.h \
+  /usr/include/c++/16/bits/stl_algo.h \
   /usr/include/c++/16/bits/stl_algobase.h \
   /usr/include/c++/16/bits/stl_bvector.h \
   /usr/include/c++/16/bits/stl_construct.h \
@@ -982,11 +985,13 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
   /usr/include/c++/16/bits/stl_iterator_base_types.h \
   /usr/include/c++/16/bits/stl_pair.h \
   /usr/include/c++/16/bits/stl_queue.h \
+  /usr/include/c++/16/bits/stl_tempbuf.h \
   /usr/include/c++/16/bits/stl_uninitialized.h \
   /usr/include/c++/16/bits/stl_vector.h \
   /usr/include/c++/16/bits/string_view.tcc \
   /usr/include/c++/16/bits/stringfwd.h \
   /usr/include/c++/16/bits/this_thread_sleep.h \
+  /usr/include/c++/16/bits/uniform_int_dist.h \
   /usr/include/c++/16/bits/unique_lock.h \
   /usr/include/c++/16/bits/unique_ptr.h \
   /usr/include/c++/16/bits/uses_allocator.h \
@@ -1025,6 +1030,8 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
   /usr/include/c++/16/math.h \
   /usr/include/c++/16/mutex \
   /usr/include/c++/16/new \
+  /usr/include/c++/16/pstl/execution_defs.h \
+  /usr/include/c++/16/pstl/glue_algorithm_defs.h \
   /usr/include/c++/16/pstl/pstl_config.h \
   /usr/include/c++/16/queue \
   /usr/include/c++/16/ratio \
@@ -1132,6 +1139,12 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stdint.h \
   /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/syslimits.h
 
+
+/usr/include/c++/16/bits/uniform_int_dist.h:
+
+/usr/include/c++/16/bits/stl_algo.h:
+
+/usr/include/c++/16/algorithm:
 
 /home/helmeri/DaisyOS/src/native/daisy_live_wallpaper/src/wallpaper_engine.cpp:
 
@@ -1257,6 +1270,8 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
 
 /usr/include/libavutil/hwcontext.h:
 
+/usr/include/c++/16/pstl/execution_defs.h:
+
 /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/limits.h:
 
 /usr/include/c++/16/bits/allocator.h:
@@ -1304,6 +1319,8 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
 /usr/include/bits/waitflags.h:
 
 /home/helmeri/DaisyOS/src/native/daisy_live_wallpaper/src/dmabuf_exporter.cpp:
+
+/usr/include/c++/16/bits/stl_tempbuf.h:
 
 /usr/include/ctype.h:
 
@@ -1450,6 +1467,8 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
 /usr/include/c++/16/bits/cxxabi_forced.h:
 
 /usr/include/bits/openat2.h:
+
+/usr/include/c++/16/bits/algorithmfwd.h:
 
 /usr/include/libavutil/macros.h:
 
@@ -1642,6 +1661,8 @@ CMakeFiles/daisy_live_wallpaper.dir/src/wallpaper_engine.cpp.o: /home/helmeri/Da
 /usr/include/c++/16/tr1/hypergeometric.tcc:
 
 /usr/include/c++/16/type_traits:
+
+/usr/include/c++/16/pstl/glue_algorithm_defs.h:
 
 /usr/include/c++/16/debug/assertions.h:
 

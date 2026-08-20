@@ -7,6 +7,7 @@
 extern "C" {
 #include <libavutil/frame.h>
 #include <libavutil/hwcontext_drm.h>
+#include <libswscale/swscale.h>
 }
 
 namespace daisy {
@@ -25,7 +26,7 @@ enum class SyncMode {
 class DmabufExporter {
 public:
     DmabufExporter() = default;
-    ~DmabufExporter() = default;
+    ~DmabufExporter();
 
     void init(AVHWDeviceType hw_type, StatsCollector &stats);
 
@@ -37,9 +38,16 @@ public:
     const char *sync_mode_string() const;
 
 private:
+    void reset_sws_context();
+
     TopologyMode topology_mode_ = TopologyMode::SameDeviceZeroCopy;
     SyncMode     sync_mode_     = SyncMode::Explicit;
     uint64_t     negotiated_modifier_ = 0; // DRM_FORMAT_MOD_INVALID
+
+    struct ::SwsContext *sws_ctx_ = nullptr;
+    int sws_src_w_ = 0;
+    int sws_src_h_ = 0;
+    int sws_src_fmt_ = -1;
 };
 
 } // namespace daisy

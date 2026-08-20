@@ -14,6 +14,8 @@ using DaisyOS.Shell.Views.Components.Launcher;
 using DaisyOS.Shell.Views.Components.SystemBar;
 using DaisyOS.Shell.Views.Components.Taskbar;
 using DaisyOS.Shell.Views.Windows;
+using DaisyOS.Shell.Services.Diagnostics;
+using DaisyOS.Shell.Controls;
 
 namespace DaisyOS.Shell.Views
 {
@@ -79,12 +81,72 @@ namespace DaisyOS.Shell.Views
                 if (this.FindControl<Control>("ConsoleFeedbackHost") is { } consoleHost) consoleHost.IsVisible = false;
             };
             _controllerPollTimer.Tick += async (_, _) => await RefreshControllerStateAsync();
+            RegisterShellComponents();
+            MetricsPanel.InitializeMonitor(_metricsMonitor);
         }
+
+        private readonly ShellMetricsMonitor _metricsMonitor = new();
 
         public TaskbarView Taskbar => TaskbarContent;
         public SystemBarView SystemBar => SystemBarContent;
         public LauncherView Launcher => LauncherContent;
         public bool IsLauncherVisible => LauncherContent.IsVisible;
+        public bool IsMetricsPanelVisible => MetricsPanel.IsPanelOpen;
+
+        public void ToggleMetricsPanel() => MetricsPanel.TogglePanel();
+        public void ShowMetricsPanel() => MetricsPanel.ShowPanel();
+        public void HideMetricsPanel() => MetricsPanel.HidePanel();
+
+        private void RegisterShellComponents()
+        {
+            _metricsMonitor.RegisterComponent(
+                "taskbar", "Taskbar", "dock", "Navigation",
+                () => TaskbarContent,
+                activeCheck: () => true,
+                customCpuWeightProvider: () => 1.2);
+
+            _metricsMonitor.RegisterComponent(
+                "systembar", "System Bar", "ad_units", "Navigation",
+                () => SystemBarContent,
+                activeCheck: () => true,
+                customCpuWeightProvider: () => 1.1);
+
+            _metricsMonitor.RegisterComponent(
+                "launcher", "App Launcher", "apps", "Overlay",
+                () => LauncherContent,
+                activeCheck: () => LauncherContent.IsVisible,
+                customCpuWeightProvider: () => LauncherContent.IsVisible ? 1.5 : 0.1);
+
+            _metricsMonitor.RegisterComponent(
+                "desktop", "Desktop Environment", "desktop_windows", "Desktop",
+                () => DesktopExperience,
+                activeCheck: () => !_consoleMode,
+                customCpuWeightProvider: () => _consoleMode ? 0.2 : 1.3);
+
+            _metricsMonitor.RegisterComponent(
+                "wallpaper", "Wallpaper Engine", "image", "Background",
+                () => ShellWallpaper,
+                activeCheck: () => true,
+                customCpuWeightProvider: () => 0.8);
+
+            _metricsMonitor.RegisterComponent(
+                "media_widget", "Media Widget", "play_circle", "Widgets",
+                () => MediaWidgetContent,
+                activeCheck: () => MediaWidgetContent.IsVisible,
+                customCpuWeightProvider: () => 0.7);
+
+            _metricsMonitor.RegisterComponent(
+                "console_home", "Console Mode UI", "sports_esports", "Console Mode",
+                () => ConsoleHome,
+                activeCheck: () => _consoleMode,
+                customCpuWeightProvider: () => _consoleMode ? 1.8 : 0.05);
+
+            _metricsMonitor.RegisterComponent(
+                "console_settings", "Console Settings", "settings_suggest", "Console Mode",
+                () => ConsoleSettings,
+                activeCheck: () => ConsoleSettings.IsVisible,
+                customCpuWeightProvider: () => ConsoleSettings.IsVisible ? 1.4 : 0.05);
+        }
 
         /// <summary>Enters the controller-first shell only after the user explicitly asks for it.</summary>
         public void RequestConsoleMode()
@@ -432,6 +494,7 @@ namespace DaisyOS.Shell.Views
 
             vm.IsLaunching = false;
             vm.IsRunning = true;
+            ShellWallpaper.SetGameRunningState(true);
             ConsoleHome.UpdateSelectedGameSpotlight(vm);
 
             if (_consoleMode)
@@ -511,6 +574,7 @@ namespace DaisyOS.Shell.Views
             _quickMenuWindow.Overlay.CloseGameRequested += (_, gameVm) =>
             {
                 gameVm.IsRunning = false;
+                ShellWallpaper.SetGameRunningState(false);
                 ConsoleHome.UpdateSelectedGameSpotlight(gameVm);
                 (Application.Current as App)?.Feedback.Show($"Closed {gameVm.Title}.");
             };

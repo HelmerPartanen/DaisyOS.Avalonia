@@ -21,8 +21,12 @@ public sealed class NativeAppWindowTracker
     public NativeAppWindowTracker() => _states.StateChanged += (_, args) => StateChanged?.Invoke(this, args);
 
     public event EventHandler<NativeAppWindowStateChangedEventArgs>? StateChanged;
+    public event EventHandler? OcclusionStateChanged;
 
     public NativeAppWindowState GetState(string appId) => _states.GetState(appId);
+
+    public bool IsAnyWindowMaximizedOrFullScreen =>
+        _windows.Values.Any(t => t.Window.IsVisible && t.Window.WindowState is WindowState.Maximized or WindowState.FullScreen);
 
     public void Register(string appId, Window window)
     {
@@ -36,6 +40,7 @@ public sealed class NativeAppWindowTracker
         window.Closed += OnWindowClosed;
         window.PropertyChanged += OnWindowPropertyChanged;
         _states.Register(appId);
+        OcclusionStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>Runs the standard taskbar action. Returns false if the app has no window.</summary>
@@ -80,6 +85,7 @@ public sealed class NativeAppWindowTracker
         tracked.Window.Closed -= OnWindowClosed;
         tracked.Window.PropertyChanged -= OnWindowPropertyChanged;
         _states.Unregister(appId);
+        OcclusionStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void Minimize(string appId, TrackedWindow tracked)
@@ -91,6 +97,7 @@ public sealed class NativeAppWindowTracker
 
         tracked.Window.WindowState = WindowState.Minimized;
         _states.Minimize(appId);
+        OcclusionStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void RestoreAndActivate(string appId, TrackedWindow tracked)
@@ -103,6 +110,7 @@ public sealed class NativeAppWindowTracker
 
         tracked.Window.Activate();
         _states.Activate(appId);
+        OcclusionStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnWindowActivated(object? sender, EventArgs e)
@@ -131,22 +139,28 @@ public sealed class NativeAppWindowTracker
 
     private void OnWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property != Window.WindowStateProperty || FindAppId(sender as Window) is not { } appId || !_windows.TryGetValue(appId, out var tracked))
+        if (FindAppId(sender as Window) is not { } appId || !_windows.TryGetValue(appId, out var tracked))
         {
             return;
         }
 
-        var state = e.GetNewValue<WindowState>();
-        if (state == WindowState.Minimized)
+        if (e.Property == Window.WindowStateProperty)
         {
-            _states.Minimize(appId);
-            return;
+            var state = e.GetNewValue<WindowState>();
+            if (state == WindowState.Minimized)
+            {
+                _states.Minimize(appId);
+            }
+            else if (state is WindowState.Normal or WindowState.Maximized)
+            {
+                tracked.RestoreState = state;
+                _states.Restore(appId);
+            }
+            OcclusionStateChanged?.Invoke(this, EventArgs.Empty);
         }
-
-        if (state is WindowState.Normal or WindowState.Maximized)
+        else if (e.Property == Visual.IsVisibleProperty)
         {
-            tracked.RestoreState = state;
-            _states.Restore(appId);
+            OcclusionStateChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 

@@ -39,6 +39,23 @@ public class VideoWallpaperServiceTests
         Assert.Equal(1080, stats.SrcHeight);
         Assert.False(string.IsNullOrEmpty(stats.CodecString));
 
+        service.Pause();
+        Assert.True(service.IsPaused);
+
+        service.Play();
+        Assert.False(service.IsPaused);
+
         service.Stop();
+    }
+
+    [Fact]
+    public void VideoWallpaperService_Pause_SetsIsPausedTrue()
+    {
+        using var service = new VideoWallpaperService();
+        Assert.False(service.IsPaused);
+        service.Pause();
+        Assert.True(service.IsPaused);
+        service.Play();
+        Assert.False(service.IsPaused);
     }
 }

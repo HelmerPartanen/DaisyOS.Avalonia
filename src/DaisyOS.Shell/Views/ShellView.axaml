@@ -9,6 +9,7 @@
     xmlns:systembar="clr-namespace:DaisyOS.Shell.Views.Components.SystemBar"
     xmlns:console="clr-namespace:DaisyOS.Shell.Views.Components.Console"
     xmlns:wallpaper="clr-namespace:DaisyOS.Shell.Views.Components.Wallpaper"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views">
     <Grid>
         <wallpaper:WallpaperLayer x:Name="ShellWallpaper" />
@@ -75,5 +76,8 @@
                 </StackPanel>
             </StackPanel>
         </Border>
+
+        <!-- DaisyOS Shell Metrics Monitoring Panel Overlay -->
+        <controls:ShellMetricsPanel x:Name="MetricsPanel" IsVisible="False" ZIndex="950" />
     </Grid>
 </UserControl>

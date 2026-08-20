@@ -34,6 +34,7 @@ void WallpaperEngine::play() {
     if (is_running_) {
         is_paused_ = false;
         stats_.is_playing = 1;
+        queue_cv_.notify_all();
         return;
     }
 
@@ -48,6 +49,8 @@ void WallpaperEngine::play() {
 void WallpaperEngine::pause() {
     is_paused_        = true;
     stats_.is_playing = 0;
+    clear_frame_queue();
+    queue_cv_.notify_all();
 }
 
 void WallpaperEngine::stop() {
@@ -92,9 +95,15 @@ void WallpaperEngine::decoder_thread_loop() {
     auto last_target_time = clock::now();
 
     while (!stop_requested_) {
-        if (is_paused_) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            continue;
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex_);
+            queue_cv_.wait(lock, [this] {
+                return stop_requested_ || !is_paused_;
+            });
+        }
+
+        if (stop_requested_) {
+            break;
         }
 
         double src_fps = stats_.src_fps > 0 ? stats_.src_fps : 30.0;

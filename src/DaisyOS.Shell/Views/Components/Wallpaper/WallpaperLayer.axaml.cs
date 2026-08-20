@@ -55,6 +55,10 @@ public partial class WallpaperLayer : UserControl
         _videoFrameTimer.Tick += OnVideoFrameTick;
     }
 
+    private Window? _attachedWindow;
+    private bool _isConsoleMode;
+    private bool _isGameRunning;
+
     public void SetConsoleNavigationParallax(double position)
     {
         _targetOffsetX = 0;
@@ -65,6 +69,25 @@ public partial class WallpaperLayer : UserControl
     {
         _targetOffsetX = 0;
         _targetOffsetY = 0;
+        SetConsoleModeActive(enabled);
+    }
+
+    public void SetConsoleModeActive(bool active)
+    {
+        if (_isConsoleMode != active)
+        {
+            _isConsoleMode = active;
+            UpdateVisibilityAndPauseState();
+        }
+    }
+
+    public void SetGameRunningState(bool running)
+    {
+        if (_isGameRunning != running)
+        {
+            _isGameRunning = running;
+            UpdateVisibilityAndPauseState();
+        }
     }
 
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -72,13 +95,25 @@ public partial class WallpaperLayer : UserControl
         _isLoaded = true;
         ApplyWallpaperGeometry();
         _app = Application.Current as App;
-        if (_app is null)
+        if (_app is not null)
         {
-            return;
+            _app.WallpaperChanged += OnWallpaperChanged;
+            _app.WindowTracker.OcclusionStateChanged += OnOcclusionStateChanged;
         }
 
-        _app.WallpaperChanged += OnWallpaperChanged;
-        _ = LoadWallpaperAsync(_app.CurrentWallpaperUri);
+        _attachedWindow = TopLevel.GetTopLevel(this) as Window;
+        if (_attachedWindow is not null)
+        {
+            _attachedWindow.PropertyChanged += OnWindowPropertyChanged;
+        }
+
+        PropertyChanged += OnLayerPropertyChanged;
+        UpdateVisibilityAndPauseState();
+
+        if (_app is not null)
+        {
+            _ = LoadWallpaperAsync(_app.CurrentWallpaperUri);
+        }
     }
 
     private void OnUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -90,7 +125,16 @@ public partial class WallpaperLayer : UserControl
         if (_app is not null)
         {
             _app.WallpaperChanged -= OnWallpaperChanged;
+            _app.WindowTracker.OcclusionStateChanged -= OnOcclusionStateChanged;
         }
+
+        if (_attachedWindow is not null)
+        {
+            _attachedWindow.PropertyChanged -= OnWindowPropertyChanged;
+            _attachedWindow = null;
+        }
+
+        PropertyChanged -= OnLayerPropertyChanged;
 
         WallpaperImage.Source = null;
         _wallpaperImageService?.Dispose();
@@ -101,6 +145,59 @@ public partial class WallpaperLayer : UserControl
         _videoBitmapA = null;
         _videoBitmapB?.Dispose();
         _videoBitmapB = null;
+    }
+
+    private void OnOcclusionStateChanged(object? sender, EventArgs e) => UpdateVisibilityAndPauseState();
+
+    private void OnWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == Window.WindowStateProperty || e.Property == Visual.IsVisibleProperty)
+        {
+            UpdateVisibilityAndPauseState();
+        }
+    }
+
+    private void OnLayerPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == Visual.IsVisibleProperty)
+        {
+            UpdateVisibilityAndPauseState();
+        }
+    }
+
+    private void UpdateVisibilityAndPauseState()
+    {
+        if (!_isLoaded || _videoWallpaperService is null || !_videoWallpaperService.IsLoaded)
+        {
+            return;
+        }
+
+        bool isVisible = IsEffectivelyVisible;
+        bool isWindowMinimized = _attachedWindow?.WindowState == WindowState.Minimized;
+        bool isWindowMaximizedOrFullScreen = _app?.WindowTracker.IsAnyWindowMaximizedOrFullScreen ?? false;
+
+        bool shouldRender = isVisible
+                            && !isWindowMinimized
+                            && !isWindowMaximizedOrFullScreen
+                            && !_isConsoleMode
+                            && !_isGameRunning;
+
+        if (shouldRender)
+        {
+            _videoWallpaperService.Play();
+            if (!_videoFrameTimer.IsEnabled)
+            {
+                _videoFrameTimer.Start();
+            }
+        }
+        else
+        {
+            _videoWallpaperService.Pause();
+            if (_videoFrameTimer.IsEnabled)
+            {
+                _videoFrameTimer.Stop();
+            }
+        }
     }
 
     private void OnWallpaperChanged(object? sender, string wallpaperUri) => _ = LoadWallpaperAsync(wallpaperUri);
@@ -138,8 +235,7 @@ public partial class WallpaperLayer : UserControl
                     }
 
                     _videoFrameTimer.Interval = TimeSpan.FromMilliseconds(1000.0 / targetFps);
-                    _videoWallpaperService.Play();
-                    _videoFrameTimer.Start();
+                    UpdateVisibilityAndPauseState();
                     return;
                 }
             }

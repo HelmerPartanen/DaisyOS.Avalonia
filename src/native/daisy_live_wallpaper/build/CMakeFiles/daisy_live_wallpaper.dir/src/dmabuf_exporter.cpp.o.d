@@ -160,7 +160,9 @@ CMakeFiles/daisy_live_wallpaper.dir/src/dmabuf_exporter.cpp.o: \
  /usr/include/libavcodec/codec.h /usr/include/libavcodec/version_major.h \
  /usr/include/libavcodec/version.h /usr/include/libavcodec/codec_desc.h \
  /usr/include/libavcodec/codec_par.h \
- /usr/include/libavutil/hwcontext_drm.h /usr/include/c++/16/cstring \
+ /usr/include/libavutil/hwcontext_drm.h /usr/include/libswscale/swscale.h \
+ /usr/include/libswscale/version_major.h \
+ /usr/include/libswscale/version.h /usr/include/c++/16/cstring \
  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
  /usr/include/bits/environments.h /usr/include/bits/confname.h \
  /usr/include/bits/getopt_posix.h /usr/include/bits/getopt_core.h \
@@ -180,8 +182,6 @@ CMakeFiles/daisy_live_wallpaper.dir/src/dmabuf_exporter.cpp.o: \
  /usr/include/bits/statx-generic.h \
  /usr/include/bits/types/struct_statx_timestamp.h \
  /usr/include/bits/types/struct_statx.h /usr/include/libavutil/imgutils.h \
- /usr/include/libavutil/pixdesc.h /usr/include/libswscale/swscale.h \
- /usr/include/libswscale/version_major.h \
- /usr/include/libswscale/version.h /usr/include/libdrm/drm_fourcc.h \
+ /usr/include/libavutil/pixdesc.h /usr/include/libdrm/drm_fourcc.h \
  /usr/include/libdrm/drm.h /usr/include/asm/ioctl.h \
  /usr/include/asm-generic/ioctl.h /usr/include/libdrm/drm_mode.h

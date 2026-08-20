@@ -34,6 +34,7 @@ public partial class App : Application
 
     public ShellSessionState SessionState { get; } = new();
     public ShellFeedbackService Feedback { get; } = new();
+    public NativeAppWindowTracker WindowTracker => _nativeWindowTracker;
     public string CurrentWallpaperUri => _wallpaperService?.CurrentWallpaperUri ?? ShellSettings.DefaultWallpaperUri;
 
     public event EventHandler<string>? WallpaperChanged;
@@ -186,6 +187,12 @@ public partial class App : Application
 
     public bool DismissTransientShellSurfaces()
     {
+        if (_shellView?.IsMetricsPanelVisible == true)
+        {
+            _shellView.HideMetricsPanel();
+            return true;
+        }
+
         if (_shellView?.SystemBar.IsQuickSettingsVisible == true)
         {
             HideQuickSettings();

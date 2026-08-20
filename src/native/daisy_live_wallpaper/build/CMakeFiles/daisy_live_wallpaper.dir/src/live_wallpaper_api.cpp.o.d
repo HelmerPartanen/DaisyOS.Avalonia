@@ -161,7 +161,9 @@ CMakeFiles/daisy_live_wallpaper.dir/src/live_wallpaper_api.cpp.o: \
  /usr/include/libavcodec/version.h /usr/include/libavcodec/codec_desc.h \
  /usr/include/libavcodec/codec_par.h \
  /home/helmeri/DaisyOS/src/native/daisy_live_wallpaper/src/dmabuf_exporter.h \
- /usr/include/libavutil/hwcontext_drm.h /usr/include/c++/16/thread \
+ /usr/include/libavutil/hwcontext_drm.h /usr/include/libswscale/swscale.h \
+ /usr/include/libswscale/version_major.h \
+ /usr/include/libswscale/version.h /usr/include/c++/16/thread \
  /usr/include/c++/16/bits/std_thread.h /usr/include/c++/16/bits/refwrap.h \
  /usr/include/c++/16/bits/unique_ptr.h \
  /usr/include/c++/16/x86_64-pc-linux-gnu/bits/gthr.h \

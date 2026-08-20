@@ -11,7 +11,10 @@ public sealed class VideoWallpaperService : IDisposable
     private nint _handle;
     private bool _disposed;
 
+    private bool _isPaused;
+
     public bool IsLoaded => _handle != nint.Zero;
+    public bool IsPaused => _isPaused;
 
     public VideoWallpaperService()
     {
@@ -23,6 +26,7 @@ public sealed class VideoWallpaperService : IDisposable
         if (_handle == nint.Zero || string.IsNullOrWhiteSpace(videoPath))
             return false;
 
+        _isPaused = true;
         int res = DaisyNativeWallpaper.Load(_handle, videoPath);
         return res == 0;
     }
@@ -30,13 +34,19 @@ public sealed class VideoWallpaperService : IDisposable
     public void Play()
     {
         if (_handle != nint.Zero)
+        {
             DaisyNativeWallpaper.Play(_handle);
+            _isPaused = false;
+        }
     }
 
     public void Pause()
     {
         if (_handle != nint.Zero)
+        {
             DaisyNativeWallpaper.Pause(_handle);
+            _isPaused = true;
+        }
     }
 
     public void Stop()
