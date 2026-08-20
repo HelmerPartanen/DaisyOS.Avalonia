@@ -64,10 +64,11 @@
       </StackPanel>
 
       <controls:SearchBar Grid.Column="1"
-                          Width="340"
+                          MinWidth="220"
+                          MaxWidth="440"
                           Height="36"
                           Margin="12,0"
-                          HorizontalAlignment="Center"
+                          HorizontalAlignment="Stretch"
                           VerticalAlignment="Center"
                           CornerRadius="{DynamicResource RoundedSM}"
                           PlaceholderText="Search settings..." />

@@ -40,6 +40,14 @@
       <Setter Property="Padding" Value="12,8" />
     </Style>
 
+    <!-- The Settings app uses a single content width at every window size so pages
+         remain comfortably readable instead of stretching across a full display. -->
+    <Style Selector="TextBlock.SettingsPageTitle">
+      <Setter Property="FontSize" Value="24" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
     <!-- Breadcrumb button style -->
     <Style Selector="Button.BreadcrumbItem">
       <Setter Property="Padding" Value="6,4" />
@@ -123,9 +131,11 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid ColumnDefinitions="240,*" Background="{DynamicResource PrimarySurfaceBrush}">
-    <!-- Transparent Sidebar Container -->
-    <Border Grid.Column="0" Background="Transparent" Padding="12,12,8,12">
+  <Grid x:Name="SettingsLayout" ColumnDefinitions="248,*" Background="{DynamicResource PrimarySurfaceBrush}">
+    <!-- A quiet, dedicated navigation surface keeps the page hierarchy clear at every size. -->
+    <Border Grid.Column="0"
+            Background="{DynamicResource PrimarySurfaceBrush}"
+            Padding="12,14,10,14">
       <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="6">
           <Button x:Name="NavSystem" Classes="SettingsNavItem Active" Click="OnNavCategoryClicked" Tag="System">
@@ -244,7 +254,7 @@
     </Border>
 
     <!-- Main Content Area -->
-    <Grid Grid.Column="1" Background="Transparent" Margin="24,12,24,12" HorizontalAlignment="Stretch">
+    <Grid x:Name="ContentArea" Grid.Column="1" Background="Transparent" Margin="28,24,36,24" HorizontalAlignment="Stretch">
       <!-- SYSTEM CATEGORY MAIN LIST -->
       <ScrollViewer x:Name="SystemListView" IsVisible="True" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
         <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="1240">
@@ -341,14 +351,14 @@
       <!-- Every category except Appearance is composed into this shared surface at runtime. Keeping
            the page shell here ensures the same compact hierarchy, spacing and focus behavior. -->
       <ScrollViewer x:Name="CategoryView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-        <StackPanel x:Name="CategoryContent" Spacing="20" HorizontalAlignment="Left" Width="680" Margin="0,4,0,32" />
+        <StackPanel x:Name="CategoryContent" Spacing="24" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36" />
       </ScrollViewer>
 
       <!-- APPEARANCE -->
       <ScrollViewer x:Name="AppearanceView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-        <StackPanel Spacing="20" HorizontalAlignment="Left" Width="680" Margin="0,4,0,32">
+        <StackPanel x:Name="AppearanceContent" Spacing="24" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36">
           <StackPanel Spacing="3">
-            <TextBlock Text="Appearance" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="Appearance" Classes="SettingsPageTitle" />
           </StackPanel>
 
           <StackPanel Spacing="10">

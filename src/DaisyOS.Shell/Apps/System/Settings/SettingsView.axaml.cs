@@ -30,6 +30,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
         public SettingsView()
         {
             InitializeComponent();
+            ContentArea.SizeChanged += (_, _) => UpdateContentWidth();
             AttachedToVisualTree += (_, _) =>
             {
                 if (Application.Current is App app)
@@ -37,6 +38,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
                     app.AppearanceChanged -= OnAppearanceChanged;
                     app.AppearanceChanged += OnAppearanceChanged;
                 }
+                UpdateContentWidth();
                 RefreshAppearanceControls();
                 ShowCategory("System");
             };
@@ -125,12 +127,19 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 _ => ("System", "Power, workspaces, updates and everyday desktop behaviour.")
             };
 
+            var pageTitle = new TextBlock
+            {
+                Text = title,
+                FontSize = 24,
+                FontWeight = FontWeight.SemiBold
+            };
+            pageTitle.Classes.Add("SettingsPageTitle");
             CategoryContent.Children.Add(new StackPanel
             {
                 Spacing = 3,
                 Children =
                 {
-                    new TextBlock { Text = title, FontSize = 20, FontWeight = FontWeight.SemiBold },
+                    pageTitle,
                     Secondary(subtitle)
                 }
             });
@@ -432,13 +441,26 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
             var row = new Border
             {
-                Padding = new Thickness(12, 10),
-                // Keep the compact grouped rows; neutral charcoal avoids a wallpaper/accent tint.
-                Background = new SolidColorBrush(Color.Parse("#242424")),
-                CornerRadius = new CornerRadius(8),
+                Padding = new Thickness(16, 12),
+                Background = TryBrush("TertiarySurfaceBrush"),
+                CornerRadius = new CornerRadius(10),
                 Child = content
             };
             return row;
+        }
+
+        private void UpdateContentWidth()
+        {
+            // ContentArea has already accounted for the responsive outer margins.  Cap the
+            // column on large displays, while using all available width in a compact window.
+            var width = Math.Min(900, ContentArea.Bounds.Width);
+            if (width <= 0)
+            {
+                return;
+            }
+
+            CategoryContent.Width = width;
+            AppearanceContent.Width = width;
         }
 
         private static TextBlock Secondary(string text) => new()

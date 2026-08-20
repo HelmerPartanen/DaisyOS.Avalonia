@@ -4,10 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:settings="clr-namespace:DaisyOS.Shell.Apps.System.Settings"
     Title="Settings"
-    Width="1080"
-    Height="720"
+    Width="1120"
+    Height="760"
     MinWidth="760"
-    MinHeight="540"
+    MinHeight="560"
     CanResize="True"
     WindowStartupLocation="CenterScreen"
     WindowDecorations="None"
@@ -16,15 +16,30 @@
     TextOptions.TextRenderingMode="SubpixelAntialias"
     Background="Transparent"
     PointerPressed="OnWindowPointerPressed">
+  <Window.Styles>
+    <!-- A maximized/full-screen app must meet the display edge cleanly: no desktop gap,
+         clipped corners, or invisible resize affordances remain. -->
+    <Style Selector="Border.SettingsAppFrame.FilledWindow">
+      <Setter Property="Margin" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="Background" Value="{DynamicResource PrimarySurfaceBrush}" />
+    </Style>
+    <Style Selector="Border.SettingsContentFrame.FilledWindow">
+      <Setter Property="CornerRadius" Value="0" />
+    </Style>
+  </Window.Styles>
   <Grid>
     <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
     <Border x:Name="AppFrame"
-            Classes="AppWindowFrame"
+            Classes="AppWindowFrame SettingsAppFrame"
             Margin="12"
             Background="{DynamicResource DividerBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border Background="{DynamicResource PrimarySurfaceBrush}"
+      <Border Classes="SettingsContentFrame"
+              Background="{DynamicResource PrimarySurfaceBrush}"
+              x:Name="ContentFrame"
               CornerRadius="{DynamicResource RoundedLGInset}"
               ClipToBounds="True">
         <Grid RowDefinitions="44,*">

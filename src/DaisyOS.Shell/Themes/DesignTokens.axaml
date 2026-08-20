@@ -18,9 +18,9 @@
   <!-- Button and interaction shared colors -->
   <Color x:Key="GlobalPrimaryButtonHoverColor">#E5E5E5</Color>
   <Color x:Key="GlobalPrimaryButtonPressedColor">#CCCCCC</Color>
-  <Color x:Key="GlobalSecondaryButtonBgColor">#1C1C24</Color>
-  <Color x:Key="GlobalSecondaryButtonHoverColor">#282834</Color>
-  <Color x:Key="GlobalSecondaryButtonPressedColor">#14141C</Color>
+  <Color x:Key="GlobalSecondaryButtonBgColor">#FF242424</Color>
+  <Color x:Key="GlobalSecondaryButtonHoverColor">#FF242424</Color>
+  <Color x:Key="GlobalSecondaryButtonPressedColor">#FF363636</Color>
 
   <!-- A compact geometry scale. Use the nearest role instead of literal radii. -->
   <CornerRadius x:Key="RoundedXS">4</CornerRadius>

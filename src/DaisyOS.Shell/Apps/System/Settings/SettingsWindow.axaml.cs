@@ -12,6 +12,32 @@ public partial class SettingsWindow : Window
         InitializeComponent();
         Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
         Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
+        PropertyChanged += OnWindowPropertyChanged;
+        UpdateWindowChrome();
+    }
+
+    private void OnWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == WindowStateProperty)
+        {
+            UpdateWindowChrome();
+        }
+    }
+
+    private void UpdateWindowChrome()
+    {
+        var fillsDisplay = WindowState is WindowState.Maximized or WindowState.FullScreen;
+        AppFrame.Classes.Set("FilledWindow", fillsDisplay);
+        ContentFrame.Classes.Set("FilledWindow", fillsDisplay);
+
+        ResizeTop.IsHitTestVisible = !fillsDisplay;
+        ResizeBottom.IsHitTestVisible = !fillsDisplay;
+        ResizeLeft.IsHitTestVisible = !fillsDisplay;
+        ResizeRight.IsHitTestVisible = !fillsDisplay;
+        ResizeTopLeft.IsHitTestVisible = !fillsDisplay;
+        ResizeTopRight.IsHitTestVisible = !fillsDisplay;
+        ResizeBottomLeft.IsHitTestVisible = !fillsDisplay;
+        ResizeBottomRight.IsHitTestVisible = !fillsDisplay;
     }
 
     private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)

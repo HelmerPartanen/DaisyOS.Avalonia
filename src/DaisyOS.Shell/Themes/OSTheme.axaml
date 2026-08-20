@@ -81,7 +81,7 @@ OPACITY VALUES
     <ResourceDictionary x:Key="Dark">
       <!-- Surface roles retain contrast over the #FF000000 base without a grey washout. -->
       <SolidColorBrush x:Key="PrimarySurfaceBrush" Color="{StaticResource GlobalSurfaceColor}" />
-      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="{StaticResource GlobalSecondaryButtonBgColor}" />
+      <SolidColorBrush x:Key="SecondarySurfaceBrush" Color="#242424" />
       <!-- Add opacity to ElevatedSurfaceColor which is #181820 -->
       <SolidColorBrush x:Key="ElevatedSurfaceBrush" Color="{StaticResource GlobalElevatedSurfaceColor}" Opacity="0.95" />
       <SolidColorBrush x:Key="MenuSurfaceBrush" Color="{StaticResource GlobalElevatedSurfaceColor}" />
