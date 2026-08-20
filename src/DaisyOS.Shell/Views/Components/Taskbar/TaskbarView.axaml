@@ -94,6 +94,13 @@
 
       <!-- Reorderable App Icons Canvas. Width is set from code-behind. -->
       <Canvas x:Name="AppIconsCanvas" Height="40">
+        <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="calendar" ToolTip.Tip="Calendar">
+          <Grid Width="32" Height="32">
+            <TextBlock Text="event" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
+                       FontSize="22" Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+          </Grid>
+        </Button>
+
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="notes" ToolTip.Tip="Notes">
           <Grid Width="32" Height="32">
             <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/NotesIcon.png"
@@ -127,6 +134,7 @@
         </Button>
 
         <!-- Overlay siblings keep the status marker out of each 40px button's layout box. -->
+        <Border Classes="TaskbarWindowIndicator" Tag="calendar" Canvas.Top="41" IsHitTestVisible="False" />
         <Border Classes="TaskbarWindowIndicator" Tag="notes" Canvas.Top="41" IsHitTestVisible="False" />
         <Border Classes="TaskbarWindowIndicator" Tag="calculator" Canvas.Top="41" IsHitTestVisible="False" />
         <Border Classes="TaskbarWindowIndicator" Tag="settings" Canvas.Top="41" IsHitTestVisible="False" />

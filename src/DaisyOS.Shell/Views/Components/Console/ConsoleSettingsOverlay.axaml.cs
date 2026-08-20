@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
@@ -401,14 +402,14 @@ public partial class ConsoleSettingsOverlay : UserControl
             if (ClockText != null)
             {
                 var now = _clockService?.Now ?? DateTimeOffset.Now;
-                ClockText.Text = now.ToString("HH:mm");
+                ClockText.Text = now.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern, CultureInfo.CurrentCulture);
             }
         };
         _clockTimer.Start();
         if (ClockText != null)
         {
             var now = _clockService?.Now ?? DateTimeOffset.Now;
-            ClockText.Text = now.ToString("HH:mm");
+            ClockText.Text = now.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern, CultureInfo.CurrentCulture);
         }
     }
 

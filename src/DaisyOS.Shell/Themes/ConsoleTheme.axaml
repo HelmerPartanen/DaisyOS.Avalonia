@@ -31,7 +31,7 @@
 
   <SolidColorBrush x:Key="ConsoleTextPrimaryBrush" Color="{StaticResource GlobalTextPrimaryColor}" />
   <SolidColorBrush x:Key="ConsoleTextSecondaryBrush" Color="{StaticResource GlobalTextSecondaryColor}" />
-  <SolidColorBrush x:Key="ConsoleTextTertiaryBrush" Color="#666666" />
+  <SolidColorBrush x:Key="ConsoleTextTertiaryBrush" Color="{StaticResource GlobalTextMutedColor}" />
   <SolidColorBrush x:Key="ConsoleTextMutedBrush" Color="{StaticResource GlobalTextMutedColor}" />
   <SolidColorBrush x:Key="ConsoleDividerBrush" Color="{StaticResource GlobalDividerColor}" />
 

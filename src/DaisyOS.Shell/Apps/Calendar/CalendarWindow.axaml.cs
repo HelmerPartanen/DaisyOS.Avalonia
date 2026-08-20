@@ -1,0 +1,98 @@
+using System.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.VisualTree;
+
+using Avalonia.Threading;
+
+namespace DaisyOS.Shell.Apps.Calendar;
+
+public partial class CalendarWindow : Window
+{
+    public CalendarWindow()
+    {
+        InitializeComponent();
+        DataContext = new CalendarViewModel();
+        Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
+        Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
+
+        Loaded += (_, _) =>
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                GC.Collect(2, GCCollectionMode.Optimized, false);
+            }, DispatcherPriority.Background);
+        };
+    }
+
+    public void TogglePerformanceOverlay()
+    {
+        PerfOverlay.ToggleOverlayVisibility();
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+        (DataContext as CalendarViewModel)?.Dispose();
+    }
+
+    private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.Source is Visual source &&
+            source is not TextBox &&
+            source is not Controls.SearchBar &&
+            !source.GetVisualAncestors().Any(v => v is Controls.SearchBar || v is TextBox))
+        {
+            FocusManager?.Focus(null);
+        }
+    }
+
+    private void OnResizeTopPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            BeginResizeDrag(WindowEdge.North, e);
+    }
+
+    private void OnResizeBottomPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            BeginResizeDrag(WindowEdge.South, e);
+    }
+
+    private void OnResizeLeftPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            BeginResizeDrag(WindowEdge.West, e);
+    }
+
+    private void OnResizeRightPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            BeginResizeDrag(WindowEdge.East, e);
+    }
+
+    private void OnResizeTopLeftPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            BeginResizeDrag(WindowEdge.NorthWest, e);
+    }
+
+    private void OnResizeTopRightPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            BeginResizeDrag(WindowEdge.NorthEast, e);
+    }
+
+    private void OnResizeBottomLeftPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            BeginResizeDrag(WindowEdge.SouthWest, e);
+    }
+
+    private void OnResizeBottomRightPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            BeginResizeDrag(WindowEdge.SouthEast, e);
+    }
+}

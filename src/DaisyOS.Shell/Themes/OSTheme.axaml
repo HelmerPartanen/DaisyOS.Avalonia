@@ -39,6 +39,7 @@ OPACITY VALUES
       <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FF000000" />
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="#CC000000" />
       <SolidColorBrush x:Key="TextTertiaryBrush" Color="#99000000" />
+      <SolidColorBrush x:Key="TextMutedBrush" Color="#99000000" />
 
       <SolidColorBrush x:Key="PrimaryButtonTextPrimaryBrush" Color="{StaticResource GlobalPrimaryButtonTextPrimaryColor}" />
       <SolidColorBrush x:Key="PrimaryButtonTextSecondaryBrush" Color="{StaticResource GlobalPrimaryButtonTextSecondaryColor}" />
@@ -89,6 +90,7 @@ OPACITY VALUES
       <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource GlobalTextPrimaryColor}" />
       <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource GlobalTextSecondaryColor}" />
       <SolidColorBrush x:Key="TextTertiaryBrush" Color="{StaticResource GlobalTextMutedColor}" />
+      <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource GlobalTextMutedColor}" />
 
       <SolidColorBrush x:Key="PrimaryButtonTextPrimaryBrush" Color="{StaticResource GlobalPrimaryButtonTextPrimaryColor}" />
       <SolidColorBrush x:Key="PrimaryButtonTextSecondaryBrush" Color="{StaticResource GlobalPrimaryButtonTextSecondaryColor}" />

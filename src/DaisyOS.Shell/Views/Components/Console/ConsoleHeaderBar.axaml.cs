@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using DaisyOS.Core.Models;
@@ -30,7 +31,7 @@ public partial class ConsoleHeaderBar : UserControl
     {
         if (ClockText != null)
         {
-            ClockText.Text = DateTime.Now.ToString("HH:mm");
+            ClockText.Text = DateTime.Now.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern, CultureInfo.CurrentCulture);
         }
     }
 

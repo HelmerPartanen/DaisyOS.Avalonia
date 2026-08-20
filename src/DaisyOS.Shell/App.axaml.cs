@@ -15,6 +15,7 @@ using System;
 using DaisyOS.Shell.Apps.Notes;
 using DaisyOS.Shell.Apps.Calculator;
 using DaisyOS.Shell.Apps.Files;
+using DaisyOS.Shell.Apps.Calendar;
 using DaisyOS.Shell.Services.Windows;
 using DaisyOS.Shell.Services.Notifications;
 
@@ -28,6 +29,7 @@ public partial class App : Application
         new MaterialDynamicSchemeGenerator());
     private SettingsWindow? _settingsWindow;
     private NotesWindow? _notesWindow;
+    private CalendarWindow? _calendarWindow;
     private CalculatorWindow? _calculatorWindow;
     private FilesWindow? _filesWindow;
     private ShellView? _shellView;
@@ -244,6 +246,9 @@ public partial class App : Application
             case "files":
                 ShowFiles();
                 break;
+            case "calendar":
+                ShowCalendar();
+                break;
         }
     }
 
@@ -292,6 +297,29 @@ public partial class App : Application
         else
         {
             _notesWindow.Show();
+        }
+    }
+
+    /// <summary>Opens one instance of the native DaisyOS Calendar app.</summary>
+    public void ShowCalendar()
+    {
+        HideLauncher();
+        if (_nativeWindowTracker.RestoreAndActivate("calendar"))
+        {
+            return;
+        }
+
+        _calendarWindow = new CalendarWindow();
+        _nativeWindowTracker.Register("calendar", _calendarWindow);
+        _calendarWindow.Closed += (_, _) => _calendarWindow = null;
+
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime { MainWindow: { } mainWindow })
+        {
+            _calendarWindow.Show(mainWindow);
+        }
+        else
+        {
+            _calendarWindow.Show();
         }
     }
 

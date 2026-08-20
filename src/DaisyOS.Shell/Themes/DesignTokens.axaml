@@ -8,8 +8,8 @@
   <Color x:Key="GlobalAccentColor">#FFFFFF</Color>
   <Color x:Key="GlobalOnAccentColor">#000000</Color>
   <Color x:Key="GlobalTextPrimaryColor">#FFFFFF</Color>
-  <Color x:Key="GlobalTextSecondaryColor">#B5B5C8</Color>
-  <Color x:Key="GlobalTextMutedColor">#707085</Color>
+  <Color x:Key="GlobalTextSecondaryColor">#CCFFFFFF</Color>
+  <Color x:Key="GlobalTextMutedColor">#99FFFFFF</Color>
   <Color x:Key="GlobalDividerColor">#33FFFFFF</Color>
 
   <Color x:Key="GlobalPrimaryButtonTextPrimaryColor">#000000</Color>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -94,7 +95,7 @@ public partial class ConsoleQuickMenuOverlay : UserControl
     {
         if (ClockText != null)
         {
-            ClockText.Text = DateTime.Now.ToString("HH:mm");
+            ClockText.Text = DateTime.Now.ToString(CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern, CultureInfo.CurrentCulture);
         }
     }
 

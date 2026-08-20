@@ -187,9 +187,8 @@ public partial class SystemBarView : UserControl
     {
         var now = DateTime.Now;
         var culture = CultureInfo.CurrentCulture;
-        // System Bar uses the stable, compact 24-hour clock used throughout the shell.
-        // The calendar flyout retains the localized full-date heading.
-        var clockValue = now.ToString("HH.mm", CultureInfo.InvariantCulture);
+        // Respect the system locale's configured short-time pattern, including 12/24-hour preference.
+        var clockValue = now.ToString(culture.DateTimeFormat.ShortTimePattern, culture);
         if (_clockText is not null && !string.Equals(clockValue, _lastClockValue, StringComparison.Ordinal))
         {
             _lastClockValue = clockValue;
