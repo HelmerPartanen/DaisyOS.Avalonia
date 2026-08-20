@@ -3,24 +3,29 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Width="320" MaxHeight="600"
-    ClipToBounds="True">
+    ClipToBounds="True"
+    xmlns:converters="clr-namespace:DaisyOS.Shell.Converters">
+
+  <UserControl.Resources>
+    <converters:BitmapAssetValueConverter x:Key="BitmapAssetValueConverter" />
+  </UserControl.Resources>
 
   <UserControl.Styles>
     <Style Selector="Border.NotificationItemCard">
-      <Setter Property="Background" Value="{DynamicResource PrimarySurfaceBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-      <Setter Property="BorderThickness" Value="2" />
-      <Setter Property="CornerRadius" Value="12" />
-      <Setter Property="Padding" Value="10,8" />
-      <Setter Property="Margin" Value="0,0,0,10" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
+      <Setter Property="Padding" Value="16" />
+      <Setter Property="Margin" Value="0,0,0,8" />
     </Style>
     <Style Selector="Border.NotificationItemCard:pointerover">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
     </Style>
   </UserControl.Styles>
 
-  <Border Padding="16" Background="{DynamicResource ElevatedSurfaceBrush}"
-          BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1"
+  <Border Padding="16,16,16,16" Background="{DynamicResource PrimarySurfaceBrush}"
+          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
           CornerRadius="{DynamicResource RoundedXL}">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
       <StackPanel Spacing="16">
@@ -37,15 +42,7 @@
             </Border>
           </StackPanel>
 
-          <!-- DND Toggle -->
-          <Button Grid.Column="1" x:Name="DndButton" Classes="ShellButton" Height="28" Padding="8,0" Margin="0,0,4,0"
-                  ToolTip.Tip="Toggle Do Not Disturb" Click="OnDndToggled">
-            <StackPanel Orientation="Horizontal" Spacing="4">
-              <TextBlock x:Name="DndIcon" Text="do_not_disturb_on" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                         FontSize="14" VerticalAlignment="Center" />
-              <TextBlock x:Name="DndText" Text="DND" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center" />
-            </StackPanel>
-          </Button>
+
 
           <!-- Clear All Button -->
           <Button Grid.Column="2" x:Name="ClearAllButton" Classes="ShellButton" Height="28" Padding="8,0"
@@ -54,32 +51,7 @@
           </Button>
         </Grid>
 
-        <!-- Test Notification Generator Toolbar -->
-        <Border Padding="8" Background="{DynamicResource SubtleSurfaceBrush}" CornerRadius="{DynamicResource RoundedMD}">
-          <Grid ColumnDefinitions="*,*,*">
-            <Button Grid.Column="0" Classes="ShellButton" Height="28" Margin="2,0" Padding="4,0"
-                    ToolTip.Tip="Post standard test toast" Click="OnPostTestNotificationClicked">
-              <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-                <TextBlock Text="add_alert" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="14" VerticalAlignment="Center" />
-                <TextBlock Text="Test Toast" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" />
-              </StackPanel>
-            </Button>
-            <Button Grid.Column="1" Classes="ShellButton" Height="28" Margin="2,0" Padding="4,0"
-                    ToolTip.Tip="Post urgent/critical test toast" Click="OnPostUrgentTestNotificationClicked">
-              <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-                <TextBlock Text="warning" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="14" Foreground="#FF5252" VerticalAlignment="Center" />
-                <TextBlock Text="Urgent" FontSize="11" FontWeight="Bold" Foreground="#FF5252" VerticalAlignment="Center" />
-              </StackPanel>
-            </Button>
-            <Button Grid.Column="2" Classes="ShellButton" Height="28" Margin="2,0" Padding="4,0"
-                    ToolTip.Tip="Post system update test toast" Click="OnPostSystemTestNotificationClicked">
-              <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
-                <TextBlock Text="system_update" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="14" VerticalAlignment="Center" />
-                <TextBlock Text="System" FontSize="11" FontWeight="Bold" VerticalAlignment="Center" />
-              </StackPanel>
-            </Button>
-          </Grid>
-        </Border>
+
 
         <!-- 3. Empty State Visual -->
         <Border x:Name="EmptyStateHost" Padding="24,32" IsVisible="True" HorizontalAlignment="Center">
@@ -109,8 +81,9 @@
                                      HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                         <!-- App Icon (visible if Icon is provided) -->
-                        <Image Source="{Binding Icon}" Stretch="UniformToFill"
-                               IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <Image IsVisible="{Binding Icon, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               Source="{Binding Icon, Converter={StaticResource BitmapAssetValueConverter}}"
+                               Width="32" Height="32" Stretch="UniformToFill" />
                       </Panel>
                     </Border>
                   </Panel>
@@ -122,7 +95,7 @@
                                  FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}"
                                  TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                       <TextBlock Grid.Column="1" Text="{Binding CreatedAt, StringFormat='{}{0:HH:mm}'}"
-                                 FontSize="10" Foreground="{DynamicResource TextMutedBrush}" Margin="8,0,8,0" VerticalAlignment="Center" />
+                                 FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" Margin="8,0,8,0" VerticalAlignment="Center" />
                       <Button Grid.Column="2" Classes="ShellButton" Width="20" Height="20" Padding="0"
                               ToolTip.Tip="Dismiss" Click="OnDismissItemClicked" Tag="{Binding Id}">
                         <TextBlock Text="close" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"

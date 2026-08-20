@@ -401,7 +401,7 @@ namespace DaisyOS.Shell.Views
                 (Application.Current as App)?.HideLauncher();
             }
 
-            if (SystemBar.IsQuickSettingsVisible && !IsWithin(source, SystemBarContent))
+            if ((SystemBar.IsQuickSettingsVisible || SystemBar.IsNotificationPanelVisible) && !IsWithin(source, SystemBarContent))
             {
                 (Application.Current as App)?.DismissTransientShellSurfaces();
             }

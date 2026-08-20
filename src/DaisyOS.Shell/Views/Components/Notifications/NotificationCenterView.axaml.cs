@@ -28,7 +28,6 @@ public partial class NotificationCenterView : UserControl
         {
             _app.Notifications.NotificationsChanged += OnNotificationsStateChanged;
             _app.Notifications.UnreadCountChanged += OnUnreadCountChanged;
-            _app.Notifications.DoNotDisturbChanged += OnDndChanged;
             RefreshUI();
             _app.Notifications.MarkAllAsRead();
         }
@@ -40,7 +39,6 @@ public partial class NotificationCenterView : UserControl
         {
             _app.Notifications.NotificationsChanged -= OnNotificationsStateChanged;
             _app.Notifications.UnreadCountChanged -= OnUnreadCountChanged;
-            _app.Notifications.DoNotDisturbChanged -= OnDndChanged;
         }
     }
 
@@ -58,11 +56,6 @@ public partial class NotificationCenterView : UserControl
         });
     }
 
-    private void OnDndChanged(object? sender, bool isDnd)
-    {
-        Dispatcher.UIThread.Post(UpdateDndButton);
-    }
-
     private void RefreshUI()
     {
         if (_app is null) return;
@@ -78,28 +71,11 @@ public partial class NotificationCenterView : UserControl
         int unread = _app.Notifications.UnreadCount;
         UnreadCountText.Text = unread.ToString();
         UnreadBadge.IsVisible = unread > 0;
-
-        UpdateDndButton();
-    }
-
-    private void UpdateDndButton()
-    {
-        if (_app is null) return;
-
-        bool isDnd = _app.Notifications.IsDoNotDisturb;
-        DndIcon.Text = isDnd ? "do_not_disturb_on" : "notifications";
-        DndText.Text = isDnd ? "DND On" : "DND Off";
     }
 
     private void OnClearAllClicked(object? sender, RoutedEventArgs e)
     {
         _app?.Notifications.Clear();
-    }
-
-    private void OnDndToggled(object? sender, RoutedEventArgs e)
-    {
-        if (_app is null) return;
-        _app.Notifications.SetDoNotDisturb(!_app.Notifications.IsDoNotDisturb);
     }
 
     private void OnDismissItemClicked(object? sender, RoutedEventArgs e)
@@ -116,62 +92,5 @@ public partial class NotificationCenterView : UserControl
         {
             _app?.Notifications.TriggerAction(item);
         }
-    }
-
-    private int _testCount = 0;
-
-    private void OnPostTestNotificationClicked(object? sender, RoutedEventArgs e)
-    {
-        _testCount++;
-        var notification = new NotificationItem(
-            Title: $"New Message Received",
-            Body: "Hey, do you want to play a game later? I just got the new update.",
-            CreatedAt: DateTimeOffset.Now,
-            SourceAppId: "Steam",
-            Icon: "avares://DaisyOS.Shell/Assets/AppIcons/SettingsIcon.png",
-            Category: NotificationCategory.Application,
-            Urgency: NotificationUrgency.Normal,
-            ActionLabel: "Reply",
-            ActionId: "reply_msg"
-        );
-
-        _app?.Notifications.Add(notification);
-    }
-
-    private void OnPostUrgentTestNotificationClicked(object? sender, RoutedEventArgs e)
-    {
-        _testCount++;
-        var notification = new NotificationItem(
-            Title: "Security Warning: Low Disk Space",
-            Body: "System partition /dev/sda2 has less than 500 MB remaining. Clean up files immediately.",
-            CreatedAt: DateTimeOffset.Now,
-            SourceAppId: "Security & Storage",
-            SystemIconGlyph: "warning",
-            IsError: true,
-            Category: NotificationCategory.Security,
-            Urgency: NotificationUrgency.Critical,
-            ActionLabel: "Open Disk Cleaner",
-            ActionId: "disk_cleaner"
-        );
-
-        _app?.Notifications.Add(notification);
-    }
-
-    private void OnPostSystemTestNotificationClicked(object? sender, RoutedEventArgs e)
-    {
-        _testCount++;
-        var notification = new NotificationItem(
-            Title: "System Update Available",
-            Body: "DaisyOS 2026.08 feature update is ready to download and install.",
-            CreatedAt: DateTimeOffset.Now,
-            SourceAppId: "Software Updater",
-            SystemIconGlyph: "system_update",
-            Category: NotificationCategory.Updates,
-            Urgency: NotificationUrgency.Normal,
-            ActionLabel: "Install Now",
-            ActionId: "install_update"
-        );
-
-        _app?.Notifications.Add(notification);
     }
 }

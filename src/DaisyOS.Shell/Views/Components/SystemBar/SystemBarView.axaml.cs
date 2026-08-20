@@ -54,17 +54,49 @@ public partial class SystemBarView : UserControl
     }
 
     public bool IsQuickSettingsVisible => this.FindControl<Control>("QuickSettingsPanel")?.IsVisible == true;
+    public bool IsNotificationPanelVisible => this.FindControl<Control>("NotificationDrawer")?.IsVisible == true;
 
     /// <summary>Shows Quick Settings as an overlay within the shell window.</summary>
     public void ShowQuickSettingsPanel()
     {
-        this.FindControl<Control>("QuickSettingsPanel")!.IsVisible = true;
+        var qsPanel = this.FindControl<Control>("QuickSettingsPanel");
+        if (qsPanel != null) qsPanel.IsVisible = true;
         SetQuickSettingsPage(QuickSettingsPage.Main);
+        HideNotificationPanel();
         QueueQuickSettingsRefresh(force: true);
+        SetFlyoutButtonActive("QuickSettingsButton", true);
     }
 
-    public void HideQuickSettingsPanel() =>
-        this.FindControl<Control>("QuickSettingsPanel")!.IsVisible = false;
+    /// <summary>Hides Quick Settings overlay.</summary>
+    public void HideQuickSettingsPanel()
+    {
+        var qsPanel = this.FindControl<Control>("QuickSettingsPanel");
+        if (qsPanel != null) qsPanel.IsVisible = false;
+        SetFlyoutButtonActive("QuickSettingsButton", false);
+    }
+
+    public void ShowNotificationPanel()
+    {
+        var notifPanel = this.FindControl<Control>("NotificationDrawer");
+        if (notifPanel != null) notifPanel.IsVisible = true;
+        HideQuickSettingsPanel();
+        SetFlyoutButtonActive("NotificationsButton", true);
+    }
+
+    public void HideNotificationPanel()
+    {
+        var notifPanel = this.FindControl<Control>("NotificationDrawer");
+        if (notifPanel != null) notifPanel.IsVisible = false;
+        SetFlyoutButtonActive("NotificationsButton", false);
+    }
+
+
+
+    private void OnNotificationsRequested(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (IsNotificationPanelVisible) HideNotificationPanel();
+        else ShowNotificationPanel();
+    }
 
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {

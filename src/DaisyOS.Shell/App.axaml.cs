@@ -201,6 +201,12 @@ public partial class App : Application
             return true;
         }
 
+        if (_shellView?.SystemBar.IsNotificationPanelVisible == true)
+        {
+            _shellView.SystemBar.HideNotificationPanel();
+            return true;
+        }
+
         if (_shellView?.IsLauncherVisible == true)
         {
             HideLauncher();

@@ -135,7 +135,7 @@
           </Flyout>
         </Button.Flyout>
       </Button>
-      <Button x:Name="NotificationsButton" Classes="ShellButton" Width="40" Height="40" Padding="0" ToolTip.Tip="Notifications">
+      <Button x:Name="NotificationsButton" Classes="ShellButton" Width="40" Height="40" Padding="0" ToolTip.Tip="Notifications" Click="OnNotificationsRequested">
         <Border Background="Transparent" CornerRadius="{DynamicResource RoundedSM}">
           <Grid>
             <!-- Using the filled version of Material Symbols Rounded -->
@@ -147,12 +147,6 @@
                     ToolTip.Tip="Unread notifications" />
           </Grid>
         </Border>
-        <Button.Flyout>
-          <Flyout Placement="TopEdgeAlignedRight" FlyoutPresenterTheme="{DynamicResource SystemBarFlyoutPresenter}"
-                  Opened="OnNotificationsFlyoutOpened" Closed="OnNotificationsFlyoutClosed">
-            <notifications:NotificationCenterView x:Name="NotificationDrawer" />
-          </Flyout>
-        </Button.Flyout>
       </Button>
     </StackPanel>
   </Border>
@@ -233,5 +227,8 @@
       </StackPanel>
     </Grid>
   </Border>
+  
+  <notifications:NotificationCenterView x:Name="NotificationDrawer" IsVisible="False"
+          HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,64"/>
   </Grid>
 </UserControl>
