@@ -45,7 +45,7 @@
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <controls:SearchBar x:Name="LauncherSearchBar"
                                 Height="44"
-                                CornerRadius="{DynamicResource RoundedSM}"
+                                CornerRadius="{DynamicResource RoundedMD}"
                                 Text="{Binding SearchText, Mode=TwoWay}"
                                 PlaceholderText="Search apps" />
             <Button Grid.Column="1" Classes="LauncherUtility" Width="44" Height="44" Padding="0" ToolTip.Tip="Power">

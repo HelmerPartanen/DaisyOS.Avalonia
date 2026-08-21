@@ -279,7 +279,7 @@
                         <StackPanel Orientation="Horizontal">
                           <Button Classes="ShellButton" 
                                   Padding="6,4" 
-                                  CornerRadius="{DynamicResource RoundedSM}"
+                                  CornerRadius="{DynamicResource RoundedMD}"
                                   Content="{Binding Name}"
                                   Tag="{Binding Path}"
                                   Click="OnBreadcrumbClicked"

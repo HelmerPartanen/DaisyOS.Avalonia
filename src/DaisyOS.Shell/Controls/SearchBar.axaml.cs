@@ -9,7 +9,7 @@ namespace DaisyOS.Shell.Controls;
 public partial class SearchBar : UserControl
 {
     public static new readonly StyledProperty<CornerRadius> CornerRadiusProperty =
-        AvaloniaProperty.Register<SearchBar, CornerRadius>(nameof(CornerRadius), new CornerRadius(8));
+        AvaloniaProperty.Register<SearchBar, CornerRadius>(nameof(CornerRadius), new CornerRadius(10));
 
     public static readonly StyledProperty<string> PlaceholderTextProperty =
         AvaloniaProperty.Register<SearchBar, string>(nameof(PlaceholderText), "Search...");
