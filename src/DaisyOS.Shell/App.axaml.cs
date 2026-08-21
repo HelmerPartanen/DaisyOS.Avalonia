@@ -509,6 +509,7 @@ public partial class App : Application
         Resources["ActionPrimaryHoverBrush"] = new SolidColorBrush(Blend(accent, onAccent, 0.12));
         Resources["ActionPrimaryPressedBrush"] = new SolidColorBrush(Blend(accent, onAccent, 0.22));
         Resources["ContentOnActionBrush"] = new SolidColorBrush(onAccent);
+        Resources["FocusRingBrush"] = new SolidColorBrush(accent);
     }
 
     private Color GetThemeColor(string key)
@@ -523,7 +524,7 @@ public partial class App : Application
     {
         if (Resources is null) return;
 
-        var keys = new[] { "SurfaceBaseBrush", "SurfaceRaisedBrush", "SurfaceSunkenBrush", "StrokeDefaultBrush", "ContentPrimaryBrush", "ContentSecondaryBrush", "ContentTertiaryBrush", "ContentDisabledBrush" };
+        var keys = new[] { "SurfaceBaseBrush", "SurfaceRaisedBrush", "SurfaceSunkenBrush", "SurfaceInputBrush", "SurfaceInputHoverBrush", "StrokeDefaultBrush", "StrokeStrongBrush", "ContentPrimaryBrush", "ContentSecondaryBrush", "ContentTertiaryBrush", "ContentDisabledBrush" };
         foreach (var key in keys) Resources.Remove(key);
         if (!_appearanceSettings.HighContrast) return;
 
@@ -532,8 +533,11 @@ public partial class App : Application
         var background = light ? Colors.White : Colors.Black;
         Resources["SurfaceBaseBrush"] = new SolidColorBrush(background);
         Resources["SurfaceRaisedBrush"] = new SolidColorBrush(background);
-        Resources["SurfaceSunkenBrush"] = new SolidColorBrush(light ? Color.Parse("#16000000") : Color.Parse("#1AFFFFFF"));
+        Resources["SurfaceSunkenBrush"] = new SolidColorBrush(light ? Color.Parse("#FFE6E6E6") : Color.Parse("#FF1F1F1F"));
+        Resources["SurfaceInputBrush"] = new SolidColorBrush(light ? Color.Parse("#FFFFFFFF") : Color.Parse("#FF242424"));
+        Resources["SurfaceInputHoverBrush"] = new SolidColorBrush(light ? Color.Parse("#FFF4F4F4") : Color.Parse("#FF2C2C2C"));
         Resources["StrokeDefaultBrush"] = new SolidColorBrush(foreground);
+        Resources["StrokeStrongBrush"] = new SolidColorBrush(foreground);
         Resources["ContentPrimaryBrush"] = new SolidColorBrush(foreground);
         Resources["ContentSecondaryBrush"] = new SolidColorBrush(foreground);
         Resources["ContentTertiaryBrush"] = new SolidColorBrush(foreground);

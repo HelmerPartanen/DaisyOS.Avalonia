@@ -41,7 +41,25 @@
       <Setter Property="FontFamily" Value="Inter" />
       <Setter Property="FontWeight" Value="Regular" />
       <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceInputBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeDefaultBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
+    </Style>
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInputHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeStrongBrush}" />
+    </Style>
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusRingBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <!-- Keyboard and controller focus receives the same unmistakable ring as pointer users. -->
+    <Style Selector="Button:focus /template/ Border#PART_FocusRing, ToggleButton:focus /template/ Border#PART_FocusRing">
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusRingBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="Opacity" Value="1" />
     </Style>
 
     <!-- Baseline geometry for every ordinary button; specialized controls can opt out locally. -->
@@ -163,9 +181,7 @@
     <Style Selector="Button.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
     </Style>
-    <!--
-      Active buttons must ensure high contrast over the pure white background.
-    -->
+    <!-- Active controls use the selected accent with contrast-safe foreground text. -->
     <Style Selector="Button.Active TextBlock, ToggleButton.Active TextBlock, ToggleButton:checked TextBlock">
       <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>

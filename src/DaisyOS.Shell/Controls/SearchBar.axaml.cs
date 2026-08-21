@@ -57,7 +57,7 @@ public partial class SearchBar : UserControl
         if (outline is not null)
         {
             outline.Opacity = isFocused ? 1 : 0;
-            outline.BorderBrush = outline.FindResource("ActionSecondaryBrush") as IBrush;
+            outline.BorderBrush = outline.FindResource("FocusRingBrush") as IBrush;
         }
     }
 

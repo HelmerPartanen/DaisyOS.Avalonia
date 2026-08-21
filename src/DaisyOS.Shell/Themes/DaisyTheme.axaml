@@ -12,6 +12,8 @@
       <Color x:Key="SurfaceRaisedColor">#FFFCFCFD</Color>
       <Color x:Key="SurfaceOverlayColor">#FFFFFFFF</Color>
       <Color x:Key="SurfaceSunkenColor">#FFEDF0F4</Color>
+      <Color x:Key="SurfaceInputColor">#FFFFFFFF</Color>
+      <Color x:Key="SurfaceInputHoverColor">#FFFCFCFD</Color>
       <Color x:Key="ContentPrimaryColor">#FF1C1C20</Color>
       <Color x:Key="ContentSecondaryColor">#FF51515A</Color>
       <Color x:Key="ContentTertiaryColor">#FF73737D</Color>
@@ -53,6 +55,8 @@
       <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaisedColor}" />
       <SolidColorBrush x:Key="SurfaceOverlayBrush" Color="{StaticResource SurfaceOverlayColor}" />
       <SolidColorBrush x:Key="SurfaceSunkenBrush" Color="{StaticResource SurfaceSunkenColor}" />
+      <SolidColorBrush x:Key="SurfaceInputBrush" Color="{StaticResource SurfaceInputColor}" />
+      <SolidColorBrush x:Key="SurfaceInputHoverBrush" Color="{StaticResource SurfaceInputHoverColor}" />
       <SolidColorBrush x:Key="ContentPrimaryBrush" Color="{StaticResource ContentPrimaryColor}" />
       <SolidColorBrush x:Key="ContentSecondaryBrush" Color="{StaticResource ContentSecondaryColor}" />
       <SolidColorBrush x:Key="ContentTertiaryBrush" Color="{StaticResource ContentTertiaryColor}" />
@@ -92,18 +96,20 @@
       <SolidColorBrush x:Key="DesktopLabelBrush" Color="{StaticResource ContentPrimaryColor}" />
     </ResourceDictionary>
     <ResourceDictionary x:Key="Dark">
-      <Color x:Key="SurfaceCanvasColor">#FF0A0A0B</Color>
-      <Color x:Key="SurfaceBaseColor">#FF121214</Color>
-      <Color x:Key="SurfaceRaisedColor">#FF1A1A1D</Color>
-      <Color x:Key="SurfaceOverlayColor">#FF222225</Color>
-      <Color x:Key="SurfaceSunkenColor">#FF060607</Color>
-      <Color x:Key="ContentPrimaryColor">#FFF5F5F7</Color>
-      <Color x:Key="ContentSecondaryColor">#FFC7C7CC</Color>
-      <Color x:Key="ContentTertiaryColor">#FF98989F</Color>
-      <Color x:Key="ContentDisabledColor">#FF6C6C73</Color>
-      <Color x:Key="StrokeSubtleColor">#FF2D2D31</Color>
-      <Color x:Key="StrokeDefaultColor">#FF3A3A40</Color>
-      <Color x:Key="StrokeStrongColor">#FF5A5A62</Color>
+      <Color x:Key="SurfaceCanvasColor">#FF0D0D0D</Color>
+      <Color x:Key="SurfaceBaseColor">#FF171717</Color>
+      <Color x:Key="SurfaceRaisedColor">#FF202020</Color>
+      <Color x:Key="SurfaceOverlayColor">#FF292929</Color>
+      <Color x:Key="SurfaceSunkenColor">#FF111111</Color>
+      <Color x:Key="SurfaceInputColor">#FF242424</Color>
+      <Color x:Key="SurfaceInputHoverColor">#FF2B2B2B</Color>
+      <Color x:Key="ContentPrimaryColor">#FFF5F5F5</Color>
+      <Color x:Key="ContentSecondaryColor">#FFD1D1D1</Color>
+      <Color x:Key="ContentTertiaryColor">#FFA8A8A8</Color>
+      <Color x:Key="ContentDisabledColor">#FF777777</Color>
+      <Color x:Key="StrokeSubtleColor">#FF303030</Color>
+      <Color x:Key="StrokeDefaultColor">#FF414141</Color>
+      <Color x:Key="StrokeStrongColor">#FF6A6A6A</Color>
       <Color x:Key="StateHoverColor">#14FFFFFF</Color>
       <Color x:Key="StatePressedColor">#24FFFFFF</Color>
       <Color x:Key="StateSelectedColor">#1FFFFFFF</Color>
@@ -138,6 +144,8 @@
       <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaisedColor}" />
       <SolidColorBrush x:Key="SurfaceOverlayBrush" Color="{StaticResource SurfaceOverlayColor}" />
       <SolidColorBrush x:Key="SurfaceSunkenBrush" Color="{StaticResource SurfaceSunkenColor}" />
+      <SolidColorBrush x:Key="SurfaceInputBrush" Color="{StaticResource SurfaceInputColor}" />
+      <SolidColorBrush x:Key="SurfaceInputHoverBrush" Color="{StaticResource SurfaceInputHoverColor}" />
       <SolidColorBrush x:Key="ContentPrimaryBrush" Color="{StaticResource ContentPrimaryColor}" />
       <SolidColorBrush x:Key="ContentSecondaryBrush" Color="{StaticResource ContentSecondaryColor}" />
       <SolidColorBrush x:Key="ContentTertiaryBrush" Color="{StaticResource ContentTertiaryColor}" />
