@@ -117,7 +117,7 @@
       <Color x:Key="StrokeStrongColor">#FF6A6A6A</Color>
       <!-- Large shell surfaces use two distinct perimeter roles. Ordinary borders and dividers keep Stroke*. -->
       <Color x:Key="ShellFrameOuterEdgeColor">#99000000</Color>
-      <Color x:Key="ShellFrameInnerHighlightColor">#3DFFFFFF</Color>
+      <Color x:Key="ShellFrameInnerHighlightColor">#33FFFFFF</Color>
       <Color x:Key="StateHoverColor">#14FFFFFF</Color>
       <Color x:Key="StatePressedColor">#24FFFFFF</Color>
       <Color x:Key="StateSelectedColor">#1FFFFFFF</Color>
