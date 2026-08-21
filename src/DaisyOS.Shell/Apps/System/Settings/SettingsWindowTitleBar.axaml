@@ -13,27 +13,27 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedNone}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.CaptionButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}" />
     </Style>
     <Style Selector="Button.CaptionButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StatePressedBrush}" />
     </Style>
     <Style Selector="Button.CaptionClose:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource DangerHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StatusDangerBrush}" />
     </Style>
     <Style Selector="Button.CaptionClose:pointerover TextBlock.CaptionIcon">
-      <Setter Property="Foreground" Value="{DynamicResource OnDangerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="Button.CaptionClose:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource DangerPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StatusDangerBrush}" />
     </Style>
     <Style Selector="Button.CaptionClose:pressed TextBlock.CaptionIcon">
-      <Setter Property="Foreground" Value="{DynamicResource OnDangerBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="TextBlock.CaptionIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" />
@@ -49,7 +49,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Border Background="{DynamicResource PrimarySurfaceBrush}"
+  <Border Background="{DynamicResource SurfaceBaseBrush}"
           BorderThickness="0"
           PointerPressed="OnTitleBarPointerPressed"
           DoubleTapped="OnTitleBarDoubleTapped">

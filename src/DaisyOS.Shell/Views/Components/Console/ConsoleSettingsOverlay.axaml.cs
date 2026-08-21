@@ -503,7 +503,7 @@ public partial class ConsoleSettingsOverlay : UserControl
                 {
                     Text = "No Wi-Fi networks found",
                     FontSize = 13,
-                    Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                    Foreground = GetThemeBrush("ContentSecondaryBrush", Brushes.Gray)
                 });
                 return;
             }
@@ -514,7 +514,7 @@ public partial class ConsoleSettingsOverlay : UserControl
                 {
                     Padding = new Thickness(12, 10),
                     CornerRadius = new CornerRadius(10),
-                    Background = GetThemeBrush("SubtleSurfaceBrush", Brushes.DarkGray)
+                    Background = GetThemeBrush("ActionSecondaryBrush", Brushes.DarkGray)
                 };
 
                 var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
@@ -530,7 +530,7 @@ public partial class ConsoleSettingsOverlay : UserControl
                 {
                     Text = net.IsActive ? "Connected" : $"Signal: {net.SignalPercent}%",
                     FontSize = 12,
-                    Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                    Foreground = GetThemeBrush("ContentSecondaryBrush", Brushes.Gray)
                 });
 
                 var connectBtn = new Button
@@ -700,7 +700,7 @@ public partial class ConsoleSettingsOverlay : UserControl
             {
                 Padding = new Thickness(12, 10),
                 CornerRadius = new CornerRadius(10),
-                Background = GetThemeBrush("SubtleSurfaceBrush", Brushes.DarkGray)
+                Background = GetThemeBrush("ActionSecondaryBrush", Brushes.DarkGray)
             };
 
             var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
@@ -711,7 +711,7 @@ public partial class ConsoleSettingsOverlay : UserControl
             {
                 Text = act.Label,
                 FontSize = 12,
-                Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                Foreground = GetThemeBrush("ContentSecondaryBrush", Brushes.Gray)
             });
 
             var boundText = GetBoundButtonText(act.Action) ?? act.DefaultDesc;
@@ -932,7 +932,7 @@ public partial class ConsoleSettingsOverlay : UserControl
                     {
                         Text = "No Bluetooth devices found",
                         FontSize = 13,
-                        Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                        Foreground = GetThemeBrush("ContentSecondaryBrush", Brushes.Gray)
                     });
                     return;
                 }
@@ -943,7 +943,7 @@ public partial class ConsoleSettingsOverlay : UserControl
                     {
                         Padding = new Thickness(12, 10),
                         CornerRadius = new CornerRadius(10),
-                        Background = GetThemeBrush("SubtleSurfaceBrush", Brushes.DarkGray)
+                        Background = GetThemeBrush("ActionSecondaryBrush", Brushes.DarkGray)
                     };
 
                     var grid = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto") };
@@ -954,14 +954,14 @@ public partial class ConsoleSettingsOverlay : UserControl
                         Text = device.Name,
                         FontSize = 14,
                         FontWeight = FontWeight.SemiBold,
-                        Foreground = GetThemeBrush("TextPrimaryBrush", Brushes.White)
+                        Foreground = GetThemeBrush("ContentPrimaryBrush", Brushes.White)
                     });
 
                     infoStack.Children.Add(new TextBlock
                     {
                         Text = device.IsConnected ? "Connected" : (device.IsPaired ? "Paired" : "Available"),
                         FontSize = 12,
-                        Foreground = GetThemeBrush("TextSecondaryBrush", Brushes.Gray)
+                        Foreground = GetThemeBrush("ContentSecondaryBrush", Brushes.Gray)
                     });
 
                     Grid.SetColumn(infoStack, 0);

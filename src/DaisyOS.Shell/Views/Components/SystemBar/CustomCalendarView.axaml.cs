@@ -102,16 +102,16 @@ public partial class CustomCalendarView : UserControl
 
         if (isToday)
         {
-            border.Bind(Border.BackgroundProperty, this.GetResourceObservable("TextPrimaryBrush"));
-            textBlock.Bind(TextBlock.ForegroundProperty, this.GetResourceObservable("PrimarySurfaceBrush"));
+            border.Bind(Border.BackgroundProperty, this.GetResourceObservable("ContentPrimaryBrush"));
+            textBlock.Bind(TextBlock.ForegroundProperty, this.GetResourceObservable("SurfaceBaseBrush"));
         }
         else if (isCurrentMonth)
         {
-            textBlock.Bind(TextBlock.ForegroundProperty, this.GetResourceObservable("TextPrimaryBrush"));
+            textBlock.Bind(TextBlock.ForegroundProperty, this.GetResourceObservable("ContentPrimaryBrush"));
         }
         else
         {
-            textBlock.Bind(TextBlock.ForegroundProperty, this.GetResourceObservable("TextTertiaryBrush"));
+            textBlock.Bind(TextBlock.ForegroundProperty, this.GetResourceObservable("ContentTertiaryBrush"));
         }
 
         border.Child = textBlock;

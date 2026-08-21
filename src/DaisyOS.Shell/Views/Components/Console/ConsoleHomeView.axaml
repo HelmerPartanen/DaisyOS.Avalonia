@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:console="clr-namespace:DaisyOS.Shell.Views.Components.Console"
     xmlns:vm="clr-namespace:DaisyOS.Shell.ViewModels"
-    Background="{DynamicResource ConsoleBackgroundBrush}">
+    Background="{DynamicResource SurfaceCanvasBrush}">
 
   <UserControl.Resources>
     <DataTemplate x:Key="GameCardTemplate" DataType="vm:ConsoleGameItemViewModel">
@@ -51,7 +51,7 @@
       <Setter Property="BorderBrush" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="16" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
 
       <Setter Property="Transitions">
         <Transitions>
@@ -65,7 +65,7 @@
           <Panel ClipToBounds="False">
             <!-- Outer Offsetted White Outline Ring (6px gap, 22px CornerRadius) -->
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="#FFFFFF"
+                    BorderBrush="{DynamicResource StrokeStrongBrush}"
                     BorderThickness="2.5"
                     CornerRadius="22"
                     Margin="-2"
@@ -143,21 +143,21 @@
 
     <!-- OSTheme Classes for Dynamically Created Tile Elements -->
     <Style Selector="Border.ConsoleCardClipper">
-      <Setter Property="Background" Value="{DynamicResource ConsoleElevatedSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
       <Setter Property="CornerRadius" Value="16" />
       <Setter Property="ClipToBounds" Value="True" />
     </Style>
 
     <Style Selector="Border.ConsoleTitleScrim">
-      <Setter Property="Background" Value="{DynamicResource ConsoleSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceBaseBrush}" />
     </Style>
 
     <Style Selector="TextBlock.ConsoleCardTitleText">
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <Style Selector="TextBlock.ConsoleFallbackTitle">
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <!-- Top Header Tab Navigation Buttons -->
@@ -177,7 +177,7 @@
           <Panel ClipToBounds="False">
             <!-- Outer Offsetted White Outline Ring (5px gap, 25px CornerRadius) -->
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="3"
                     CornerRadius="17"
                     Margin="-5"
@@ -216,17 +216,17 @@
     <Style Selector="Button.ConsoleHeaderNav TextBlock">
       <Setter Property="FontSize" Value="18" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <!-- State 1: Active Tab -> Solid White Pill, Solid Black Text, NO GLOW -->
     <Style Selector="Button.ConsoleHeaderNav.Active /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav.Active TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
@@ -239,12 +239,12 @@
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:focus TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <!-- Ensure Active Focused Text stays solid black on the white pill -->
     <Style Selector="Button.ConsoleHeaderNav.Active:focus TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
@@ -254,20 +254,20 @@
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:pointerover:not(.Active) TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <Style Selector="TextBlock.ConsoleStatusIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
       <Setter Property="FontSize" Value="18" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsolePrimaryBtn">
       <Setter Property="Height" Value="48" />
       <Setter Property="Padding" Value="24,0" />
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
       <Setter Property="FontWeight" Value="Bold" />
@@ -277,7 +277,7 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="#FFFFFF"
+                    BorderBrush="{DynamicResource StrokeStrongBrush}"
                     BorderThickness="2"
                     CornerRadius="16"
                     Margin="-5"
@@ -313,8 +313,8 @@
     </Style>
 
     <Style Selector="Button.ConsolePrimaryBtn /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
-      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
+      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
 
     <Style Selector="Button.ConsolePrimaryBtn:focus /template/ Border#PART_FocusRing">
@@ -322,25 +322,25 @@
     </Style>
 
     <Style Selector="Button.ConsolePrimaryBtn:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonHoverBgBrush}" />
-      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryHoverBrush}" />
+      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleActionBtn">
       <Setter Property="Height" Value="48" />
       <Setter Property="Padding" Value="20,0" />
-      <Setter Property="Background" Value="{DynamicResource ConsoleSecondaryButtonBgBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ConsoleDividerBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeDefaultBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="ClipToBounds" Value="False" />
 
       <Setter Property="Template">
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="#FFFFFF"
+                    BorderBrush="{DynamicResource StrokeStrongBrush}"
                     BorderThickness="2"
                     CornerRadius="16"
                     Margin="-5"
@@ -380,8 +380,8 @@
     </Style>
 
     <Style Selector="Button.ConsoleActionBtn:focus /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
-      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
+      <Setter Property="TextBlock.Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
 
     <Style Selector=":is(Control).HomeTabContent">
@@ -422,7 +422,7 @@
 
       <!-- Subtle Dark Gradient Vignette for UI Text Readability -->
       <Border IsHitTestVisible="False">
-<Border Background="{DynamicResource ConsoleOverlayBrush}"
+<Border Background="{DynamicResource OverlayScrimBrush}"
         IsHitTestVisible="False" />
       </Border>
     </Grid>
@@ -450,7 +450,7 @@
               <!-- Title + Badge Row -->
               <StackPanel Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
                 <TextBlock x:Name="SelectedGameTitleText" Text="Game Title" FontSize="42" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
-                <Border Background="#33FFFFFF" CornerRadius="999" Padding="14,6" VerticalAlignment="Center" Margin="0,4,0,0">
+                <Border Background="{DynamicResource StateSelectedBrush}" CornerRadius="999" Padding="14,6" VerticalAlignment="Center" Margin="0,4,0,0">
                   <TextBlock x:Name="SelectedGameSourceText" Text="STEAM" FontSize="15" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" />
                 </Border>
               </StackPanel>
@@ -478,12 +478,12 @@
           <StackPanel Spacing="20" ClipToBounds="False">
             
             <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center" Margin="0,0,0,16">
-              <TextBlock Text="grid_view" Classes="ConsoleStatusIcon" FontSize="26" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
-              <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" Margin="0,2,0,0" />
+              <TextBlock Text="grid_view" Classes="ConsoleStatusIcon" FontSize="26" Foreground="{DynamicResource ContentPrimaryBrush}" VerticalAlignment="Center" />
+              <TextBlock Text="Game Library" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource ContentPrimaryBrush}" VerticalAlignment="Center" Margin="0,2,0,0" />
             </StackPanel>
 
             <StackPanel Spacing="0" ClipToBounds="False">
-              <TextBlock x:Name="LibraryCountText" Text="0 Games" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" Margin="0,0,0,24" />
+              <TextBlock x:Name="LibraryCountText" Text="0 Games" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="0,0,0,24" />
               
               <!-- Grid Container -->
               <ItemsControl x:Name="LibraryGrid" ItemsSource="{Binding AllLibraryGames}" ItemTemplate="{StaticResource GameCardTemplate}" ClipToBounds="False" HorizontalAlignment="Stretch" VerticalAlignment="Top">

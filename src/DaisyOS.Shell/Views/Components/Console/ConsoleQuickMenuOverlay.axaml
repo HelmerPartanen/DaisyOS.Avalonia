@@ -22,22 +22,22 @@
     <Style Selector="TextBlock.QuickIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
       <Setter Property="FontSize" Value="24" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style Selector="TextBlock.StatusIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
       <Setter Property="FontSize" Value="18" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
 
     <!-- Premium Side Panel Pill Button Style -->
     <Style Selector="Button.SidePanelActionBtn">
       <Setter Property="Height" Value="48" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
-      <Setter Property="Background" Value="{DynamicResource ConsoleSubtleSurfaceBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceSunkenBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="24" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -47,7 +47,7 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="3"
                     CornerRadius="28"
                     Margin="-4"
@@ -89,7 +89,7 @@
     <Style Selector="Button.RecentGameBtn">
       <Setter Property="Width" Value="130" />
       <Setter Property="Height" Value="76" />
-      <Setter Property="Background" Value="{DynamicResource ConsoleSubtleSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceSunkenBrush}" />
       <Setter Property="CornerRadius" Value="12" />
       <Setter Property="Padding" Value="12" />
       <Setter Property="ClipToBounds" Value="False" />
@@ -97,7 +97,7 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="3"
                     CornerRadius="16"
                     Margin="-4"
@@ -151,29 +151,29 @@
         <Border Grid.Row="1" 
                 Width="6" 
                 CornerRadius="3" 
-                Background="{DynamicResource ConsoleTextSecondaryBrush}" />
+                Background="{DynamicResource ContentSecondaryBrush}" />
       </Grid>
 
       <!-- Floating Dashboard Island -->
       <Border Grid.Column="2"
               Width="460" 
-              Background="{DynamicResource ConsoleSurfaceBrush}" 
+              Background="{DynamicResource SurfaceBaseBrush}"
               CornerRadius="32"
-              BorderBrush="{DynamicResource ConsoleDividerBrush}"
+              BorderBrush="{DynamicResource StrokeDefaultBrush}"
               BorderThickness="1"
-              BoxShadow="8 12 36 0 #B0000000"
+              BoxShadow="{DynamicResource ElevationDialogShadow}"
               ClipToBounds="False">
         
         <Grid RowDefinitions="Auto,Auto,Auto" Margin="24">
         
         <!-- HEADER (System Status, Clock, Battery, Wifi) -->
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,24">
-          <TextBlock Grid.Column="0" x:Name="SystemStatusDescription" Text="CPU: 0% • RAM: 40%" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+          <TextBlock Grid.Column="0" x:Name="SystemStatusDescription" Text="CPU: 0% • RAM: 40%" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}" VerticalAlignment="Center" />
           
           <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
             <TextBlock Text="wifi" Classes="StatusIcon" />
             <TextBlock Text="battery_full" Classes="StatusIcon" />
-            <TextBlock x:Name="ClockText" Text="00:00" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+            <TextBlock x:Name="ClockText" Text="00:00" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}" VerticalAlignment="Center" />
           </StackPanel>
         </Grid>
 
@@ -213,32 +213,32 @@
 
           <!-- 2. SLIDERS (VOLUME & MIC) -->
           <StackPanel Spacing="16" ClipToBounds="False">
-            <TextBlock Text="Volume &amp; Audio" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" Margin="4,0,0,0"/>
+            <TextBlock Text="Volume &amp; Audio" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ContentPrimaryBrush}" Margin="4,0,0,0"/>
             <controls:ConsolePillSlider x:Name="QuickMasterVolumeSlider" Icon="volume_up" Value="50" ValueChanged="OnQuickMasterVolumeChanged" />
             <controls:ConsolePillSlider x:Name="QuickMicVolumeSlider" Icon="mic" Value="50" ValueChanged="OnQuickMicVolumeChanged" />
           </StackPanel>
 
           <!-- 3. MEDIA WIDGET -->
           <StackPanel Spacing="16" ClipToBounds="False">
-            <TextBlock Text="Now Playing" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" Margin="4,0,0,0"/>
+            <TextBlock Text="Now Playing" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ContentPrimaryBrush}" Margin="4,0,0,0"/>
             <!-- Stretched horizontally -->
             <local:ConsoleMediaWidget x:Name="PanelMediaWidget" HorizontalAlignment="Stretch" Margin="0" />
           </StackPanel>
 
           <!-- 4. CURRENT GAME -->
           <StackPanel x:Name="CurrentGamePanel" Spacing="16" ClipToBounds="False" IsVisible="False">
-            <Border BorderBrush="{DynamicResource ConsoleDividerBrush}" BorderThickness="0,1,0,0" Margin="0,-16,0,0"/>
+            <Border BorderBrush="{DynamicResource StrokeDefaultBrush}" BorderThickness="0,1,0,0" Margin="0,-16,0,0"/>
 
-            <TextBlock Text="Current Game" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" Margin="4,0,0,0"/>
+            <TextBlock Text="Current Game" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource ContentPrimaryBrush}" Margin="4,0,0,0"/>
 
             <!-- Game Info Row -->
             <Grid ColumnDefinitions="Auto,*" Margin="4,0,0,0">
-              <Border Grid.Column="0" Width="44" Height="44" CornerRadius="10" ClipToBounds="True" Background="{DynamicResource ConsoleSubtleSurfaceBrush}">
+              <Border Grid.Column="0" Width="44" Height="44" CornerRadius="10" ClipToBounds="True" Background="{DynamicResource SurfaceSunkenBrush}">
                 <Image x:Name="CurrentGameIcon" Stretch="UniformToFill" />
               </Border>
               <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0" Spacing="2">
-                <TextBlock x:Name="CurrentGameTitle" Text="No game running" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
-                <TextBlock Text="Running" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}"/>
+                <TextBlock x:Name="CurrentGameTitle" Text="No game running" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource ContentPrimaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
+                <TextBlock Text="Running" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}"/>
               </StackPanel>
             </Grid>
 
@@ -256,19 +256,19 @@
         </StackPanel>
 
         <!-- FOOTER: CONTROLLER HINTS -->
-        <Border Grid.Row="2" Padding="0,24,0,0" BorderBrush="{DynamicResource ConsoleDividerBrush}" BorderThickness="0,1,0,0">
+        <Border Grid.Row="2" Padding="0,24,0,0" BorderBrush="{DynamicResource StrokeDefaultBrush}" BorderThickness="0,1,0,0">
           <StackPanel Orientation="Horizontal" Spacing="24" HorizontalAlignment="Center" RenderOptions.BitmapInterpolationMode="HighQuality">
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Image x:Name="HintCategoryDpadImage" Width="20" Height="20" VerticalAlignment="Center" />
-              <TextBlock Text="Navigate" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+              <TextBlock Text="Navigate" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}" VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Image x:Name="HintConfirmImage" Width="20" Height="20" VerticalAlignment="Center" />
-              <TextBlock Text="Select" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+              <TextBlock Text="Select" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}" VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
               <Image x:Name="HintBackImage" Width="20" Height="20" VerticalAlignment="Center" />
-              <TextBlock Text="Close" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" VerticalAlignment="Center" />
+              <TextBlock Text="Close" FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}" VerticalAlignment="Center" />
             </StackPanel>
           </StackPanel>
         </Border>

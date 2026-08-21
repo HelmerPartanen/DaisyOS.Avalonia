@@ -6,8 +6,8 @@
              x:DataType="vm:LauncherViewModel"
              Width="600" Height="500">
 
-  <Border Background="{DynamicResource PrimarySurfaceBrush}"
-          BorderBrush="{DynamicResource BorderBrush}"
+  <Border Background="{DynamicResource SurfaceBaseBrush}"
+          BorderBrush="{DynamicResource StrokeSubtleBrush}"
           BorderThickness="2"
           CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
@@ -20,7 +20,7 @@
           <Setter Property="Padding" Value="8"/>
         </Style>
         <Style Selector="Button.LauncherUtility:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}"/>
+          <Setter Property="Background" Value="{DynamicResource StateHoverBrush}"/>
         </Style>
 
         <Style Selector="Button.LauncherLibraryItem">
@@ -33,14 +33,14 @@
           <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
         <Style Selector="Button.LauncherLibraryItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}"/>
+          <Setter Property="Background" Value="{DynamicResource StateHoverBrush}"/>
         </Style>
         <Style Selector="Button.LauncherLibraryItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
-          <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}"/>
+          <Setter Property="Background" Value="{DynamicResource StatePressedBrush}"/>
         </Style>
       </Grid.Styles>
 
-      <Border Grid.Row="0" Padding="22,12" BorderBrush="{DynamicResource DividerBrush}" BorderThickness="0,0,0,1">
+      <Border Grid.Row="0" Padding="22,12" BorderBrush="{DynamicResource StrokeDefaultBrush}" BorderThickness="0,0,0,1">
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
             <controls:SearchBar x:Name="LauncherSearchBar"
                                 Height="40"
@@ -50,7 +50,7 @@
             <Button Grid.Column="1" Classes="LauncherUtility" Width="40" Height="40" Padding="0" ToolTip.Tip="Power">
               <TextBlock Text="power_settings_new"
                          FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                         FontSize="20" Foreground="{DynamicResource TextPrimaryBrush}"
+                         FontSize="20" Foreground="{DynamicResource ContentPrimaryBrush}"
                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
               <Button.Flyout>
                 <MenuFlyout Placement="BottomEdgeAlignedRight">
@@ -74,13 +74,13 @@
                       <Image Source="{Binding IconBitmap}" IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNotNull}}"
                              RenderOptions.BitmapInterpolationMode="HighQuality" Width="34" Height="34"/>
                       <Border IsVisible="{Binding IconBitmap, Converter={x:Static ObjectConverters.IsNull}}"
-                              Background="{DynamicResource ElevatedSurfaceBrush}" CornerRadius="{DynamicResource RoundedMD}" Width="34" Height="34">
+                              Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="{DynamicResource RoundedMD}" Width="34" Height="34">
                         <TextBlock Text="{Binding Name[0]}" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                       </Border>
                     </Panel>
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
                       <TextBlock Text="{Binding Name}" FontSize="12" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
-                      <TextBlock Text="{Binding Description}" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Text="{Binding Description}" FontSize="10" Foreground="{DynamicResource ContentSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
                     </StackPanel>
                   </Grid>
                 </Button>
@@ -91,7 +91,7 @@
 
         <StackPanel IsVisible="{Binding ShowNoResults}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
           <TextBlock Text="search_off" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                     FontSize="28" Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center"/>
+                     FontSize="28" Foreground="{DynamicResource ContentSecondaryBrush}" HorizontalAlignment="Center"/>
           <TextBlock Text="No apps found" FontSize="13" FontWeight="SemiBold" HorizontalAlignment="Center"/>
         </StackPanel>
       </Grid>

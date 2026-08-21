@@ -188,10 +188,10 @@ public partial class ShellMetricsPanel : UserControl
             if (iconCpu != null)
             {
                 var resourceKey = snapshot.CpuUsagePercentage > 60.0
-                    ? "DangerBrush"
+                    ? "StatusDangerBrush"
                     : snapshot.CpuUsagePercentage > 25.0
-                        ? "WarningBrush"
-                        : "SuccessBrush";
+                        ? "StatusWarningBrush"
+                        : "StatusSuccessBrush";
                 iconCpu.Foreground = this.FindResource(resourceKey) as IBrush;
             }
 
@@ -226,8 +226,8 @@ public partial class ShellMetricsPanel : UserControl
     {
         var border = new Border
         {
-            Background = this.FindResource("OverlaySurfaceSubtleBrush") as IBrush,
-            BorderBrush = this.FindResource("DividerBrush") as IBrush,
+            Background = this.FindResource("StateSelectedBrush") as IBrush,
+            BorderBrush = this.FindResource("StrokeDefaultBrush") as IBrush,
             BorderThickness = new Thickness(1),
             CornerRadius = CornerRadius.Parse("8"),
             Padding = new Thickness(10, 8)
@@ -242,7 +242,7 @@ public partial class ShellMetricsPanel : UserControl
         // Rank & Icon Badge
         var iconBorder = new Border
         {
-            Background = this.FindResource("TertiarySurfaceBrush") as IBrush,
+            Background = this.FindResource("SurfaceSunkenBrush") as IBrush,
             CornerRadius = CornerRadius.Parse("6"),
             Padding = new Thickness(6),
             Margin = new Thickness(0, 0, 10, 0),
@@ -254,7 +254,7 @@ public partial class ShellMetricsPanel : UserControl
             Text = string.IsNullOrWhiteSpace(comp.Icon) ? "widgets" : comp.Icon,
             FontFamily = new FontFamily("avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"),
             FontSize = 18,
-            Foreground = this.FindResource("AccentBrush") as IBrush,
+            Foreground = this.FindResource("ActionPrimaryBrush") as IBrush,
             VerticalAlignment = VerticalAlignment.Center
         };
         iconBorder.Child = iconText;
@@ -280,7 +280,7 @@ public partial class ShellMetricsPanel : UserControl
             Text = $"#{rank}",
             FontSize = 11,
             FontWeight = FontWeight.Bold,
-            Foreground = this.FindResource("TextTertiaryBrush") as IBrush,
+            Foreground = this.FindResource("ContentTertiaryBrush") as IBrush,
             VerticalAlignment = VerticalAlignment.Center
         };
 
@@ -289,7 +289,7 @@ public partial class ShellMetricsPanel : UserControl
             Text = comp.Name,
             FontSize = 13,
             FontWeight = FontWeight.SemiBold,
-            Foreground = this.FindResource("TextPrimaryBrush") as IBrush,
+            Foreground = this.FindResource("ContentPrimaryBrush") as IBrush,
             VerticalAlignment = VerticalAlignment.Center
         };
 
@@ -307,7 +307,7 @@ public partial class ShellMetricsPanel : UserControl
         {
             Text = comp.Category,
             FontSize = 10,
-            Foreground = this.FindResource("TextTertiaryBrush") as IBrush
+            Foreground = this.FindResource("ContentTertiaryBrush") as IBrush
         };
 
         var statusBorder = new Border
@@ -316,9 +316,9 @@ public partial class ShellMetricsPanel : UserControl
             Padding = new Thickness(4, 1),
             Background = comp.Status switch
             {
-                "Active" => new SolidColorBrush(Color.Parse("#2010B981")),
-                "Idle" => new SolidColorBrush(Color.Parse("#20F59E0B")),
-                _ => new SolidColorBrush(Color.Parse("#206B7280"))
+                "Active" => this.FindResource("StatusSuccessContainerBrush") as IBrush,
+                "Idle" => this.FindResource("StatusWarningContainerBrush") as IBrush,
+                _ => this.FindResource("SurfaceSunkenBrush") as IBrush
             }
         };
         var statusText = new TextBlock
@@ -328,9 +328,9 @@ public partial class ShellMetricsPanel : UserControl
             FontWeight = FontWeight.Bold,
             Foreground = comp.Status switch
             {
-                "Active" => this.FindResource("SuccessBrush") as IBrush,
-                "Idle" => this.FindResource("WarningBrush") as IBrush,
-                _ => this.FindResource("TextTertiaryBrush") as IBrush
+                "Active" => this.FindResource("StatusSuccessBrush") as IBrush,
+                "Idle" => this.FindResource("StatusWarningBrush") as IBrush,
+                _ => this.FindResource("ContentTertiaryBrush") as IBrush
             }
         };
         statusBorder.Child = statusText;
@@ -356,14 +356,14 @@ public partial class ShellMetricsPanel : UserControl
             FontSize = 13,
             FontWeight = FontWeight.Bold,
             HorizontalAlignment = HorizontalAlignment.Right,
-            Foreground = this.FindResource("TextPrimaryBrush") as IBrush
+            Foreground = this.FindResource("ContentPrimaryBrush") as IBrush
         };
 
         var secondaryMetric = new TextBlock
         {
             FontSize = 10,
             HorizontalAlignment = HorizontalAlignment.Right,
-            Foreground = this.FindResource("TextSecondaryBrush") as IBrush
+            Foreground = this.FindResource("ContentSecondaryBrush") as IBrush
         };
 
         if (_currentSort == "Memory")
@@ -400,7 +400,7 @@ public partial class ShellMetricsPanel : UserControl
 
         var progressTrack = new Border
         {
-            Background = this.FindResource("TertiarySurfaceBrush") as IBrush,
+            Background = this.FindResource("SurfaceSunkenBrush") as IBrush,
             CornerRadius = CornerRadius.Parse("3"),
             Height = 4,
             Margin = new Thickness(0, 8, 0, 0),
@@ -408,10 +408,10 @@ public partial class ShellMetricsPanel : UserControl
         };
 
         var barBrush = comp.RelativeCpuPercent > 20.0
-            ? this.FindResource("DangerBrush") as IBrush
+            ? this.FindResource("StatusDangerBrush") as IBrush
             : (comp.RelativeCpuPercent > 5.0
-                ? this.FindResource("WarningBrush") as IBrush
-                : this.FindResource("AccentBrush") as IBrush);
+                ? this.FindResource("StatusWarningBrush") as IBrush
+                : this.FindResource("ActionPrimaryBrush") as IBrush);
 
         var progressBar = new Border
         {

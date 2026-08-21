@@ -35,27 +35,27 @@
     <!-- A split pair is one control. The chevron deliberately uses the exact same inactive
          and disabled material as the toggle beside it, rather than the platform button state. -->
     <Style Selector="Button.QuickSettingDetails:not(.Active)">
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}"/>
     </Style>
     <Style Selector="Button.QuickSettingDetails:disabled">
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}"/>
       <Setter Property="Opacity" Value="0.48"/>
     </Style>
     <!-- Controller focus must be as explicit as pointer hover. The shared tiles are used in
          console mode where there is no cursor to reveal the current destination. -->
     <Style Selector="ToggleButton.QuickSetting:focus-visible /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ActionPrimaryBrush}"/>
       <Setter Property="BorderThickness" Value="2"/>
     </Style>
     <Style Selector="Border.QuickSettingSplitDivider">
-      <Setter Property="Background" Value="{DynamicResource DividerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource StrokeDefaultBrush}"/>
     </Style>
     <Style Selector="Border.QuickSettingSplitDivider.Active">
-      <Setter Property="Background" Value="{DynamicResource AccentDividerBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource FocusRingBrush}"/>
     </Style>
     <Style Selector="TextBlock.QuickSettingLabel">
       <Setter Property="FontSize" Value="11"/>
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}"/>
       <Setter Property="HorizontalAlignment" Value="Center"/>
       <Setter Property="TextAlignment" Value="Center"/>
     </Style>

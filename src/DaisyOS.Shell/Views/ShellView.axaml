@@ -38,8 +38,8 @@
 
             <Border x:Name="FeedbackHost" ZIndex="100" IsVisible="False"
                     HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,24,0,0"
-                    Padding="16,10" Background="{DynamicResource ElevatedSurfaceBrush}"
-                    BorderBrush="{DynamicResource DividerBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedMD}">
+                    Padding="16,10" Background="{DynamicResource SurfaceRaisedBrush}"
+                    BorderBrush="{DynamicResource StrokeDefaultBrush}" BorderThickness="1" CornerRadius="{DynamicResource RoundedMD}">
                 <TextBlock x:Name="FeedbackText" MaxWidth="440" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"/>
             </Border>
         </Grid>
@@ -49,17 +49,17 @@
 
         <Border x:Name="ConsoleFeedbackHost" ZIndex="650" IsVisible="False"
                 HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,32"
-                Padding="24,12" Background="{DynamicResource ConsoleSurfaceBrush}"
-                BorderBrush="{DynamicResource ConsoleDividerBrush}" BorderThickness="1" CornerRadius="32">
+                Padding="24,12" Background="{DynamicResource SurfaceBaseBrush}"
+                BorderBrush="{DynamicResource StrokeDefaultBrush}" BorderThickness="1" CornerRadius="32">
             <TextBlock x:Name="ConsoleFeedbackText" MaxWidth="440" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite"
-                       Foreground="{DynamicResource ConsoleTextPrimaryBrush}" FontWeight="Medium" FontSize="16" />
+                       Foreground="{DynamicResource ContentPrimaryBrush}" FontWeight="Medium" FontSize="16" />
         </Border>
 
         <!-- Console Mode Fullscreen Settings Overlay -->
         <console:ConsoleSettingsOverlay x:Name="ConsoleSettings" IsVisible="False" ZIndex="700" />
 
         <!-- A fully opaque transition makes desktop dismissal and console loading visually atomic. -->
-        <Border x:Name="ConsoleTransition" ZIndex="600" IsVisible="False" Opacity="0" Background="#090A0F"
+        <Border x:Name="ConsoleTransition" ZIndex="600" IsVisible="False" Opacity="0" Background="{DynamicResource SurfaceCanvasBrush}"
                 AutomationProperties.LiveSetting="Polite">
             <Border.Transitions>
                 <Transitions>
@@ -74,7 +74,7 @@
                     <TextBlock x:Name="ConsoleTransitionTitle" Text="Switching to console mode"
                                FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
                     <TextBlock x:Name="ConsoleTransitionDetail" Text="Preparing your controller-first home"
-                               FontSize="14" FontWeight="Medium" Foreground="#AAFFFFFF" HorizontalAlignment="Center" />
+                               FontSize="14" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}" HorizontalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
         </Border>

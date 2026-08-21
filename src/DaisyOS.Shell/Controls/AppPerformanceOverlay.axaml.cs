@@ -147,10 +147,10 @@ public partial class AppPerformanceOverlay : UserControl
             if (iconCpu != null)
             {
                 var resourceKey = metrics.CpuUsagePercentage > 60.0
-                    ? "DangerBrush"
+                    ? "StatusDangerBrush"
                     : metrics.CpuUsagePercentage > 25.0
-                        ? "WarningBrush"
-                        : "SuccessBrush";
+                        ? "StatusWarningBrush"
+                        : "StatusSuccessBrush";
                 iconCpu.Foreground = this.FindResource(resourceKey) as IBrush;
             }
         }

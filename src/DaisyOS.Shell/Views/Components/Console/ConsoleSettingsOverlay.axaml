@@ -22,7 +22,7 @@
     <Style Selector="TextBlock.SettingsIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
       <Setter Property="FontSize" Value="20" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
 
     <!-- Top Header Navigation Icon Button (Chevron Back) -->
@@ -42,7 +42,7 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="2"
                     CornerRadius="23"
                     Margin="-5"
@@ -92,7 +92,7 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="23" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -102,7 +102,7 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="2"
                     CornerRadius="27"
                     Margin="-4"
@@ -138,11 +138,11 @@
     </Style>
 
     <Style Selector="Button.SettingsCategoryBtn.Active /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.SettingsCategoryBtn.Active TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
@@ -155,11 +155,11 @@
     </Style>
 
     <Style Selector="Button.SettingsCategoryBtn:focus TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.SettingsCategoryBtn.Active:focus TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
@@ -182,7 +182,7 @@
           <Panel ClipToBounds="False">
             <!-- White Offset Capsule Focus Ring -->
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="2"
                     CornerRadius="35"
                     Margin="-5"
@@ -227,7 +227,7 @@
 
     <!-- Inner Device Picker Pill -->
     <Style Selector="Border.ConsoleDevicePill">
-      <Setter Property="Background" Value="{DynamicResource ConsoleSubtleSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceSunkenBrush}" />
       <Setter Property="CornerRadius" Value="18" />
       <Setter Property="Padding" Value="24,8" />
       <Setter Property="MinWidth" Value="180" />
@@ -246,7 +246,7 @@
   </UserControl.Styles>
 
   <!-- Fullscreen Main Canvas -->
-  <Grid Background="{DynamicResource ConsoleBackgroundBrush}"
+  <Grid Background="{DynamicResource SurfaceCanvasBrush}"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Stretch"
         RowDefinitions="Auto,*,Auto">
@@ -271,13 +271,13 @@
                      FontSize="20"
                      HorizontalAlignment="Center"
                      VerticalAlignment="Center"
-                     Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                     Foreground="{DynamicResource ContentPrimaryBrush}" />
         </Button>
 
         <TextBlock Text="Settings"
                    FontSize="22"
                    FontWeight="Bold"
-                   Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                   Foreground="{DynamicResource ContentPrimaryBrush}"
                    VerticalAlignment="Center"
                    Margin="8,0,0,0" />
 
@@ -288,7 +288,7 @@
                  Text="20:20"
                  FontSize="13"
                  FontWeight="SemiBold"
-                 Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
+                 Foreground="{DynamicResource ContentSecondaryBrush}"
                  VerticalAlignment="Center" />
     </Grid>
 
@@ -302,9 +302,9 @@
 
       <!-- Full Height Categories Sidebar -->
       <Border Grid.Column="0"
-              Background="{DynamicResource ConsoleSurfaceBrush}"
+              Background="{DynamicResource SurfaceBaseBrush}"
               CornerRadius="32"
-              BorderBrush="{DynamicResource ConsoleDividerBrush}"
+              BorderBrush="{DynamicResource StrokeDefaultBrush}"
               BorderThickness="1"
               Padding="12,16"
               VerticalAlignment="Top"
@@ -315,7 +315,7 @@
           <TextBlock Text="CATEGORIES"
                      FontSize="10"
                      FontWeight="Bold"
-                     Foreground="{DynamicResource ConsoleTextMutedBrush}"
+                     Foreground="{DynamicResource ContentDisabledBrush}"
                      Margin="12,4,0,10"
                      LetterSpacing="1" />
 
@@ -394,7 +394,7 @@
                    Text="Audio"
                    FontSize="26"
                    FontWeight="Bold"
-                   Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                   Foreground="{DynamicResource ContentPrimaryBrush}"
                    Margin="0,0,0,24" />
 
         <ScrollViewer Grid.Row="1"
@@ -417,7 +417,7 @@
                     <TextBlock Text="Volume"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                               Foreground="{DynamicResource ContentPrimaryBrush}"
                                VerticalAlignment="Center" />
 
                     <controls:ConsolePillSlider Grid.Column="1"
@@ -435,7 +435,7 @@
                     <TextBlock Text="Mic level"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                               Foreground="{DynamicResource ContentPrimaryBrush}"
                                VerticalAlignment="Center" />
 
                     <controls:ConsolePillSlider Grid.Column="1"
@@ -449,7 +449,7 @@
 
                 <!-- Subtle 1px Divider -->
                 <Border Height="1"
-                        Background="{DynamicResource ConsoleDividerBrush}"
+                        Background="{DynamicResource StrokeDefaultBrush}"
                         Margin="6,6,6,6"
                         MaxWidth="1080"
                         HorizontalAlignment="Stretch" />
@@ -464,7 +464,7 @@
                     <TextBlock Text="Output device"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                               Foreground="{DynamicResource ContentPrimaryBrush}"
                                VerticalAlignment="Center" />
 
                     <Border Grid.Column="1" Classes="ConsoleDevicePill">
@@ -472,7 +472,7 @@
                                  Text="Default"
                                  FontSize="14"
                                  FontWeight="SemiBold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                                 Foreground="{DynamicResource ContentPrimaryBrush}"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center" />
                     </Border>
@@ -490,7 +490,7 @@
                     <TextBlock Text="Input device"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                               Foreground="{DynamicResource ContentPrimaryBrush}"
                                VerticalAlignment="Center" />
 
                     <Border Grid.Column="1" Classes="ConsoleDevicePill">
@@ -498,7 +498,7 @@
                                  Text="Default"
                                  FontSize="14"
                                  FontWeight="SemiBold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                                 Foreground="{DynamicResource ContentPrimaryBrush}"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center" />
                     </Border>
@@ -524,12 +524,12 @@
                       <TextBlock Text="Wi-Fi Connection"
                                  FontSize="16"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                                 Foreground="{DynamicResource ContentPrimaryBrush}" />
 
                       <TextBlock x:Name="NetworkStatusText"
                                  Text="Checking network status…"
                                  FontSize="13"
-                                 Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                                 Foreground="{DynamicResource ContentSecondaryBrush}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1"
@@ -545,7 +545,7 @@
                         <TextBlock Text="Scan Networks"
                                    FontSize="13"
                                    FontWeight="SemiBold"
-                                   Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                                   Foreground="{DynamicResource ContentPrimaryBrush}"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center" />
                       </Border>
@@ -575,12 +575,12 @@
                       <TextBlock Text="Bluetooth Connection"
                                  FontSize="16"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                                 Foreground="{DynamicResource ContentPrimaryBrush}" />
 
                       <TextBlock x:Name="BluetoothStatusText"
                                  Text="Checking bluetooth status…"
                                  FontSize="13"
-                                 Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                                 Foreground="{DynamicResource ContentSecondaryBrush}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1"
@@ -596,7 +596,7 @@
                         <TextBlock Text="Scan Devices"
                                    FontSize="13"
                                    FontWeight="SemiBold"
-                                   Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                                   Foreground="{DynamicResource ContentPrimaryBrush}"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center" />
                       </Border>
@@ -623,7 +623,7 @@
                     <TextBlock Text="Brightness"
                                FontSize="16"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                               Foreground="{DynamicResource ContentPrimaryBrush}"
                                VerticalAlignment="Center" />
 
                     <controls:ConsolePillSlider Grid.Column="1"
@@ -644,7 +644,7 @@
                     <TextBlock Text="Resolution"
                                FontSize="16"
                                FontWeight="SemiBold"
-                               Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                               Foreground="{DynamicResource ContentPrimaryBrush}"
                                VerticalAlignment="Center" />
 
                     <Border Grid.Column="1" Classes="ConsoleDevicePill">
@@ -652,7 +652,7 @@
                                  Text="1920x1080"
                                  FontSize="14"
                                  FontWeight="SemiBold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                                 Foreground="{DynamicResource ContentPrimaryBrush}"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center" />
                     </Border>
@@ -674,11 +674,11 @@
                     <TextBlock Text="Controller Button Remapping"
                                FontSize="16"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                               Foreground="{DynamicResource ContentPrimaryBrush}" />
 
                     <TextBlock Text="Click Remap on any action, then press your controller button to reassign."
                                FontSize="13"
-                               Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                               Foreground="{DynamicResource ContentSecondaryBrush}" />
 
                   </StackPanel>
                 </Button>
@@ -686,7 +686,7 @@
                 <StackPanel x:Name="KeybindingsListStack" Spacing="8" />
 
                 <Border Classes="ConsoleSettingRow"
-                        Background="{DynamicResource ConsoleSurfaceBrush}"
+                        Background="{DynamicResource SurfaceBaseBrush}"
                         MaxWidth="1080"
                         Margin="6,6">
 
@@ -695,14 +695,14 @@
                     <TextBlock Text="LIVE CONTROLLER TEST FEED"
                                FontSize="11"
                                FontWeight="Bold"
-                               Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                               Foreground="{DynamicResource ContentPrimaryBrush}"
                                LetterSpacing="1" />
 
                     <TextBlock x:Name="LiveTestFeedText"
                                Text="Press any controller button to test input live..."
                                FontSize="13"
                                FontWeight="Medium"
-                               Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
+                               Foreground="{DynamicResource ContentSecondaryBrush}"
                                TextWrapping="Wrap" />
 
                   </StackPanel>
@@ -715,7 +715,7 @@
                   <TextBlock Text="Reset Keybindings to Defaults"
                              FontSize="15"
                              FontWeight="Bold"
-                             Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                             Foreground="{DynamicResource ContentPrimaryBrush}" />
 
                 </Button>
 
@@ -738,11 +738,11 @@
                       <TextBlock Text="Performance Overlay"
                                  FontSize="16"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                                 Foreground="{DynamicResource ContentPrimaryBrush}" />
 
                       <TextBlock Text="Show live FPS, CPU &amp; GPU stats"
                                  FontSize="13"
-                                 Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                                 Foreground="{DynamicResource ContentSecondaryBrush}" />
 
                     </StackPanel>
 
@@ -765,11 +765,11 @@
                       <TextBlock Text="Return to Desktop"
                                  FontSize="16"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                                 Foreground="{DynamicResource ContentPrimaryBrush}" />
 
                       <TextBlock Text="Exit console mode to DaisyOS desktop"
                                  FontSize="13"
-                                 Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                                 Foreground="{DynamicResource ContentSecondaryBrush}" />
 
                     </StackPanel>
 
@@ -778,7 +778,7 @@
                       <TextBlock Text="Exit to Desktop"
                                  FontSize="13"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                                 Foreground="{DynamicResource ContentPrimaryBrush}"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center" />
 
@@ -798,11 +798,11 @@
                       <TextBlock Text="Restart Console"
                                  FontSize="16"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                                 Foreground="{DynamicResource ContentPrimaryBrush}" />
 
                       <TextBlock Text="Reboot DaisyOS operating system"
                                  FontSize="13"
-                                 Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                                 Foreground="{DynamicResource ContentSecondaryBrush}" />
 
                     </StackPanel>
 
@@ -811,7 +811,7 @@
                       <TextBlock Text="Restart"
                                  FontSize="13"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                                 Foreground="{DynamicResource ContentPrimaryBrush}"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center" />
 
@@ -831,11 +831,11 @@
                       <TextBlock Text="Power Off"
                                  FontSize="16"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                                 Foreground="{DynamicResource ContentPrimaryBrush}" />
 
                       <TextBlock Text="Shut down DaisyOS system completely"
                                  FontSize="13"
-                                 Foreground="{DynamicResource ConsoleTextSecondaryBrush}" />
+                                 Foreground="{DynamicResource ContentSecondaryBrush}" />
 
                     </StackPanel>
 
@@ -844,7 +844,7 @@
                       <TextBlock Text="Power Off"
                                  FontSize="13"
                                  FontWeight="Bold"
-                                 Foreground="{DynamicResource ConsoleTextPrimaryBrush}"
+                                 Foreground="{DynamicResource ContentPrimaryBrush}"
                                  HorizontalAlignment="Center"
                                  VerticalAlignment="Center" />
 
@@ -882,21 +882,21 @@
                       Spacing="8"
                       VerticalAlignment="Center">
 
-            <Border Background="{DynamicResource ConsoleDividerBrush}"
+            <Border Background="{DynamicResource StrokeDefaultBrush}"
                     CornerRadius="6"
                     Padding="6,2">
 
               <TextBlock Text="LB/RB"
                          FontSize="11"
                          FontWeight="Bold"
-                         Foreground="{DynamicResource ConsoleTextPrimaryBrush}" />
+                         Foreground="{DynamicResource ContentPrimaryBrush}" />
 
             </Border>
 
             <TextBlock Text="Switch Tab"
                        FontSize="12"
                        FontWeight="Medium"
-                       Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
+                       Foreground="{DynamicResource ContentSecondaryBrush}"
                        VerticalAlignment="Center" />
 
           </StackPanel>
@@ -915,7 +915,7 @@
             <TextBlock Text="Navigate"
                        FontSize="12"
                        FontWeight="Medium"
-                       Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
+                       Foreground="{DynamicResource ContentSecondaryBrush}"
                        VerticalAlignment="Center" />
 
           </StackPanel>
@@ -934,7 +934,7 @@
             <TextBlock Text="Select"
                        FontSize="12"
                        FontWeight="Medium"
-                       Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
+                       Foreground="{DynamicResource ContentSecondaryBrush}"
                        VerticalAlignment="Center" />
 
           </StackPanel>
@@ -953,7 +953,7 @@
             <TextBlock Text="Details"
                        FontSize="12"
                        FontWeight="Medium"
-                       Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
+                       Foreground="{DynamicResource ContentSecondaryBrush}"
                        VerticalAlignment="Center" />
 
           </StackPanel>
@@ -972,7 +972,7 @@
             <TextBlock Text="Back"
                        FontSize="12"
                        FontWeight="Medium"
-                       Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
+                       Foreground="{DynamicResource ContentSecondaryBrush}"
                        VerticalAlignment="Center" />
 
           </StackPanel>

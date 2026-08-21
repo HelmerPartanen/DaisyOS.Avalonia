@@ -25,7 +25,7 @@
       <Setter Property="Width" Value="24" />
       <Setter Property="TextAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
 
     <Style Selector="TextBlock.NavLabel">
@@ -33,16 +33,16 @@
       <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Margin" Value="12,0,0,0" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
     <Style Selector="Button.Active TextBlock.NavLabel">
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="Button.Active TextBlock.SecondaryText">
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="Button.Active TextBlock.AccentText">
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
 
     <!-- Seamless Editor TextBoxes -->
@@ -62,7 +62,7 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid ColumnDefinitions="240,*" Background="{DynamicResource PrimarySurfaceBrush}">
+  <Grid ColumnDefinitions="240,*" Background="{DynamicResource SurfaceBaseBrush}">
     <!-- Transparent Sidebar Container (matching Settings 240px sidebar) -->
     <Border Grid.Column="0" Background="Transparent" Padding="12,12,8,12">
       <Grid RowDefinitions="Auto,Auto,*">
@@ -151,7 +151,7 @@
                         <TextBlock Text="keep" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="14" Classes="AccentText" HorizontalAlignment="Right" VerticalAlignment="Center" IsVisible="{Binding IsPinned}" />
                       </Grid>
                     </Button>
-                    <Rectangle Height="1" Fill="{DynamicResource DividerBrush}" Margin="12,4,12,4" IsVisible="{Binding ShowDivider}" />
+                    <Rectangle Height="1" Fill="{DynamicResource StrokeDefaultBrush}" Margin="12,4,12,4" IsVisible="{Binding ShowDivider}" />
                   </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -166,7 +166,7 @@
                HorizontalAlignment="Right" 
                VerticalAlignment="Stretch"
                Width="1" 
-               Fill="{DynamicResource DividerBrush}"
+               Fill="{DynamicResource StrokeDefaultBrush}"
                Margin="0,0,0,44" />
 
     <!-- Main Content Area -->
@@ -179,13 +179,13 @@
         <TextBlock Text="edit_document"
                    FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                    FontSize="64"
-                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   Foreground="{DynamicResource ContentSecondaryBrush}"
                    Opacity="0.5"
                    TextAlignment="Center" />
         <TextBlock Text="Start by creating a note"
                    FontSize="16"
                    FontWeight="Medium"
-                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   Foreground="{DynamicResource ContentSecondaryBrush}"
                    Opacity="0.7"
                    TextAlignment="Center" />
       </StackPanel>

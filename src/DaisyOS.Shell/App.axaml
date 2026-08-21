@@ -6,10 +6,7 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/DynamicColors.axaml" />
-        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/DesignTokens.axaml" />
-        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/OSTheme.axaml" />
-        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/ConsoleTheme.axaml" />
+        <ResourceInclude Source="avares://DaisyOS.Shell/Themes/DaisyTheme.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
@@ -21,13 +18,13 @@
     <Style Selector="TextBlock">
       <Setter Property="FontFamily" Value="Inter" />
       <Setter Property="FontWeight" Value="Regular" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <Style Selector="AccessText">
       <Setter Property="FontFamily" Value="Inter" />
       <Setter Property="FontWeight" Value="Regular" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <!--
@@ -36,14 +33,14 @@
       existing borders.
     -->
     <Style Selector="Border.DiagonalShellBorder">
-      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeDefaultBrush}" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
 
     <Style Selector="TextBox">
       <Setter Property="FontFamily" Value="Inter" />
       <Setter Property="FontWeight" Value="Regular" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
     </Style>
 
@@ -64,20 +61,20 @@
 
     <!-- Subtle buttons reserve a visible resting surface, unlike transparent ghost buttons. -->
     <Style Selector="Button.SubtleButton, ToggleButton.SubtleButton">
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
     </Style>
     <Style Selector="Button.SubtleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.SubtleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryHoverBrush}" />
     </Style>
     <Style Selector="Button.SubtleButton:pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.SubtleButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryPressedBrush}" />
     </Style>
 
     <!-- Settings List Items (Main panel subcategory cards) -->
     <Style Selector="Button.SettingsListItem">
-      <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceSunkenBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
       <Setter Property="Padding" Value="12,8" />
@@ -85,21 +82,21 @@
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.SettingsListItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}" />
     </Style>
     <Style Selector="Button.SettingsListItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StatePressedBrush}" />
     </Style>
 
     <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}" />
     </Style>
     <Style Selector="Button.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.ShellButton:not(.Active):not(.QuickSetting):not(.QuickAction):not(.QuickSettingDetails):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SettingsNavItem:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.BackButton:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.SubtleLink:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StatePressedBrush}" />
     </Style>
     <!-- Flyout triggers stay visibly active for the duration of their open surface. -->
     <Style Selector="Button.ShellButton.ShellButtonActive /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateSelectedBrush}" />
     </Style>
 
     <!-- Disabled ghost buttons should remain transparent but dimmed, overriding Avalonia's default grey disabled background -->
@@ -112,23 +109,23 @@
 
     <!-- Reusable Material You Quick Settings container buttons. -->
     <Style Selector="ToggleButton.QuickSetting, Button.QuickSettingDetails">
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Padding" Value="0" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active), Button.QuickSettingDetails:not(.Active)">
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:not(.Active):pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryHoverBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:not(:checked):not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails:not(.Active):pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryPressedBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting > TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
     <Style Selector="ToggleButton.QuickSetting:disabled">
       <Setter Property="Opacity" Value="0.48" />
@@ -136,64 +133,64 @@
 
     <!-- Native switches follow the selected shell accent, with a stable black thumb for contrast. -->
     <Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ActionPrimaryBrush}" />
     </Style>
     <Style Selector="ToggleSwitch:checked /template/ Ellipse#SwitchKnobOn">
-      <Setter Property="Fill" Value="#FF000000" />
+      <Setter Property="Fill" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="ToggleSwitch:checked:pointerover /template/ Border#SwitchKnobBounds">
-      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ActionPrimaryHoverBrush}" />
     </Style>
     <Style Selector="ToggleSwitch:checked:pointerover /template/ Ellipse#SwitchKnobOn, ToggleSwitch:checked:pressed /template/ Ellipse#SwitchKnobOn">
-      <Setter Property="Fill" Value="#FF000000" />
+      <Setter Property="Fill" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="ToggleSwitch:checked:pressed /template/ Border#SwitchKnobBounds">
-      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource AccentPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryPressedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ActionPrimaryPressedBrush}" />
     </Style>
 
     <!-- Owned app windows reserve a transparent edge for this restrained elevation cue. -->
     <Style Selector="Border.AppWindowFrame">
-      <Setter Property="BoxShadow" Value="0 1 5 0 #16000000" />
+      <Setter Property="BoxShadow" Value="{DynamicResource ElevationWindowShadow}" />
     </Style>
     <Style Selector="Border.AppWindowFrame.WindowFocused">
-      <Setter Property="BoxShadow" Value="0 2 8 0 #3D000000" />
+      <Setter Property="BoxShadow" Value="{DynamicResource ElevationWindowFocusedShadow}" />
     </Style>
 
     <!-- Global Normalized Active / Accent Button states. -->
     <Style Selector="Button.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
     </Style>
     <!--
       Active buttons must ensure high contrast over the pure white background.
     -->
     <Style Selector="Button.Active TextBlock, ToggleButton.Active TextBlock, ToggleButton:checked TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="Button.Active TextBlock.SecondaryText, ToggleButton.Active TextBlock.SecondaryText, ToggleButton:checked TextBlock.SecondaryText">
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="Button.Active TextBlock.AccentText, ToggleButton.Active TextBlock.AccentText, ToggleButton:checked TextBlock.AccentText">
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
 
     <Style Selector="TextBlock.SecondaryText">
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
     <Style Selector="TextBlock.AccentText">
-      <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ActionPrimaryBrush}" />
     </Style>
 
     <Style Selector="ToggleButton.QuickSetting:checked > TextBlock.QuickSettingIcon, Button.QuickSettingDetails.Active > TextBlock.QuickSettingIcon">
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
     <Style Selector="Button.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryHoverBrush}" />
     </Style>
     <Style Selector="Button.Active:pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.Active:pressed /template/ ContentPresenter#PART_ContentPresenter, ToggleButton.QuickSetting:checked:pressed /template/ ContentPresenter#PART_ContentPresenter, Button.QuickSettingDetails.Active:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryPressedBrush}" />
     </Style>
   </Application.Styles>
 </Application>

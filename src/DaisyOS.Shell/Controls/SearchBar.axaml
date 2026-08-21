@@ -4,17 +4,17 @@
              x:Class="DaisyOS.Shell.Controls.SearchBar">
   <UserControl.Styles>
     <Style Selector="Border#SearchFrame">
-      <Setter Property="Background" Value="{DynamicResource TertiarySurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceSunkenBrush}" />
       <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="UserControl:pointerover Border#SearchFrame">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}" />
     </Style>
   </UserControl.Styles>
   <Grid ClipToBounds="False">
     <!-- The 2 px inset reserves a 1 px gap after the 1 px outline without overflow or clipping. -->
     <Border x:Name="FocusOutline"
-            BorderBrush="{DynamicResource AccentSurfaceBrush}"
+            BorderBrush="{DynamicResource ActionSecondaryBrush}"
             BorderThickness="2"
             CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=controls:SearchBar}}"
             Opacity="0"
@@ -34,7 +34,7 @@
       <!-- Search Icon -->
       <PathIcon Data="M 15.5 14 L 20 18.5 L 18.5 20 L 14 15.5 C 12.5 16.5 10.8 17 9 17 C 4.6 17 1 13.4 1 9 C 1 4.6 4.6 1 9 1 C 13.4 1 17 4.6 17 9 C 17 10.8 16.5 12.5 15.5 14 Z M 9 15 C 12.3 15 15 12.3 15 9 C 15 5.7 12.3 3 9 3 C 5.7 3 3 5.7 3 9 C 3 12.3 5.7 15 9 15 Z"
                 Width="15" Height="15"
-                Foreground="{DynamicResource TextSecondaryBrush}"
+                Foreground="{DynamicResource ContentSecondaryBrush}"
                 VerticalAlignment="Center"/>
       
       <TextBox x:Name="SearchInput"
@@ -45,15 +45,15 @@
                Text="{Binding Text, RelativeSource={RelativeSource AncestorType=controls:SearchBar}, Mode=TwoWay}"
                PlaceholderText="{Binding PlaceholderText, RelativeSource={RelativeSource AncestorType=controls:SearchBar}}"
                Background="Transparent"
-               Foreground="{DynamicResource TextPrimaryBrush}"
+               Foreground="{DynamicResource ContentPrimaryBrush}"
                BorderThickness="0"
                VerticalAlignment="Center"
                VerticalContentAlignment="Center"
                FontSize="13"
-               CaretBrush="{DynamicResource TextPrimaryBrush}">
+               CaretBrush="{DynamicResource ContentPrimaryBrush}">
         <TextBox.Styles>
           <Style Selector="TextBox /template/ TextBlock#PART_Watermark">
-            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}"/>
             <Setter Property="Opacity" Value="0.80"/>
           </Style>
           <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">

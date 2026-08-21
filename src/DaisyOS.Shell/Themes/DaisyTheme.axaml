@@ -1,0 +1,199 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!--
+    DaisyOS semantic theme contract. Components select a role, never a literal
+    paint or a desktop/console-specific palette. Theme-specific values belong
+    only in these dictionaries.
+  -->
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <Color x:Key="SurfaceCanvasColor">#FFF7F8FA</Color>
+      <Color x:Key="SurfaceBaseColor">#FFFFFFFF</Color>
+      <Color x:Key="SurfaceRaisedColor">#FFFCFCFD</Color>
+      <Color x:Key="SurfaceOverlayColor">#FFFFFFFF</Color>
+      <Color x:Key="SurfaceSunkenColor">#FFEDF0F4</Color>
+      <Color x:Key="ContentPrimaryColor">#FF1C1C20</Color>
+      <Color x:Key="ContentSecondaryColor">#FF51515A</Color>
+      <Color x:Key="ContentTertiaryColor">#FF73737D</Color>
+      <Color x:Key="ContentDisabledColor">#FF9C9CA5</Color>
+      <Color x:Key="StrokeSubtleColor">#FFE2E4E9</Color>
+      <Color x:Key="StrokeDefaultColor">#FFD1D4DA</Color>
+      <Color x:Key="StrokeStrongColor">#FFAAADB5</Color>
+      <Color x:Key="StateHoverColor">#0D1C1C20</Color>
+      <Color x:Key="StatePressedColor">#1A1C1C20</Color>
+      <Color x:Key="StateSelectedColor">#141C1C20</Color>
+      <Color x:Key="OverlayScrimColor">#660B0B0D</Color>
+      <Color x:Key="ActionPrimaryColor">#FF303036</Color>
+      <Color x:Key="ActionPrimaryHoverColor">#FF45454D</Color>
+      <Color x:Key="ActionPrimaryPressedColor">#FF202025</Color>
+      <Color x:Key="ContentOnActionColor">#FFFFFFFF</Color>
+      <Color x:Key="ActionSecondaryColor">#FFE9EAEE</Color>
+      <Color x:Key="ActionSecondaryHoverColor">#FFDFE1E6</Color>
+      <Color x:Key="ActionSecondaryPressedColor">#FFD4D7DD</Color>
+      <Color x:Key="ContentOnSecondaryActionColor">#FF24242A</Color>
+      <Color x:Key="FocusRingColor">#FF303036</Color>
+      <Color x:Key="StatusSuccessColor">#FF187B45</Color>
+      <Color x:Key="StatusSuccessContainerColor">#FFE4F4EA</Color>
+      <Color x:Key="StatusWarningColor">#FFA85A00</Color>
+      <Color x:Key="StatusWarningContainerColor">#FFFFEEDB</Color>
+      <Color x:Key="StatusDangerColor">#FFB42318</Color>
+      <Color x:Key="StatusDangerContainerColor">#FFFDE9E7</Color>
+      <Color x:Key="StatusInfoColor">#FF1959B7</Color>
+      <Color x:Key="StatusInfoContainerColor">#FFE8F0FF</Color>
+      <Color x:Key="AccentOptionDefaultColor">#FF303036</Color>
+      <Color x:Key="AccentOptionBlueColor">#FF2F6FD6</Color>
+      <Color x:Key="AccentOptionPurpleColor">#FF7456B8</Color>
+      <Color x:Key="AccentOptionPinkColor">#FFC43D78</Color>
+      <Color x:Key="AccentOptionRedColor">#FFC13A32</Color>
+      <Color x:Key="AccentOptionOrangeColor">#FFB85D00</Color>
+      <Color x:Key="AccentOptionGreenColor">#FF1B8153</Color>
+      <Color x:Key="AccentOptionGrayColor">#FF62636A</Color>
+      <SolidColorBrush x:Key="SurfaceCanvasBrush" Color="{StaticResource SurfaceCanvasColor}" />
+      <SolidColorBrush x:Key="SurfaceBaseBrush" Color="{StaticResource SurfaceBaseColor}" />
+      <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaisedColor}" />
+      <SolidColorBrush x:Key="SurfaceOverlayBrush" Color="{StaticResource SurfaceOverlayColor}" />
+      <SolidColorBrush x:Key="SurfaceSunkenBrush" Color="{StaticResource SurfaceSunkenColor}" />
+      <SolidColorBrush x:Key="ContentPrimaryBrush" Color="{StaticResource ContentPrimaryColor}" />
+      <SolidColorBrush x:Key="ContentSecondaryBrush" Color="{StaticResource ContentSecondaryColor}" />
+      <SolidColorBrush x:Key="ContentTertiaryBrush" Color="{StaticResource ContentTertiaryColor}" />
+      <SolidColorBrush x:Key="ContentDisabledBrush" Color="{StaticResource ContentDisabledColor}" />
+      <SolidColorBrush x:Key="StrokeSubtleBrush" Color="{StaticResource StrokeSubtleColor}" />
+      <SolidColorBrush x:Key="StrokeDefaultBrush" Color="{StaticResource StrokeDefaultColor}" />
+      <SolidColorBrush x:Key="StrokeStrongBrush" Color="{StaticResource StrokeStrongColor}" />
+      <SolidColorBrush x:Key="StateHoverBrush" Color="{StaticResource StateHoverColor}" />
+      <SolidColorBrush x:Key="StatePressedBrush" Color="{StaticResource StatePressedColor}" />
+      <SolidColorBrush x:Key="StateSelectedBrush" Color="{StaticResource StateSelectedColor}" />
+      <SolidColorBrush x:Key="OverlayScrimBrush" Color="{StaticResource OverlayScrimColor}" />
+      <SolidColorBrush x:Key="ActionPrimaryBrush" Color="{StaticResource ActionPrimaryColor}" />
+      <SolidColorBrush x:Key="ActionPrimaryHoverBrush" Color="{StaticResource ActionPrimaryHoverColor}" />
+      <SolidColorBrush x:Key="ActionPrimaryPressedBrush" Color="{StaticResource ActionPrimaryPressedColor}" />
+      <SolidColorBrush x:Key="ContentOnActionBrush" Color="{StaticResource ContentOnActionColor}" />
+      <SolidColorBrush x:Key="ActionSecondaryBrush" Color="{StaticResource ActionSecondaryColor}" />
+      <SolidColorBrush x:Key="ActionSecondaryHoverBrush" Color="{StaticResource ActionSecondaryHoverColor}" />
+      <SolidColorBrush x:Key="ActionSecondaryPressedBrush" Color="{StaticResource ActionSecondaryPressedColor}" />
+      <SolidColorBrush x:Key="ContentOnSecondaryActionBrush" Color="{StaticResource ContentOnSecondaryActionColor}" />
+      <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource FocusRingColor}" />
+      <SolidColorBrush x:Key="StatusSuccessBrush" Color="{StaticResource StatusSuccessColor}" />
+      <SolidColorBrush x:Key="StatusSuccessContainerBrush" Color="{StaticResource StatusSuccessContainerColor}" />
+      <SolidColorBrush x:Key="StatusWarningBrush" Color="{StaticResource StatusWarningColor}" />
+      <SolidColorBrush x:Key="StatusWarningContainerBrush" Color="{StaticResource StatusWarningContainerColor}" />
+      <SolidColorBrush x:Key="StatusDangerBrush" Color="{StaticResource StatusDangerColor}" />
+      <SolidColorBrush x:Key="StatusDangerContainerBrush" Color="{StaticResource StatusDangerContainerColor}" />
+      <SolidColorBrush x:Key="StatusInfoBrush" Color="{StaticResource StatusInfoColor}" />
+      <SolidColorBrush x:Key="StatusInfoContainerBrush" Color="{StaticResource StatusInfoContainerColor}" />
+      <SolidColorBrush x:Key="AccentOptionDefaultBrush" Color="{StaticResource AccentOptionDefaultColor}" />
+      <SolidColorBrush x:Key="AccentOptionBlueBrush" Color="{StaticResource AccentOptionBlueColor}" />
+      <SolidColorBrush x:Key="AccentOptionPurpleBrush" Color="{StaticResource AccentOptionPurpleColor}" />
+      <SolidColorBrush x:Key="AccentOptionPinkBrush" Color="{StaticResource AccentOptionPinkColor}" />
+      <SolidColorBrush x:Key="AccentOptionRedBrush" Color="{StaticResource AccentOptionRedColor}" />
+      <SolidColorBrush x:Key="AccentOptionOrangeBrush" Color="{StaticResource AccentOptionOrangeColor}" />
+      <SolidColorBrush x:Key="AccentOptionGreenBrush" Color="{StaticResource AccentOptionGreenColor}" />
+      <SolidColorBrush x:Key="AccentOptionGrayBrush" Color="{StaticResource AccentOptionGrayColor}" />
+      <SolidColorBrush x:Key="DesktopLabelBrush" Color="{StaticResource ContentPrimaryColor}" />
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <Color x:Key="SurfaceCanvasColor">#FF0A0A0B</Color>
+      <Color x:Key="SurfaceBaseColor">#FF121214</Color>
+      <Color x:Key="SurfaceRaisedColor">#FF1A1A1D</Color>
+      <Color x:Key="SurfaceOverlayColor">#FF222225</Color>
+      <Color x:Key="SurfaceSunkenColor">#FF060607</Color>
+      <Color x:Key="ContentPrimaryColor">#FFF5F5F7</Color>
+      <Color x:Key="ContentSecondaryColor">#FFC7C7CC</Color>
+      <Color x:Key="ContentTertiaryColor">#FF98989F</Color>
+      <Color x:Key="ContentDisabledColor">#FF6C6C73</Color>
+      <Color x:Key="StrokeSubtleColor">#FF2D2D31</Color>
+      <Color x:Key="StrokeDefaultColor">#FF3A3A40</Color>
+      <Color x:Key="StrokeStrongColor">#FF5A5A62</Color>
+      <Color x:Key="StateHoverColor">#14FFFFFF</Color>
+      <Color x:Key="StatePressedColor">#24FFFFFF</Color>
+      <Color x:Key="StateSelectedColor">#1FFFFFFF</Color>
+      <Color x:Key="OverlayScrimColor">#B8060607</Color>
+      <Color x:Key="ActionPrimaryColor">#FFF5F5F7</Color>
+      <Color x:Key="ActionPrimaryHoverColor">#FFFFFFFF</Color>
+      <Color x:Key="ActionPrimaryPressedColor">#FFD9D9DF</Color>
+      <Color x:Key="ContentOnActionColor">#FF111113</Color>
+      <Color x:Key="ActionSecondaryColor">#FF2A2A2E</Color>
+      <Color x:Key="ActionSecondaryHoverColor">#FF35353A</Color>
+      <Color x:Key="ActionSecondaryPressedColor">#FF414147</Color>
+      <Color x:Key="ContentOnSecondaryActionColor">#FFF5F5F7</Color>
+      <Color x:Key="FocusRingColor">#FFF5F5F7</Color>
+      <Color x:Key="StatusSuccessColor">#FF58D68D</Color>
+      <Color x:Key="StatusSuccessContainerColor">#FF163D28</Color>
+      <Color x:Key="StatusWarningColor">#FFFFB95B</Color>
+      <Color x:Key="StatusWarningContainerColor">#FF4A300D</Color>
+      <Color x:Key="StatusDangerColor">#FFFF7A70</Color>
+      <Color x:Key="StatusDangerContainerColor">#FF4A211E</Color>
+      <Color x:Key="StatusInfoColor">#FF85B6FF</Color>
+      <Color x:Key="StatusInfoContainerColor">#FF1C355E</Color>
+      <Color x:Key="AccentOptionDefaultColor">#FFF5F5F7</Color>
+      <Color x:Key="AccentOptionBlueColor">#FF75A7FF</Color>
+      <Color x:Key="AccentOptionPurpleColor">#FFBB9CFF</Color>
+      <Color x:Key="AccentOptionPinkColor">#FFFF9AC6</Color>
+      <Color x:Key="AccentOptionRedColor">#FFFF9B91</Color>
+      <Color x:Key="AccentOptionOrangeColor">#FFFFB87B</Color>
+      <Color x:Key="AccentOptionGreenColor">#FF7DD9A0</Color>
+      <Color x:Key="AccentOptionGrayColor">#FFC4C7CD</Color>
+      <SolidColorBrush x:Key="SurfaceCanvasBrush" Color="{StaticResource SurfaceCanvasColor}" />
+      <SolidColorBrush x:Key="SurfaceBaseBrush" Color="{StaticResource SurfaceBaseColor}" />
+      <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaisedColor}" />
+      <SolidColorBrush x:Key="SurfaceOverlayBrush" Color="{StaticResource SurfaceOverlayColor}" />
+      <SolidColorBrush x:Key="SurfaceSunkenBrush" Color="{StaticResource SurfaceSunkenColor}" />
+      <SolidColorBrush x:Key="ContentPrimaryBrush" Color="{StaticResource ContentPrimaryColor}" />
+      <SolidColorBrush x:Key="ContentSecondaryBrush" Color="{StaticResource ContentSecondaryColor}" />
+      <SolidColorBrush x:Key="ContentTertiaryBrush" Color="{StaticResource ContentTertiaryColor}" />
+      <SolidColorBrush x:Key="ContentDisabledBrush" Color="{StaticResource ContentDisabledColor}" />
+      <SolidColorBrush x:Key="StrokeSubtleBrush" Color="{StaticResource StrokeSubtleColor}" />
+      <SolidColorBrush x:Key="StrokeDefaultBrush" Color="{StaticResource StrokeDefaultColor}" />
+      <SolidColorBrush x:Key="StrokeStrongBrush" Color="{StaticResource StrokeStrongColor}" />
+      <SolidColorBrush x:Key="StateHoverBrush" Color="{StaticResource StateHoverColor}" />
+      <SolidColorBrush x:Key="StatePressedBrush" Color="{StaticResource StatePressedColor}" />
+      <SolidColorBrush x:Key="StateSelectedBrush" Color="{StaticResource StateSelectedColor}" />
+      <SolidColorBrush x:Key="OverlayScrimBrush" Color="{StaticResource OverlayScrimColor}" />
+      <SolidColorBrush x:Key="ActionPrimaryBrush" Color="{StaticResource ActionPrimaryColor}" />
+      <SolidColorBrush x:Key="ActionPrimaryHoverBrush" Color="{StaticResource ActionPrimaryHoverColor}" />
+      <SolidColorBrush x:Key="ActionPrimaryPressedBrush" Color="{StaticResource ActionPrimaryPressedColor}" />
+      <SolidColorBrush x:Key="ContentOnActionBrush" Color="{StaticResource ContentOnActionColor}" />
+      <SolidColorBrush x:Key="ActionSecondaryBrush" Color="{StaticResource ActionSecondaryColor}" />
+      <SolidColorBrush x:Key="ActionSecondaryHoverBrush" Color="{StaticResource ActionSecondaryHoverColor}" />
+      <SolidColorBrush x:Key="ActionSecondaryPressedBrush" Color="{StaticResource ActionSecondaryPressedColor}" />
+      <SolidColorBrush x:Key="ContentOnSecondaryActionBrush" Color="{StaticResource ContentOnSecondaryActionColor}" />
+      <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource FocusRingColor}" />
+      <SolidColorBrush x:Key="StatusSuccessBrush" Color="{StaticResource StatusSuccessColor}" />
+      <SolidColorBrush x:Key="StatusSuccessContainerBrush" Color="{StaticResource StatusSuccessContainerColor}" />
+      <SolidColorBrush x:Key="StatusWarningBrush" Color="{StaticResource StatusWarningColor}" />
+      <SolidColorBrush x:Key="StatusWarningContainerBrush" Color="{StaticResource StatusWarningContainerColor}" />
+      <SolidColorBrush x:Key="StatusDangerBrush" Color="{StaticResource StatusDangerColor}" />
+      <SolidColorBrush x:Key="StatusDangerContainerBrush" Color="{StaticResource StatusDangerContainerColor}" />
+      <SolidColorBrush x:Key="StatusInfoBrush" Color="{StaticResource StatusInfoColor}" />
+      <SolidColorBrush x:Key="StatusInfoContainerBrush" Color="{StaticResource StatusInfoContainerColor}" />
+      <SolidColorBrush x:Key="AccentOptionDefaultBrush" Color="{StaticResource AccentOptionDefaultColor}" />
+      <SolidColorBrush x:Key="AccentOptionBlueBrush" Color="{StaticResource AccentOptionBlueColor}" />
+      <SolidColorBrush x:Key="AccentOptionPurpleBrush" Color="{StaticResource AccentOptionPurpleColor}" />
+      <SolidColorBrush x:Key="AccentOptionPinkBrush" Color="{StaticResource AccentOptionPinkColor}" />
+      <SolidColorBrush x:Key="AccentOptionRedBrush" Color="{StaticResource AccentOptionRedColor}" />
+      <SolidColorBrush x:Key="AccentOptionOrangeBrush" Color="{StaticResource AccentOptionOrangeColor}" />
+      <SolidColorBrush x:Key="AccentOptionGreenBrush" Color="{StaticResource AccentOptionGreenColor}" />
+      <SolidColorBrush x:Key="AccentOptionGrayBrush" Color="{StaticResource AccentOptionGrayColor}" />
+      <SolidColorBrush x:Key="DesktopLabelBrush" Color="{StaticResource ContentPrimaryColor}" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
+  <DropShadowEffect x:Key="DesktopLabelShadow" OffsetX="0" OffsetY="1" BlurRadius="2" Color="Black" Opacity="0.30" />
+  <BoxShadows x:Key="ElevationWindowShadow">0 1 5 0 #16000000</BoxShadows>
+  <BoxShadows x:Key="ElevationWindowFocusedShadow">0 2 8 0 #3D000000</BoxShadows>
+  <BoxShadows x:Key="ElevationFlyoutShadow">0 4 16 0 #30000000</BoxShadows>
+  <BoxShadows x:Key="ElevationPopupShadow">0 6 18 0 #38000000</BoxShadows>
+  <BoxShadows x:Key="ElevationPanelShadow">0 8 24 0 #60000000</BoxShadows>
+  <BoxShadows x:Key="ElevationDialogShadow">0 12 36 0 #80000000</BoxShadows>
+  <CornerRadius x:Key="RoundedXS">4</CornerRadius>
+  <CornerRadius x:Key="RoundedSM">8</CornerRadius>
+  <CornerRadius x:Key="RoundedMD">10</CornerRadius>
+  <CornerRadius x:Key="RoundedLG">12</CornerRadius>
+  <CornerRadius x:Key="RoundedXL">16</CornerRadius>
+  <CornerRadius x:Key="RoundedMDLeft">10,0,0,10</CornerRadius>
+  <CornerRadius x:Key="RoundedMDRight">0,10,10,0</CornerRadius>
+  <CornerRadius x:Key="RoundedLGInset">11</CornerRadius>
+  <CornerRadius x:Key="RoundedNone">0</CornerRadius>
+  <CornerRadius x:Key="RoundedPill">13</CornerRadius>
+  <x:Double x:Key="RoundedLGValue">12</x:Double>
+</ResourceDictionary>

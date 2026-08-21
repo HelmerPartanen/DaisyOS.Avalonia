@@ -22,10 +22,10 @@
                    FontSize="13"
                    FontWeight="Medium"
                    TextTrimming="CharacterEllipsis"
-                   Foreground="{DynamicResource TextPrimaryBrush}"/>
+                   Foreground="{DynamicResource ContentPrimaryBrush}"/>
         <TextBlock Text="{Binding Subtitle, ElementName=Root}"
                    FontSize="11"
-                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   Foreground="{DynamicResource ContentSecondaryBrush}"
                    TextTrimming="CharacterEllipsis"
                    IsVisible="{Binding Subtitle, ElementName=Root, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
       </StackPanel>

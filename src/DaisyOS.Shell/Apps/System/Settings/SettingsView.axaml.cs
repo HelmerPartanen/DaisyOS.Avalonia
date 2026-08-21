@@ -343,7 +343,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 CategoryContent.Children.Add(new Border
                 {
                     Height = 1,
-                    Background = TryBrush("DividerBrush")
+                    Background = TryBrush("StrokeDefaultBrush")
                 });
             }
 
@@ -353,7 +353,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 Text = label,
                 FontSize = 12,
                 FontWeight = FontWeight.SemiBold,
-                Foreground = TryBrush("TextTertiaryBrush")
+                Foreground = TryBrush("ContentTertiaryBrush")
             });
             if (!string.IsNullOrWhiteSpace(description)) section.Children.Add(Secondary(description));
 
@@ -485,7 +485,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
         {
             Text = text,
             FontSize = 13,
-            Foreground = TryBrush("TextSecondaryBrush"),
+            Foreground = TryBrush("ContentSecondaryBrush"),
             TextWrapping = TextWrapping.Wrap
         };
 

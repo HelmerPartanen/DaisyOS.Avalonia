@@ -82,16 +82,16 @@ public partial class ConsolePillSlider : UserControl
 
     private IBrush GetFilledBrush()
     {
-        if (Application.Current?.TryGetResource("ConsoleTextPrimaryBrush", null, out var res) == true && res is IBrush b)
+        if (Application.Current?.TryGetResource("ContentPrimaryBrush", null, out var res) == true && res is IBrush b)
             return b;
-        return Brushes.White;
+        return Brushes.Transparent;
     }
 
     private IBrush GetEmptyBrush()
     {
-        if (Application.Current?.TryGetResource("ConsoleDividerBrush", null, out var res) == true && res is IBrush b)
+        if (Application.Current?.TryGetResource("StrokeDefaultBrush", null, out var res) == true && res is IBrush b)
             return b;
-        return new SolidColorBrush(Color.Parse("#33FFFFFF"));
+        return Brushes.Transparent;
     }
 
     public void UpdatePills()

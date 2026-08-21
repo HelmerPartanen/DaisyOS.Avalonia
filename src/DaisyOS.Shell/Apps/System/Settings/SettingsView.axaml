@@ -28,7 +28,7 @@
     </Style>
     <!-- Active navigation uses one foreground for its label and icon. -->
     <Style Selector="Button.SettingsNavItem.Active TextBlock.NavIcon, Button.SettingsNavItem.Active TextBlock.NavLabel">
-      <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonTextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
 
     <!-- List item button layout -->
@@ -45,7 +45,7 @@
     <Style Selector="TextBlock.SettingsPageTitle">
       <Setter Property="FontSize" Value="26" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <!-- Breadcrumb button style -->
@@ -57,13 +57,13 @@
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.BreadcrumbItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}" />
     </Style>
     <Style Selector="Button.BreadcrumbItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StatePressedBrush}" />
     </Style>
     <Style Selector="Button.BreadcrumbItem:pointerover TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <!-- Keep the platform ComboBox template so pointer, keyboard and popup behavior stay native. -->
@@ -71,34 +71,34 @@
       <Setter Property="Width" Value="112" />
       <Setter Property="Height" Value="32" />
       <Setter Property="Padding" Value="10,0" />
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeDefaultBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="FontSize" Value="14" />
     </Style>
     <Style Selector="ComboBox.ThemeModePicker /template/ Border#Background">
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeDefaultBrush}" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
     </Style>
     <Style Selector="ComboBox.ThemeModePicker:pointerover /template/ Border#Background, ComboBox.ThemeModePicker:dropdownopen /template/ Border#Background">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryHoverBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeDefaultBrush}" />
     </Style>
     <Style Selector="ComboBox.ThemeModePicker /template/ PathIcon#DropDownGlyph">
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
     <Style Selector="ComboBox.ThemeModePicker:dropdownopen /template/ Border#PopupBorder">
-      <Setter Property="Background" Value="{DynamicResource MenuSurfaceBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceOverlayBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeDefaultBrush}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="Padding" Value="4" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedSM}" />
-      <Setter Property="BoxShadow" Value="0 6 18 0 #38000000" />
+      <Setter Property="BoxShadow" Value="{DynamicResource ElevationPopupShadow}" />
     </Style>
     <Style Selector="ComboBoxItem.ThemeModeOption">
       <Setter Property="MinHeight" Value="32" />
@@ -107,35 +107,35 @@
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="BorderThickness" Value="0" />
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedXS}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="FontSize" Value="13" />
     </Style>
     <Style Selector="ComboBoxItem.ThemeModeOption:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
     <Style Selector="ComboBoxItem.ThemeModeOption:selected /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentSurfaceBrush}" />
-      <Setter Property="Foreground" Value="{DynamicResource OnAccentSurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateSelectedBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
     <Style Selector="Button.AccentSwatch">
       <Setter Property="Width" Value="28" />
       <Setter Property="Height" Value="28" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="CornerRadius" Value="14" />
-      <Setter Property="BorderBrush" Value="{DynamicResource DividerBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource StrokeDefaultBrush}" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
     <Style Selector="Button.AccentSwatch.Selected /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="BorderBrush" Value="{DynamicResource TextPrimaryBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusRingBrush}" />
       <Setter Property="BorderThickness" Value="2" />
     </Style>
   </UserControl.Styles>
 
-  <Grid x:Name="SettingsLayout" ColumnDefinitions="248,*" Background="{DynamicResource PrimarySurfaceBrush}">
+  <Grid x:Name="SettingsLayout" ColumnDefinitions="248,*" Background="{DynamicResource SurfaceBaseBrush}">
     <!-- A quiet, dedicated navigation surface keeps the page hierarchy clear at every size. -->
     <Border Grid.Column="0"
-            Background="{DynamicResource PrimarySurfaceBrush}"
+            Background="{DynamicResource SurfaceBaseBrush}"
             Padding="12,14,10,14">
       <ScrollViewer VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled">
@@ -264,7 +264,7 @@
           <Border Height="40" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
               <Button Classes="BreadcrumbItem" IsHitTestVisible="False">
-                <TextBlock Text="System" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="System" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource ContentPrimaryBrush}" />
               </Button>
             </StackPanel>
           </Border>
@@ -274,60 +274,60 @@
             <!-- Power & Battery Card -->
             <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Power">
               <Grid ColumnDefinitions="Auto,*,Auto">
-                <TextBlock Text="battery_charging_full" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <TextBlock Text="battery_charging_full" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="0,0,14,0" />
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                  <TextBlock Text="Power &amp; Battery" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
-                  <TextBlock Text="Energy saver, screen sleep timeouts, and performance mode" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                  <TextBlock Text="Power &amp; Battery" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource ContentPrimaryBrush}" />
+                  <TextBlock Text="Energy saver, screen sleep timeouts, and performance mode" FontSize="12" Foreground="{DynamicResource ContentSecondaryBrush}" TextWrapping="Wrap" />
                 </StackPanel>
-                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource ContentTertiaryBrush}" Margin="12,0,0,0" />
               </Grid>
             </Button>
 
             <!-- Multitasking & Workspaces Card -->
             <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Multitasking">
               <Grid ColumnDefinitions="Auto,*,Auto">
-                <TextBlock Text="space_dashboard" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <TextBlock Text="space_dashboard" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="0,0,14,0" />
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                  <TextBlock Text="Multitasking &amp; Workspaces" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
-                  <TextBlock Text="Window snapping, desktop workspaces, and alt-tab behavior" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                  <TextBlock Text="Multitasking &amp; Workspaces" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource ContentPrimaryBrush}" />
+                  <TextBlock Text="Window snapping, desktop workspaces, and alt-tab behavior" FontSize="12" Foreground="{DynamicResource ContentSecondaryBrush}" TextWrapping="Wrap" />
                 </StackPanel>
-                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource ContentTertiaryBrush}" Margin="12,0,0,0" />
               </Grid>
             </Button>
 
             <!-- System Performance Card -->
             <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Performance">
               <Grid ColumnDefinitions="Auto,*,Auto">
-                <TextBlock Text="speed" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <TextBlock Text="speed" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="0,0,14,0" />
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                  <TextBlock Text="System Performance" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
-                  <TextBlock Text="RAM usage, background processes, and performance profile" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                  <TextBlock Text="System Performance" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource ContentPrimaryBrush}" />
+                  <TextBlock Text="RAM usage, background processes, and performance profile" FontSize="12" Foreground="{DynamicResource ContentSecondaryBrush}" TextWrapping="Wrap" />
                 </StackPanel>
-                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource ContentTertiaryBrush}" Margin="12,0,0,0" />
               </Grid>
             </Button>
 
             <!-- Recovery & Maintenance Card -->
             <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Recovery">
               <Grid ColumnDefinitions="Auto,*,Auto">
-                <TextBlock Text="restore" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <TextBlock Text="restore" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="0,0,14,0" />
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                  <TextBlock Text="Recovery &amp; Maintenance" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
-                  <TextBlock Text="System reset, diagnostic logs, and restore options" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                  <TextBlock Text="Recovery &amp; Maintenance" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource ContentPrimaryBrush}" />
+                  <TextBlock Text="System reset, diagnostic logs, and restore options" FontSize="12" Foreground="{DynamicResource ContentSecondaryBrush}" TextWrapping="Wrap" />
                 </StackPanel>
-                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource ContentTertiaryBrush}" Margin="12,0,0,0" />
               </Grid>
             </Button>
 
             <!-- Clipboard & History Card -->
             <Button Classes="SettingsListItem" Click="OnSystemSettingItemClicked" Tag="Clipboard">
               <Grid ColumnDefinitions="Auto,*,Auto">
-                <TextBlock Text="content_paste" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,14,0" />
+                <TextBlock Text="content_paste" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="20" VerticalAlignment="Center" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="0,0,14,0" />
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                  <TextBlock Text="Clipboard &amp; History" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
-                  <TextBlock Text="Clipboard history and cross-device sync" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                  <TextBlock Text="Clipboard &amp; History" FontSize="13" FontWeight="Medium" Foreground="{DynamicResource ContentPrimaryBrush}" />
+                  <TextBlock Text="Clipboard history and cross-device sync" FontSize="12" Foreground="{DynamicResource ContentSecondaryBrush}" TextWrapping="Wrap" />
                 </StackPanel>
-                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextTertiaryBrush}" Margin="12,0,0,0" />
+                <TextBlock Grid.Column="2" Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource ContentTertiaryBrush}" Margin="12,0,0,0" />
               </Grid>
             </Button>
           </StackPanel>
@@ -341,10 +341,10 @@
           <Border Height="40" VerticalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="2">
               <Button Classes="BreadcrumbItem" Click="OnBackToSystemListClicked">
-                <TextBlock Text="System" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="System" FontSize="20" FontWeight="SemiBold" Foreground="{DynamicResource ContentSecondaryBrush}" />
               </Button>
-              <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0" />
-              <TextBlock x:Name="DetailTitleText" Text="Power &amp; Battery" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource TextPrimaryBrush}" Margin="4,0,0,0" />
+              <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18" VerticalAlignment="Center" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="2,0" />
+              <TextBlock x:Name="DetailTitleText" Text="Power &amp; Battery" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource ContentPrimaryBrush}" Margin="4,0,0,0" />
             </StackPanel>
           </Border>
         </StackPanel>
@@ -369,8 +369,8 @@
           <StackPanel Spacing="10">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24">
               <StackPanel Spacing="3">
-                <TextBlock Text="THEME" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
-                <TextBlock Text="Switch between light and dark mode" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock Text="THEME" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ContentTertiaryBrush}" />
+                <TextBlock Text="Switch between light and dark mode" FontSize="14" Foreground="{DynamicResource ContentSecondaryBrush}" />
               </StackPanel>
               <ComboBox x:Name="ThemeModePicker" Grid.Column="1" Classes="ThemeModePicker" VerticalAlignment="Center" SelectionChanged="OnThemeModeSelectionChanged">
                 <ComboBoxItem Classes="ThemeModeOption" Tag="Light">Light</ComboBoxItem>
@@ -378,50 +378,50 @@
                 <ComboBoxItem Classes="ThemeModeOption" Tag="Automatic">Automatic</ComboBoxItem>
               </ComboBox>
             </Grid>
-            <TextBlock x:Name="AutomaticThemeInfo" IsVisible="False" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="2,0,0,0" />
+            <TextBlock x:Name="AutomaticThemeInfo" IsVisible="False" FontSize="13" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="2,0,0,0" />
           </StackPanel>
 
           <StackPanel Spacing="10">
-            <TextBlock Text="WALLPAPER" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
-            <Border Height="116" Background="{DynamicResource SecondarySurfaceBrush}" CornerRadius="{DynamicResource RoundedMD}" ClipToBounds="True">
+            <TextBlock Text="WALLPAPER" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ContentTertiaryBrush}" />
+            <Border Height="116" Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="{DynamicResource RoundedMD}" ClipToBounds="True">
               <Grid>
                 <Image x:Name="WallpaperPreviewImage" Source="avares://DaisyOS.Shell/Assets/Wallpapers/Wallpaper.jpg" Stretch="UniformToFill" />
-                <Border Background="#4D000000" />
+                <Border Background="{DynamicResource OverlayScrimBrush}" />
                 <StackPanel Margin="16" VerticalAlignment="Bottom" Spacing="2">
                   <TextBlock x:Name="WallpaperNameText" Text="DaisyOS wallpaper" FontSize="14" FontWeight="SemiBold" />
-                  <TextBlock Text="Shown across desktop and console mode" FontSize="13" Foreground="#CCFFFFFF" />
+                  <TextBlock Text="Shown across desktop and console mode" FontSize="13" Foreground="{DynamicResource ContentSecondaryBrush}" />
                 </StackPanel>
               </Grid>
             </Border>
             <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-              <TextBlock Text="Images and video wallpapers are supported." VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+              <TextBlock Text="Images and video wallpapers are supported." VerticalAlignment="Center" FontSize="13" Foreground="{DynamicResource ContentSecondaryBrush}" />
               <Button Grid.Column="1" Classes="SubtleButton" Height="36" Padding="12,0" VerticalContentAlignment="Center" Click="OnPickWallpaperClicked"><StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="6"><TextBlock Text="folder_open" Classes="NavIcon" FontSize="18" /><TextBlock Text="Choose file" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" /></StackPanel></Button>
               <Button Grid.Column="2" Classes="ShellButton" Padding="8,7" Click="OnResetWallpaperClicked" ToolTip.Tip="Restore DaisyOS wallpaper"><TextBlock Text="restart_alt" Classes="NavIcon" FontSize="18" /></Button>
             </Grid>
           </StackPanel>
 
-          <Border Background="{DynamicResource DividerBrush}" Height="1" />
+          <Border Background="{DynamicResource StrokeDefaultBrush}" Height="1" />
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
-            <StackPanel Spacing="3"><TextBlock Text="Accent color" FontSize="15" FontWeight="SemiBold" /><TextBlock Text="Applied to controls and focus states." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+            <StackPanel Spacing="3"><TextBlock Text="Accent color" FontSize="15" FontWeight="SemiBold" /><TextBlock Text="Applied to controls and focus states." FontSize="13" Foreground="{DynamicResource ContentSecondaryBrush}" /></StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
-              <Button x:Name="AccentDefaultButton" Classes="AccentSwatch" Tag="Default" Click="OnAccentColorClicked" Background="#FFFFFFFF" ToolTip.Tip="Default" />
-              <Button x:Name="AccentBlueButton" Classes="AccentSwatch" Tag="Blue" Click="OnAccentColorClicked" Background="#FF75A7FF" ToolTip.Tip="Blue" />
-              <Button x:Name="AccentPurpleButton" Classes="AccentSwatch" Tag="Purple" Click="OnAccentColorClicked" Background="#FFBB9CFF" ToolTip.Tip="Purple" />
-              <Button x:Name="AccentPinkButton" Classes="AccentSwatch" Tag="Pink" Click="OnAccentColorClicked" Background="#FFFF9AC6" ToolTip.Tip="Pink" />
-              <Button x:Name="AccentRedButton" Classes="AccentSwatch" Tag="Red" Click="OnAccentColorClicked" Background="#FFFF9B91" ToolTip.Tip="Red" />
-              <Button x:Name="AccentOrangeButton" Classes="AccentSwatch" Tag="Orange" Click="OnAccentColorClicked" Background="#FFFFB87B" ToolTip.Tip="Orange" />
-              <Button x:Name="AccentGreenButton" Classes="AccentSwatch" Tag="Green" Click="OnAccentColorClicked" Background="#FF7DD9A0" ToolTip.Tip="Green" />
-              <Button x:Name="AccentGrayButton" Classes="AccentSwatch" Tag="Gray" Click="OnAccentColorClicked" Background="#FFC4C7CD" ToolTip.Tip="Gray" />
+              <Button x:Name="AccentDefaultButton" Classes="AccentSwatch" Tag="Default" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionDefaultBrush}" ToolTip.Tip="Default" />
+              <Button x:Name="AccentBlueButton" Classes="AccentSwatch" Tag="Blue" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionBlueBrush}" ToolTip.Tip="Blue" />
+              <Button x:Name="AccentPurpleButton" Classes="AccentSwatch" Tag="Purple" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionPurpleBrush}" ToolTip.Tip="Purple" />
+              <Button x:Name="AccentPinkButton" Classes="AccentSwatch" Tag="Pink" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionPinkBrush}" ToolTip.Tip="Pink" />
+              <Button x:Name="AccentRedButton" Classes="AccentSwatch" Tag="Red" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionRedBrush}" ToolTip.Tip="Red" />
+              <Button x:Name="AccentOrangeButton" Classes="AccentSwatch" Tag="Orange" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionOrangeBrush}" ToolTip.Tip="Orange" />
+              <Button x:Name="AccentGreenButton" Classes="AccentSwatch" Tag="Green" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionGreenBrush}" ToolTip.Tip="Green" />
+              <Button x:Name="AccentGrayButton" Classes="AccentSwatch" Tag="Gray" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionGrayBrush}" ToolTip.Tip="Gray" />
             </StackPanel>
           </Grid>
 
-          <Border Background="{DynamicResource DividerBrush}" Height="1" />
+          <Border Background="{DynamicResource StrokeDefaultBrush}" Height="1" />
           <StackPanel Spacing="12">
-            <TextBlock Text="ACCESSIBILITY" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource TextTertiaryBrush}" />
+            <TextBlock Text="ACCESSIBILITY" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ContentTertiaryBrush}" />
             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="14" ColumnSpacing="20">
-              <StackPanel Spacing="2"><TextBlock Text="High contrast" FontSize="14" FontWeight="SemiBold" /><TextBlock Text="Increase contrast between text and surfaces." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+              <StackPanel Spacing="2"><TextBlock Text="High contrast" FontSize="14" FontWeight="SemiBold" /><TextBlock Text="Increase contrast between text and surfaces." FontSize="13" Foreground="{DynamicResource ContentSecondaryBrush}" /></StackPanel>
               <ToggleSwitch x:Name="HighContrastToggle" Grid.Column="1" VerticalAlignment="Center" Click="OnHighContrastToggled" />
-              <StackPanel Grid.Row="1" Spacing="2"><TextBlock Text="Reduce desktop motion" FontSize="14" FontWeight="SemiBold" /><TextBlock Text="Turn off desktop item movement animations." FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+              <StackPanel Grid.Row="1" Spacing="2"><TextBlock Text="Reduce desktop motion" FontSize="14" FontWeight="SemiBold" /><TextBlock Text="Turn off desktop item movement animations." FontSize="13" Foreground="{DynamicResource ContentSecondaryBrush}" /></StackPanel>
               <ToggleSwitch x:Name="ReduceMotionToggle" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Click="OnReduceMotionToggled" />
             </Grid>
           </StackPanel>

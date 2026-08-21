@@ -20,10 +20,10 @@
     <Border x:Name="AppFrame"
             Classes="AppWindowFrame"
             Margin="12"
-            Background="{DynamicResource DividerBrush}"
+            Background="{DynamicResource StrokeDefaultBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border Background="{DynamicResource PrimarySurfaceBrush}"
+      <Border Background="{DynamicResource SurfaceBaseBrush}"
               CornerRadius="{DynamicResource RoundedLGInset}"
               ClipToBounds="True">
         <Grid RowDefinitions="44,*">

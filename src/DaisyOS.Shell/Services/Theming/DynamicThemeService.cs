@@ -76,15 +76,15 @@ public sealed class DynamicThemeService
         }
 
         /*
-        resources["AccentColor"] = scheme.Primary;
-        Set(resources, "AccentBrush", scheme.Primary);
-        Set(resources, "AccentHoverBrush", Blend(scheme.Primary, scheme.OnPrimary, 0.08));
-        Set(resources, "AccentPressedBrush", Blend(scheme.Primary, scheme.OnPrimary, 0.16));
-        Set(resources, "OnAccentBrush", scheme.OnPrimary);
-        Set(resources, "AccentSurfaceBrush", scheme.PrimaryContainer);
-        Set(resources, "AccentSurfaceHoverBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.08));
-        Set(resources, "AccentSurfacePressedBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.16));
-        Set(resources, "OnAccentSurfaceBrush", scheme.OnPrimaryContainer);
+        resources["ActionPrimaryColor"] = scheme.Primary;
+        Set(resources, "ActionPrimaryBrush", scheme.Primary);
+        Set(resources, "ActionPrimaryHoverBrush", Blend(scheme.Primary, scheme.OnPrimary, 0.08));
+        Set(resources, "ActionPrimaryPressedBrush", Blend(scheme.Primary, scheme.OnPrimary, 0.16));
+        Set(resources, "ContentOnActionBrush", scheme.OnPrimary);
+        Set(resources, "ActionSecondaryBrush", scheme.PrimaryContainer);
+        Set(resources, "ActionSecondaryHoverBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.08));
+        Set(resources, "ActionSecondaryPressedBrush", Blend(scheme.PrimaryContainer, scheme.OnPrimaryContainer, 0.16));
+        Set(resources, "ContentOnSecondaryActionBrush", scheme.OnPrimaryContainer);
         */
     }
 

@@ -386,7 +386,7 @@ public partial class SystemBarView : UserControl
         host.Children.Add(new TextBlock
         {
             Text = "Loading devices…",
-            Foreground = this.FindResource("TextSecondaryBrush") as IBrush,
+            Foreground = this.FindResource("ContentSecondaryBrush") as IBrush,
             Margin = new Avalonia.Thickness(10, 8)
         });
 
@@ -406,7 +406,7 @@ public partial class SystemBarView : UserControl
             host.Children.Add(new TextBlock
             {
                 Text = "No output devices available",
-                Foreground = this.FindResource("TextSecondaryBrush") as IBrush,
+                Foreground = this.FindResource("ContentSecondaryBrush") as IBrush,
                 Margin = new Avalonia.Thickness(10, 8)
             });
             return;
@@ -535,8 +535,8 @@ public partial class SystemBarView : UserControl
             SignalPercent = network.SignalPercent,
             Width = 18,
             Height = 18,
-            ActiveBrush = this.FindResource("TextPrimaryBrush") as IBrush ?? Brushes.White,
-            InactiveBrush = this.FindResource("TextTertiaryBrush") as IBrush ?? Brushes.Gray,
+            ActiveBrush = this.FindResource("ContentPrimaryBrush") as IBrush ?? Brushes.White,
+            InactiveBrush = this.FindResource("ContentTertiaryBrush") as IBrush ?? Brushes.Gray,
             VerticalAlignment = VerticalAlignment.Center,
         };
         content.Children.Add(signalIcon);
@@ -558,7 +558,7 @@ public partial class SystemBarView : UserControl
             {
                 Text = "Connected",
                 FontSize = 11,
-                Foreground = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.Gray,
+                Foreground = this.FindResource("ContentSecondaryBrush") as IBrush ?? Brushes.Gray,
                 TextTrimming = TextTrimming.CharacterEllipsis,
                 VerticalAlignment = VerticalAlignment.Center,
             };
@@ -684,7 +684,7 @@ public partial class SystemBarView : UserControl
             {
                 Text = "Connected",
                 FontSize = 11,
-                Foreground = this.FindResource("TextSecondaryBrush") as IBrush ?? Brushes.Gray,
+                Foreground = this.FindResource("ContentSecondaryBrush") as IBrush ?? Brushes.Gray,
                 VerticalAlignment = VerticalAlignment.Center,
             };
             Grid.SetRow(detail, 1);
@@ -750,7 +750,7 @@ public partial class SystemBarView : UserControl
     private TextBlock CreateStatusText(string text) => new()
     {
         Text = text,
-        Foreground = this.FindResource("TextSecondaryBrush") as IBrush,
+        Foreground = this.FindResource("ContentSecondaryBrush") as IBrush,
         Margin = new Avalonia.Thickness(10, 8),
         TextWrapping = TextWrapping.Wrap,
     };

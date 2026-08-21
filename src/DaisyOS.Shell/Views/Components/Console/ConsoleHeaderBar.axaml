@@ -22,7 +22,7 @@
           <Panel ClipToBounds="False">
             <!-- Outer Offsetted White Outline Ring (5px gap, 25px CornerRadius) -->
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="2"
                     CornerRadius="25"
                     Margin="-5"
@@ -61,17 +61,17 @@
     <Style Selector="Button.ConsoleHeaderNav TextBlock">
       <Setter Property="FontSize" Value="18" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <!-- State 1: Active Tab -> Solid White Pill, Solid Black Text, NO GLOW -->
     <Style Selector="Button.ConsoleHeaderNav.Active /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource ConsolePrimaryButtonBgBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav.Active TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
@@ -81,12 +81,12 @@
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:focus TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <!-- Ensure Active Focused Text stays solid black on the white pill -->
     <Style Selector="Button.ConsoleHeaderNav.Active:focus TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsolePrimaryButtonFgBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
@@ -96,7 +96,7 @@
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNav:pointerover:not(.Active) TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon">
@@ -115,7 +115,7 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="2"
                     CornerRadius="23"
                     Margin="-5"
@@ -159,21 +159,21 @@
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon:focus TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleHeaderNavIcon:pointerover TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <Style Selector="TextBlock.ConsoleStatusIcon">
       <Setter Property="FontFamily" Value="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded Filled" />
       <Setter Property="FontSize" Value="18" />
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
   </UserControl.Styles>
 
@@ -201,7 +201,7 @@
       <StackPanel Orientation="Horizontal" Spacing="18" VerticalAlignment="Center" Margin="0,0,8,0" ClipToBounds="False">
         <TextBlock Text="wifi" Classes="ConsoleStatusIcon" VerticalAlignment="Center" />
         <TextBlock Text="battery_full" Classes="ConsoleStatusIcon" VerticalAlignment="Center" />
-        <TextBlock x:Name="ClockText" Text="20:18" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" VerticalAlignment="Center" />
+        <TextBlock x:Name="ClockText" Text="20:18" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource ContentPrimaryBrush}" VerticalAlignment="Center" />
 
         <!-- Settings Gear Icon Button -->
         <Button x:Name="HeaderSettingsIconButton" Classes="ConsoleHeaderNavIcon" Click="OnSettingsButtonClicked" ToolTip.Tip="Settings">

@@ -23,7 +23,7 @@
       <Setter Property="Margin" Value="0" />
       <Setter Property="Padding" Value="0" />
       <Setter Property="CornerRadius" Value="0" />
-      <Setter Property="Background" Value="{DynamicResource PrimarySurfaceBrush}" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceBaseBrush}" />
     </Style>
     <Style Selector="Border.SettingsContentFrame.FilledWindow">
       <Setter Property="CornerRadius" Value="0" />
@@ -34,11 +34,11 @@
     <Border x:Name="AppFrame"
             Classes="AppWindowFrame SettingsAppFrame"
             Margin="12"
-            Background="{DynamicResource DividerBrush}"
+            Background="{DynamicResource StrokeDefaultBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
       <Border Classes="SettingsContentFrame"
-              Background="{DynamicResource PrimarySurfaceBrush}"
+              Background="{DynamicResource SurfaceBaseBrush}"
               x:Name="ContentFrame"
               CornerRadius="{DynamicResource RoundedLGInset}"
               ClipToBounds="True">

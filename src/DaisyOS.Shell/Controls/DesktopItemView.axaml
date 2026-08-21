@@ -29,11 +29,11 @@
     </Style>
 
     <Style Selector="Border#CellCard:pointerover">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}" />
     </Style>
 
     <Style Selector="Border#CellCard:pressed">
-      <Setter Property="Background" Value="{DynamicResource GhostPressedBrush}" />
+      <Setter Property="Background" Value="{DynamicResource StatePressedBrush}" />
     </Style>
   </UserControl.Styles>
 

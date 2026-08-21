@@ -7,7 +7,7 @@
     VerticalAlignment="Center">
   <UserControl.Styles>
     <Style Selector="Border.spectrumBar">
-      <Setter Property="Background" Value="{DynamicResource ConsoleTextPrimaryBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ContentPrimaryBrush}" />
       <Setter Property="Opacity" Value="0.6" />
     </Style>
     
@@ -28,7 +28,7 @@
         <ControlTemplate>
           <Panel ClipToBounds="False">
             <Border x:Name="PART_FocusRing"
-                    BorderBrush="{DynamicResource ConsoleAccentBrush}"
+                    BorderBrush="{DynamicResource ActionPrimaryBrush}"
                     BorderThickness="2"
                     CornerRadius="21"
                     Margin="-5"
@@ -71,15 +71,15 @@
     </Style>
 
     <Style Selector="Button.ConsoleMediaIconBtn TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource ConsoleTextSecondaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentSecondaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleMediaIconBtn:focus TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
 
     <Style Selector="Button.ConsoleMediaIconBtn:pointerover TextBlock">
-      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}" />
     </Style>
   </UserControl.Styles>
 
@@ -92,12 +92,12 @@
       <Border Grid.Column="0" Width="40" Height="40" CornerRadius="{DynamicResource RoundedMD}" ClipToBounds="True" VerticalAlignment="Center">
         <Grid>
           <Image x:Name="Artwork" Stretch="UniformToFill" IsVisible="False" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-          <Border x:Name="SourceFallback" Background="{DynamicResource ConsoleSubtleSurfaceBrush}">
+          <Border x:Name="SourceFallback" Background="{DynamicResource SurfaceSunkenBrush}">
             <Grid>
               <Image x:Name="SourceIcon" Width="20" Height="20" IsVisible="False" RenderOptions.BitmapInterpolationMode="HighQuality"/>
               <TextBlock x:Name="SourceGlyph" Text="music_note" FontSize="20"
                          FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                         Foreground="{DynamicResource ConsoleTextSecondaryBrush}"
+                         Foreground="{DynamicResource ContentSecondaryBrush}"
                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
           </Border>
@@ -106,8 +106,8 @@
 
       <!-- Track Info -->
       <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="12,0,16,0">
-        <TextBlock x:Name="MediaTitle" Text="Not playing" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ConsoleTextPrimaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
-        <TextBlock x:Name="MediaArtist" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource ConsoleTextSecondaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
+        <TextBlock x:Name="MediaTitle" Text="Not playing" FontSize="14" FontWeight="Bold" Foreground="{DynamicResource ContentPrimaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
+        <TextBlock x:Name="MediaArtist" FontSize="12" FontWeight="Medium" Foreground="{DynamicResource ContentSecondaryBrush}" TextTrimming="CharacterEllipsis" MaxLines="1"/>
       </StackPanel>
 
       <!-- Buttons -->

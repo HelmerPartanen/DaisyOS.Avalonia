@@ -238,7 +238,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                     {
                         new Border
                         {
-                            Background = new SolidColorBrush(Color.FromArgb(0x33, 0xFF, 0xFF, 0xFF)),
+                            Background = this.FindResource("StateSelectedBrush") as IBrush,
                             CornerRadius = new Avalonia.CornerRadius(6),
                             Width = 32,
                             Height = 32,
@@ -247,7 +247,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                                 Text = glyph,
                                 FontFamily = new FontFamily("avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"),
                                 FontSize = 18,
-                                Foreground = Brushes.White,
+                                Foreground = this.FindResource("ContentPrimaryBrush") as IBrush,
                                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
                                 VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
                             }

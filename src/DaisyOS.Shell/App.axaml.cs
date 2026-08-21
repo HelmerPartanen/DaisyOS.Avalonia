@@ -490,45 +490,54 @@ public partial class App : Application
 
     private void ApplyAccentPreference()
     {
-        var accent = _appearanceSettings.AccentColor switch
+        var accent = GetThemeColor(_appearanceSettings.AccentColor switch
         {
-            AccentColor.Blue => Color.Parse("#75A7FF"),
-            AccentColor.Purple => Color.Parse("#BB9CFF"),
-            AccentColor.Pink => Color.Parse("#FF9AC6"),
-            AccentColor.Red => Color.Parse("#FF9B91"),
-            AccentColor.Orange => Color.Parse("#FFB87B"),
-            AccentColor.Green => Color.Parse("#7DD9A0"),
-            AccentColor.Gray => Color.Parse("#C4C7CD"),
-            _ => ActualThemeVariant == ThemeVariant.Light ? Color.Parse("#56565B") : Colors.White
-        };
+            AccentColor.Blue => "AccentOptionBlueColor",
+            AccentColor.Purple => "AccentOptionPurpleColor",
+            AccentColor.Pink => "AccentOptionPinkColor",
+            AccentColor.Red => "AccentOptionRedColor",
+            AccentColor.Orange => "AccentOptionOrangeColor",
+            AccentColor.Green => "AccentOptionGreenColor",
+            AccentColor.Gray => "AccentOptionGrayColor",
+            _ => "AccentOptionDefaultColor"
+        });
+        var onAccent = GetHighestContrastContent(accent);
 
         if (Resources is null) return;
-        Resources["AccentColor"] = accent;
-        Resources["AccentBrush"] = new SolidColorBrush(accent);
-        Resources["AccentHoverBrush"] = new SolidColorBrush(Blend(accent, ActualThemeVariant == ThemeVariant.Light ? Colors.White : Colors.Black, 0.12));
-        Resources["AccentPressedBrush"] = new SolidColorBrush(Blend(accent, ActualThemeVariant == ThemeVariant.Light ? Colors.White : Colors.Black, 0.22));
-        Resources["OnAccentBrush"] = new SolidColorBrush(IsLight(accent) ? Colors.Black : Colors.White);
+        Resources["ActionPrimaryColor"] = accent;
+        Resources["ActionPrimaryBrush"] = new SolidColorBrush(accent);
+        Resources["ActionPrimaryHoverBrush"] = new SolidColorBrush(Blend(accent, onAccent, 0.12));
+        Resources["ActionPrimaryPressedBrush"] = new SolidColorBrush(Blend(accent, onAccent, 0.22));
+        Resources["ContentOnActionBrush"] = new SolidColorBrush(onAccent);
+    }
+
+    private Color GetThemeColor(string key)
+    {
+        if (Resources?.TryGetResource(key, ActualThemeVariant, out var value) == true && value is Color color)
+            return color;
+
+        return ActualThemeVariant == ThemeVariant.Light ? Colors.Black : Colors.White;
     }
 
     private void ApplyAccessibilityPreferences()
     {
         if (Resources is null) return;
 
-        var keys = new[] { "PrimarySurfaceBrush", "SecondarySurfaceBrush", "TertiarySurfaceBrush", "DividerBrush", "TextPrimaryBrush", "TextSecondaryBrush", "TextTertiaryBrush", "TextMutedBrush" };
+        var keys = new[] { "SurfaceBaseBrush", "SurfaceRaisedBrush", "SurfaceSunkenBrush", "StrokeDefaultBrush", "ContentPrimaryBrush", "ContentSecondaryBrush", "ContentTertiaryBrush", "ContentDisabledBrush" };
         foreach (var key in keys) Resources.Remove(key);
         if (!_appearanceSettings.HighContrast) return;
 
         var light = ActualThemeVariant == ThemeVariant.Light;
         var foreground = light ? Colors.Black : Colors.White;
         var background = light ? Colors.White : Colors.Black;
-        Resources["PrimarySurfaceBrush"] = new SolidColorBrush(background);
-        Resources["SecondarySurfaceBrush"] = new SolidColorBrush(background);
-        Resources["TertiarySurfaceBrush"] = new SolidColorBrush(light ? Color.Parse("#16000000") : Color.Parse("#1AFFFFFF"));
-        Resources["DividerBrush"] = new SolidColorBrush(foreground);
-        Resources["TextPrimaryBrush"] = new SolidColorBrush(foreground);
-        Resources["TextSecondaryBrush"] = new SolidColorBrush(foreground);
-        Resources["TextTertiaryBrush"] = new SolidColorBrush(foreground);
-        Resources["TextMutedBrush"] = new SolidColorBrush(foreground);
+        Resources["SurfaceBaseBrush"] = new SolidColorBrush(background);
+        Resources["SurfaceRaisedBrush"] = new SolidColorBrush(background);
+        Resources["SurfaceSunkenBrush"] = new SolidColorBrush(light ? Color.Parse("#16000000") : Color.Parse("#1AFFFFFF"));
+        Resources["StrokeDefaultBrush"] = new SolidColorBrush(foreground);
+        Resources["ContentPrimaryBrush"] = new SolidColorBrush(foreground);
+        Resources["ContentSecondaryBrush"] = new SolidColorBrush(foreground);
+        Resources["ContentTertiaryBrush"] = new SolidColorBrush(foreground);
+        Resources["ContentDisabledBrush"] = new SolidColorBrush(foreground);
     }
 
     private static Color Blend(Color from, Color to, double amount) => Color.FromArgb(
@@ -537,7 +546,31 @@ public partial class App : Application
         (byte)Math.Round(from.G + ((to.G - from.G) * amount)),
         (byte)Math.Round(from.B + ((to.B - from.B) * amount)));
 
-    private static bool IsLight(Color color) => ((color.R * 299) + (color.G * 587) + (color.B * 114)) / 1000 > 150;
+    private static Color GetHighestContrastContent(Color background) =>
+        ContrastRatio(background, Colors.White) >= ContrastRatio(background, Colors.Black)
+            ? Colors.White
+            : Colors.Black;
+
+    private static double ContrastRatio(Color first, Color second)
+    {
+        var firstLuminance = RelativeLuminance(first);
+        var secondLuminance = RelativeLuminance(second);
+        return (Math.Max(firstLuminance, secondLuminance) + 0.05) /
+               (Math.Min(firstLuminance, secondLuminance) + 0.05);
+    }
+
+    private static double RelativeLuminance(Color color)
+    {
+        static double Linearize(byte channel)
+        {
+            var value = channel / 255.0;
+            return value <= 0.04045 ? value / 12.92 : Math.Pow((value + 0.055) / 1.055, 2.4);
+        }
+
+        return (0.2126 * Linearize(color.R)) +
+               (0.7152 * Linearize(color.G)) +
+               (0.0722 * Linearize(color.B));
+    }
 
     private static readonly string[] NativeAppIds = ["notes", "calculator", "settings", "files"];
 

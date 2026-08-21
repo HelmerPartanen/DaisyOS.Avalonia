@@ -31,26 +31,26 @@
       <Setter Property="Height" Value="40"/>
       <Setter Property="Padding" Value="0"/>
       <Setter Property="BorderThickness" Value="0"/>
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}"/>
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMDRight}"/>
     </Style>
     <Style Selector="Button.VolumeOutputDetails:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryHoverBrush}"/>
     </Style>
     <Style Selector="Button.VolumeOutputDetails:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryPressedBrush}"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
-      <Setter Property="Background" Value="{DynamicResource SubtleSurfaceBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}"/>
       <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtleHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryHoverBrush}"/>
     </Style>
     <Style Selector="Button.OutputDevicesButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SubtlePressedBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryPressedBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem">
       <Setter Property="Height" Value="44"/>
@@ -60,28 +60,28 @@
       <Setter Property="Padding" Value="10,0"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource GhostHoverBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource ContentPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.SelectedOutputDevice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.ConnectedWifiNetwork">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.ConnectedWifiNetwork:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.ConnectedBluetoothDevice">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}"/>
     </Style>
     <Style Selector="Button.OutputDeviceItem.ConnectedBluetoothDevice:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}"/>
     </Style>
   </UserControl.Styles>
 
@@ -91,8 +91,8 @@
           HorizontalAlignment="Right"
           VerticalAlignment="Bottom"
           Padding="6"
-          Background="{DynamicResource PrimarySurfaceBrush}"
-          BorderBrush="{DynamicResource BorderBrush}"
+          Background="{DynamicResource SurfaceBaseBrush}"
+          BorderBrush="{DynamicResource StrokeSubtleBrush}"
           BorderThickness="2"
           CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
@@ -128,7 +128,7 @@
             <TextBlock Text="notifications" FontFamily="avares://DaisyOS.Shell/Assets/Icons/MaterialSymbolsRounded-Filled.ttf#Material Symbols Rounded"
                        FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
             <Border x:Name="NotificationBadge" Width="8" Height="8" CornerRadius="4"
-                    Background="{DynamicResource AccentBrush}" IsVisible="False"
+                    Background="{DynamicResource ActionPrimaryBrush}" IsVisible="False"
                     HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0"
                     ToolTip.Tip="Unread notifications" />
           </Grid>
@@ -141,8 +141,8 @@
   <Border x:Name="QuickSettingsPanel" IsVisible="False"
           Width="336" Height="304" Padding="16,16,16,0"
           HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,64"
-          Background="{DynamicResource PrimarySurfaceBrush}"
-          BorderBrush="{DynamicResource BorderBrush}"
+          Background="{DynamicResource SurfaceBaseBrush}"
+          BorderBrush="{DynamicResource StrokeSubtleBrush}"
           BorderThickness="2"
           CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
@@ -175,7 +175,7 @@
           <Grid ColumnDefinitions="*,1,40">
             <controls:QuickSettingsSlider x:Name="VolumeSlider" Grid.Column="0" Icon="volume_up"
                                           Minimum="0" Maximum="100" ValueChanged="OnVolumeChanged" ShowThumb="False" />
-            <Border Grid.Column="1" Background="{DynamicResource DividerBrush}" IsHitTestVisible="False"/>
+            <Border Grid.Column="1" Background="{DynamicResource StrokeDefaultBrush}" IsHitTestVisible="False"/>
             <Button Grid.Column="2" Classes="ShellButton VolumeOutputDetails" ToolTip.Tip="Choose output device"
                     Click="OnOutputDevicesButtonClicked">
               <TextBlock Text="chevron_right" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
@@ -184,13 +184,13 @@
           </Grid>
         </StackPanel>
         <Grid Grid.Row="1" Height="52" RowDefinitions="1,*">
-          <Border Grid.Row="0" Background="{DynamicResource DividerBrush}" Opacity="0.7"/>
+          <Border Grid.Row="0" Background="{DynamicResource StrokeDefaultBrush}" Opacity="0.7"/>
           <Grid Grid.Row="1" ColumnDefinitions="*,40">
             <StackPanel x:Name="BatteryStatusHost" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" IsVisible="False">
               <TextBlock Text="battery_full" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
-                         FontSize="18" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                         FontSize="18" Foreground="{DynamicResource ContentPrimaryBrush}"/>
               <TextBlock x:Name="BatteryText" Text="Battery unavailable" FontSize="13" VerticalAlignment="Center"
-                         Foreground="{DynamicResource TextPrimaryBrush}"/>
+                         Foreground="{DynamicResource ContentPrimaryBrush}"/>
             </StackPanel>
             <Button Grid.Column="1" Classes="ShellButton" Width="40" Height="40" VerticalAlignment="Center"
                     ToolTip.Tip="Settings" Click="OnSettingsClicked">
@@ -201,15 +201,15 @@
       </Grid>
       <StackPanel x:Name="OutputDevicesPage" IsVisible="False" Spacing="12">
         <controls:FlyoutPageHeader Title="Output devices" BackClicked="OnOutputDevicesBackClicked"/>
-        <StackPanel x:Name="OutputDevicesHost" Spacing="2"><TextBlock Text="Loading devices…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/></StackPanel>
+        <StackPanel x:Name="OutputDevicesHost" Spacing="2"><TextBlock Text="Loading devices…" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="10,8"/></StackPanel>
       </StackPanel>
       <StackPanel x:Name="WifiNetworksPage" IsVisible="False" Spacing="12">
         <controls:FlyoutPageHeader Title="Wi-Fi networks" BackClicked="OnWifiNetworksBackClicked"/>
-        <StackPanel x:Name="WifiNetworksHost" Spacing="2"><TextBlock Text="Loading networks…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/></StackPanel>
+        <StackPanel x:Name="WifiNetworksHost" Spacing="2"><TextBlock Text="Loading networks…" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="10,8"/></StackPanel>
       </StackPanel>
       <StackPanel x:Name="BluetoothDevicesPage" IsVisible="False" Spacing="12">
         <controls:FlyoutPageHeader Title="Bluetooth devices" BackClicked="OnBluetoothDevicesBackClicked"/>
-        <StackPanel x:Name="BluetoothDevicesHost" Spacing="2"><TextBlock Text="Loading devices…" Foreground="{DynamicResource TextSecondaryBrush}" Margin="10,8"/></StackPanel>
+        <StackPanel x:Name="BluetoothDevicesHost" Spacing="2"><TextBlock Text="Loading devices…" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="10,8"/></StackPanel>
       </StackPanel>
     </Grid>
   </Border>
@@ -219,8 +219,8 @@
           
     <!-- Calendar Overlay -->
   <Border x:Name="CalendarPanel" IsVisible="False"
-          Padding="16" Background="{DynamicResource PrimarySurfaceBrush}"
-          BorderBrush="{DynamicResource BorderBrush}" BorderThickness="2"
+          Padding="16" Background="{DynamicResource SurfaceBaseBrush}"
+          BorderBrush="{DynamicResource StrokeSubtleBrush}" BorderThickness="2"
           CornerRadius="{DynamicResource RoundedXL}"
           HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,64">
     <systemBar:CustomCalendarView x:Name="CalendarView" />

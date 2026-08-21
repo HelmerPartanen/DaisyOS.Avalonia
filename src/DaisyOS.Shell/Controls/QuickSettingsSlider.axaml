@@ -8,7 +8,7 @@
   <!-- The glyph overlays the track and never creates a false minimum fill. -->
   <Grid x:Name="RangeSurface">
     <Border x:Name="TrackBackground"
-            Background="{DynamicResource SubtleSurfaceBrush}"
+            Background="{DynamicResource ActionSecondaryBrush}"
             BorderBrush="{Binding TrackBorderBrush, ElementName=Root}"
             BorderThickness="{Binding TrackBorderThickness, ElementName=Root}"
             CornerRadius="{Binding TrackCornerRadius, ElementName=Root}"
@@ -17,11 +17,11 @@
         <!-- The fill deliberately owns no corner geometry. The clipped track is
              the single rounded silhouette at every value, including 0 and 100. -->
         <Border x:Name="ProgressFill"
-                Background="{DynamicResource AccentBrush}"
+                Background="{DynamicResource ActionPrimaryBrush}"
                 HorizontalAlignment="Left" />
         <Border x:Name="ProgressThumb"
                 Width="8"
-                Background="{DynamicResource OnAccentBrush}"
+                Background="{DynamicResource ContentOnActionBrush}"
                 CornerRadius="{DynamicResource RoundedXS}"
                 HorizontalAlignment="Left"
                 IsVisible="{Binding ShowThumb, ElementName=Root}" />
@@ -30,7 +30,7 @@
     <TextBlock Text="{Binding Icon, ElementName=Root}"
                FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"
                FontSize="20"
-               Foreground="{DynamicResource OnAccentBrush}"
+               Foreground="{DynamicResource ContentOnActionBrush}"
                Margin="14,0,0,0"
                HorizontalAlignment="Left"
                VerticalAlignment="Center"
