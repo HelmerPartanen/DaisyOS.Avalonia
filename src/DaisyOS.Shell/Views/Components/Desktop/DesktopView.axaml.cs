@@ -70,7 +70,7 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             Point posInItem = itemView != null ? e.GetPosition(itemView) : new Point(0, 0);
             Size itemSize = itemView != null ? itemView.Bounds.Size : new Size(74, 88);
 
-            if (itemVm is { IsFixedPosition: false })
+            if (itemVm != null)
             {
                 e.Pointer.Capture(surface);
             }

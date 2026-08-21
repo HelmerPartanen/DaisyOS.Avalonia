@@ -35,7 +35,7 @@ public class DesktopViewModelTests
     }
 
     [Fact]
-    public void Trash_IsAlwaysTheFirstFixedDesktopItem()
+    public void Trash_IsAddedAsTheFirstDesktopItem()
     {
         var vm = new DesktopViewModel();
         var trash = Assert.Single(vm.Items, item => item.Id.Value == DesktopItemViewModel.TrashItemId);
@@ -43,21 +43,16 @@ public class DesktopViewModelTests
 
         vm.CalculateLayout(metrics);
 
-        Assert.True(trash.IsFixedPosition);
         Assert.Equal("Trash", trash.Label);
         Assert.Equal(new GridCell(0, 0), vm.GetCommittedCell(trash.Id));
-        Assert.False(vm.ReorderItem(trash.Id, new GridCell(0, 1), metrics));
     }
 
     [Fact]
-    public void DesktopApps_CannotDisplaceTrashFromTheFirstCell()
+    public void Trash_CanBeReorderedLikeAnyOtherDesktopItem()
     {
         var vm = new DesktopViewModel();
         vm.ClearItems();
-        var trash = new DesktopItemViewModel(new DesktopItemState(DesktopItemViewModel.TrashItemId, "primary", 0, 0, 0))
-        {
-            IsFixedPosition = true
-        };
+        var trash = new DesktopItemViewModel(new DesktopItemState(DesktopItemViewModel.TrashItemId, "primary", 0, 0, 0));
         var app = new DesktopItemViewModel(new DesktopItemState("app", "primary", 0, 1, 1));
         var metrics = new DesktopGridMetrics("primary", new Rect(0, 0, 800, 600), 96.0, 100, 100);
 
@@ -65,9 +60,9 @@ public class DesktopViewModelTests
         vm.AddItem(app);
         vm.CalculateLayout(metrics);
 
-        Assert.False(vm.ReorderItem(app.Id, new GridCell(0, 0), metrics));
-        Assert.Equal(new GridCell(0, 0), vm.GetCommittedCell(trash.Id));
-        Assert.Equal(new GridCell(0, 1), vm.GetCommittedCell(app.Id));
+        Assert.True(vm.ReorderItem(trash.Id, new GridCell(0, 1), metrics));
+        Assert.Equal(new GridCell(0, 1), vm.GetCommittedCell(trash.Id));
+        Assert.Equal(new GridCell(0, 0), vm.GetCommittedCell(app.Id));
     }
 
     [Fact]

@@ -12,6 +12,8 @@
     <Style Selector="Button.TaskbarApp">
       <Setter Property="Width" Value="40"/>
       <Setter Property="Height" Value="40"/>
+      <!-- 16 px taskbar radius minus its 2 px border and 4 px inset. -->
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}"/>
     </Style>
     <Style Selector="Button.TaskbarApp.LauncherActive /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource StateHoverBrush}"/>
@@ -83,7 +85,7 @@
 
       <!-- Start Button -->
       <Button x:Name="StartButton" Classes="ShellButton TaskbarApp" ToolTip.Tip="Start Menu">
-        <Border Background="Transparent" CornerRadius="{DynamicResource RoundedSM}">
+        <Border Background="Transparent" CornerRadius="{DynamicResource RoundedMD}">
           <!-- Match the fill color used by active Quick Settings controls. -->
           <svg:Svg Width="26" Height="26"
                    Path="avares://DaisyOS.Shell/Assets/Brand/favicon.svg"

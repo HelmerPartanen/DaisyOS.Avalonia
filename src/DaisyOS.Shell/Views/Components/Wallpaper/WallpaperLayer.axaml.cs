@@ -252,7 +252,7 @@ public partial class WallpaperLayer : UserControl
     private static string ResolveWallpaperPath(string uri)
     {
         if (string.IsNullOrWhiteSpace(uri))
-            return "src/DaisyOS.Shell/Assets/Wallpapers/Green Field.mp4";
+            return "src/DaisyOS.Shell/Assets/Wallpapers/Cat.mp4";
 
         if (File.Exists(uri))
             return uri;
@@ -261,7 +261,7 @@ public partial class WallpaperLayer : UserControl
         if (File.Exists(relativePath))
             return relativePath;
 
-        string defaultTarget = "src/DaisyOS.Shell/Assets/Wallpapers/Green Field.mp4";
+        string defaultTarget = "src/DaisyOS.Shell/Assets/Wallpapers/Cat.mp4";
         if (File.Exists(defaultTarget))
             return defaultTarget;
 

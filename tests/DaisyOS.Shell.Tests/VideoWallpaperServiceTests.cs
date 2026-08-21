@@ -24,7 +24,7 @@ public class VideoWallpaperServiceTests
     [Fact]
     public void VideoWallpaperService_LoadGreenField_Succeeds()
     {
-        const string videoPath = "src/DaisyOS.Shell/Assets/Wallpapers/Green Field.mp4";
+        const string videoPath = "src/DaisyOS.Shell/Assets/Wallpapers/Cat.mp4";
         if (!global::System.IO.File.Exists(videoPath))
             return;
 

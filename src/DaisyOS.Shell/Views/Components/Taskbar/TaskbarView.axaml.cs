@@ -239,7 +239,9 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                         new Border
                         {
                             Background = this.FindResource("StateSelectedBrush") as IBrush,
-                            CornerRadius = new Avalonia.CornerRadius(6),
+                            // Keep generated taskbar icons on the same 10 px item geometry
+                            // as the built-in app buttons.
+                            CornerRadius = new Avalonia.CornerRadius(10),
                             Width = 32,
                             Height = 32,
                             Child = new TextBlock

@@ -37,7 +37,7 @@ public sealed class DesktopDragController
         DesktopGridMetrics? metrics,
         Action? invalidatePanel = null)
     {
-        if (item is null || item.IsFixedPosition) return;
+        if (item is null) return;
 
         _pressedItem = item;
         _pressedItemSize = itemSize;
