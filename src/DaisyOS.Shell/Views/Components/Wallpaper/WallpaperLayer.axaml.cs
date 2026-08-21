@@ -223,7 +223,9 @@ public partial class WallpaperLayer : UserControl
 
             string resolvedPath = ResolveWallpaperPath(wallpaperUri);
 
-            if (!string.IsNullOrEmpty(resolvedPath) && (resolvedPath.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) || File.Exists(resolvedPath)))
+            // Never hand a still image to the video decoder. Besides wasting a decoder attempt,
+            // that made ordinary JPEG wallpapers emit VAAPI initialisation errors.
+            if (!string.IsNullOrEmpty(resolvedPath) && WallpaperFileTypes.IsVideo(resolvedPath))
             {
                 _videoWallpaperService = new VideoWallpaperService();
                 if (_videoWallpaperService.Load(resolvedPath))

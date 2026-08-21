@@ -17,6 +17,7 @@ using DaisyOS.System.Bluetooth;
 using DaisyOS.System.Networking;
 using DaisyOS.System.Processes;
 using DaisyOS.Shell.Controls;
+using DaisyOS.Shell.Services.Wallpaper;
 using DaisyOS.Shell.Services.Wallpaper.VideoWallpaper;
 
 namespace DaisyOS.Shell.Apps.System.Settings
@@ -631,8 +632,12 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 AllowMultiple = false,
                 FileTypeFilter = new[]
                 {
-                    new FilePickerFileType("Images") { Patterns = new[] { "*.jpg", "*.jpeg", "*.png", "*.webp", "*.bmp", "*.gif" } },
-                    new FilePickerFileType("Videos") { Patterns = new[] { "*.mp4", "*.webm", "*.mkv", "*.mov" } }
+                    // Keep the default filter inclusive: some portal/native pickers expose only
+                    // the first filter until the user changes it manually.
+                    new FilePickerFileType("Wallpaper files") { Patterns = WallpaperFileTypes.WallpaperPatterns },
+                    new FilePickerFileType("Images") { Patterns = WallpaperFileTypes.ImagePatterns },
+                    new FilePickerFileType("Videos") { Patterns = WallpaperFileTypes.VideoPatterns },
+                    FilePickerFileTypes.All
                 }
             });
 
@@ -734,14 +739,13 @@ namespace DaisyOS.Shell.Apps.System.Settings
             try
             {
                 var resolvedPath = ResolveWallpaperPath(wallpaperUri);
-                var extension = Path.GetExtension(resolvedPath).ToLowerInvariant();
                 Bitmap? preview = null;
 
-                if (File.Exists(resolvedPath) && extension is ".jpg" or ".jpeg" or ".png" or ".webp" or ".bmp" or ".gif")
+                if (File.Exists(resolvedPath) && WallpaperFileTypes.IsImage(resolvedPath))
                 {
                     preview = new Bitmap(resolvedPath);
                 }
-                else if (IsVideoExtension(extension))
+                else if (WallpaperFileTypes.IsVideo(resolvedPath))
                 {
                     preview = await LoadVideoPreviewAsync(resolvedPath);
                 }
@@ -764,8 +768,6 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 Console.WriteLine($"Couldn’t create wallpaper preview: {ex.Message}");
             }
         }
-
-        private static bool IsVideoExtension(string extension) => extension is ".mp4" or ".webm" or ".mkv" or ".mov";
 
         private static string ResolveWallpaperPath(string wallpaperUri)
         {
