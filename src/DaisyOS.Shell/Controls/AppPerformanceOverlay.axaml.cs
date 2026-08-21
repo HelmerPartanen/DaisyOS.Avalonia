@@ -16,7 +16,7 @@ public partial class AppPerformanceOverlay : UserControl
         AvaloniaProperty.Register<AppPerformanceOverlay, string>(nameof(AppName), "App");
 
     public static readonly StyledProperty<bool> IsOverlayVisibleProperty =
-        AvaloniaProperty.Register<AppPerformanceOverlay, bool>(nameof(IsOverlayVisible), true);
+        AvaloniaProperty.Register<AppPerformanceOverlay, bool>(nameof(IsOverlayVisible), false);
 
     public string AppName
     {
@@ -50,7 +50,6 @@ public partial class AppPerformanceOverlay : UserControl
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
         _monitor ??= new AppPerformanceMonitor();
-        StartTimer();
         UpdateAppName(AppName);
         UpdateVisibility(IsOverlayVisible);
     }

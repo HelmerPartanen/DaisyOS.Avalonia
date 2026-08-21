@@ -34,7 +34,7 @@
     </Border>
 
     <!-- App Performance Overlay Layer -->
-    <controls:AppPerformanceOverlay x:Name="PerfOverlay" AppName="Calculator" IsOverlayVisible="True" Margin="0,48,16,0" />
+    <controls:AppPerformanceOverlay x:Name="PerfOverlay" AppName="Calculator" IsOverlayVisible="False" Margin="0,48,16,0" />
 
   </Grid>
 </Window>

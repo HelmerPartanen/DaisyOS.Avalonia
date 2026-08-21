@@ -36,7 +36,7 @@
     </Border>
 
     <!-- App Performance Overlay Layer -->
-    <controls:AppPerformanceOverlay x:Name="PerfOverlay" AppName="Calendar" IsOverlayVisible="True" Margin="0,48,16,0" />
+    <controls:AppPerformanceOverlay x:Name="PerfOverlay" AppName="Calendar" IsOverlayVisible="False" Margin="0,48,16,0" />
 
     <!-- Edge resize handles for custom frameless window -->
     <Border Name="ResizeTop" Height="8" Margin="10,10,10,0" VerticalAlignment="Top" Background="Transparent" Cursor="TopSide" PointerPressed="OnResizeTopPressed" />
