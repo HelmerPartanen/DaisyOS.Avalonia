@@ -12,7 +12,8 @@
     <!-- Items Layer -->
     <ItemsControl
         x:Name="ItemsControl"
-        ItemsSource="{Binding Items}">
+        ItemsSource="{Binding Items}"
+        DoubleTapped="OnDesktopItemDoubleTapped">
       <ItemsControl.Styles>
         <Style Selector="ItemsControl > ContentPresenter">
           <Setter Property="Transitions">

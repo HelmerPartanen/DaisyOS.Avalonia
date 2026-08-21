@@ -35,6 +35,42 @@ public class DesktopViewModelTests
     }
 
     [Fact]
+    public void Trash_IsAlwaysTheFirstFixedDesktopItem()
+    {
+        var vm = new DesktopViewModel();
+        var trash = Assert.Single(vm.Items, item => item.Id.Value == DesktopItemViewModel.TrashItemId);
+        var metrics = new DesktopGridMetrics("primary", new Rect(0, 0, 800, 600), 96.0, 100, 100);
+
+        vm.CalculateLayout(metrics);
+
+        Assert.True(trash.IsFixedPosition);
+        Assert.Equal("Trash", trash.Label);
+        Assert.Equal(new GridCell(0, 0), vm.GetCommittedCell(trash.Id));
+        Assert.False(vm.ReorderItem(trash.Id, new GridCell(0, 1), metrics));
+    }
+
+    [Fact]
+    public void DesktopApps_CannotDisplaceTrashFromTheFirstCell()
+    {
+        var vm = new DesktopViewModel();
+        vm.ClearItems();
+        var trash = new DesktopItemViewModel(new DesktopItemState(DesktopItemViewModel.TrashItemId, "primary", 0, 0, 0))
+        {
+            IsFixedPosition = true
+        };
+        var app = new DesktopItemViewModel(new DesktopItemState("app", "primary", 0, 1, 1));
+        var metrics = new DesktopGridMetrics("primary", new Rect(0, 0, 800, 600), 96.0, 100, 100);
+
+        vm.AddItem(trash);
+        vm.AddItem(app);
+        vm.CalculateLayout(metrics);
+
+        Assert.False(vm.ReorderItem(app.Id, new GridCell(0, 0), metrics));
+        Assert.Equal(new GridCell(0, 0), vm.GetCommittedCell(trash.Id));
+        Assert.Equal(new GridCell(0, 1), vm.GetCommittedCell(app.Id));
+    }
+
+    [Fact]
     public void ReorderItem_ReflowsVerticallyWithinAColumn()
     {
         var vm = new DesktopViewModel();

@@ -11,8 +11,12 @@ namespace DaisyOS.Shell.ViewModels;
 
 public class DesktopItemViewModel : INotifyPropertyChanged
 {
+    public const string TrashItemId = "daisyos://trash";
+
     public DesktopItemId Id { get; }
     public DesktopItemState State { get; }
+    /// <summary>True for shell-owned locations that reserve a desktop cell.</summary>
+    public bool IsFixedPosition { get; init; }
 
     private string _label = string.Empty;
     public string Label
@@ -139,10 +143,19 @@ public class DesktopViewModel : INotifyPropertyChanged
 
     private void LoadDesktopItems()
     {
+        // Trash is a shell-owned location rather than a .desktop entry. It is always
+        // present and reserves the first cell before ordinary desktop apps are loaded.
+        AddItem(new DesktopItemViewModel(new DesktopItemState(DesktopItemViewModel.TrashItemId, "primary", 0, 0, 0))
+        {
+            Label = "Trash",
+            IconPath = "avares://DaisyOS.Shell/Assets/AppIcons/Trash.png",
+            IsFixedPosition = true
+        });
+
         var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         if (!Directory.Exists(desktopPath)) return;
 
-        int index = 0;
+        int index = 1;
         foreach (var file in Directory.GetFiles(desktopPath, "*.desktop"))
         {
             var parsed = DesktopItemLoader.ParseDesktopFile(file);
@@ -190,7 +203,7 @@ public class DesktopViewModel : INotifyPropertyChanged
 
     public bool ReorderItem(DesktopItemId sourceId, GridCell targetCell, DesktopGridMetrics? metrics)
     {
-        if (metrics == null || !_itemMap.TryGetValue(sourceId, out var sourceItem))
+        if (metrics == null || !_itemMap.TryGetValue(sourceId, out var sourceItem) || sourceItem.IsFixedPosition)
             return false;
 
         if (!metrics.IsValid(targetCell))
@@ -202,29 +215,40 @@ public class DesktopViewModel : INotifyPropertyChanged
 
         // Keep desktop reordering column-major: items move vertically inside a
         // column, and only wrap from a full column's bottom to the top of the
-        // next one. Swapping arbitrary cells causes unrelated horizontal FLIP
-        // motion and leaves gaps in the desktop flow.
+        // next one. Shell-owned items reserve their slots and never move.
+        var fixedItems = Items.Where(item => item.IsFixedPosition).ToList();
         var orderedItems = Items
+            .Where(item => !item.IsFixedPosition)
             .OrderBy(item => metrics.GetSlotIndex(GetCommittedCell(item.Id)))
             .ToList();
 
         var sourceIndex = orderedItems.FindIndex(item => item.Id.Equals(sourceId));
-        var targetIndex = Math.Min(metrics.GetSlotIndex(targetCell), orderedItems.Count - 1);
+        var reservedSlotCount = fixedItems.Count;
+        var targetIndex = Math.Clamp(metrics.GetSlotIndex(targetCell) - reservedSlotCount, 0, orderedItems.Count - 1);
         if (sourceIndex < 0 || sourceIndex == targetIndex)
             return false;
 
         orderedItems.RemoveAt(sourceIndex);
         orderedItems.Insert(targetIndex, sourceItem);
 
+        foreach (var fixedItem in fixedItems)
+        {
+            var fixedCell = new GridCell(fixedItem.State.Column, fixedItem.State.Row);
+            _committedCells[fixedItem.Id] = fixedCell;
+            var fixedOrigin = metrics.GetCellOrigin(fixedCell);
+            fixedItem.X = fixedOrigin.X;
+            fixedItem.Y = fixedOrigin.Y;
+        }
+
         for (var slot = 0; slot < orderedItems.Count; slot++)
         {
             var item = orderedItems[slot];
-            var cell = metrics.GetCellForSlot(slot);
+            var cell = metrics.GetCellForSlot(slot + reservedSlotCount);
 
             _committedCells[item.Id] = cell;
             item.State.Column = cell.Column;
             item.State.Row = cell.Row;
-            item.State.SortOrder = slot;
+            item.State.SortOrder = slot + reservedSlotCount;
 
             var origin = metrics.GetCellOrigin(cell);
             item.X = origin.X;

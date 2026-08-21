@@ -9,6 +9,7 @@ using DaisyOS.Shell.Controls;
 using DaisyOS.Shell.Services.Desktop;
 using DaisyOS.Shell.ViewModels;
 using DaisyOS.System.Display;
+using DaisyOS.System.Processes;
 using Point = Avalonia.Point;
 
 namespace DaisyOS.Shell.Views.Components.Desktop
@@ -69,7 +70,7 @@ namespace DaisyOS.Shell.Views.Components.Desktop
             Point posInItem = itemView != null ? e.GetPosition(itemView) : new Point(0, 0);
             Size itemSize = itemView != null ? itemView.Bounds.Size : new Size(74, 88);
 
-            if (itemVm != null)
+            if (itemVm is { IsFixedPosition: false })
             {
                 e.Pointer.Capture(surface);
             }
@@ -103,6 +104,21 @@ namespace DaisyOS.Shell.Views.Components.Desktop
                 _viewModel,
                 CurrentMetrics,
                 InvalidateReorderPanel);
+        }
+
+        private void OnDesktopItemDoubleTapped(object? sender, TappedEventArgs e)
+        {
+            var item = (e.Source as Visual)?.FindAncestorOfType<DesktopItemView>()?.DataContext as DesktopItemViewModel;
+            if (item?.Id.Value != DesktopItemViewModel.TrashItemId)
+            {
+                return;
+            }
+
+            var result = new SafeProcessLauncher().Launch("xdg-open", ["trash:///"]);
+            if (!result.Succeeded)
+            {
+                (Application.Current as App)?.Feedback.Show("DaisyOS could not open Trash.");
+            }
         }
 
         private void OnPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
