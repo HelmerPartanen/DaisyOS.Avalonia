@@ -96,8 +96,9 @@
       <Canvas x:Name="AppIconsCanvas" Height="40">
         <Button Classes="ShellButton TaskbarApp TaskbarAppIcon" Tag="calendar" ToolTip.Tip="Calendar">
           <Grid Width="32" Height="32">
-            <TextBlock Text="event" FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" 
-                       FontSize="22" Foreground="{DynamicResource ContentPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+            <Image Source="avares://DaisyOS.Shell/Assets/AppIcons/CalendarIcon.png"
+                   RenderOptions.BitmapInterpolationMode="HighQuality"
+                   Width="26" Height="26" IsHitTestVisible="False" />
           </Grid>
         </Button>
 
