@@ -35,7 +35,7 @@ public class DesktopViewModelTests
     }
 
     [Fact]
-    public void ReorderItem_SwapsOccupiedCellsCorrectly()
+    public void ReorderItem_ReflowsVerticallyWithinAColumn()
     {
         var vm = new DesktopViewModel();
         vm.ClearItems();
@@ -49,31 +49,45 @@ public class DesktopViewModelTests
         vm.AddItem(itemB);
         vm.CalculateLayout(metrics);
 
-        // Reorder A (cell 0,0) to cell 0,1 (occupied by B)
-        bool reordered = vm.ReorderItem(itemA.Id, new GridCell(0, 1), metrics);
+        var itemC = new DesktopItemViewModel(new DesktopItemState("C", "primary", 0, 2, 2));
+        vm.AddItem(itemC);
+        vm.CalculateLayout(metrics);
+
+        // Reorder A from the top to the bottom of its column.
+        bool reordered = vm.ReorderItem(itemA.Id, new GridCell(0, 2), metrics);
         Assert.True(reordered);
 
-        // Verify committed cells swapped
-        Assert.Equal(new GridCell(0, 1), vm.GetCommittedCell(itemA.Id));
+        // The other items move only up and down within column zero.
+        Assert.Equal(new GridCell(0, 2), vm.GetCommittedCell(itemA.Id));
         Assert.Equal(new GridCell(0, 0), vm.GetCommittedCell(itemB.Id));
+        Assert.Equal(new GridCell(0, 1), vm.GetCommittedCell(itemC.Id));
     }
 
     [Fact]
-    public void ReorderItem_ToEmptyCell_MovesItemToTargetCell()
+    public void ReorderItem_WrapsToTheNextColumnOnlyAfterFillingTheCurrentOne()
     {
         var vm = new DesktopViewModel();
         vm.ClearItems();
 
-        var metrics = new DesktopGridMetrics("primary", new Rect(0, 0, 800, 600), 96.0, 100, 100);
+        var metrics = new DesktopGridMetrics("primary", new Rect(0, 0, 200, 300), 96.0, 100, 100);
 
         var itemA = new DesktopItemViewModel(new DesktopItemState("A", "primary", 0, 0, 0));
+        var itemB = new DesktopItemViewModel(new DesktopItemState("B", "primary", 0, 1, 1));
+        var itemC = new DesktopItemViewModel(new DesktopItemState("C", "primary", 0, 2, 2));
+        var itemD = new DesktopItemViewModel(new DesktopItemState("D", "primary", 1, 0, 3));
         vm.AddItem(itemA);
+        vm.AddItem(itemB);
+        vm.AddItem(itemC);
+        vm.AddItem(itemD);
         vm.CalculateLayout(metrics);
 
-        // Reorder A to empty cell (3, 2)
-        bool reordered = vm.ReorderItem(itemA.Id, new GridCell(3, 2), metrics);
+        // Moving D to the first slot pushes C across the full column boundary.
+        bool reordered = vm.ReorderItem(itemD.Id, new GridCell(0, 0), metrics);
         Assert.True(reordered);
-        Assert.Equal(new GridCell(3, 2), vm.GetCommittedCell(itemA.Id));
+        Assert.Equal(new GridCell(0, 0), vm.GetCommittedCell(itemD.Id));
+        Assert.Equal(new GridCell(0, 1), vm.GetCommittedCell(itemA.Id));
+        Assert.Equal(new GridCell(0, 2), vm.GetCommittedCell(itemB.Id));
+        Assert.Equal(new GridCell(1, 0), vm.GetCommittedCell(itemC.Id));
     }
 
     [Fact]

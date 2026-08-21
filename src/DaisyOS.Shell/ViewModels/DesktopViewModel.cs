@@ -200,26 +200,36 @@ public class DesktopViewModel : INotifyPropertyChanged
         if (currentCell.Equals(targetCell))
             return false;
 
-        var occupant = Items.FirstOrDefault(i => !i.Id.Equals(sourceId) && GetCommittedCell(i.Id).Equals(targetCell));
+        // Keep desktop reordering column-major: items move vertically inside a
+        // column, and only wrap from a full column's bottom to the top of the
+        // next one. Swapping arbitrary cells causes unrelated horizontal FLIP
+        // motion and leaves gaps in the desktop flow.
+        var orderedItems = Items
+            .OrderBy(item => metrics.GetSlotIndex(GetCommittedCell(item.Id)))
+            .ToList();
 
-        if (occupant != null)
+        var sourceIndex = orderedItems.FindIndex(item => item.Id.Equals(sourceId));
+        var targetIndex = Math.Min(metrics.GetSlotIndex(targetCell), orderedItems.Count - 1);
+        if (sourceIndex < 0 || sourceIndex == targetIndex)
+            return false;
+
+        orderedItems.RemoveAt(sourceIndex);
+        orderedItems.Insert(targetIndex, sourceItem);
+
+        for (var slot = 0; slot < orderedItems.Count; slot++)
         {
-            _committedCells[occupant.Id] = currentCell;
-            occupant.State.Column = currentCell.Column;
-            occupant.State.Row = currentCell.Row;
-            occupant.State.SortOrder = metrics.GetSlotIndex(currentCell);
-            var occupantOrigin = metrics.GetCellOrigin(currentCell);
-            occupant.X = occupantOrigin.X;
-            occupant.Y = occupantOrigin.Y;
-        }
+            var item = orderedItems[slot];
+            var cell = metrics.GetCellForSlot(slot);
 
-        _committedCells[sourceId] = targetCell;
-        sourceItem.State.Column = targetCell.Column;
-        sourceItem.State.Row = targetCell.Row;
-        sourceItem.State.SortOrder = metrics.GetSlotIndex(targetCell);
-        var targetOrigin = metrics.GetCellOrigin(targetCell);
-        sourceItem.X = targetOrigin.X;
-        sourceItem.Y = targetOrigin.Y;
+            _committedCells[item.Id] = cell;
+            item.State.Column = cell.Column;
+            item.State.Row = cell.Row;
+            item.State.SortOrder = slot;
+
+            var origin = metrics.GetCellOrigin(cell);
+            item.X = origin.X;
+            item.Y = origin.Y;
+        }
 
         return true;
     }
