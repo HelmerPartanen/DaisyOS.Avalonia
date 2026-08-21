@@ -448,17 +448,19 @@ namespace DaisyOS.Shell.Apps.System.Settings
         private Border VolumeRow(string title, bool input)
         {
             var app = Application.Current as App;
-            var slider = new Slider
+            var slider = new QuickSettingsSlider
             {
                 Minimum = 0,
                 Maximum = 100,
-                Width = 156,
+                Width = 200,
                 Value = app?.SessionState.LastKnownVolume ?? 72,
+                Icon = input ? "mic" : "volume_up",
+                ShowThumb = false,
+                TrackCornerRadius = new CornerRadius(10),
                 VerticalAlignment = VerticalAlignment.Center
             };
-            slider.PropertyChanged += (_, args) =>
+            slider.ValueChanged += (_, _) =>
             {
-                if (args.Property != Slider.ValueProperty) return;
                 var volume = Math.Round(slider.Value);
                 if (!input && app is not null) app.SessionState.LastKnownVolume = volume;
                 var audio = new LinuxAudioService(new SafeCommandRunner());
@@ -492,10 +494,11 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
         private void UpdateContentWidth()
         {
-            // Reserve a stable gutter for the overlay scrollbar so it never obscures the
-            // last column of a grouped row or moves content when it becomes visible.
+            // Scrollbars live at the panel edge. Reserve a stable gutter plus readable
+            // content insets here, instead of shrinking the ScrollViewer itself.
             const double scrollbarGutter = 16;
-            var width = Math.Min(900, ContentArea.Bounds.Width - scrollbarGutter);
+            const double contentHorizontalInset = 72;
+            var width = Math.Min(900, ContentArea.Bounds.Width - scrollbarGutter - contentHorizontalInset);
             if (width <= 0)
             {
                 return;
@@ -518,7 +521,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 ? value as IBrush
                 : null;
 
-        private async Task LoadVolumeAsync(Slider slider, bool input)
+        private async Task LoadVolumeAsync(QuickSettingsSlider slider, bool input)
         {
             try
             {
