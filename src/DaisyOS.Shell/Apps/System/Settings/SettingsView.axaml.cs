@@ -16,6 +16,7 @@ using DaisyOS.System.Audio;
 using DaisyOS.System.Bluetooth;
 using DaisyOS.System.Networking;
 using DaisyOS.System.Processes;
+using DaisyOS.Shell.Controls;
 using DaisyOS.Shell.Services.Wallpaper.VideoWallpaper;
 
 namespace DaisyOS.Shell.Apps.System.Settings
@@ -31,6 +32,13 @@ namespace DaisyOS.Shell.Apps.System.Settings
         {
             InitializeComponent();
             ContentArea.SizeChanged += (_, _) => UpdateContentWidth();
+            NavigationSearch.PropertyChanged += (_, args) =>
+            {
+                if (args.Property == SearchBar.TextProperty)
+                {
+                    FilterNavigation(args.GetNewValue<string>() ?? string.Empty);
+                }
+            };
             AttachedToVisualTree += (_, _) =>
             {
                 if (Application.Current is App app)
@@ -86,6 +94,23 @@ namespace DaisyOS.Shell.Apps.System.Settings
         private void OnBackToSystemListClicked(object? sender, RoutedEventArgs e)
         {
             ShowCategory("System");
+        }
+
+        private void FilterNavigation(string query)
+        {
+            var search = query.Trim();
+            foreach (var control in NavigationItems.Children)
+            {
+                if (control is not Button button)
+                {
+                    continue;
+                }
+
+                var name = button.Tag?.ToString() ?? string.Empty;
+                var searchableName = name == "Privacy" ? "Privacy security" : name;
+                button.IsVisible = string.IsNullOrWhiteSpace(search) ||
+                                   searchableName.Contains(search, StringComparison.OrdinalIgnoreCase);
+            }
         }
 
         private void ShowCategory(string category)
@@ -336,17 +361,6 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
         private void AddSection(string label, string? description, params Control[] rows)
         {
-            // Appearance separates its top-level sections with a full-width hairline and
-            // generous surrounding rhythm. Preserve that hierarchy without carding rows.
-            if (CategoryContent.Children.Count > 1)
-            {
-                CategoryContent.Children.Add(new Border
-                {
-                    Height = 1,
-                    Background = TryBrush("StrokeDefaultBrush")
-                });
-            }
-
             var section = new StackPanel { Spacing = 12 };
             section.Children.Add(new TextBlock
             {
@@ -357,15 +371,26 @@ namespace DaisyOS.Shell.Apps.System.Settings
             });
             if (!string.IsNullOrWhiteSpace(description)) section.Children.Add(Secondary(description));
 
-            // Match Appearance: section labels and spacing establish structure, without
-            // introducing another card surface around ordinary settings.
-            var rowsHost = new StackPanel { Spacing = 16 };
-            foreach (var row in rows)
+            // Group related preferences into one calm, scannable surface. Individual rows
+            // remain borderless; dividers expose relationships without visual noise.
+            var rowsHost = new StackPanel { Spacing = 0 };
+            for (var index = 0; index < rows.Length; index++)
             {
-                rowsHost.Children.Add(row);
+                rowsHost.Children.Add(rows[index]);
+                if (index < rows.Length - 1)
+                {
+                    rowsHost.Children.Add(new Border
+                    {
+                        Height = 1,
+                        Margin = new Thickness(16, 0),
+                        Background = TryBrush("StrokeSubtleBrush")
+                    });
+                }
             }
 
-            section.Children.Add(rowsHost);
+            var group = new Border { Child = rowsHost };
+            group.Classes.Add("SettingsGroupCard");
+            section.Children.Add(group);
             CategoryContent.Children.Add(section);
         }
 
@@ -458,11 +483,10 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
             var row = new Border
             {
-                Padding = new Thickness(0),
-                MinHeight = 40,
                 Background = Brushes.Transparent,
                 Child = content
             };
+            row.Classes.Add("SettingsGroupRow");
             return row;
         }
 

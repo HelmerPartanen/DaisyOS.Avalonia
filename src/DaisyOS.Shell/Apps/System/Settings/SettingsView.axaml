@@ -1,15 +1,29 @@
 <UserControl
     x:Class="DaisyOS.Shell.Apps.System.Settings.SettingsView"
     xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:DaisyOS.Shell.Controls">
   <UserControl.Styles>
     <!-- Sidebar navigation button layout -->
     <Style Selector="Button.SettingsNavItem">
-      <Setter Property="Height" Value="44" />
+      <Setter Property="Height" Value="42" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
       <Setter Property="Padding" Value="12,0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource StateHoverBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsNavItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource StatePressedBrush}" />
+    </Style>
+    <!-- Navigation selection uses the chosen DaisyOS accent, matching active shell controls. -->
+    <Style Selector="Button.SettingsNavItem.Active /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ActionPrimaryBrush}" />
     </Style>
 
     <Style Selector="TextBlock.NavIcon">
@@ -26,18 +40,38 @@
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Margin" Value="12,0,0,0" />
     </Style>
-    <!-- Active navigation uses one foreground for its label and icon. -->
+    <!-- Accent selections retain the contrast-safe action foreground for both label and icon. -->
     <Style Selector="Button.SettingsNavItem.Active TextBlock.NavIcon, Button.SettingsNavItem.Active TextBlock.NavLabel">
       <Setter Property="Foreground" Value="{DynamicResource ContentOnActionBrush}" />
     </Style>
 
     <!-- List item button layout -->
     <Style Selector="Button.SettingsListItem">
-      <Setter Property="MinHeight" Value="52" />
+      <Setter Property="MinHeight" Value="64" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Stretch" />
       <Setter Property="VerticalContentAlignment" Value="Center" />
-      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="Padding" Value="16,12" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
+    </Style>
+    <Style Selector="Button.SettingsListItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceInputHoverBrush}" />
+    </Style>
+    <Style Selector="Button.SettingsListItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource StatePressedBrush}" />
+    </Style>
+
+    <Style Selector="Border.SettingsGroupCard">
+      <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}" />
+      <Setter Property="CornerRadius" Value="{DynamicResource RoundedMD}" />
+      <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="Border.SettingsGroupRow">
+      <Setter Property="Padding" Value="16,12" />
+      <Setter Property="MinHeight" Value="56" />
+      <Setter Property="Background" Value="Transparent" />
     </Style>
 
     <!-- The Settings app uses a single content width at every window size so pages
@@ -132,14 +166,28 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid x:Name="SettingsLayout" ColumnDefinitions="248,*" Background="{DynamicResource SurfaceBaseBrush}">
-    <!-- A quiet, dedicated navigation surface keeps the page hierarchy clear at every size. -->
+  <Grid x:Name="SettingsLayout" ColumnDefinitions="272,*" Background="{DynamicResource SurfaceBaseBrush}">
+    <!-- Familiar persistent navigation: account, search, then settings categories. -->
     <Border Grid.Column="0"
             Background="{DynamicResource SurfaceBaseBrush}"
-            Padding="12,14,10,14">
-      <ScrollViewer VerticalScrollBarVisibility="Auto"
-                    HorizontalScrollBarVisibility="Disabled">
-        <StackPanel Spacing="6" Margin="0,0,16,0">
+            BorderBrush="{DynamicResource StrokeSubtleBrush}"
+            BorderThickness="0,0,1,0"
+            Padding="16">
+      <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
+        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+          <Border Width="40" Height="40" Background="{DynamicResource ActionSecondaryBrush}" CornerRadius="20">
+            <TextBlock Text="person" Classes="NavIcon" Foreground="{DynamicResource ContentPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+            <TextBlock Text="DaisyOS user" FontSize="14" FontWeight="SemiBold" />
+            <TextBlock Text="Local account" FontSize="12" Foreground="{DynamicResource ContentSecondaryBrush}" />
+          </StackPanel>
+        </Grid>
+
+        <controls:SearchBar x:Name="NavigationSearch" Grid.Row="1" Height="40" CornerRadius="{DynamicResource RoundedMD}" PlaceholderText="Find a setting" />
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel x:Name="NavigationItems" Spacing="4">
           <Button x:Name="NavSystem" Classes="SettingsNavItem Active" Click="OnNavCategoryClicked" Tag="System">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
               <TextBlock Text="computer" Classes="NavIcon SecondaryText" />
@@ -251,12 +299,13 @@
               <TextBlock Text="About" Classes="NavLabel" />
             </StackPanel>
           </Button>
-        </StackPanel>
-      </ScrollViewer>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
     </Border>
 
     <!-- Main Content Area -->
-    <Grid x:Name="ContentArea" Grid.Column="1" Background="Transparent" Margin="28,24,36,24" HorizontalAlignment="Stretch">
+    <Grid x:Name="ContentArea" Grid.Column="1" Background="Transparent" Margin="36,30,40,30" HorizontalAlignment="Stretch">
       <!-- SYSTEM CATEGORY MAIN LIST -->
       <ScrollViewer x:Name="SystemListView" IsVisible="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
         <StackPanel Spacing="20" HorizontalAlignment="Stretch" MaxWidth="1240" Margin="0,0,16,0">
@@ -354,18 +403,20 @@
            the page shell here ensures the same compact hierarchy, spacing and focus behavior. -->
       <ScrollViewer x:Name="CategoryView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
         <Grid Margin="0,0,16,0">
-          <StackPanel x:Name="CategoryContent" Spacing="24" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36" />
+          <StackPanel x:Name="CategoryContent" Spacing="26" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36" />
         </Grid>
       </ScrollViewer>
 
       <!-- APPEARANCE -->
       <ScrollViewer x:Name="AppearanceView" IsVisible="False" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Stretch">
         <Grid Margin="0,0,16,0">
-          <StackPanel x:Name="AppearanceContent" Spacing="24" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36">
-          <StackPanel Spacing="3">
+          <StackPanel x:Name="AppearanceContent" Spacing="20" HorizontalAlignment="Center" Width="680" Margin="0,4,0,36">
+          <StackPanel Spacing="4">
             <TextBlock Text="Appearance" Classes="SettingsPageTitle" />
+            <TextBlock Text="Choose the visual language of your desktop, apps and accessibility options." FontSize="14" Foreground="{DynamicResource ContentSecondaryBrush}" />
           </StackPanel>
 
+          <Border Classes="SettingsGroupCard" Padding="16">
           <StackPanel Spacing="10">
             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="24">
               <StackPanel Spacing="3">
@@ -380,7 +431,9 @@
             </Grid>
             <TextBlock x:Name="AutomaticThemeInfo" IsVisible="False" FontSize="13" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="2,0,0,0" />
           </StackPanel>
+          </Border>
 
+          <Border Classes="SettingsGroupCard" Padding="16">
           <StackPanel Spacing="10">
             <TextBlock Text="WALLPAPER" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ContentTertiaryBrush}" />
             <Border Height="116" Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="{DynamicResource RoundedMD}" ClipToBounds="True">
@@ -399,9 +452,10 @@
               <Button Grid.Column="2" Classes="ShellButton" Padding="8,7" Click="OnResetWallpaperClicked" ToolTip.Tip="Restore DaisyOS wallpaper"><TextBlock Text="restart_alt" Classes="NavIcon" FontSize="18" /></Button>
             </Grid>
           </StackPanel>
+          </Border>
 
-          <Border Background="{DynamicResource StrokeDefaultBrush}" Height="1" />
-          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
+          <Border Classes="SettingsGroupCard">
+          <Grid Margin="16" ColumnDefinitions="*,Auto" ColumnSpacing="20">
             <StackPanel Spacing="3"><TextBlock Text="Accent color" FontSize="15" FontWeight="SemiBold" /><TextBlock Text="Applied to controls and focus states." FontSize="13" Foreground="{DynamicResource ContentSecondaryBrush}" /></StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
               <Button x:Name="AccentDefaultButton" Classes="AccentSwatch" Tag="Default" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionDefaultBrush}" ToolTip.Tip="Default" />
@@ -414,8 +468,9 @@
               <Button x:Name="AccentGrayButton" Classes="AccentSwatch" Tag="Gray" Click="OnAccentColorClicked" Background="{DynamicResource AccentOptionGrayBrush}" ToolTip.Tip="Gray" />
             </StackPanel>
           </Grid>
+          </Border>
 
-          <Border Background="{DynamicResource StrokeDefaultBrush}" Height="1" />
+          <Border Classes="SettingsGroupCard" Padding="16">
           <StackPanel Spacing="12">
             <TextBlock Text="ACCESSIBILITY" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource ContentTertiaryBrush}" />
             <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" RowSpacing="14" ColumnSpacing="20">
@@ -425,6 +480,7 @@
               <ToggleSwitch x:Name="ReduceMotionToggle" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Click="OnReduceMotionToggled" />
             </Grid>
           </StackPanel>
+          </Border>
           </StackPanel>
         </Grid>
       </ScrollViewer>
