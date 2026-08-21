@@ -20,16 +20,19 @@
     <Border x:Name="AppFrame"
             Classes="AppWindowFrame"
             Margin="12"
-            Background="{DynamicResource StrokeDefaultBrush}"
+            Background="{DynamicResource ShellFrameOuterEdgeBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border Background="{DynamicResource SurfaceBaseBrush}"
-              CornerRadius="{DynamicResource RoundedLGInset}"
-              ClipToBounds="True">
-        <Grid RowDefinitions="44,*">
-          <calculator:CalculatorWindowTitleBar Title="Calculator" />
-          <calculator:CalculatorView Grid.Row="1" DataContext="{Binding}" />
-        </Grid>
+      <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+              Padding="1" CornerRadius="{DynamicResource RoundedLGInset}">
+        <Border Background="{DynamicResource SurfaceBaseBrush}"
+                CornerRadius="{DynamicResource RoundedMD}"
+                ClipToBounds="True">
+          <Grid RowDefinitions="44,*">
+            <calculator:CalculatorWindowTitleBar Title="Calculator" />
+            <calculator:CalculatorView Grid.Row="1" DataContext="{Binding}" />
+          </Grid>
+        </Border>
       </Border>
     </Border>
 

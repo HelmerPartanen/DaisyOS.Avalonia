@@ -6,12 +6,17 @@
              x:DataType="vm:LauncherViewModel"
              Width="620" Height="540">
 
-  <Border Background="{DynamicResource SurfaceBaseBrush}"
-          BorderBrush="{DynamicResource StrokeSubtleBrush}"
-          BorderThickness="1"
+  <Border Background="{DynamicResource ShellFrameOuterEdgeBrush}"
+          Padding="1"
           CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
-    <Grid RowDefinitions="Auto,*">
+    <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+            Padding="1"
+            CornerRadius="{DynamicResource RoundedXLInset}">
+      <Border Background="{DynamicResource SurfaceBaseBrush}"
+              CornerRadius="{DynamicResource RoundedXLDoubleInset}"
+              ClipToBounds="True">
+        <Grid RowDefinitions="Auto,*">
       <Grid.Styles>
         <Style Selector="Button.LauncherUtility">
           <Setter Property="Background" Value="Transparent"/>
@@ -96,6 +101,8 @@
           <TextBlock Text="No apps found" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
         </StackPanel>
       </Grid>
-    </Grid>
+        </Grid>
+      </Border>
+    </Border>
   </Border>
 </UserControl>

@@ -15,14 +15,18 @@
   </UserControl.Styles>
   <Border x:Name="MediaFrame"
           Height="52"
-          Background="{DynamicResource SurfaceBaseBrush}"
-          BorderBrush="{DynamicResource StrokeSubtleBrush}"
-          BorderThickness="2"
+          Padding="1"
+          Background="{DynamicResource ShellFrameOuterEdgeBrush}"
           CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
-    <Grid>
+    <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}" Padding="1"
+            CornerRadius="{DynamicResource RoundedXLInset}">
+      <Border Background="{DynamicResource SurfaceBaseBrush}"
+              CornerRadius="{DynamicResource RoundedXLDoubleInset}"
+              ClipToBounds="True">
+        <Grid>
       <!-- The adaptive artwork color sits above the shared System Bar material. -->
-      <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False" CornerRadius="{DynamicResource RoundedXL}"/>
+      <Border x:Name="ArtworkTint" Background="Transparent" IsHitTestVisible="False" CornerRadius="{DynamicResource RoundedXLDoubleInset}"/>
       <Grid Margin="4" ColumnDefinitions="44,*,120,28">
       <Border Width="44" Height="44" CornerRadius="{DynamicResource RoundedLG}" ClipToBounds="True">
         <Grid>
@@ -62,7 +66,9 @@
       <Canvas x:Name="SpectrumCanvas" Grid.Column="3" Width="28" Height="28"
               VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False"/>
       </Grid>
-    </Grid>
+        </Grid>
+      </Border>
+    </Border>
   </Border>
 
 </UserControl>

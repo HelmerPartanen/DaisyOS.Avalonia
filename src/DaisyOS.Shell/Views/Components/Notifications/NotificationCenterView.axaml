@@ -24,10 +24,13 @@
     </Style>
   </UserControl.Styles>
 
-  <Border Padding="16,16,16,16" Background="{DynamicResource SurfaceBaseBrush}"
-          BorderBrush="{DynamicResource StrokeSubtleBrush}" BorderThickness="2"
+  <Border Padding="1" Background="{DynamicResource ShellFrameOuterEdgeBrush}"
           CornerRadius="{DynamicResource RoundedXL}">
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+    <Border Padding="1" Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+            CornerRadius="{DynamicResource RoundedXLInset}">
+      <Border Padding="16,16,16,16" Background="{DynamicResource SurfaceBaseBrush}"
+              CornerRadius="{DynamicResource RoundedXLDoubleInset}" ClipToBounds="True">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
       <StackPanel Spacing="16">
 
         <!-- 1. Notification Center Header -->
@@ -126,6 +129,8 @@
         </ItemsControl>
 
       </StackPanel>
-    </ScrollViewer>
+        </ScrollViewer>
+      </Border>
+    </Border>
   </Border>
 </UserControl>

@@ -68,10 +68,8 @@
             Height="52"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Padding="4"
-            Background="{DynamicResource SurfaceBaseBrush}"
-            BorderBrush="{DynamicResource StrokeSubtleBrush}"
-            BorderThickness="2"
+            Padding="1"
+            Background="{DynamicResource ShellFrameOuterEdgeBrush}"
             CornerRadius="{DynamicResource RoundedXL}"
             ClipToBounds="True">
       <Border.Transitions>
@@ -80,8 +78,15 @@
         </Transitions>
       </Border.Transitions>
 
-      <!-- StackPanel is the direct child - Border wraps it tightly via Padding -->
-      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
+      <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+              Padding="1"
+              CornerRadius="{DynamicResource RoundedXLInset}">
+        <!-- The two frame pixels leave the original 4px content inset and 40px controls intact. -->
+        <Border Background="{DynamicResource SurfaceBaseBrush}"
+                Padding="4"
+                CornerRadius="{DynamicResource RoundedXLDoubleInset}"
+                ClipToBounds="True">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="4">
 
       <!-- Start Button -->
       <Button x:Name="StartButton" Classes="ShellButton TaskbarApp" ToolTip.Tip="Start Menu">
@@ -144,7 +149,9 @@
         <Border Classes="TaskbarWindowIndicator" Tag="files" Canvas.Top="41" IsHitTestVisible="False" />
       </Canvas>
 
-      </StackPanel>
+          </StackPanel>
+        </Border>
+      </Border>
     </Border>
   </Grid>
 </UserControl>

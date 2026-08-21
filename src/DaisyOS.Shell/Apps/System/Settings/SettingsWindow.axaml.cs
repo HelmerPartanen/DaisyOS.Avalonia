@@ -28,6 +28,7 @@ public partial class SettingsWindow : Window
     {
         var fillsDisplay = WindowState is WindowState.Maximized or WindowState.FullScreen;
         AppFrame.Classes.Set("FilledWindow", fillsDisplay);
+        FrameHighlight.Classes.Set("FilledWindow", fillsDisplay);
         ContentFrame.Classes.Set("FilledWindow", fillsDisplay);
 
         ResizeTop.IsHitTestVisible = !fillsDisplay;

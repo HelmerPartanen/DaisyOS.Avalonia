@@ -123,13 +123,15 @@
     <Border x:Name="AppFrame"
             Classes="AppWindowFrame"
             Margin="12"
-            Background="{DynamicResource StrokeDefaultBrush}"
+            Background="{DynamicResource ShellFrameOuterEdgeBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border Background="{DynamicResource SurfaceBaseBrush}"
-              CornerRadius="{DynamicResource RoundedLGInset}"
-              ClipToBounds="True">
-        <Grid RowDefinitions="44,52,42,*,26" Background="{DynamicResource SurfaceBaseBrush}">
+      <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+              Padding="1" CornerRadius="{DynamicResource RoundedLGInset}">
+        <Border Background="{DynamicResource SurfaceBaseBrush}"
+                CornerRadius="{DynamicResource RoundedMD}"
+                ClipToBounds="True">
+          <Grid RowDefinitions="44,52,42,*,26" Background="{DynamicResource SurfaceBaseBrush}">
 
           <!-- ROW 0: PURE BLACK TITLEBAR WITH METABALL MORPHING TABS EXTENDING TO BOTTOM EDGE -->
           <Panel Grid.Row="0" Background="{DynamicResource SurfaceCanvasBrush}" PointerPressed="OnTitleBarPointerPressed" DoubleTapped="OnTitleBarDoubleTapped">
@@ -599,6 +601,7 @@
 
         </Grid>
       </Border>
+    </Border>
     </Border>
 
     <!-- App Performance Overlay Layer -->

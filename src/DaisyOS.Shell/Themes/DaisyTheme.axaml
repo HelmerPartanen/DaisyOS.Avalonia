@@ -21,6 +21,9 @@
       <Color x:Key="StrokeSubtleColor">#FFE2E4E9</Color>
       <Color x:Key="StrokeDefaultColor">#FFD1D4DA</Color>
       <Color x:Key="StrokeStrongColor">#FFAAADB5</Color>
+      <!-- Large shell surfaces use two distinct perimeter roles. Ordinary borders and dividers keep Stroke*. -->
+      <Color x:Key="ShellFrameOuterEdgeColor">#52000000</Color>
+      <Color x:Key="ShellFrameInnerHighlightColor">#E6FFFFFF</Color>
       <Color x:Key="StateHoverColor">#0D1C1C20</Color>
       <Color x:Key="StatePressedColor">#1A1C1C20</Color>
       <Color x:Key="StateSelectedColor">#141C1C20</Color>
@@ -64,6 +67,8 @@
       <SolidColorBrush x:Key="StrokeSubtleBrush" Color="{StaticResource StrokeSubtleColor}" />
       <SolidColorBrush x:Key="StrokeDefaultBrush" Color="{StaticResource StrokeDefaultColor}" />
       <SolidColorBrush x:Key="StrokeStrongBrush" Color="{StaticResource StrokeStrongColor}" />
+      <SolidColorBrush x:Key="ShellFrameOuterEdgeBrush" Color="{StaticResource ShellFrameOuterEdgeColor}" />
+      <SolidColorBrush x:Key="ShellFrameInnerHighlightBrush" Color="{StaticResource ShellFrameInnerHighlightColor}" />
       <SolidColorBrush x:Key="StateHoverBrush" Color="{StaticResource StateHoverColor}" />
       <SolidColorBrush x:Key="StatePressedBrush" Color="{StaticResource StatePressedColor}" />
       <SolidColorBrush x:Key="StateSelectedBrush" Color="{StaticResource StateSelectedColor}" />
@@ -110,6 +115,9 @@
       <Color x:Key="StrokeSubtleColor">#FF303030</Color>
       <Color x:Key="StrokeDefaultColor">#FF414141</Color>
       <Color x:Key="StrokeStrongColor">#FF6A6A6A</Color>
+      <!-- Large shell surfaces use two distinct perimeter roles. Ordinary borders and dividers keep Stroke*. -->
+      <Color x:Key="ShellFrameOuterEdgeColor">#99000000</Color>
+      <Color x:Key="ShellFrameInnerHighlightColor">#3DFFFFFF</Color>
       <Color x:Key="StateHoverColor">#14FFFFFF</Color>
       <Color x:Key="StatePressedColor">#24FFFFFF</Color>
       <Color x:Key="StateSelectedColor">#1FFFFFFF</Color>
@@ -153,6 +161,8 @@
       <SolidColorBrush x:Key="StrokeSubtleBrush" Color="{StaticResource StrokeSubtleColor}" />
       <SolidColorBrush x:Key="StrokeDefaultBrush" Color="{StaticResource StrokeDefaultColor}" />
       <SolidColorBrush x:Key="StrokeStrongBrush" Color="{StaticResource StrokeStrongColor}" />
+      <SolidColorBrush x:Key="ShellFrameOuterEdgeBrush" Color="{StaticResource ShellFrameOuterEdgeColor}" />
+      <SolidColorBrush x:Key="ShellFrameInnerHighlightBrush" Color="{StaticResource ShellFrameInnerHighlightColor}" />
       <SolidColorBrush x:Key="StateHoverBrush" Color="{StaticResource StateHoverColor}" />
       <SolidColorBrush x:Key="StatePressedBrush" Color="{StaticResource StatePressedColor}" />
       <SolidColorBrush x:Key="StateSelectedBrush" Color="{StaticResource StateSelectedColor}" />
@@ -198,6 +208,8 @@
   <CornerRadius x:Key="RoundedMD">10</CornerRadius>
   <CornerRadius x:Key="RoundedLG">12</CornerRadius>
   <CornerRadius x:Key="RoundedXL">16</CornerRadius>
+  <CornerRadius x:Key="RoundedXLInset">15</CornerRadius>
+  <CornerRadius x:Key="RoundedXLDoubleInset">14</CornerRadius>
   <CornerRadius x:Key="RoundedMDLeft">10,0,0,10</CornerRadius>
   <CornerRadius x:Key="RoundedMDRight">0,10,10,0</CornerRadius>
   <CornerRadius x:Key="RoundedLGInset">11</CornerRadius>

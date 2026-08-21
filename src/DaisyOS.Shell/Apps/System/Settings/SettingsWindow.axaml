@@ -28,24 +28,33 @@
     <Style Selector="Border.SettingsContentFrame.FilledWindow">
       <Setter Property="CornerRadius" Value="0" />
     </Style>
+    <Style Selector="Border.SettingsFrameHighlight.FilledWindow">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="CornerRadius" Value="0" />
+      <Setter Property="Background" Value="{DynamicResource SurfaceBaseBrush}" />
+    </Style>
   </Window.Styles>
   <Grid>
-    <!-- The frame is separate from the clipped content so its 1px rounded edge is never cut off. -->
+    <!-- The outer shadow edge and inner highlight frame the clipped app surface. -->
     <Border x:Name="AppFrame"
             Classes="AppWindowFrame SettingsAppFrame"
             Margin="12"
-            Background="{DynamicResource StrokeDefaultBrush}"
+            Background="{DynamicResource ShellFrameOuterEdgeBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border Classes="SettingsContentFrame"
-              Background="{DynamicResource SurfaceBaseBrush}"
-              x:Name="ContentFrame"
-              CornerRadius="{DynamicResource RoundedLGInset}"
-              ClipToBounds="True">
-        <Grid RowDefinitions="44,*">
-          <settings:SettingsWindowTitleBar Title="Settings" />
-          <settings:SettingsView Grid.Row="1" />
-        </Grid>
+      <Border x:Name="FrameHighlight" Classes="SettingsFrameHighlight"
+              Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+              Padding="1" CornerRadius="{DynamicResource RoundedLGInset}">
+        <Border Classes="SettingsContentFrame"
+                Background="{DynamicResource SurfaceBaseBrush}"
+                x:Name="ContentFrame"
+                CornerRadius="{DynamicResource RoundedMD}"
+                ClipToBounds="True">
+          <Grid RowDefinitions="44,*">
+            <settings:SettingsWindowTitleBar Title="Settings" />
+            <settings:SettingsView Grid.Row="1" />
+          </Grid>
+        </Border>
       </Border>
     </Border>
 
