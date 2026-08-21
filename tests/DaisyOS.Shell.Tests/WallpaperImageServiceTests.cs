@@ -222,10 +222,14 @@ public class WallpaperImageServiceTests : IDisposable
             
             // Assert - bitmap1 should still be valid (not disposed)
             // We can't directly test disposal state, but we can verify bitmap2 is different
-            if (bitmap2 is not null)
-            {
-                Assert.NotSame(bitmap1, bitmap2);
-            }
+        if (bitmap2 is not null)
+        {
+            Assert.NotSame(bitmap1, bitmap2);
+            // The shell may still be compositing bitmap1 during the source swap. It must
+            // remain usable until the wallpaper service itself is retired.
+            Assert.True(bitmap1.Size.Width > 0);
+            Assert.True(bitmap1.Size.Height > 0);
+        }
         }
         finally
         {

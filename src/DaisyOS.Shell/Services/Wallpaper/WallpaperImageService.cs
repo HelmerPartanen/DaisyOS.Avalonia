@@ -97,6 +97,10 @@ public sealed class WallpaperImageService : IAsyncDisposable
     /// Currently cached pre-rendered bitmap assigned to the Image control.
     /// </summary>
     private Bitmap? _cachedBitmap;
+    // Avalonia may still be compositing the previous bitmap when a monitor reports its
+    // settled size. Keep superseded render targets alive for this wallpaper instance; the
+    // layer retires the whole instance only after it has replaced its Image.Source.
+    private readonly List<Bitmap> _supersededBitmaps = [];
 
     /// <summary>
     /// The render metrics used to produce the current cached bitmap.
@@ -249,17 +253,9 @@ public sealed class WallpaperImageService : IAsyncDisposable
         // Step 2: Pre-render to target size if needed
         Bitmap? resultBitmap;
 
-        // Check if we can use the source bitmap directly (no scaling needed)
-        if (CanUseSourceDirectly(sourceBitmap, metrics))
-        {
-            // Use the decoded bitmap directly - no crop/scale needed
-            resultBitmap = sourceBitmap;
-        }
-        else
-        {
-            // Pre-render with crop and scale
-            resultBitmap = await PreRenderBitmapAsync(sourceBitmap, metrics, cancellationToken).ConfigureAwait(false);
-        }
+        // Always create a service-owned render bitmap. Returning the shared source cache
+        // directly lets one wallpaper instance dispose a bitmap another consumer still uses.
+        resultBitmap = await PreRenderBitmapAsync(sourceBitmap, metrics, cancellationToken).ConfigureAwait(false);
 
         if (resultBitmap is null || cancellationToken.IsCancellationRequested)
         {
@@ -276,10 +272,15 @@ public sealed class WallpaperImageService : IAsyncDisposable
             _diagnostics.CacheReplacementCount++;
         }
 
-        // Dispose old bitmap after swap (but not the one we're now displaying)
+        // The shell may still be rendering the old source for one compositor frame. It is
+        // released with this service instead of being disposed between the cache swap and
+        // the Image.Source replacement.
         if (oldBitmap is not null && oldBitmap != resultBitmap)
         {
-            oldBitmap.Dispose();
+            lock (_swapLock)
+            {
+                _supersededBitmaps.Add(oldBitmap);
+            }
         }
 
         // Raise change notification on UI thread
@@ -483,16 +484,9 @@ public sealed class WallpaperImageService : IAsyncDisposable
                 return null;
             }
 
-            // Pre-render
-            Bitmap? resultBitmap;
-            if (CanUseSourceDirectly(newSource, metrics))
-            {
-                resultBitmap = newSource;
-            }
-            else
-            {
-                resultBitmap = await PreRenderBitmapAsync(newSource, metrics, linkedCts.Token).ConfigureAwait(false);
-            }
+            // Like the normal load path, each service owns its rendered bitmap rather than
+            // returning the shared decoded source directly.
+            Bitmap? resultBitmap = await PreRenderBitmapAsync(newSource, metrics, linkedCts.Token).ConfigureAwait(false);
 
             if (resultBitmap is null)
             {
@@ -513,7 +507,10 @@ public sealed class WallpaperImageService : IAsyncDisposable
 
             if (oldBitmap is not null && oldBitmap != resultBitmap)
             {
-                oldBitmap.Dispose();
+                lock (_swapLock)
+                {
+                    _supersededBitmaps.Add(oldBitmap);
+                }
             }
 
             WallpaperBitmapChanged?.Invoke(this, resultBitmap);
@@ -536,23 +533,31 @@ public sealed class WallpaperImageService : IAsyncDisposable
     {
         _regenCts?.Cancel();
 
-        Bitmap? bitmapToDispose = null;
+        List<Bitmap> bitmapsToDispose;
         lock (_swapLock)
         {
-            bitmapToDispose = _cachedBitmap;
+            bitmapsToDispose = [.. _supersededBitmaps];
+            _supersededBitmaps.Clear();
+            if (_cachedBitmap is not null)
+            {
+                bitmapsToDispose.Add(_cachedBitmap);
+            }
             _cachedBitmap = null;
             _currentMetrics = default;
         }
 
-        if (bitmapToDispose is not null)
+        if (bitmapsToDispose.Count > 0)
         {
             if (Dispatcher.UIThread.CheckAccess())
             {
-                bitmapToDispose.Dispose();
+                foreach (var bitmap in bitmapsToDispose) bitmap.Dispose();
             }
             else
             {
-                await Dispatcher.UIThread.InvokeAsync(() => bitmapToDispose.Dispose());
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    foreach (var bitmap in bitmapsToDispose) bitmap.Dispose();
+                });
             }
         }
 
@@ -567,15 +572,20 @@ public sealed class WallpaperImageService : IAsyncDisposable
     {
         _regenCts?.Cancel();
 
-        Bitmap? bitmapToDispose = null;
+        List<Bitmap> bitmapsToDispose;
         lock (_swapLock)
         {
-            bitmapToDispose = _cachedBitmap;
+            bitmapsToDispose = [.. _supersededBitmaps];
+            _supersededBitmaps.Clear();
+            if (_cachedBitmap is not null)
+            {
+                bitmapsToDispose.Add(_cachedBitmap);
+            }
             _cachedBitmap = null;
             _currentMetrics = default;
         }
 
-        bitmapToDispose?.Dispose();
+        foreach (var bitmap in bitmapsToDispose) bitmap.Dispose();
         _regenCts?.Dispose();
         _regenCts = null;
     }

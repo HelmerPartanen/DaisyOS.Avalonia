@@ -10,5 +10,11 @@
          Stretch="UniformToFill"
          HorizontalAlignment="Center"
          VerticalAlignment="Center"
-         RenderTransformOrigin="0.5,0.5" />
+         RenderTransformOrigin="0.5,0.5">
+    <Image.Transitions>
+      <Transitions>
+        <DoubleTransition Property="Opacity" Duration="0:0:0.16" Easing="CubicEaseOut" />
+      </Transitions>
+    </Image.Transitions>
+  </Image>
 </UserControl>

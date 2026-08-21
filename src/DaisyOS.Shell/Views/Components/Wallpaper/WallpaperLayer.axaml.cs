@@ -20,6 +20,7 @@ public partial class WallpaperLayer : UserControl
     private const double MaximumParallaxOffset = 0;
     private const double WallpaperScale = 1.0;
     private const double EdgeSafetyInset = 0;
+    private const int WallpaperFadeHalfDurationMilliseconds = 160;
     private readonly DispatcherTimer _parallaxTimer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly DispatcherTimer _videoFrameTimer = new(DispatcherPriority.Render) { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly TranslateTransform _parallaxTranslation = new();
@@ -39,6 +40,9 @@ public partial class WallpaperLayer : UserControl
     private double _verticalTravelLimit;
     private int _refreshRequestVersion;
     private bool _isLoaded;
+    private int _wallpaperTransitionVersion;
+    private bool _wallpaperFadeInProgress;
+    private WallpaperResources? _pendingVideoTransitionResources;
 
     public WallpaperLayer()
     {
@@ -92,6 +96,14 @@ public partial class WallpaperLayer : UserControl
 
     private void OnLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
+        // Loaded may be raised again while the shell's presentation tree is being composed.
+        // Reopening the decoder in that case races the first frame and can dispose a bitmap
+        // that Avalonia still has queued for rendering.
+        if (_isLoaded)
+        {
+            return;
+        }
+
         _isLoaded = true;
         ApplyWallpaperGeometry();
         _app = Application.Current as App;
@@ -137,14 +149,10 @@ public partial class WallpaperLayer : UserControl
         PropertyChanged -= OnLayerPropertyChanged;
 
         WallpaperImage.Source = null;
-        _wallpaperImageService?.Dispose();
-        _wallpaperImageService = null;
-        _videoWallpaperService?.Dispose();
-        _videoWallpaperService = null;
-        _videoBitmapA?.Dispose();
-        _videoBitmapA = null;
-        _videoBitmapB?.Dispose();
-        _videoBitmapB = null;
+        WallpaperImage.Opacity = 1;
+        DetachWallpaperResources().Dispose();
+        _pendingVideoTransitionResources?.Dispose();
+        _pendingVideoTransitionResources = null;
     }
 
     private void OnOcclusionStateChanged(object? sender, EventArgs e) => UpdateVisibilityAndPauseState();
@@ -207,19 +215,16 @@ public partial class WallpaperLayer : UserControl
         try
         {
             var requestVersion = Interlocked.Increment(ref _refreshRequestVersion);
-            _videoFrameTimer.Stop();
-            WallpaperImage.Source = null;
-
-            _wallpaperImageService?.Dispose();
-            _wallpaperImageService = null;
-
-            _videoWallpaperService?.Dispose();
-            _videoWallpaperService = null;
-
-            _videoBitmapA?.Dispose();
-            _videoBitmapA = null;
-            _videoBitmapB?.Dispose();
-            _videoBitmapB = null;
+            var previousResources = DetachWallpaperResources();
+            if (_pendingVideoTransitionResources is { } pendingResources)
+            {
+                // A video can be replaced before it produces its first frame. The visible
+                // wallpaper is still the older one, so retain that resource for the fade and
+                // release the never-presented video decoder immediately.
+                previousResources.Dispose();
+                previousResources = pendingResources;
+                _pendingVideoTransitionResources = null;
+            }
 
             string resolvedPath = ResolveWallpaperPath(wallpaperUri);
 
@@ -237,13 +242,17 @@ public partial class WallpaperLayer : UserControl
                     }
 
                     _videoFrameTimer.Interval = TimeSpan.FromMilliseconds(1000.0 / targetFps);
+                    _pendingVideoTransitionResources = previousResources;
                     UpdateVisibilityAndPauseState();
                     return;
                 }
+
+                _videoWallpaperService.Dispose();
+                _videoWallpaperService = null;
             }
 
             _wallpaperImageService = new WallpaperImageService(wallpaperUri);
-            await RefreshWallpaperAsync(requestVersion);
+            await RefreshWallpaperAsync(requestVersion, previousResources);
         }
         catch (ArgumentException)
         {
@@ -310,8 +319,8 @@ public partial class WallpaperLayer : UserControl
                                 }
                             }
 
-                            WallpaperImage.Source = targetBitmap;
-                            WallpaperImage.InvalidateVisual();
+                            PresentWallpaper(targetBitmap, _pendingVideoTransitionResources);
+                            _pendingVideoTransitionResources = null;
                         }
                     }
                 }
@@ -375,7 +384,7 @@ public partial class WallpaperLayer : UserControl
         _targetOffsetY = Math.Clamp(_targetOffsetY, -_verticalTravelLimit, _verticalTravelLimit);
     }
 
-    private async Task RefreshWallpaperAsync(int requestVersion)
+    private async Task RefreshWallpaperAsync(int requestVersion, WallpaperResources? previousResources = null)
     {
         if (_wallpaperImageService is null || Bounds.Width <= 0 || Bounds.Height <= 0)
         {
@@ -398,7 +407,6 @@ public partial class WallpaperLayer : UserControl
                 return;
             }
 
-            WallpaperImage.Source = null;
             var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
             _wallpaperMetrics = WallpaperRenderMetrics.FromPixelSize(
                 (int)Math.Round(Bounds.Width * scaling),
@@ -411,7 +419,7 @@ public partial class WallpaperLayer : UserControl
                 && ReferenceEquals(wallpaperService, _wallpaperImageService)
                 && bitmap is not null)
             {
-                WallpaperImage.Source = bitmap;
+                PresentWallpaper(bitmap, previousResources);
             }
         }
         catch
@@ -424,6 +432,98 @@ public partial class WallpaperLayer : UserControl
             {
                 _refreshGate.Release();
             }
+        }
+    }
+
+    private WallpaperResources DetachWallpaperResources()
+    {
+        _videoFrameTimer.Stop();
+        var resources = new WallpaperResources(
+            _wallpaperImageService,
+            _videoWallpaperService,
+            _videoBitmapA,
+            _videoBitmapB);
+        _wallpaperImageService = null;
+        _videoWallpaperService = null;
+        _videoBitmapA = null;
+        _videoBitmapB = null;
+        _useBitmapA = false;
+        return resources;
+    }
+
+    private void PresentWallpaper(IImage source, WallpaperResources? previousResources)
+    {
+        // Live wallpapers update the incoming source every frame. Once the first frame has
+        // started a fade, let subsequent frames refresh it without restarting that motion.
+        if (previousResources is null && _wallpaperFadeInProgress)
+        {
+            WallpaperImage.Source = source;
+            return;
+        }
+
+        bool shouldAnimate = previousResources?.HasResources == true
+                             && WallpaperImage.Source is not null
+                             && !(_app?.ReduceMotionEnabled ?? false);
+
+        if (!shouldAnimate)
+        {
+            WallpaperImage.Source = source;
+            WallpaperImage.Opacity = 1;
+            if (previousResources is not null)
+            {
+                _ = RetireResourcesAfterSourceReplacementAsync(previousResources);
+            }
+            return;
+        }
+
+        _ = FadeToWallpaperAsync(source, previousResources!);
+    }
+
+    private async Task FadeToWallpaperAsync(IImage source, WallpaperResources previousResources)
+    {
+        int transitionVersion = Interlocked.Increment(ref _wallpaperTransitionVersion);
+        _wallpaperFadeInProgress = true;
+        WallpaperImage.Opacity = 0;
+        await Task.Delay(WallpaperFadeHalfDurationMilliseconds);
+
+        if (!_isLoaded || transitionVersion != Volatile.Read(ref _wallpaperTransitionVersion))
+        {
+            // A newer selection owns the source replacement now. Leave the old resources
+            // alive long enough for that replacement to reach the compositor.
+            await Task.Delay(WallpaperFadeHalfDurationMilliseconds * 2);
+            previousResources.Dispose();
+            return;
+        }
+
+        WallpaperImage.Source = source;
+        WallpaperImage.Opacity = 1;
+        _wallpaperFadeInProgress = false;
+
+        await RetireResourcesAfterSourceReplacementAsync(previousResources);
+    }
+
+    private static async Task RetireResourcesAfterSourceReplacementAsync(WallpaperResources resources)
+    {
+        // Keep retired data through the rest of the fade. This protects compositors that
+        // retain a source for more than one frame while preparing the replacement.
+        await Task.Delay(WallpaperFadeHalfDurationMilliseconds);
+        resources.Dispose();
+    }
+
+    private sealed class WallpaperResources(
+        WallpaperImageService? imageService,
+        VideoWallpaperService? videoService,
+        WriteableBitmap? bitmapA,
+        WriteableBitmap? bitmapB) : IDisposable
+    {
+        public bool HasResources => imageService is not null || videoService is not null || bitmapA is not null || bitmapB is not null;
+
+        public void Dispose()
+        {
+            imageService?.Dispose();
+            videoService?.Dispose();
+            bitmapA?.Dispose();
+            bitmapB?.Dispose();
         }
     }
 
