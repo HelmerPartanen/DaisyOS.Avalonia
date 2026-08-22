@@ -11,7 +11,8 @@ public sealed record LayerShellOptions(
     string Namespace,
     string? OutputName = null,
     uint Width = 0,
-    uint Height = 0)
+    uint Height = 0,
+    bool InputPassthrough = false)
 {
     public void Validate()
     {

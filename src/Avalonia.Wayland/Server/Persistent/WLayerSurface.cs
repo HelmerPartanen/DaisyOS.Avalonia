@@ -47,6 +47,11 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         _layerSurface.SetAnchor(_options.Anchor);
         _layerSurface.SetExclusiveZone(_options.ExclusiveZone);
         _layerSurface.SetKeyboardInteractivity(_options.KeyboardInteractivity);
+        // A passive overlay (for example notification toasts) must never
+        // become an invisible full-screen click target. A null input region
+        // makes Wayland continue hit-testing the surface below it.
+        if (_options.InputPassthrough)
+            WlSurface!.SetInputRegion(null!);
         WlSurface!.Commit();
     }
 
