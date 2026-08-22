@@ -32,15 +32,37 @@ class WSurface : IPersistentWaylandObject, IWSurface, IWaylandFramebufferSurface
     private double _currentScale = 1;
     private const double ScaleEpsilon = 1e-6;
     private readonly List<IDisposable> _activeRenderTargets = new();
+    private bool _registeredWithWorker;
 
     public bool HasFractionalScaling => FractionalScale != null && Viewport != null;
     public WlDisplay? CurrentDisplay => Connection?.Display;
     internal double CurrentScale => _currentScale;
 
-    public WSurface(WaylandWorker worker)
+    public WSurface(WaylandWorker worker) : this(worker, registerImmediately: true)
+    {
+    }
+
+    /// <summary>
+    /// Derived surface roles which need constructor parameters on the worker
+    /// thread can delay registration until their own fields are initialized.
+    /// Registering from the base constructor is otherwise a race: the worker
+    /// may invoke <see cref="OnConnected"/> before the derived constructor
+    /// has assigned its role-specific state.
+    /// </summary>
+    protected WSurface(WaylandWorker worker, bool registerImmediately)
     {
         Worker = worker;
-        worker.PostOob(() => worker.RegisterPersistentObject(this));
+        if (registerImmediately)
+            RegisterWithWorker();
+    }
+
+    protected void RegisterWithWorker()
+    {
+        if (_registeredWithWorker)
+            throw new InvalidOperationException("A Wayland surface can only be registered once.");
+
+        _registeredWithWorker = true;
+        Worker.PostOob(() => Worker.RegisterPersistentObject(this));
     }
 
     /// <summary>

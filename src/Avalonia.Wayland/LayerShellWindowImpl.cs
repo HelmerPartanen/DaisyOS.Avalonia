@@ -20,6 +20,7 @@ internal sealed class LayerShellWindowImpl : WindowImpl
     public LayerShellWindowImpl(WaylandWorkerClient client, LayerShellOptions options)
         : base(client, createInitialSink: false)
     {
+        ArgumentNullException.ThrowIfNull(options);
         _options = options;
         CurrentSink = new LayerSink(this, secondShow: false);
     }

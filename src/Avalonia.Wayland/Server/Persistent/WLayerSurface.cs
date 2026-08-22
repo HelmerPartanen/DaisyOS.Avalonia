@@ -21,38 +21,52 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
     private readonly TaskCompletionSource<XdgConfigureBatch> _initialConfigure = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     public WLayerSurface(WaylandWorker worker, LayerShellOptions options, WLayerSurfaceEventSinkProxy eventSink)
-        : base(worker)
+        : base(worker, registerImmediately: false)
     {
+        ArgumentNullException.ThrowIfNull(options);
         _options = options;
         _eventSink = eventSink;
+        RegisterWithWorker();
     }
 
     public Task<XdgConfigureBatch> BasicInitCompleted => _initialConfigure.Task;
 
     public override void OnConnected(WaylandConnection connection, WaylandGlobals globals)
     {
+        var options = _options ?? throw new InvalidOperationException(
+            "A layer surface reached the Wayland worker before its options were initialized.");
+        LayerShellDiagnostics.Write($"connecting '{options.Namespace}'");
         base.OnConnected(connection, globals);
+        LayerShellDiagnostics.Write($"'{options.Namespace}' created wl_surface");
         if (globals.LayerShell is null)
             throw new AvaloniaWaylandException("zwlr_layer_shell_v1 is required for a DaisyOS shell surface.");
 
-        LayerShellDiagnostics.Write($"creating '{_options.Namespace}' as {_options.Layer}");
+        LayerShellDiagnostics.Write($"creating '{options.Namespace}' as {options.Layer}");
 
-        var output = string.IsNullOrWhiteSpace(_options.OutputName)
-            ? null
+        // The protocol allows a null output to let the compositor choose, but
+        // the current NWayland descriptor exposes this argument as non-null.
+        // Select a concrete output instead. DaisyOS supplies an explicit name
+        // when output routing is available; the first announced output is the
+        // compositor's primary output for the single-output prototype.
+        var output = string.IsNullOrWhiteSpace(options.OutputName)
+            ? globals.Outputs.Outputs.FirstOrDefault()?.WlOutput
             : globals.Outputs.Outputs.FirstOrDefault(candidate =>
-                string.Equals(candidate.XdgName ?? candidate.OutputName, _options.OutputName, StringComparison.Ordinal))?.WlOutput;
+                string.Equals(candidate.XdgName ?? candidate.OutputName, options.OutputName, StringComparison.Ordinal))?.WlOutput;
+
+        if (output is null)
+            throw new AvaloniaWaylandException("The compositor did not announce an output for a DaisyOS shell surface.");
 
         _layerSurface = globals.LayerShell.GetLayerSurface(
-            WlSurface!, output, _options.Layer, _options.Namespace,
+            WlSurface!, output, options.Layer, options.Namespace,
             new LayerListener(this), connection.Queue);
-        _layerSurface.SetSize(_options.Width, _options.Height);
-        _layerSurface.SetAnchor(_options.Anchor);
-        _layerSurface.SetExclusiveZone(_options.ExclusiveZone);
-        _layerSurface.SetKeyboardInteractivity(_options.KeyboardInteractivity);
+        _layerSurface.SetSize(options.Width, options.Height);
+        _layerSurface.SetAnchor(options.Anchor);
+        _layerSurface.SetExclusiveZone(options.ExclusiveZone);
+        _layerSurface.SetKeyboardInteractivity(options.KeyboardInteractivity);
         // A passive overlay (for example notification toasts) must never
         // become an invisible full-screen click target. A null input region
         // makes Wayland continue hit-testing the surface below it.
-        if (_options.InputPassthrough)
+        if (options.InputPassthrough)
             WlSurface!.SetInputRegion(null!);
         WlSurface!.Commit();
     }

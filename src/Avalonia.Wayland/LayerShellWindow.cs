@@ -15,7 +15,11 @@ namespace Avalonia.Wayland;
 /// </summary>
 public static class LayerShellWindow
 {
-    private static readonly AsyncLocal<LayerShellOptions?> PendingOptions = new();
+    // Avalonia creates native top-level implementations synchronously on its
+    // UI thread. AsyncLocal is the wrong scope for this hand-off: execution
+    // contexts captured by unrelated UI work can retain a stale (or cleared)
+    // value and turn a later shell surface into an invalid layer window.
+    private static readonly ThreadLocal<LayerShellOptions?> PendingOptions = new();
 
     public static T Create<T>(LayerShellOptions options, Func<T> createWindow)
         where T : Window
@@ -28,6 +32,7 @@ public static class LayerShellWindow
 
         try
         {
+            WriteDiagnostics($"offering '{options.Namespace}' to the next native window");
             PendingOptions.Value = options;
             return createWindow();
         }
@@ -43,10 +48,17 @@ public static class LayerShellWindow
         {
             PendingOptions.Value = null;
             options = pending;
+            WriteDiagnostics($"assigned '{options.Namespace}' to a layer window");
             return true;
         }
 
         options = default!;
         return false;
+    }
+
+    private static void WriteDiagnostics(string message)
+    {
+        if (string.Equals(Environment.GetEnvironmentVariable("DAISYOS_WAYLAND_DIAGNOSTICS"), "1", StringComparison.Ordinal))
+            Console.Error.WriteLine($"[daisy-layer] {message}");
     }
 }
