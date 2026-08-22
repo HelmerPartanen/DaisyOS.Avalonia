@@ -2,8 +2,8 @@
 set -Eeuo pipefail
 
 # This launcher is installed in /usr/local/bin by
-# scripts/install-development-session.sh. KWin remains alive independently from
-# DaisyOS so a shell restart never takes down normal applications.
+# scripts/install-development-session.sh. This is deliberately the windowed
+# prototype entry, not the production DaisyOS layer-shell session.
 config_file="${DAISYOS_DEVELOPMENT_CONFIG:-/etc/daisyos/daisyos-development-session.conf}"
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/DaisyOS"
 session_log="$state_dir/development-session.log"
@@ -63,13 +63,12 @@ run_shell() {
   start_user_services
 
   if ! command -v dotnet >/dev/null 2>&1; then
-    log_message "The .NET SDK is required for DaisyOS (Development), but dotnet was not found."
+    log_message "The .NET SDK is required for DaisyOS (Windowed Prototype), but dotnet was not found."
     exit 1
   fi
 
-  log_message "Starting native-Wayland DaisyOS from $source_root."
-  DAISYOS_SHELL_SESSION=1 \
-    dotnet run --project "$source_root/src/DaisyOS.Shell" -- --real-services --shell-session >>"$session_log" 2>&1
+  log_message "Starting the DaisyOS Windowed Prototype from $source_root."
+  dotnet run --project "$source_root/src/DaisyOS.Shell" -- --real-services --windowed-prototype >>"$session_log" 2>&1
 }
 
 install_kwin_bridge() {
@@ -108,11 +107,11 @@ start_compositor_and_shell() {
   publish_session_environment
 
   if ! command -v kwin_wayland >/dev/null 2>&1; then
-    log_message "KWin Wayland is required for DaisyOS (Development), but kwin_wayland was not found."
+    log_message "KWin Wayland is required for DaisyOS (Windowed Prototype), but kwin_wayland was not found."
     exit 1
   fi
 
-  log_message "Starting the KWin Wayland session for DaisyOS (Development)."
+  log_message "Starting the KWin Wayland session for the DaisyOS Windowed Prototype."
   kwin_wayland --drm --xwayland >>"$session_log" 2>&1 &
   local kwin_pid=$!
 
@@ -143,7 +142,7 @@ start_compositor_and_shell() {
     fi
   done
 
-  log_message "Ending DaisyOS (Development) after shell exit; KWin stayed alive until this controlled session shutdown."
+  log_message "Ending the DaisyOS Windowed Prototype after shell exit; KWin stayed alive until this controlled session shutdown."
   kill "$kwin_pid" 2>/dev/null || true
   wait "$kwin_pid" 2>/dev/null || true
 }

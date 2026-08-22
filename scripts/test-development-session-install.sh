@@ -17,7 +17,7 @@ installed_config="$stage_root/etc/daisyos/daisyos-development-session.conf"
 [[ -x "$installed_launcher" ]]
 [[ -f "$installed_entry" ]]
 [[ -f "$installed_config" ]]
-grep -Fxq 'Name=DaisyOS (Development)' "$installed_entry"
+grep -Fxq 'Name=DaisyOS (Windowed Prototype)' "$installed_entry"
 grep -Fxq 'Exec=/usr/local/bin/daisyos-development-session' "$installed_entry"
 grep -Fq 'DAISYOS_DEVELOPMENT_ROOT=' "$installed_config"
 
@@ -39,6 +39,6 @@ PATH="$temp_dir/bin:$PATH" \
   DAISYOS_DEVELOPMENT_CONFIG="$temp_dir/config" \
   "$launcher" --run-shell
 
-grep -Fq "run --project $fake_checkout/src/DaisyOS.Shell -- --real-services --shell-session" "$temp_dir/dotnet-arguments"
+grep -Fq "run --project $fake_checkout/src/DaisyOS.Shell -- --real-services --windowed-prototype" "$temp_dir/dotnet-arguments"
 
 echo "Development-session installer tests passed."

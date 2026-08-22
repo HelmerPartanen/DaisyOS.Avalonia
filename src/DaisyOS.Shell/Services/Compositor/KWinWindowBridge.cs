@@ -68,6 +68,14 @@ public sealed class KWinWindowBridge : ICompositorWindowService
     public Task CloseAsync(string windowId, CancellationToken cancellationToken = default) =>
         _dispatcher.DispatchAsync(windowId, KWinWindowCommand.Close, cancellationToken);
 
+    public Task SetMaximizedAsync(string windowId, bool maximized, CancellationToken cancellationToken = default) =>
+        _dispatcher.DispatchAsync(windowId,
+            maximized ? KWinWindowCommand.Maximize : KWinWindowCommand.Restore,
+            cancellationToken);
+
+    public Task MoveToWorkspaceAsync(string windowId, int workspace, CancellationToken cancellationToken = default) =>
+        _dispatcher.DispatchAsync(windowId, KWinWindowCommand.MoveToWorkspace, cancellationToken, workspace);
+
     private async Task ReadSnapshotsAsync(Process process, CancellationToken cancellationToken)
     {
         try

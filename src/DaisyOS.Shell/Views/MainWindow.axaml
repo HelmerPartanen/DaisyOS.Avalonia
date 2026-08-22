@@ -3,7 +3,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:views="clr-namespace:DaisyOS.Shell.Views"
-    Title="DaisyOS Shell"
+    Title="DaisyOS (Windowed Prototype)"
     WindowState="FullScreen"
     WindowDecorations="None"
     TextOptions.TextRenderingMode="SubpixelAntialias"

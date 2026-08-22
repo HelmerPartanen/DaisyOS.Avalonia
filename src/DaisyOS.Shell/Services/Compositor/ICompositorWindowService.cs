@@ -17,4 +17,8 @@ public interface ICompositorWindowService : IAsyncDisposable
     Task ActivateOrMinimizeAsync(string windowId, CancellationToken cancellationToken = default);
 
     Task CloseAsync(string windowId, CancellationToken cancellationToken = default);
+
+    Task SetMaximizedAsync(string windowId, bool maximized, CancellationToken cancellationToken = default);
+
+    Task MoveToWorkspaceAsync(string windowId, int workspace, CancellationToken cancellationToken = default);
 }

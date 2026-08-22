@@ -19,16 +19,6 @@ function isShellWindow(window) {
     return appId.indexOf("daisyos-shell") >= 0 || resource.indexOf("daisyos-shell") >= 0 || caption === "daisyos shell";
 }
 
-function configureShellWindow(window) {
-    if (!isShellWindow(window)) return;
-    // This is the compatibility policy while the maintained Avalonia
-    // layer-shell role is landing. KWin remains the authority: normal clients
-    // stay above the desktop root and shell chrome never enters task lists.
-    window.keepBelow = true;
-    window.skipTaskbar = true;
-    window.skipSwitcher = true;
-}
-
 function isApplicationWindow(window) {
     if (!window || window.internal || window.skipTaskbar || isShellWindow(window)) return false;
     // KWin exposes normal clients as managed windows. Keep dialogs visible too:
@@ -65,7 +55,6 @@ function publishSnapshot() {
 
 function observeWindow(window) {
     if (!window) return;
-    configureShellWindow(window);
     var refresh = function () { publishSnapshot(); };
     if (window.minimizedChanged) window.minimizedChanged.connect(refresh);
     if (window.maximizedChanged) window.maximizedChanged.connect(refresh);

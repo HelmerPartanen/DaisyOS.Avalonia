@@ -14,7 +14,7 @@ internal sealed class KWinCommandDispatcher
     private const string ScriptingPath = "/Scripting";
     private const string ScriptingInterface = "org.kde.kwin.Scripting";
 
-    public async Task DispatchAsync(string windowId, KWinWindowCommand command, CancellationToken cancellationToken)
+    public async Task DispatchAsync(string windowId, KWinWindowCommand command, CancellationToken cancellationToken, int workspace = 0)
     {
         if (string.IsNullOrWhiteSpace(windowId)
             || windowId.Length > 256
@@ -30,7 +30,7 @@ internal sealed class KWinCommandDispatcher
 
         var pluginName = $"daisyos-command-{Guid.NewGuid():N}";
         var scriptPath = Path.Combine(runtimeDirectory, $"{pluginName}.js");
-        await File.WriteAllTextAsync(scriptPath, CreateScript(windowId, command), cancellationToken);
+        await File.WriteAllTextAsync(scriptPath, CreateScript(windowId, command, workspace), cancellationToken);
 
         try
         {
@@ -46,7 +46,7 @@ internal sealed class KWinCommandDispatcher
         }
     }
 
-    private static string CreateScript(string windowId, KWinWindowCommand command)
+    private static string CreateScript(string windowId, KWinWindowCommand command, int workspace)
     {
         var literalId = JsonSerializer.Serialize(windowId);
         var body = command switch
@@ -59,6 +59,14 @@ if (workspace.activeWindow === target && !target.minimized) {
     workspace.activeWindow = target;
 }",
             KWinWindowCommand.Close => "target.closeWindow();",
+            KWinWindowCommand.Maximize => "target.maximized = true;",
+            KWinWindowCommand.Restore => "target.maximized = false; target.minimized = false; workspace.activeWindow = target;",
+            KWinWindowCommand.MoveToWorkspace => $@"
+var targetWorkspace = Number({workspace});
+if (targetWorkspace > 0 && workspace.desktops.length >= targetWorkspace) {{
+    target.desktops = [workspace.desktops[targetWorkspace - 1]];
+}}
+",
             _ => string.Empty
         };
 
@@ -107,5 +115,8 @@ for (var index = 0; index < windows.length; ++index) {{
 internal enum KWinWindowCommand
 {
     ActivateOrMinimize,
-    Close
+    Close,
+    Maximize,
+    Restore,
+    MoveToWorkspace
 }

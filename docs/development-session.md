@@ -1,11 +1,14 @@
 # DaisyOS Development Login Session
 
 The development session makes DaisyOS selectable from GDM, SDDM, and other
-Wayland-aware display managers as **DaisyOS (Development)**. It starts KWin
-Wayland, installs the session-local DaisyOS KWin window bridge, and then runs
-the current checkout using Avalonia's explicit native-Wayland backend. XWayland
-applications remain supported by KWin. DaisyOS remains the shell; KWin remains
-the compositor and window manager.
+Wayland-aware display managers as **DaisyOS (Windowed Prototype)**. It starts
+KWin Wayland, installs the session-local DaisyOS KWin window bridge, and then
+runs the current checkout using Avalonia's explicit native-Wayland backend.
+XWayland applications remain supported by KWin.
+
+This is intentionally a visual-development prototype, not the production
+DaisyOS session: it remains a fullscreen `xdg_toplevel`. It is labelled this
+way so it can never be confused with the future native layer-shell session.
 
 ## Install
 
@@ -24,7 +27,7 @@ The installer adds these system files:
 ```
 
 Sign out. In the display manager's session menu, choose **DaisyOS
-(Development)** and sign in normally. The launcher reads the checkout path
+(Windowed Prototype)** and sign in normally. The launcher reads the checkout path
 from the configuration file, so edit and rebuild the source tree in place;
 sign out and back in to exercise a new shell build.
 

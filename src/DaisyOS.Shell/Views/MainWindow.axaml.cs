@@ -6,6 +6,11 @@ using DaisyOS.Shell;
 
 namespace DaisyOS.Shell.Views
 {
+    /// <summary>
+    /// Development-only fullscreen prototype. The production display-manager
+    /// session never creates this xdg_toplevel: it is retained so visual work
+    /// can continue while the layer-shell backend is maintained separately.
+    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()

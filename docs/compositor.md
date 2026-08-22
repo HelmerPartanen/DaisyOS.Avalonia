@@ -62,7 +62,7 @@ login manager or VM autologin
       -> normal Linux applications
 ```
 
-The development session currently uses:
+The windowed prototype currently uses:
 
 ```text
 current developer session
@@ -78,16 +78,19 @@ Run `scripts/test-kwin-nested-runtime.sh` for the bounded automated acceptance
 path. It binds the strict report to the exact nested KWin process, proves the
 nested socket accepts a native Wayland client, exercises an XWayland client,
 and checks that the original host display still answers after nested KWin
-exits. The display-manager session now launches the shell with `UseWayland()`;
-layer-shell roles remain the next required integration step.
+exits. The production `DaisyOS` entry is deliberately not installed by this
+script. It will be installed only with the version-pinned
+`DaisyOS.Avalonia.Wayland` backend, which binds `zwlr_layer_shell_v1` before
+creating any shell surface. If that backend or protocol is unavailable it exits
+with a clear error instead of falling back to this fullscreen client.
 
 ## Surface Ownership
 
-| DaisyOS surface | Initial prototype | Target Wayland role |
+| DaisyOS surface | Windowed prototype | Native DaisyOS role |
 |---|---|---|
 | Wallpaper and desktop | One fullscreen Avalonia window | Background layer per output |
-| System bar | Owned native surface | Top layer, exclusive bottom edge |
-| Dock | Owned native surface | Top layer on the selected left, right, top, or bottom edge |
+| System bar | Inside fullscreen window | Primary-output panel layer, exclusive bottom edge |
+| Dock | Inside fullscreen window | Primary-output panel layer, exclusive bottom edge |
 | Launcher and search | Owned native surfaces | Overlay layer or activated popup |
 | Notifications | Inside fullscreen window | Overlay/top layer, no keyboard focus by default |
 | Settings and Files | Normal Avalonia windows | `xdg_toplevel` normal windows |
@@ -97,9 +100,10 @@ layer-shell roles remain the next required integration step.
 
 `zwlr_layer_shell_v1` can anchor a client surface to output edges, assign its
 desktop layer, and reserve an exclusive zone. Avalonia's stock backend creates
-normal `xdg_toplevel` windows, so DaisyOS must add its maintained layer-shell
-extension before it can claim those roles. The session must reject an unavailable
-layer-shell capability instead of silently presenting a fullscreen application.
+normal `xdg_toplevel` windows. DaisyOS therefore has a strict shell-surface
+contract (`LayerShellSurfaceOptions`) and refuses to create a fullscreen
+`xdg_toplevel` as a production fallback. The pinned backend must bind the
+protocol before it constructs background, primary-panel, or overlay surfaces.
 
 ## Window and Application Integration
 

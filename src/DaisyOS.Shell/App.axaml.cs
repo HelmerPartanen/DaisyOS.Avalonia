@@ -21,6 +21,7 @@ using DaisyOS.Shell.Apps.Calendar;
 using DaisyOS.Shell.Services.Windows;
 using DaisyOS.Shell.Services.Notifications;
 using DaisyOS.Shell.Services.Compositor;
+using DaisyOS.Shell.Services.Shell;
 using Avalonia.Threading;
 
 namespace DaisyOS.Shell;
@@ -99,6 +100,13 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            if (IsNativeShellSession)
+            {
+                StartNativeShellSession(desktop);
+                base.OnFrameworkInitializationCompleted();
+                return;
+            }
+
             var mainWindow = new MainWindow();
             desktop.MainWindow = mainWindow;
             mainWindow.Opened += (_, _) =>
@@ -125,6 +133,37 @@ public partial class App : Application
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>
+    /// Production shell startup is intentionally a hard gate. A normal
+    /// Avalonia Wayland window is an xdg_toplevel, even when fullscreen, and
+    /// must never be used as a substitute for a desktop/panel layer surface.
+    /// The maintained backend plugs into this point before any Window exists.
+    /// </summary>
+    private static void StartNativeShellSession(IClassicDesktopStyleApplicationLifetime desktop)
+    {
+        var protocolAvailable = LayerShellCapability.ProbeAsync().GetAwaiter().GetResult();
+        if (!protocolAvailable)
+        {
+            Console.Error.WriteLine(
+                "DaisyOS cannot start the native shell: KWin did not advertise zwlr_layer_shell_v1. " +
+                "The session will not fall back to a fullscreen application.");
+            desktop.Shutdown(1);
+            return;
+        }
+
+        // This is deliberately not an xdg_toplevel fallback. The maintained
+        // DaisyOS.Avalonia.Wayland backend supplies an ILayerShellWindowBackend
+        // here; until it is present, the production session fails clearly and
+        // the labelled Windowed Prototype remains available for development.
+        var backend = new UnavailableLayerShellWindowBackend();
+        if (!backend.IsAvailable)
+        {
+            Console.Error.WriteLine(
+                "DaisyOS cannot start the native shell: the pinned DaisyOS.Avalonia.Wayland layer-shell backend is not installed.");
+            desktop.Shutdown(1);
+        }
     }
 
     /// <summary>Applies the requested appearance and regenerates its wallpaper-derived accent roles.</summary>

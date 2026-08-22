@@ -9,7 +9,7 @@ usage() {
   cat <<'EOF'
 Usage: scripts/install-development-session.sh [--repo PATH] [--prefix PATH]
 
-Installs the DaisyOS (Development) Wayland session entry. Select it from the
+Installs the DaisyOS (Windowed Prototype) Wayland session entry. Select it from the
 display manager after signing out. --prefix is intended for tests or staging;
 the normal install target is /.
 EOF
@@ -68,4 +68,4 @@ if [[ ! -f "$config_target" || "$source_root" != "$repo_root" ]]; then
   chmod 0644 "$config_target"
 fi
 
-echo "Installed DaisyOS (Development). Sign out, then select it from the display-manager session menu."
+echo "Installed DaisyOS (Windowed Prototype). Sign out, then select it from the display-manager session menu."
