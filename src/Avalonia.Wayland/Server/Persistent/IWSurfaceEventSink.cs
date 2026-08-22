@@ -103,3 +103,12 @@ internal interface IWXdgPopupEventSink : IWSurfaceEventSink
     void OnPopupDone();
 }
 
+[GenerateCrossThreadProxy(
+    typeof(DispatcherPriority),
+    "default",
+    GeneratedClassName = "WLayerSurfaceEventSinkProxy")]
+internal interface ILayerSurfaceEventSink : IWSurfaceEventSink
+{
+    void OnConfigure(XdgConfigureBatch batch);
+    void OnClose();
+}

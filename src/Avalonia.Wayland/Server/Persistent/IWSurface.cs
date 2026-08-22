@@ -59,3 +59,12 @@ internal interface IWSurface
     /// <summary>Resets the IME state (clears any pending preedit/commit).</summary>
     void ResetTextInput();
 }
+
+[GenerateCrossThreadProxy(
+    typeof(WaylandDispatchPriority),
+    "Avalonia.Wayland.Server.WaylandDispatchPriority.Normal",
+    GeneratedClassName = "WLayerSurfaceProxy")]
+internal interface ILayerSurface : IWSurface
+{
+    void SetPendingAckSerial(uint serial);
+}

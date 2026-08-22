@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Input.Raw;
 using Avalonia.Rendering.Composition;
 using Avalonia.Wayland.Server.Persistent;
+using Avalonia.Wayland.Server.LayerShell;
 
 namespace Avalonia.Wayland.Server;
 
@@ -93,6 +94,20 @@ class WaylandWorkerClient
             Proxy: proxy,
             GetRenderSurfaces: () => topLevel.RenderSurfaces,
             BasicInitCompleted: topLevel.BasicInitCompleted);
+    }
+
+    /// <summary>Creates a layer-shell surface before any xdg role is assigned.</summary>
+    public WaylandSurfaceCreateResult<WLayerSurfaceProxy> CreateLayerShellHandle(
+        LayerShellOptions options,
+        WLayerSurfaceEventSinkProxy sink)
+    {
+        options.Validate();
+        var surface = new WLayerSurface(_worker, options, sink);
+        var proxy = new WLayerSurfaceProxy(surface, Marshaller);
+        return new WaylandSurfaceCreateResult<WLayerSurfaceProxy>(
+            Proxy: proxy,
+            GetRenderSurfaces: () => surface.RenderSurfaces,
+            BasicInitCompleted: surface.BasicInitCompleted);
     }
 
     /// <summary>
