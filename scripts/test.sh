@@ -20,5 +20,6 @@ scripts/check-packaging.sh
 scripts/test-packaging-check.sh
 scripts/check-branding.sh
 scripts/test-session-scripts.sh
+scripts/test-development-session-install.sh
 scripts/test-compositor-session-check.sh
 scripts/check-iso-profile.sh

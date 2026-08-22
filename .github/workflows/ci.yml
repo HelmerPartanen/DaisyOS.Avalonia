@@ -53,6 +53,9 @@ jobs:
       - name: Test live-session recovery
         run: scripts/test-session-scripts.sh
 
+      - name: Test development display-manager session
+        run: scripts/test-development-session-install.sh
+
       - name: Validate KWin prototype
         run: scripts/check-kwin-prototype.sh
 
