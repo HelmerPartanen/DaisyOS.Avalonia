@@ -30,6 +30,8 @@ public sealed class LinuxNetworkStatusService : INetworkStatusService
                 IsAvailable: false);
         }
 
+        var connectivity = await GetConnectivityAsync(cancellationToken);
+
         var output = result.StandardOutput.Trim();
         var activeDevice = output
             .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -40,8 +42,16 @@ public sealed class LinuxNetworkStatusService : INetworkStatusService
 
         if (activeDevice is null)
         {
-            return new NetworkStatus(false, "Offline", "No active network connection was found.");
+            return new NetworkStatus(
+                false,
+                "Offline",
+                "No active network connection was found.",
+                Connectivity: connectivity);
         }
+
+        var signalPercent = activeDevice.Kind == NetworkConnectionKind.WiFi
+            ? await GetActiveWifiSignalAsync(cancellationToken)
+            : null;
 
         var detail = activeDevice.Kind switch
         {
@@ -49,7 +59,65 @@ public sealed class LinuxNetworkStatusService : INetworkStatusService
             NetworkConnectionKind.Ethernet => "Ethernet is connected.",
             _ => "A network connection is active."
         };
-        return new NetworkStatus(true, activeDevice.DisplayName, detail, activeDevice.Kind);
+        return new NetworkStatus(
+            true,
+            activeDevice.DisplayName,
+            detail,
+            activeDevice.Kind,
+            connectivity,
+            signalPercent);
+    }
+
+    private async Task<NetworkConnectivity> GetConnectivityAsync(CancellationToken cancellationToken)
+    {
+        var result = await _commandRunner.RunAsync(
+            "nmcli",
+            ["-t", "-f", "CONNECTIVITY", "general"],
+            TimeSpan.FromSeconds(3),
+            cancellationToken);
+
+        if (!result.Succeeded)
+        {
+            return NetworkConnectivity.Unknown;
+        }
+
+        return result.StandardOutput.Trim().ToLowerInvariant() switch
+        {
+            "full" => NetworkConnectivity.Full,
+            "limited" => NetworkConnectivity.Limited,
+            "portal" => NetworkConnectivity.Portal,
+            "none" => NetworkConnectivity.None,
+            _ => NetworkConnectivity.Unknown
+        };
+    }
+
+    private async Task<int?> GetActiveWifiSignalAsync(CancellationToken cancellationToken)
+    {
+        var result = await _commandRunner.RunAsync(
+            "nmcli",
+            ["-t", "-f", "IN-USE,SIGNAL", "device", "wifi", "list", "--rescan", "no"],
+            TimeSpan.FromSeconds(3),
+            cancellationToken);
+        if (!result.Succeeded)
+        {
+            return null;
+        }
+
+        foreach (var line in result.StandardOutput.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var separator = line.LastIndexOf(':');
+            if (separator < 0 || line[..separator] != "*")
+            {
+                continue;
+            }
+
+            if (int.TryParse(line[(separator + 1)..], out var signal))
+            {
+                return Math.Clamp(signal, 0, 100);
+            }
+        }
+
+        return null;
     }
 
     private static NetworkDeviceStatus ParseDeviceStatusLine(string line)

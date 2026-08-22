@@ -25,13 +25,13 @@
             Background="{DynamicResource ShellFrameOuterEdgeBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+      <Border x:Name="FrameHighlight" Classes="AppWindowFrameHighlight" Background="{DynamicResource ShellFrameInnerHighlightBrush}"
               Padding="1" CornerRadius="{DynamicResource RoundedLGInset}">
-        <Border Background="{DynamicResource SurfaceBaseBrush}"
+        <Border x:Name="ContentFrame" Classes="AppWindowContentFrame" Background="{DynamicResource SurfaceBaseBrush}"
                 CornerRadius="{DynamicResource RoundedMD}"
                 ClipToBounds="True">
-          <Grid RowDefinitions="44,*">
-            <calendar:CalendarWindowTitleBar Title="Calendar" />
+          <Grid x:Name="ContentLayout" RowDefinitions="44,*">
+            <calendar:CalendarWindowTitleBar x:Name="TitleBar" Title="Calendar" />
             <calendar:CalendarView Grid.Row="1" DataContext="{Binding}" />
           </Grid>
         </Border>

@@ -26,6 +26,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
     {
         private Bitmap? _wallpaperPreview;
         private bool _isRefreshingAppearanceControls;
+        private int _categoryBuildVersion;
         private string? _previewWallpaperUri;
         private int _previewRequestVersion;
 
@@ -116,6 +117,7 @@ namespace DaisyOS.Shell.Apps.System.Settings
 
         private void ShowCategory(string category)
         {
+            var buildVersion = ++_categoryBuildVersion;
             var isAppearance = string.Equals(category, "Appearance", StringComparison.Ordinal);
             SystemListView.IsVisible = false;
             SystemDetailView.IsVisible = false;
@@ -128,10 +130,10 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 return;
             }
 
-            BuildCategory(category);
+            BuildCategory(category, buildVersion);
         }
 
-        private void BuildCategory(string category)
+        private void BuildCategory(string category, int buildVersion)
         {
             CategoryContent.Children.Clear();
             var (title, subtitle) = category switch
@@ -174,8 +176,8 @@ namespace DaisyOS.Shell.Apps.System.Settings
             {
                 case "Displays": BuildDisplays(); break;
                 case "Sound": BuildSound(); break;
-                case "Network": BuildNetwork(); break;
-                case "Bluetooth": BuildBluetooth(); break;
+                case "Network": BuildNetwork(buildVersion); break;
+                case "Bluetooth": BuildBluetooth(buildVersion); break;
                 case "Notifications": BuildNotifications(); break;
                 case "Apps": BuildApps(); break;
                 case "Storage": BuildStorage(); break;
@@ -228,27 +230,73 @@ namespace DaisyOS.Shell.Apps.System.Settings
                 Toggle("Spatial audio when available", "sound.spatial", false));
         }
 
-        private void BuildNetwork()
+        private void BuildNetwork(int buildVersion)
         {
-            var status = Secondary("Checking Wi-Fi availability…");
-            var wifi = Toggle("Wi-Fi", "network.wifi", true, value => { _ = SetWifi(value, status); });
-            AddSection("CONNECTIONS", "Wi-Fi changes are applied through NetworkManager.", wifi, status,
+            var checking = Secondary("Checking Wi-Fi availability…");
+            CategoryContent.Children.Add(checking);
+            _ = BuildNetworkAvailabilityAsync(buildVersion, checking);
+        }
+
+        private async Task BuildNetworkAvailabilityAsync(int buildVersion, TextBlock checking)
+        {
+            WirelessRadioStatus radio;
+            try
+            {
+                radio = await new LinuxWirelessNetworkService(new SafeCommandRunner()).GetRadioStatusAsync();
+            }
+            catch
+            {
+                radio = new WirelessRadioStatus(false, false, "Wi-Fi isn’t available on this device.");
+            }
+
+            if (buildVersion != _categoryBuildVersion) return;
+            CategoryContent.Children.Remove(checking);
+            if (!radio.IsAvailable)
+            {
+                AddUnavailableMessage(radio.Detail);
+                return;
+            }
+
+            AddSection("CONNECTIONS", "Wi-Fi changes are applied through NetworkManager.",
+                Toggle("Wi-Fi", "network.wifi", radio.IsEnabled, value => { _ = SetWifi(value); }),
                 Toggle("Ask before joining public networks", "network.ask-public", true),
                 Toggle("Use random hardware address", "network.random-mac", true));
             AddSection("CONNECTION PRIVACY", null,
                 Toggle("Connect automatically to known networks", "network.auto-connect", true),
                 Toggle("Allow background sync on metered networks", "network.metered-sync", false));
-            _ = RefreshWifiAsync(wifi, status);
         }
 
-        private void BuildBluetooth()
+        private void BuildBluetooth(int buildVersion)
         {
-            var status = Secondary("Checking Bluetooth availability…");
-            var bluetooth = Toggle("Bluetooth", "bluetooth.enabled", false, value => { _ = SetBluetooth(value, status); });
-            AddSection("BLUETOOTH", "Bluetooth changes are applied through the system adapter.", bluetooth, status,
+            var checking = Secondary("Checking Bluetooth availability…");
+            CategoryContent.Children.Add(checking);
+            _ = BuildBluetoothAvailabilityAsync(buildVersion, checking);
+        }
+
+        private async Task BuildBluetoothAvailabilityAsync(int buildVersion, TextBlock checking)
+        {
+            BluetoothStatus adapter;
+            try
+            {
+                adapter = await new LinuxBluetoothService(new SafeCommandRunner()).GetAdapterStatusAsync();
+            }
+            catch
+            {
+                adapter = new BluetoothStatus(false, false, false, Array.Empty<BluetoothDevice>(), "Bluetooth isn’t available on this device.");
+            }
+
+            if (buildVersion != _categoryBuildVersion) return;
+            CategoryContent.Children.Remove(checking);
+            if (!adapter.IsAvailable)
+            {
+                AddUnavailableMessage(adapter.Detail);
+                return;
+            }
+
+            AddSection("BLUETOOTH", "Bluetooth changes are applied through the system adapter.",
+                Toggle("Bluetooth", "bluetooth.enabled", adapter.IsEnabled, value => { _ = SetBluetooth(value); }),
                 Toggle("Allow nearby devices to discover this computer", "bluetooth.discoverable", false),
                 Toggle("Reconnect trusted devices automatically", "bluetooth.auto-connect", true));
-            _ = RefreshBluetoothAsync(bluetooth, status);
         }
 
         private void BuildNotifications()
@@ -395,6 +443,20 @@ namespace DaisyOS.Shell.Apps.System.Settings
             CategoryContent.Children.Add(section);
         }
 
+        private void AddUnavailableMessage(string message)
+        {
+            // Hardware availability is not a preference. Keep this calm and ungrouped so it
+            // does not look like a disabled row with hidden actions or decorative dividers.
+            CategoryContent.Children.Add(new TextBlock
+            {
+                Text = message,
+                FontSize = 13,
+                Foreground = TryBrush("ContentSecondaryBrush"),
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 12, 0, 0)
+            });
+        }
+
         private Border Toggle(string title, string key, bool fallback, Action<bool>? apply = null)
         {
             var app = Application.Current as App;
@@ -539,48 +601,24 @@ namespace DaisyOS.Shell.Apps.System.Settings
             catch { }
         }
 
-        private async Task RefreshWifiAsync(Border row, TextBlock status)
-        {
-            try
-            {
-                var radio = await new LinuxWirelessNetworkService(new SafeCommandRunner()).GetRadioStatusAsync();
-                status.Text = radio.Detail;
-                if (row.Child is Grid { Children: { Count: > 1 } } grid && grid.Children[1] is ToggleSwitch toggle)
-                    toggle.IsChecked = radio.IsEnabled;
-            }
-            catch { status.Text = "Wi-Fi status could not be read."; }
-        }
-
-        private async Task SetWifi(bool enabled, TextBlock status)
+        private async Task SetWifi(bool enabled)
         {
             try
             {
                 var changed = await new LinuxWirelessNetworkService(new SafeCommandRunner()).SetEnabledAsync(enabled);
-                status.Text = changed ? (enabled ? "Wi-Fi is on." : "Wi-Fi is off.") : "DaisyOS could not change Wi-Fi.";
+                if (!changed) (Application.Current as App)?.Feedback.Show("DaisyOS could not change Wi-Fi.");
             }
-            catch { status.Text = "DaisyOS could not change Wi-Fi."; }
+            catch { (Application.Current as App)?.Feedback.Show("DaisyOS could not change Wi-Fi."); }
         }
 
-        private async Task RefreshBluetoothAsync(Border row, TextBlock status)
-        {
-            try
-            {
-                var adapter = await new LinuxBluetoothService(new SafeCommandRunner()).GetAdapterStatusAsync();
-                status.Text = adapter.Detail;
-                if (row.Child is Grid { Children: { Count: > 1 } } grid && grid.Children[1] is ToggleSwitch toggle)
-                    toggle.IsChecked = adapter.IsEnabled;
-            }
-            catch { status.Text = "Bluetooth status could not be read."; }
-        }
-
-        private async Task SetBluetooth(bool enabled, TextBlock status)
+        private async Task SetBluetooth(bool enabled)
         {
             try
             {
                 var changed = await new LinuxBluetoothService(new SafeCommandRunner()).SetEnabledAsync(enabled);
-                status.Text = changed ? (enabled ? "Bluetooth is on." : "Bluetooth is off.") : "DaisyOS could not change Bluetooth.";
+                if (!changed) (Application.Current as App)?.Feedback.Show("DaisyOS could not change Bluetooth.");
             }
-            catch { status.Text = "DaisyOS could not change Bluetooth."; }
+            catch { (Application.Current as App)?.Feedback.Show("DaisyOS could not change Bluetooth."); }
         }
 
         private async Task SetHighContrast(bool enabled)

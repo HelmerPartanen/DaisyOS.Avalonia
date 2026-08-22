@@ -58,5 +58,15 @@ public partial class CalculatorWindowTitleBar : UserControl
         }
     }
 
+    private void OnMaximizeRestoreClicked(object? sender, RoutedEventArgs e)
+    {
+        if (HostWindow is { } window)
+        {
+            window.WindowState = window.WindowState == WindowState.Maximized
+                ? WindowState.Normal
+                : WindowState.Maximized;
+        }
+    }
+
     private void OnCloseClicked(object? sender, RoutedEventArgs e) => HostWindow?.Close();
 }

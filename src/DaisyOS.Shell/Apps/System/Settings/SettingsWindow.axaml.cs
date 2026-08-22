@@ -2,43 +2,27 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.VisualTree;
+using DaisyOS.Shell.Apps;
 
 namespace DaisyOS.Shell.Apps.System.Settings;
 
 public partial class SettingsWindow : Window
 {
+    private readonly SystemAppWindowChrome _windowChrome;
+
     public SettingsWindow()
     {
         InitializeComponent();
         Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
         Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
-        PropertyChanged += OnWindowPropertyChanged;
-        UpdateWindowChrome();
+        _windowChrome = new SystemAppWindowChrome(this, AppFrame, FrameHighlight, ContentFrame, TitleBar, ContentLayout,
+            [ResizeTop, ResizeBottom, ResizeLeft, ResizeRight, ResizeTopLeft, ResizeTopRight, ResizeBottomLeft, ResizeBottomRight]);
     }
 
-    private void OnWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    protected override void OnClosed(EventArgs e)
     {
-        if (e.Property == WindowStateProperty)
-        {
-            UpdateWindowChrome();
-        }
-    }
-
-    private void UpdateWindowChrome()
-    {
-        var fillsDisplay = WindowState is WindowState.Maximized or WindowState.FullScreen;
-        AppFrame.Classes.Set("FilledWindow", fillsDisplay);
-        FrameHighlight.Classes.Set("FilledWindow", fillsDisplay);
-        ContentFrame.Classes.Set("FilledWindow", fillsDisplay);
-
-        ResizeTop.IsHitTestVisible = !fillsDisplay;
-        ResizeBottom.IsHitTestVisible = !fillsDisplay;
-        ResizeLeft.IsHitTestVisible = !fillsDisplay;
-        ResizeRight.IsHitTestVisible = !fillsDisplay;
-        ResizeTopLeft.IsHitTestVisible = !fillsDisplay;
-        ResizeTopRight.IsHitTestVisible = !fillsDisplay;
-        ResizeBottomLeft.IsHitTestVisible = !fillsDisplay;
-        ResizeBottomRight.IsHitTestVisible = !fillsDisplay;
+        _windowChrome.Dispose();
+        base.OnClosed(e);
     }
 
     private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)

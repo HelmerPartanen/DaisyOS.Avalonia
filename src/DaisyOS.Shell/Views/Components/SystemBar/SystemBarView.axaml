@@ -101,20 +101,27 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="0">
 
       <!-- Network and sound are one Quick Settings action, laid out on an even two-icon grid. -->
-      <Button x:Name="QuickSettingsButton" Classes="ShellButton" Width="96" Height="40" ToolTip.Tip="Quick settings"
+      <Button x:Name="QuickSettingsButton" Classes="ShellButton" Height="40" Padding="8,0" ToolTip.Tip="Quick settings"
               Click="OnQuickSettingsRequested">
-        <Border Width="96" Height="40" Background="Transparent" CornerRadius="{DynamicResource RoundedMD}">
-          <Grid ColumnDefinitions="*,*,*">
-            <TextBlock Grid.Column="0" Text="wifi"
+        <Border Height="40" Background="Transparent" CornerRadius="{DynamicResource RoundedMD}">
+          <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <Grid Width="18" Height="18">
+              <controls:WifiSignalIcon x:Name="SystemBarWifiIcon" IsVisible="False"
+                                       SignalPercent="0"/>
+              <TextBlock x:Name="SystemBarEthernetIcon" Text="lan" IsVisible="False"
+                         FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              <TextBlock x:Name="SystemBarOfflineIcon" Text="language"
+                         FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="18"
+                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+            <TextBlock x:Name="SystemBarBluetoothIcon" Text="bluetooth" IsVisible="False"
                        FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1" Text="bluetooth"
+            <TextBlock Text="volume_up"
                        FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="2" Text="volume_up"
-                       FontFamily="avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded" FontSize="16"
-                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-          </Grid>
+          </StackPanel>
         </Border>
       </Button>
       <Button x:Name="CalendarButton" Classes="ShellButton" Height="40" Padding="10,0" ToolTip.Tip="Calendar" Click="OnCalendarRequested">
@@ -143,25 +150,29 @@
 
   <!-- In-window overlay anchored 12px above the System Bar. -->
   <Border x:Name="QuickSettingsPanel" IsVisible="False"
-          Width="336" Height="304" Padding="1"
+          Width="336" Padding="1"
           HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,64"
           Background="{DynamicResource ShellFrameOuterEdgeBrush}"
           CornerRadius="{DynamicResource RoundedXL}"
           ClipToBounds="True">
     <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}" Padding="1"
             CornerRadius="{DynamicResource RoundedXLInset}">
-      <Border Background="{DynamicResource SurfaceBaseBrush}" Padding="16,16,16,0"
+      <Border Background="{DynamicResource SurfaceBaseBrush}" Padding="16"
               CornerRadius="{DynamicResource RoundedXLDoubleInset}" ClipToBounds="True">
         <Grid>
-      <Grid x:Name="QuickSettingsMainPage" RowDefinitions="*,Auto">
-        <StackPanel Grid.Row="0" Spacing="12">
+      <StackPanel x:Name="QuickSettingsMainPage" Spacing="12">
           <Grid Width="304" HorizontalAlignment="Center"
+                x:Name="QuickSettingsTiles"
                 ColumnDefinitions="96,96,96" ColumnSpacing="8"
                 RowDefinitions="Auto,Auto" RowSpacing="8">
             <controls:QuickSettingTile Grid.Row="0" Grid.Column="0" x:Name="WifiTile"
                                        Icon="wifi" Label="Wi-Fi" HasDetails="True"
                                        ToolTipText="Toggle Wi-Fi" DetailsToolTipText="Wi-Fi networks"
                                        Toggled="OnWifiTileToggled" DetailsClicked="OnWifiNetworksButtonClicked"/>
+            <controls:QuickSettingTile Grid.Row="0" Grid.Column="0" x:Name="EthernetTile" IsVisible="False"
+                                       Icon="lan" Label="Ethernet" HasDetails="True"
+                                       ToolTipText="Open Network settings" DetailsToolTipText="Network settings"
+                                       Toggled="OnEthernetTileClicked" DetailsClicked="OnNetworkSettingsClicked"/>
             <controls:QuickSettingTile Grid.Row="0" Grid.Column="1" x:Name="BluetoothTile"
                                        Icon="bluetooth" Label="Bluetooth" HasDetails="True"
                                        ToolTipText="Toggle Bluetooth" DetailsToolTipText="Bluetooth devices"
@@ -188,8 +199,7 @@
                          FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Button>
           </Grid>
-        </StackPanel>
-        <Grid Grid.Row="1" Height="52" RowDefinitions="1,*">
+        <Grid Height="52" RowDefinitions="1,*">
           <Border Grid.Row="0" Background="{DynamicResource StrokeDefaultBrush}" Opacity="0.7"/>
           <Grid Grid.Row="1" ColumnDefinitions="*,40">
             <StackPanel x:Name="BatteryStatusHost" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" IsVisible="False">
@@ -204,7 +214,7 @@
             </Button>
           </Grid>
         </Grid>
-      </Grid>
+      </StackPanel>
       <StackPanel x:Name="OutputDevicesPage" IsVisible="False" Spacing="12">
         <controls:FlyoutPageHeader Title="Output devices" BackClicked="OnOutputDevicesBackClicked"/>
         <StackPanel x:Name="OutputDevicesHost" Spacing="2"><TextBlock Text="Loading devices…" Foreground="{DynamicResource ContentSecondaryBrush}" Margin="10,8"/></StackPanel>

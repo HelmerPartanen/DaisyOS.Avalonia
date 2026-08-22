@@ -7,7 +7,7 @@
     Title="Calculator"
     Width="360"
     Height="560"
-    CanResize="False"
+    CanResize="True"
     WindowStartupLocation="CenterScreen"
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"
@@ -23,13 +23,13 @@
             Background="{DynamicResource ShellFrameOuterEdgeBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+      <Border x:Name="FrameHighlight" Classes="AppWindowFrameHighlight" Background="{DynamicResource ShellFrameInnerHighlightBrush}"
               Padding="1" CornerRadius="{DynamicResource RoundedLGInset}">
-        <Border Background="{DynamicResource SurfaceBaseBrush}"
+        <Border x:Name="ContentFrame" Classes="AppWindowContentFrame" Background="{DynamicResource SurfaceBaseBrush}"
                 CornerRadius="{DynamicResource RoundedMD}"
                 ClipToBounds="True">
-          <Grid RowDefinitions="44,*">
-            <calculator:CalculatorWindowTitleBar Title="Calculator" />
+          <Grid x:Name="ContentLayout" RowDefinitions="44,*">
+            <calculator:CalculatorWindowTitleBar x:Name="TitleBar" Title="Calculator" />
             <calculator:CalculatorView Grid.Row="1" DataContext="{Binding}" />
           </Grid>
         </Border>

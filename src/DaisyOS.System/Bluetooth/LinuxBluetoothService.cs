@@ -101,6 +101,14 @@ public sealed partial class LinuxBluetoothService : IBluetoothService
             cancellationToken);
         if (!resultShow.Succeeded)
         {
+            var diagnostic = string.Concat(resultShow.StandardOutput, "\n", resultShow.StandardError);
+            if (diagnostic.Contains("no default controller", StringComparison.OrdinalIgnoreCase) ||
+                diagnostic.Contains("no controller available", StringComparison.OrdinalIgnoreCase))
+            {
+                return new BluetoothStatus(false, false, false, Array.Empty<BluetoothDevice>(),
+                    "Bluetooth isn’t available on this device.");
+            }
+
             return new BluetoothStatus(false, false, false, Array.Empty<BluetoothDevice>(),
                 BuildFailureDetail(resultShow, "Bluetooth status query"));
         }

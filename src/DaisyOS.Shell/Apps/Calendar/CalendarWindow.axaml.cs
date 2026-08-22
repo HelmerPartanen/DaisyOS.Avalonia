@@ -5,15 +5,20 @@ using Avalonia.Input;
 using Avalonia.VisualTree;
 
 using Avalonia.Threading;
+using DaisyOS.Shell.Apps;
 
 namespace DaisyOS.Shell.Apps.Calendar;
 
 public partial class CalendarWindow : Window
 {
+    private readonly SystemAppWindowChrome _windowChrome;
+
     public CalendarWindow()
     {
         InitializeComponent();
         DataContext = new CalendarViewModel();
+        _windowChrome = new SystemAppWindowChrome(this, AppFrame, FrameHighlight, ContentFrame, TitleBar, ContentLayout,
+            [ResizeTop, ResizeBottom, ResizeLeft, ResizeRight, ResizeTopLeft, ResizeTopRight, ResizeBottomLeft, ResizeBottomRight]);
         Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
         Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
 
@@ -33,6 +38,7 @@ public partial class CalendarWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        _windowChrome.Dispose();
         base.OnClosed(e);
         (DataContext as CalendarViewModel)?.Dispose();
     }

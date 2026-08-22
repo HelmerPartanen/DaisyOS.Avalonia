@@ -42,16 +42,16 @@
             Background="{DynamicResource ShellFrameOuterEdgeBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border x:Name="FrameHighlight" Classes="SettingsFrameHighlight"
+      <Border x:Name="FrameHighlight" Classes="SettingsFrameHighlight AppWindowFrameHighlight"
               Background="{DynamicResource ShellFrameInnerHighlightBrush}"
               Padding="1" CornerRadius="{DynamicResource RoundedLGInset}">
-        <Border Classes="SettingsContentFrame"
+        <Border Classes="SettingsContentFrame AppWindowContentFrame"
                 Background="{DynamicResource SurfaceBaseBrush}"
                 x:Name="ContentFrame"
                 CornerRadius="{DynamicResource RoundedMD}"
                 ClipToBounds="True">
-          <Grid RowDefinitions="44,*">
-            <settings:SettingsWindowTitleBar Title="Settings" />
+          <Grid x:Name="ContentLayout" RowDefinitions="44,*">
+            <settings:SettingsWindowTitleBar x:Name="TitleBar" Title="Settings" />
             <settings:SettingsView Grid.Row="1" />
           </Grid>
         </Border>

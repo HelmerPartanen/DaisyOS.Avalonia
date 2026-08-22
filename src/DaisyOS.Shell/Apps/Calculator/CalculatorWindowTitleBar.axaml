@@ -68,6 +68,9 @@
         <Button Classes="CaptionButton" Click="OnMinimizeClicked" ToolTip.Tip="Minimize">
           <TextBlock Text="remove" Classes="CaptionIcon" />
         </Button>
+        <Button Classes="CaptionButton" Click="OnMaximizeRestoreClicked" ToolTip.Tip="Maximize or restore">
+          <TextBlock Text="crop_square" Classes="CaptionIcon CaptionMaximizeIcon" />
+        </Button>
         <Button Classes="CaptionButton CaptionClose" Click="OnCloseClicked" ToolTip.Tip="Close">
           <TextBlock Text="close" Classes="CaptionIcon" />
         </Button>

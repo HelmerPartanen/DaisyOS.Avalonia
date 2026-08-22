@@ -126,15 +126,15 @@
             Background="{DynamicResource ShellFrameOuterEdgeBrush}"
             Padding="1"
             CornerRadius="{DynamicResource RoundedLG}">
-      <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}"
+      <Border x:Name="FrameHighlight" Classes="AppWindowFrameHighlight" Background="{DynamicResource ShellFrameInnerHighlightBrush}"
               Padding="1" CornerRadius="{DynamicResource RoundedLGInset}">
-        <Border Background="{DynamicResource SurfaceBaseBrush}"
+        <Border x:Name="ContentFrame" Classes="AppWindowContentFrame" Background="{DynamicResource SurfaceBaseBrush}"
                 CornerRadius="{DynamicResource RoundedMD}"
                 ClipToBounds="True">
-          <Grid RowDefinitions="44,52,42,*,26" Background="{DynamicResource SurfaceBaseBrush}">
+          <Grid x:Name="ContentLayout" RowDefinitions="44,52,42,*,26" Background="{DynamicResource SurfaceBaseBrush}">
 
           <!-- ROW 0: PURE BLACK TITLEBAR WITH METABALL MORPHING TABS EXTENDING TO BOTTOM EDGE -->
-          <Panel Grid.Row="0" Background="{DynamicResource SurfaceCanvasBrush}" PointerPressed="OnTitleBarPointerPressed" DoubleTapped="OnTitleBarDoubleTapped">
+          <Panel x:Name="TitleBar" Grid.Row="0" Background="{DynamicResource SurfaceCanvasBrush}" PointerPressed="OnTitleBarPointerPressed" DoubleTapped="OnTitleBarDoubleTapped">
             <Grid ColumnDefinitions="*,Auto">
 
               <!-- Tabs Area (Tight symmetrical layout with 6px margins) -->

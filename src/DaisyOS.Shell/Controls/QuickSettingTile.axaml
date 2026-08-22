@@ -39,6 +39,24 @@
     </Style>
     <Style Selector="Button.QuickSettingDetails:disabled">
       <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}"/>
+    </Style>
+    <!-- Disabled split pairs fade as a single control. Each half is deliberately reset to
+         full local opacity so platform disabled styles cannot make the chevron differ. -->
+    <Style Selector="Grid.QuickSettingSplitPair.Disabled">
+      <Setter Property="Opacity" Value="0.48"/>
+    </Style>
+    <Style Selector="Grid.QuickSettingSplitPair.Disabled ToggleButton.QuickSetting:disabled, Grid.QuickSettingSplitPair.Disabled Button.QuickSettingDetails:disabled">
+      <Setter Property="Opacity" Value="1"/>
+    </Style>
+    <Style Selector="ToggleButton.QuickSetting:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button.QuickSettingDetails:disabled /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource ActionSecondaryBrush}"/>
+      <Setter Property="BorderBrush" Value="Transparent"/>
+    </Style>
+    <Style Selector="UserControl:disabled Border.QuickSettingSplitDivider, UserControl:disabled TextBlock.QuickSettingLabel">
       <Setter Property="Opacity" Value="0.48"/>
     </Style>
     <!-- Controller focus must be as explicit as pointer hover. The shared tiles are used in
@@ -78,7 +96,9 @@
     </Grid>
 
     <!-- Split Tile (Action + Divider + Details Chevron) -->
-    <Grid IsVisible="{Binding HasDetails, ElementName=Root}" Height="56" Width="96" ColumnDefinitions="68,1,27">
+    <Grid Classes="QuickSettingSplitPair"
+          Classes.Disabled="{Binding !IsEnabled, ElementName=Root}"
+          IsVisible="{Binding HasDetails, ElementName=Root}" Height="56" Width="96" ColumnDefinitions="68,1,27">
         <ToggleButton x:Name="SplitToggle"
                       Grid.Column="0"
                       Classes="ShellButton QuickActionSplit QuickSetting"

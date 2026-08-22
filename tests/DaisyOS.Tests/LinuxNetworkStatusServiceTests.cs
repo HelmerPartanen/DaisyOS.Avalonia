@@ -33,13 +33,15 @@ public sealed class LinuxNetworkStatusServiceTests
             0,
             "wlan0:wifi:disconnected:--\neth0:ethernet:unavailable:--",
             string.Empty,
-            TimedOut: false));
+            TimedOut: false),
+            new CommandResult(0, "none", string.Empty, TimedOut: false));
         var service = new LinuxNetworkStatusService(runner);
 
         var status = await service.GetStatusAsync();
 
         Assert.True(status.IsAvailable);
         Assert.False(status.IsConnected);
+        Assert.Equal(DaisyOS.Core.Models.NetworkConnectivity.None, status.Connectivity);
         Assert.Equal("Offline", status.DisplayName);
         Assert.Equal("No active network connection was found.", status.Detail);
     }
@@ -51,7 +53,8 @@ public sealed class LinuxNetworkStatusServiceTests
             0,
             "wlan0:wifi:connected:Studio Wi-Fi\neth0:ethernet:connected:Wired connection",
             string.Empty,
-            TimedOut: false));
+            TimedOut: false),
+            new CommandResult(0, "full", string.Empty, TimedOut: false));
         var service = new LinuxNetworkStatusService(runner);
 
         var status = await service.GetStatusAsync();
@@ -61,5 +64,39 @@ public sealed class LinuxNetworkStatusServiceTests
         Assert.Equal("Wired connection", status.DisplayName);
         Assert.Equal("Ethernet is connected.", status.Detail);
         Assert.Equal(DaisyOS.Core.Models.NetworkConnectionKind.Ethernet, status.ConnectionKind);
+        Assert.Equal(DaisyOS.Core.Models.NetworkConnectivity.Full, status.Connectivity);
+    }
+
+    [Fact]
+    public async Task ConnectedWifiIncludesConnectivityAndActiveSignalWithoutRescan()
+    {
+        var runner = new ScriptedCommandRunner(
+            new CommandResult(0, "wlan0:wifi:connected:Studio Wi-Fi", string.Empty, TimedOut: false),
+            new CommandResult(0, "full", string.Empty, TimedOut: false),
+            new CommandResult(0, "*:73\n:32", string.Empty, TimedOut: false));
+        var service = new LinuxNetworkStatusService(runner);
+
+        var status = await service.GetStatusAsync();
+
+        Assert.Equal(DaisyOS.Core.Models.NetworkConnectionKind.WiFi, status.ConnectionKind);
+        Assert.Equal(DaisyOS.Core.Models.NetworkConnectivity.Full, status.Connectivity);
+        Assert.Equal(73, status.SignalPercent);
+        Assert.Equal(["-t", "-f", "IN-USE,SIGNAL", "device", "wifi", "list", "--rescan", "no"], runner.Calls[2].Arguments);
+    }
+
+    [Fact]
+    public async Task LimitedWifiConnectionPreservesItsConnectivityState()
+    {
+        var runner = new ScriptedCommandRunner(
+            new CommandResult(0, "wlan0:wifi:connected:Studio Wi-Fi", string.Empty, TimedOut: false),
+            new CommandResult(0, "limited", string.Empty, TimedOut: false),
+            new CommandResult(0, "*:51", string.Empty, TimedOut: false));
+        var service = new LinuxNetworkStatusService(runner);
+
+        var status = await service.GetStatusAsync();
+
+        Assert.True(status.IsConnected);
+        Assert.Equal(DaisyOS.Core.Models.NetworkConnectivity.Limited, status.Connectivity);
+        Assert.Equal(51, status.SignalPercent);
     }
 }

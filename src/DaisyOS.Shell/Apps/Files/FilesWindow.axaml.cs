@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using DaisyOS.Shell.Apps;
 using DaisyOS.System.Processes;
 
 namespace DaisyOS.Shell.Apps.Files;
@@ -16,6 +17,7 @@ namespace DaisyOS.Shell.Apps.Files;
 public partial class FilesWindow : Window
 {
     private readonly FilesViewModel _viewModel;
+    private readonly SystemAppWindowChrome _windowChrome;
 
     public FilesWindow() : this(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)) { }
 
@@ -24,6 +26,9 @@ public partial class FilesWindow : Window
         InitializeComponent();
         _viewModel = new FilesViewModel(initialPath);
         DataContext = _viewModel;
+        _windowChrome = new SystemAppWindowChrome(this, AppFrame, FrameHighlight, ContentFrame, TitleBar, ContentLayout,
+            [ResizeTop, ResizeBottom, ResizeLeft, ResizeRight, ResizeTopLeft, ResizeTopRight, ResizeBottomLeft, ResizeBottomRight],
+            "44,52,42,*,26", "0,52,42,*,26");
 
         Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
         Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
@@ -40,6 +45,12 @@ public partial class FilesWindow : Window
     public void TogglePerformanceOverlay()
     {
         PerfOverlay.ToggleOverlayVisibility();
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        _windowChrome.Dispose();
+        base.OnClosed(e);
     }
 
     private void OnTogglePerformanceClicked(object? sender, RoutedEventArgs e) => TogglePerformanceOverlay();

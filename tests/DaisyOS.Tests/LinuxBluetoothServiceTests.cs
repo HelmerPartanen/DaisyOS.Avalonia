@@ -22,6 +22,18 @@ public sealed class LinuxBluetoothServiceTests
     }
 
     [Fact]
+    public async Task GetAdapterStatusAsyncNormalizesMissingControllerForHardwarePresentation()
+    {
+        var runner = new ScriptedCommandRunner(Failed("No default controller available"));
+        var service = new LinuxBluetoothService(runner);
+
+        var status = await service.GetAdapterStatusAsync();
+
+        Assert.False(status.IsAvailable);
+        Assert.Equal("Bluetooth isn’t available on this device.", status.Detail);
+    }
+
+    [Fact]
     public async Task GetStatusAsyncParsesAndDeduplicatesBluetoothDevices()
     {
         const string headphonesAddress = "AA:BB:CC:DD:EE:01";

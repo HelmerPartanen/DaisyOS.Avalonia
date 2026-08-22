@@ -24,8 +24,10 @@ namespace DaisyOS.Shell.Views.Components.SystemBar;
 public partial class SystemBarView : UserControl
 {
     private readonly DispatcherTimer _clockTimer;
+    private readonly DispatcherTimer _statusTimer;
     private readonly IAudioService _audioService = new LinuxAudioService(new SafeCommandRunner());
     private readonly IWirelessNetworkService _wirelessNetworkService = new LinuxWirelessNetworkService(new SafeCommandRunner());
+    private readonly INetworkStatusService _networkStatusService = new LinuxNetworkStatusService(new SafeCommandRunner());
     private readonly IBluetoothService _bluetoothService = new LinuxBluetoothService(new SafeCommandRunner());
     private readonly IBatteryStatusService _batteryService = new LinuxBatteryStatusService();
     private readonly ShellSessionState _sessionState = (Application.Current as App)?.SessionState ?? new ShellSessionState();
@@ -33,9 +35,7 @@ public partial class SystemBarView : UserControl
     private TextBlock? _clockText;
     private string? _lastClockValue;
     private string? _demoConnectedWifi = "DottOS Guest";
-    private Task? _quickSettingsRefreshTask;
-    private DateTimeOffset _lastQuickSettingsRefresh = DateTimeOffset.MinValue;
-    private static readonly TimeSpan QuickSettingsRefreshInterval = TimeSpan.FromSeconds(15);
+    private Task? _statusRefreshTask;
 
     public event EventHandler? QuickSettingsRequested;
     public event EventHandler? QuickSettingsDismissRequested;
@@ -47,6 +47,8 @@ public partial class SystemBarView : UserControl
 
         _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
         _clockTimer.Tick += (_, _) => UpdateClock();
+        _statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(15) };
+        _statusTimer.Tick += (_, _) => QueueStatusRefresh();
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
     }
@@ -63,7 +65,7 @@ public partial class SystemBarView : UserControl
         SetQuickSettingsPage(QuickSettingsPage.Main);
         HideNotificationPanel();
         HideCalendarPanel();
-        QueueQuickSettingsRefresh(force: true);
+        QueueStatusRefresh();
         SetFlyoutButtonActive("QuickSettingsButton", true);
     }
 
@@ -124,6 +126,7 @@ public partial class SystemBarView : UserControl
         _clockText ??= this.FindControl<TextBlock>("ClockText");
         UpdateClock();
         _clockTimer.Start();
+        _statusTimer.Start();
         if (Application.Current is App app)
         {
             app.Notifications.UnreadCountChanged += OnUnreadNotificationsCountChanged;
@@ -136,12 +139,13 @@ public partial class SystemBarView : UserControl
         }
         // Let first paint win. Fast adapter state preloads after the shell is interactive so
         // opening Quick Settings never waits behind a Wi-Fi scan or paired-device enumeration.
-        Dispatcher.UIThread.Post(() => QueueQuickSettingsRefresh(), DispatcherPriority.Background);
+        Dispatcher.UIThread.Post(QueueStatusRefresh, DispatcherPriority.Background);
     }
 
     private void OnUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         _clockTimer.Stop();
+        _statusTimer.Stop();
         _volumeUpdateCancellation?.Cancel();
         if (Application.Current is App app)
         {
@@ -214,7 +218,7 @@ public partial class SystemBarView : UserControl
             tile.IsChecked = !tile.IsChecked;
             ReportFailure("DaisyOS could not change Wi-Fi. Check that NetworkManager is available.");
         }
-        QueueQuickSettingsRefresh(force: true);
+        QueueStatusRefresh();
     }
 
     private async void OnBluetoothTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -225,7 +229,7 @@ public partial class SystemBarView : UserControl
             tile.IsChecked = !tile.IsChecked;
             ReportFailure("DaisyOS could not change Bluetooth. Check that Bluetooth is available.");
         }
-        QueueQuickSettingsRefresh(force: true);
+        QueueStatusRefresh();
     }
 
     private void OnGamingTileToggled(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -263,41 +267,45 @@ public partial class SystemBarView : UserControl
         (Application.Current as App)?.ShowSettings();
     }
 
-    private void QueueQuickSettingsRefresh(bool force = false)
+    private void OnNetworkSettingsClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (_quickSettingsRefreshTask is { IsCompleted: false }) return;
-        if (!force && (!IsQuickSettingsVisible || DateTimeOffset.UtcNow - _lastQuickSettingsRefresh < QuickSettingsRefreshInterval)) return;
-        _quickSettingsRefreshTask = RefreshQuickSettingsStateAsync();
+        QuickSettingsDismissRequested?.Invoke(this, EventArgs.Empty);
+        (Application.Current as App)?.ShowSettings();
     }
 
-    private async Task RefreshQuickSettingsStateAsync()
+    private void OnEthernetTileClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        // Ethernet is a connection status rather than a radio switch. Keep its active
+        // presentation stable and send either half of the split control to Network Settings.
+        if (sender is QuickSettingTile ethernetTile) ethernetTile.IsChecked = true;
+        OnNetworkSettingsClicked(sender, e);
+    }
+
+    private void QueueStatusRefresh()
+    {
+        if (_statusRefreshTask is { IsCompleted: false }) return;
+        _statusRefreshTask = RefreshStatusAsync();
+    }
+
+    private async Task RefreshStatusAsync()
     {
         try
         {
-            // Detail discovery is intentionally deferred to the chevrons. These calls are
-            // bounded adapter/radio probes and complete without network scanning.
+            // Status queries are bounded and do not trigger a Wi-Fi rescan, so the shell
+            // can remain current without blocking interaction or waiting for a flyout.
+            var networkTask = _networkStatusService.GetStatusAsync();
             var wifiTask = _wirelessNetworkService.GetRadioStatusAsync();
             var bluetoothTask = _bluetoothService.GetAdapterStatusAsync();
             var batteryTask = _batteryService.GetStatusAsync();
             var volumeTask = _audioService.GetVolumeAsync();
-            await Task.WhenAll(wifiTask, bluetoothTask, batteryTask, volumeTask);
+            await Task.WhenAll(networkTask, wifiTask, bluetoothTask, batteryTask, volumeTask);
 
+            var network = await networkTask;
             var wifi = await wifiTask;
             var bluetooth = await bluetoothTask;
             var battery = await batteryTask;
             var volume = await volumeTask;
-            if (this.FindControl<QuickSettingTile>("WifiTile") is { } wifiTile)
-            {
-                wifiTile.IsEnabled = wifi.IsAvailable;
-                wifiTile.IsChecked = wifi.IsEnabled;
-                wifiTile.ToolTipText = wifi.Detail;
-            }
-            if (this.FindControl<QuickSettingTile>("BluetoothTile") is { } bluetoothTile)
-            {
-                bluetoothTile.IsEnabled = bluetooth.IsAvailable;
-                bluetoothTile.IsChecked = bluetooth.IsEnabled;
-                bluetoothTile.ToolTipText = bluetooth.Detail;
-            }
+            UpdateNetworkPresentation(network, wifi, bluetooth);
             if (this.FindControl<QuickSettingTile>("FocusTile") is { } focusTile) focusTile.IsChecked = _sessionState.DoNotDisturb;
             if (this.FindControl<QuickSettingTile>("GamingTile") is { } gamingTile) gamingTile.IsChecked = _sessionState.GamingMode;
             if (this.FindControl<QuickSettingTile>("ThemeTile") is { } themeTile)
@@ -324,12 +332,101 @@ public partial class SystemBarView : UserControl
         }
         catch
         {
-            // Individual controls retain an explicit unavailable/disabled state rather than invented data.
+            ShowOfflineNetworkPresentation();
             if (this.FindControl<QuickSettingsSlider>("VolumeSlider") is { } volumeSlider) volumeSlider.IsEnabled = false;
         }
-        finally
+    }
+
+    private void UpdateNetworkPresentation(NetworkStatus network, WirelessRadioStatus wifi, BluetoothStatus bluetooth)
+    {
+        var hasInternet = network.IsConnected && network.Connectivity == NetworkConnectivity.Full;
+        var wifiIsOnline = hasInternet && network.ConnectionKind == NetworkConnectionKind.WiFi;
+        var ethernetIsOnline = hasInternet && network.ConnectionKind == NetworkConnectionKind.Ethernet;
+        var ethernetIsActive = network.IsConnected && network.ConnectionKind == NetworkConnectionKind.Ethernet;
+        var wifiReceiverMissing = IsHardwareUnavailable(wifi.Detail, "Wi-Fi");
+        var bluetoothReceiverMissing = IsHardwareUnavailable(bluetooth.Detail, "Bluetooth");
+
+        if (this.FindControl<WifiSignalIcon>("SystemBarWifiIcon") is { } wifiIcon)
         {
-            _lastQuickSettingsRefresh = DateTimeOffset.UtcNow;
+            wifiIcon.IsVisible = wifiIsOnline;
+            wifiIcon.SignalPercent = network.SignalPercent ?? 0;
+            wifiIcon.ActiveBrush = this.FindResource("ContentPrimaryBrush") as IBrush ?? Brushes.White;
+            wifiIcon.InactiveBrush = this.FindResource("ContentTertiaryBrush") as IBrush ?? Brushes.Gray;
+            ToolTip.SetTip(wifiIcon, network.DisplayName);
+        }
+        if (this.FindControl<TextBlock>("SystemBarEthernetIcon") is { } ethernetIcon)
+        {
+            ethernetIcon.IsVisible = ethernetIsOnline;
+            ToolTip.SetTip(ethernetIcon, network.DisplayName);
+        }
+        if (this.FindControl<TextBlock>("SystemBarOfflineIcon") is { } offlineIcon)
+        {
+            offlineIcon.IsVisible = !wifiIsOnline && !ethernetIsOnline;
+            ToolTip.SetTip(offlineIcon, "No internet connection");
+        }
+        if (this.FindControl<TextBlock>("SystemBarBluetoothIcon") is { } bluetoothIcon)
+        {
+            bluetoothIcon.IsVisible = !bluetoothReceiverMissing;
+            bluetoothIcon.Text = bluetooth.IsEnabled ? "bluetooth" : "bluetooth_disabled";
+            ToolTip.SetTip(bluetoothIcon, bluetooth.Detail);
+        }
+
+        if (this.FindControl<QuickSettingTile>("WifiTile") is { } wifiTile)
+        {
+            wifiTile.IsVisible = !wifiReceiverMissing && !ethernetIsActive;
+            wifiTile.IsEnabled = wifi.IsAvailable;
+            wifiTile.IsChecked = wifi.IsEnabled;
+            wifiTile.ToolTipText = wifi.Detail;
+        }
+        if (this.FindControl<QuickSettingTile>("EthernetTile") is { } ethernetTile)
+        {
+            ethernetTile.IsVisible = ethernetIsActive;
+            ethernetTile.IsEnabled = ethernetIsActive;
+            ethernetTile.IsChecked = ethernetIsActive;
+            ethernetTile.ToolTipText = ethernetIsActive ? network.DisplayName : "Ethernet is not connected.";
+        }
+        if (this.FindControl<QuickSettingTile>("BluetoothTile") is { } bluetoothTile)
+        {
+            bluetoothTile.IsVisible = !bluetoothReceiverMissing;
+            bluetoothTile.IsEnabled = bluetooth.IsAvailable;
+            bluetoothTile.IsChecked = bluetooth.IsEnabled;
+            bluetoothTile.ToolTipText = bluetooth.Detail;
+        }
+        UpdateQuickSettingsTileLayout();
+
+    }
+
+    private void ShowOfflineNetworkPresentation()
+    {
+        if (this.FindControl<WifiSignalIcon>("SystemBarWifiIcon") is { } wifiIcon) wifiIcon.IsVisible = false;
+        if (this.FindControl<TextBlock>("SystemBarEthernetIcon") is { } ethernetIcon) ethernetIcon.IsVisible = false;
+        if (this.FindControl<TextBlock>("SystemBarOfflineIcon") is { } offlineIcon) offlineIcon.IsVisible = true;
+    }
+
+    private static bool IsHardwareUnavailable(string detail, string deviceName) =>
+        string.Equals(detail, $"{deviceName} isn’t available on this device.", StringComparison.Ordinal);
+
+    private void UpdateQuickSettingsTileLayout()
+    {
+        var grid = this.FindControl<Grid>("QuickSettingsTiles");
+        if (grid is null) return;
+
+        var tiles = new[]
+        {
+            this.FindControl<QuickSettingTile>("WifiTile"),
+            this.FindControl<QuickSettingTile>("EthernetTile"),
+            this.FindControl<QuickSettingTile>("BluetoothTile"),
+            this.FindControl<QuickSettingTile>("FocusTile"),
+            this.FindControl<QuickSettingTile>("NightLightTile"),
+            this.FindControl<QuickSettingTile>("ThemeTile"),
+            this.FindControl<QuickSettingTile>("GamingTile")
+        }.Where(tile => tile?.IsVisible == true).Cast<QuickSettingTile>().ToArray();
+
+        grid.RowDefinitions = new RowDefinitions(string.Join(',', Enumerable.Repeat("Auto", Math.Max(1, (int)Math.Ceiling(tiles.Length / 3d)))));
+        for (var index = 0; index < tiles.Length; index++)
+        {
+            Grid.SetRow(tiles[index], index / 3);
+            Grid.SetColumn(tiles[index], index % 3);
         }
     }
 
@@ -463,7 +560,7 @@ public partial class SystemBarView : UserControl
 
     private void SetQuickSettingsPage(QuickSettingsPage page)
     {
-        var mainPage = this.FindControl<Grid>("QuickSettingsMainPage");
+        var mainPage = this.FindControl<Control>("QuickSettingsMainPage");
         var outputPage = this.FindControl<StackPanel>("OutputDevicesPage");
         var wifiPage = this.FindControl<StackPanel>("WifiNetworksPage");
         var bluetoothPage = this.FindControl<StackPanel>("BluetoothDevicesPage");

@@ -5,16 +5,20 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using DaisyOS.Shell.Apps;
 
 namespace DaisyOS.Shell.Apps.Calculator;
 
 public partial class CalculatorWindow : Window
 {
+    private readonly SystemAppWindowChrome _windowChrome;
+
     public CalculatorWindow()
     {
         InitializeComponent();
 
         DataContext = new CalculatorViewModel();
+        _windowChrome = new SystemAppWindowChrome(this, AppFrame, FrameHighlight, ContentFrame, TitleBar, ContentLayout);
         Activated += (_, _) => AppFrame.Classes.Set("WindowFocused", true);
         Deactivated += (_, _) => AppFrame.Classes.Set("WindowFocused", false);
 
@@ -38,6 +42,7 @@ public partial class CalculatorWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        _windowChrome.Dispose();
         (DataContext as CalculatorViewModel)?.Dispose();
 
         base.OnClosed(e);
