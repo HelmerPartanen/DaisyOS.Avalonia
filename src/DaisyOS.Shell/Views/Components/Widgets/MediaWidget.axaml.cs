@@ -20,6 +20,7 @@ namespace DaisyOS.Shell.Views.Components.Widgets;
 public partial class MediaWidget : UserControl
 {
     private const int SpectrumColumns = 6;
+    private const int MaxInlineArtworkBytes = 4 * 1024 * 1024;
     private static readonly HttpClient ArtworkHttpClient = new() { Timeout = TimeSpan.FromSeconds(3) };
     private readonly IMediaSessionService _mediaService = new LinuxMediaSessionService(new SafeCommandRunner());
     private readonly IWallpaperColorExtractor _colorExtractor = new WallpaperColorExtractor();
@@ -318,7 +319,11 @@ public partial class MediaWidget : UserControl
         try
         {
             byte[] bytes;
-            if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+            if (TryDecodeDataImageUri(path, out var inlineImage))
+            {
+                bytes = inlineImage;
+            }
+            else if (Uri.TryCreate(path, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
             {
                 bytes = await ArtworkHttpClient.GetByteArrayAsync(uri, cancellationToken);
             }
@@ -333,6 +338,38 @@ public partial class MediaWidget : UserControl
         catch
         {
             return null;
+        }
+    }
+
+    private static bool TryDecodeDataImageUri(string value, out byte[] bytes)
+    {
+        bytes = [];
+        const string prefix = "data:image/";
+        if (!value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var separator = value.IndexOf(',');
+        if (separator < 0 || !value[..separator].Contains(";base64", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var payload = value[(separator + 1)..];
+        if (payload.Length > (MaxInlineArtworkBytes * 4 / 3) + 4)
+        {
+            return false;
+        }
+
+        try
+        {
+            bytes = Convert.FromBase64String(payload);
+            return bytes is { Length: > 0 and <= MaxInlineArtworkBytes };
+        }
+        catch (FormatException)
+        {
+            return false;
         }
     }
 

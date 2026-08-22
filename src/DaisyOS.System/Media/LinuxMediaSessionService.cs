@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Diagnostics;
+using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using DaisyOS.Core.Models;
 using DaisyOS.Core.Services;
@@ -17,6 +18,7 @@ public sealed class LinuxMediaSessionService : IMediaSessionService, IDisposable
     private readonly Task _watcherTask;
     private string? _activePlayerName;
     private string? _activeMprisPlayerName;
+    private readonly ConcurrentDictionary<string, Lazy<Task<string?>>> _browserArtworkCache = new(StringComparer.Ordinal);
 
     public LinuxMediaSessionService(ICommandRunner commandRunner)
     {
@@ -55,7 +57,7 @@ public sealed class LinuxMediaSessionService : IMediaSessionService, IDisposable
         var durationSeconds = parts.Length > 2 ? ParseMicroseconds(parts[2]) : 0;
         var positionSeconds = ParseSeconds(position);
 
-        return new MediaSession(
+        return await EnrichBrowserArtworkAsync(new MediaSession(
             parts[0].Trim(),
             parts[1].Trim(),
             parts.Length > 3 ? NormalizeArtPath(parts[3]) : null,
@@ -65,7 +67,7 @@ public sealed class LinuxMediaSessionService : IMediaSessionService, IDisposable
             parts.Length > 4 ? NullIfWhiteSpace(parts[4]) : null,
             FirstNonEmpty(
                 parts.Length > 5 ? parts[5] : null,
-                parts.Length > 6 ? parts[6] : null));
+                parts.Length > 6 ? parts[6] : null)), cancellationToken);
     }
 
     public Task PreviousAsync(CancellationToken cancellationToken = default)
@@ -158,7 +160,7 @@ public sealed class LinuxMediaSessionService : IMediaSessionService, IDisposable
         var position = await GetMprisPropertyAsync(playerName, "Position", cancellationToken) ?? string.Empty;
         var positionSeconds = ParseMicroseconds(ExtractVariantInteger(position));
 
-        return new MediaSession(
+        return await EnrichBrowserArtworkAsync(new MediaSession(
             title,
             artist ?? string.Empty,
             artPath,
@@ -166,7 +168,45 @@ public sealed class LinuxMediaSessionService : IMediaSessionService, IDisposable
             Math.Max(0, durationSeconds),
             status.Contains("Playing", StringComparison.OrdinalIgnoreCase),
             playerName,
-            sourceUrl);
+            sourceUrl), cancellationToken);
+    }
+
+    private async Task<MediaSession> EnrichBrowserArtworkAsync(MediaSession session, CancellationToken cancellationToken)
+    {
+        if (!string.IsNullOrWhiteSpace(session.AlbumArtPath)
+            || string.IsNullOrWhiteSpace(session.SourceUrl)
+            || !CanResolveBrowserArtwork(session))
+        {
+            return session;
+        }
+
+        var artworkTask = _browserArtworkCache.GetOrAdd(
+            session.SourceUrl,
+            static sourceUrl => new Lazy<Task<string?>>(
+                () => BrowserMediaArtworkResolver.ResolveAsync(sourceUrl),
+                LazyThreadSafetyMode.ExecutionAndPublication)).Value;
+
+        var artworkUrl = await artworkTask.WaitAsync(cancellationToken);
+        return string.IsNullOrWhiteSpace(artworkUrl)
+            ? session
+            : session with { AlbumArtPath = artworkUrl };
+    }
+
+    private static bool CanResolveBrowserArtwork(MediaSession session)
+    {
+        if (Uri.TryCreate(session.SourceUrl, UriKind.Absolute, out var sourceUri)
+            && (sourceUri.Host.Equals("open.spotify.com", StringComparison.OrdinalIgnoreCase)
+                || sourceUri.Host.Equals("spotify.link", StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+
+        var identity = session.SourceIdentity ?? string.Empty;
+        return identity.Contains("firefox", StringComparison.OrdinalIgnoreCase)
+            || identity.Contains("chrom", StringComparison.OrdinalIgnoreCase)
+            || identity.Contains("brave", StringComparison.OrdinalIgnoreCase)
+            || identity.Contains("vivaldi", StringComparison.OrdinalIgnoreCase)
+            || identity.Contains("edge", StringComparison.OrdinalIgnoreCase);
     }
 
     private static async Task<IReadOnlyList<string>> GetMprisPlayerNamesAsync(CancellationToken cancellationToken)
