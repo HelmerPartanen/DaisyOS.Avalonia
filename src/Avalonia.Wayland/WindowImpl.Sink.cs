@@ -48,6 +48,11 @@ partial class WindowImpl
             if (Parent._title != null)
                 _surfaceProxy.SetTitle(Parent._title);
 
+            // The app id must be sent before the first buffer commit. KWin
+            // uses it as the stable identity for taskbar lifecycle commands.
+            if (Parent._appId != null)
+                _surfaceProxy.SetAppId(Parent._appId);
+
             // Re-apply cached min/max size constraints after a fresh worker
             // surface is created. null on both sides means SetMinMaxSize was
             // never called (or both bounds are unconstrained) — nothing to push.

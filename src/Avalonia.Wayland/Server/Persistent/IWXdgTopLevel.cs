@@ -50,6 +50,13 @@ internal interface IWXdgTopLevel : IWXdgShellSurface
     void SetTitle(string? title);
 
     /// <summary>
+    /// Sets the xdg_toplevel application identifier. Compositors use this
+    /// stable value to associate a native Wayland window with its desktop
+    /// entry, taskbar item, and activation commands.
+    /// </summary>
+    void SetAppId(string? appId);
+
+    /// <summary>
     /// Tear down the worker's <c>zxdg_toplevel_decoration_v1</c> object
     /// (if any). Switches the compositor back to "client-side
     /// decorations on next commit" per the v1 spec. Also latches the

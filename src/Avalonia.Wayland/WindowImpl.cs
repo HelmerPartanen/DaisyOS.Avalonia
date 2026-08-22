@@ -36,6 +36,7 @@ internal partial class WindowImpl : WindowBaseImpl, IWindowImpl
     // This is a limitation of V1 of the protocol that's supported in the wild
     private bool _csdSticky;
     private string? _title;
+    private string? _appId;
     private FallbackStorageProvider? _storageProvider;
 
     public WindowImpl(WaylandWorkerClient client) : this(client, createInitialSink: true)
@@ -241,6 +242,12 @@ internal partial class WindowImpl : WindowBaseImpl, IWindowImpl
     {
         _title = title;
         _surfaceProxy?.SetTitle(title);
+    }
+
+    internal void SetAppId(string? appId)
+    {
+        _appId = appId;
+        _surfaceProxy?.SetAppId(appId);
     }
 
     public void SetParent(IWindowImpl? parent)
