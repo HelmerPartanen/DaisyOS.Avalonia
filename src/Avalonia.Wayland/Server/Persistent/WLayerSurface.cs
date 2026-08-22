@@ -78,6 +78,11 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         LayerShellDiagnostics.Write($"'{_options.Namespace}' acknowledged configure {serial}");
         _configured = true;
         _pendingAckSerial = serial;
+
+        // Configure is delivered worker → UI → worker. The first wake occurs
+        // while this surface is still NotReady; wake again after the UI has
+        // accepted the serial so the initial layer buffer is actually drawn.
+        Worker.WakeupRenderLoop();
     }
 
     public override PlatformRenderTargetState State =>
@@ -85,6 +90,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
 
     public override void OnBeforeNewBufferAttached(IRenderTarget.RenderTargetSceneInfo sceneInfo)
     {
+        LayerShellDiagnostics.Write($"'{_options.Namespace}' attaching {sceneInfo.Size.Width}x{sceneInfo.Size.Height} buffer");
         if (_pendingAckSerial is { } serial)
         {
             _layerSurface!.AckConfigure(serial);

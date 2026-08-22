@@ -475,6 +475,14 @@ class WXdgShellSurface : WSurface, IWXdgShellSurface
     {
         _initialConfigureAcknowledged = true;
         _pendingAckSerial = serial;
+
+        // The configure event wakes the render loop before this UI-thread
+        // acknowledgement arrives. At that point State still reports
+        // NotReady, so the wake is intentionally ignored. Wake once more
+        // now that a buffer may legally be attached; otherwise a freshly
+        // opened xdg_toplevel can remain tracked by the compositor without
+        // ever receiving its first frame.
+        Worker.WakeupRenderLoop();
     }
 
     public override PlatformRenderTargetState State =>
