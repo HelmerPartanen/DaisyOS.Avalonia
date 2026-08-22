@@ -84,6 +84,21 @@ public static class LayerShellWindow
             layerWindow.SetKeyboardInteractivity(interactivity);
     }
 
+    /// <summary>
+    /// Updates the output space reserved by a persistent layer surface.
+    /// DaisyOS uses this when a fullscreen client becomes active: passive
+    /// bottom chrome is hidden and its exclusive zone is released so KWin can
+    /// return the entire output to the client without a black reserved band.
+    /// </summary>
+    public static void SetExclusiveZone(Window window, int exclusiveZone)
+    {
+        ArgumentNullException.ThrowIfNull(window);
+        if (exclusiveZone < -1)
+            throw new ArgumentOutOfRangeException(nameof(exclusiveZone));
+        if (window.PlatformImpl is LayerShellWindowImpl layerWindow)
+            layerWindow.SetExclusiveZone(exclusiveZone);
+    }
+
     private static void WriteDiagnostics(string message)
     {
         if (string.Equals(Environment.GetEnvironmentVariable("DAISYOS_WAYLAND_DIAGNOSTICS"), "1", StringComparison.Ordinal))

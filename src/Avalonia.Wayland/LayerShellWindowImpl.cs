@@ -59,6 +59,14 @@ internal sealed class LayerShellWindowImpl : WindowImpl
         _layerSurfaceProxy?.SetKeyboardInteractivity(interactivity);
     }
 
+    internal void SetExclusiveZone(int exclusiveZone)
+    {
+        if (exclusiveZone < -1)
+            throw new ArgumentOutOfRangeException(nameof(exclusiveZone));
+
+        _layerSurfaceProxy?.SetExclusiveZone(exclusiveZone);
+    }
+
     private void ApplyConfigure(XdgConfigureBatch batch, bool secondShow)
     {
         if (batch.Size is not { Width: > 0, Height: > 0 })

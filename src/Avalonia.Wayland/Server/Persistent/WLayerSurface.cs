@@ -19,6 +19,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
     private uint? _pendingAckSerial;
     private bool _configured;
     private bool _inputPassthrough;
+    private int _exclusiveZone;
     private ZwlrLayerSurfaceV1.KeyboardInteractivity _keyboardInteractivity;
     private readonly TaskCompletionSource<XdgConfigureBatch> _initialConfigure = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -29,6 +30,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         _options = options;
         _eventSink = eventSink;
         _inputPassthrough = options.InputPassthrough;
+        _exclusiveZone = options.ExclusiveZone;
         _keyboardInteractivity = options.KeyboardInteractivity;
         RegisterWithWorker();
     }
@@ -67,7 +69,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
             new LayerListener(this), connection.Queue);
         _layerSurface.SetSize(options.Width, options.Height);
         _layerSurface.SetAnchor(options.Anchor);
-        _layerSurface.SetExclusiveZone(options.ExclusiveZone);
+        _layerSurface.SetExclusiveZone(_exclusiveZone);
         _layerSurface.SetKeyboardInteractivity(_keyboardInteractivity);
         ApplyInputRegion();
         WlSurface!.Commit();
@@ -102,6 +104,19 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
             return;
 
         _layerSurface.SetKeyboardInteractivity(interactivity);
+        WlSurface.Commit();
+    }
+
+    public void SetExclusiveZone(int exclusiveZone)
+    {
+        if (exclusiveZone < -1)
+            throw new ArgumentOutOfRangeException(nameof(exclusiveZone));
+
+        _exclusiveZone = exclusiveZone;
+        if (_layerSurface is null || WlSurface is null)
+            return;
+
+        _layerSurface.SetExclusiveZone(exclusiveZone);
         WlSurface.Commit();
     }
 
