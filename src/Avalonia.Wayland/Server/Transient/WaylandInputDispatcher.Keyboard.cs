@@ -18,7 +18,7 @@ partial class WaylandInputDispatcher
         private readonly XkbContext _xkbContext;
         private readonly XkbComposeTable? _composeTable;
 
-        private WXdgShellSurface? _focusedSurface;
+        private WSurface? _focusedSurface;
         private int _repeatRate;  // keys/sec (0 = disabled)
         private int _repeatDelay; // ms before first repeat
         private XkbCommonKeymap? _keymap;

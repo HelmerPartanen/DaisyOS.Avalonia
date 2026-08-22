@@ -31,6 +31,8 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
 
     public Task<XdgConfigureBatch> BasicInitCompleted => _initialConfigure.Task;
 
+    internal override WSurfaceEventSinkProxy EventSink => _eventSink;
+
     public override void OnConnected(WaylandConnection connection, WaylandGlobals globals)
     {
         var options = _options ?? throw new InvalidOperationException(

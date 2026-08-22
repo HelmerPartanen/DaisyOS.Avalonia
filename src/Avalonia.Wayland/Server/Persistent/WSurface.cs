@@ -99,6 +99,13 @@ class WSurface : IPersistentWaylandObject, IWSurface, IWaylandFramebufferSurface
     /// </summary>
     internal WaylandCursor? CurrentCursor { get; private set; }
 
+    /// <summary>
+    /// The UI-thread event sink for any Wayland role that accepts input.
+    /// Layer surfaces and xdg surfaces share the same seat/pointer pipeline.
+    /// </summary>
+    internal virtual WSurfaceEventSinkProxy EventSink => throw new NotSupportedException(
+        "Every input-routable Wayland surface must provide an event sink.");
+
     public virtual void SetCursor(IWaylandCursor? cursor)
     {
         // The proxy auto-unwraps to the real worker-side object before reaching us.
@@ -142,6 +149,10 @@ class WSurface : IPersistentWaylandObject, IWSurface, IWaylandFramebufferSurface
         Connection = connection;
         Globals = globals;
         WlSurface = Globals.WlCompositor.CreateSurface(new Listener(this));
+        // Input dispatch is role-agnostic. Layer-shell surfaces must be
+        // discoverable here just like xdg toplevels, otherwise KWin sends
+        // pointer events but Avalonia has no sink to receive them.
+        WlSurface.Tags[typeof(WSurface)] = this;
 
         if (globals.HasFractionalScaling)
         {
@@ -336,6 +347,7 @@ class WSurface : IPersistentWaylandObject, IWSurface, IWaylandFramebufferSurface
             FractionalScale.Dispose();
             FractionalScale = null;
         }
+        WlSurface?.Tags.Remove(typeof(WSurface));
         WlSurface?.Destroy();
         WlSurface = null;
         Globals = null;
@@ -374,7 +386,7 @@ class WXdgShellSurface : WSurface, IWXdgShellSurface
     /// <summary>
     /// The UI-thread event sink associated with this surface.
     /// </summary>
-    internal WSurfaceEventSinkProxy EventSink { get; }
+    internal override WSurfaceEventSinkProxy EventSink { get; }
 
     private Thickness? _shadowExtents;
 

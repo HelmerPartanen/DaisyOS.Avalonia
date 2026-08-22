@@ -16,9 +16,9 @@ partial class WaylandInputDispatcher : IDisposable
     private readonly WaylandGlobals _globals;
     private readonly Dictionary<uint, Seat> _seats = new();
 
-    internal static WXdgShellSurface? FindSurfaceForWlSurface(WlSurface? surface) =>
-        surface != null && surface.Tags.TryGetValue(typeof(WXdgShellSurface), out var tag)
-            ? (WXdgShellSurface)tag
+    internal static WSurface? FindSurfaceForWlSurface(WlSurface? surface) =>
+        surface != null && surface.Tags.TryGetValue(typeof(WSurface), out var tag)
+            ? (WSurface)tag
             : null;
 
     internal void NotifyCursorChanged(WSurface surface)
