@@ -58,23 +58,28 @@ internal sealed class LayerShellWindowImpl : WindowImpl
     private sealed class LayerSink : WindowBaseImpl.Sink, ILayerSurfaceEventSink
     {
         private new LayerShellWindowImpl Parent => (LayerShellWindowImpl)base.Parent;
-        private XdgConfigureBatch? _initialBatch;
         private WLayerSurfaceProxy? _surfaceProxy;
+        private readonly bool _secondShow;
+        private bool _configured;
 
         public LayerSink(LayerShellWindowImpl parent, bool secondShow) : base(parent)
         {
+            _secondShow = secondShow;
             var handle = parent.Client.CreateLayerShellHandle(
                 parent._options,
                 new WLayerSurfaceEventSinkProxy(this, WaylandMarshallers.UIThread));
             _surfaceProxy = handle.Proxy;
             parent._layerHandle = handle;
             parent._layerSurfaceProxy = _surfaceProxy;
-
-            var initialBatch = handle.BasicInitCompleted.GetAwaiter().GetResult();
-            _initialBatch = initialBatch;
-            parent.ApplyConfigure(initialBatch, secondShow);
-            _surfaceProxy.SetPendingAckSerial(initialBatch.Serial);
             _surfaceProxy.SetCursor(parent.CurrentCursor?.Cursor);
+
+            // Unlike an xdg toplevel, a layer surface must not synchronously
+            // wait for its first configure while Avalonia is constructing the
+            // window. The configure callback is marshalled onto Avalonia's UI
+            // dispatcher; blocking that dispatcher here deadlocks startup and
+            // leaves a nested compositor with an empty, black scene. Until
+            // KWin configures the surface WLayerSurface deliberately reports
+            // NotReady, then this callback enables the first render.
         }
 
         protected override void DisconnectFromSurface()
@@ -91,13 +96,8 @@ internal sealed class LayerShellWindowImpl : WindowImpl
             if (IsDisposed)
                 return;
 
-            if (ReferenceEquals(batch, _initialBatch))
-            {
-                _initialBatch = null;
-                return;
-            }
-
-            Parent.ApplyConfigure(batch, secondShow: true);
+            Parent.ApplyConfigure(batch, secondShow: _configured || _secondShow);
+            _configured = true;
             _surfaceProxy?.SetPendingAckSerial(batch.Serial);
         }
 

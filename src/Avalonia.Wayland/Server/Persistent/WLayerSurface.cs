@@ -35,6 +35,8 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         if (globals.LayerShell is null)
             throw new AvaloniaWaylandException("zwlr_layer_shell_v1 is required for a DaisyOS shell surface.");
 
+        LayerShellDiagnostics.Write($"creating '{_options.Namespace}' as {_options.Layer}");
+
         var output = string.IsNullOrWhiteSpace(_options.OutputName)
             ? null
             : globals.Outputs.Outputs.FirstOrDefault(candidate =>
@@ -57,6 +59,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
 
     public void SetPendingAckSerial(uint serial)
     {
+        LayerShellDiagnostics.Write($"'{_options.Namespace}' acknowledged configure {serial}");
         _configured = true;
         _pendingAckSerial = serial;
     }
@@ -87,6 +90,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
     {
         protected override void Configure(ZwlrLayerSurfaceV1 sender, uint serial, uint width, uint height)
         {
+            LayerShellDiagnostics.Write($"'{parent._options.Namespace}' configured {width}x{height} (serial {serial})");
             var batch = new XdgConfigureBatch
             {
                 Serial = serial,
@@ -98,5 +102,22 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         }
 
         protected override void Closed(ZwlrLayerSurfaceV1 sender) => parent._eventSink.OnClose();
+    }
+}
+
+/// <summary>
+/// Tiny opt-in startup trace for diagnosing compositor/session integration.
+/// It is intentionally disabled outside the development prototype so normal
+/// applications do not receive shell-specific stderr noise.
+/// </summary>
+internal static class LayerShellDiagnostics
+{
+    private static readonly bool Enabled = string.Equals(
+        Environment.GetEnvironmentVariable("DAISYOS_WAYLAND_DIAGNOSTICS"), "1", StringComparison.Ordinal);
+
+    public static void Write(string message)
+    {
+        if (Enabled)
+            Console.Error.WriteLine($"[daisy-layer] {message}");
     }
 }
