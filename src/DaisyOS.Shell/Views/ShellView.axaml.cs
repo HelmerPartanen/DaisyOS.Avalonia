@@ -89,6 +89,25 @@ namespace DaisyOS.Shell.Views
 
         public TaskbarView Taskbar => TaskbarContent;
         public SystemBarView SystemBar => SystemBarContent;
+
+        /// <summary>
+        /// KWin reports when the active client owns an output fullscreen. Keep
+        /// passive desktop chrome out of games and video content until focus
+        /// returns to a normal window.
+        /// </summary>
+        public void SetExternalFullscreenActive(bool isFullScreen)
+        {
+            TaskbarContent.IsVisible = !isFullScreen;
+            SystemBarContent.IsVisible = !isFullScreen;
+            MediaWidgetContent.IsVisible = !isFullScreen;
+            if (isFullScreen)
+            {
+                HideLauncher();
+                SystemBar.HideQuickSettingsPanel();
+                SystemBar.HideCalendarPanel();
+                SystemBar.HideNotificationPanel();
+            }
+        }
         public LauncherView Launcher => LauncherContent;
         public bool IsLauncherVisible => LauncherContent.IsVisible;
         public bool IsMetricsPanelVisible => MetricsPanel.IsPanelOpen;

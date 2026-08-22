@@ -8,6 +8,16 @@ work/
 out/
 .codex/
 packaging/
+# The KWin bridge is source code installed into the user's session, not a
+# generated packaging artifact.
+!packaging/
+packaging/*
+!packaging/kwin/
+!packaging/kwin/daisyos-window-bridge/
+!packaging/kwin/daisyos-window-bridge/metadata.json
+!packaging/kwin/daisyos-window-bridge/contents/
+!packaging/kwin/daisyos-window-bridge/contents/code/
+!packaging/kwin/daisyos-window-bridge/contents/code/main.js
 
 # User-specific files
 *.rsuser

@@ -1,9 +1,10 @@
 # DaisyOS Development Login Session
 
 The development session makes DaisyOS selectable from GDM, SDDM, and other
-Wayland-aware display managers as **DaisyOS (Development)**. It starts a real
-KWin Wayland session, with XWayland compatibility, and then runs the current
-DaisyOS checkout using the .NET SDK. DaisyOS remains the shell; KWin remains
+Wayland-aware display managers as **DaisyOS (Development)**. It starts KWin
+Wayland, installs the session-local DaisyOS KWin window bridge, and then runs
+the current checkout using Avalonia's explicit native-Wayland backend. XWayland
+applications remain supported by KWin. DaisyOS remains the shell; KWin remains
 the compositor and window manager.
 
 ## Install
@@ -35,7 +36,7 @@ sudo scripts/install-development-session.sh --repo /path/to/DaisyOS
 
 ## Requirements and recovery
 
-The login needs `kwin_wayland`, XWayland, and the .NET SDK. If any are missing,
+The login needs `kwin_wayland`, XWayland, `kpackagetool6`, `qdbus6`, and the .NET SDK. If any are missing,
 or the shell fails to start, DaisyOS writes details to:
 
 ```text
@@ -43,8 +44,9 @@ or the shell fails to start, DaisyOS writes details to:
 ```
 
 Return to the display manager and choose your normal Plasma, GNOME, or other
-desktop session. The development launcher intentionally does not restart a
-crashing shell in a loop, so source-level failures leave a clear recovery path.
+desktop session. The launcher attempts one bounded shell restart, then ends the
+development session rather than entering a crash loop. KWin is never configured
+to exit merely because DaisyOS stops.
 
 ## Validation
 

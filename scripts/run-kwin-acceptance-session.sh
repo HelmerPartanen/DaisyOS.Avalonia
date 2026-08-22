@@ -35,7 +35,7 @@ export XDG_SESSION_DESKTOP=DaisyOS
 export XDG_SESSION_TYPE=wayland
 export DAISYOS_CHECK_KWIN_PID="$PPID"
 
-"$shell_binary" --real-services --production >"$shell_log" 2>&1 &
+DAISYOS_SHELL_SESSION=1 "$shell_binary" --real-services --production --shell-session >"$shell_log" 2>&1 &
 shell_pid=$!
 
 deadline=$((SECONDS + 90))

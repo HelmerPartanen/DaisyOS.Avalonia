@@ -2,8 +2,8 @@
 set -Eeuo pipefail
 
 # This launcher is installed in /usr/local/bin by
-# scripts/install-development-session.sh. It deliberately starts KWin first:
-# DaisyOS is currently a shell hosted by a compositor, not a compositor itself.
+# scripts/install-development-session.sh. KWin remains alive independently from
+# DaisyOS so a shell restart never takes down normal applications.
 config_file="${DAISYOS_DEVELOPMENT_CONFIG:-/etc/daisyos/daisyos-development-session.conf}"
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/DaisyOS"
 session_log="$state_dir/development-session.log"
@@ -67,11 +67,43 @@ run_shell() {
     exit 1
   fi
 
-  log_message "Starting DaisyOS from $source_root."
-  exec dotnet run --project "$source_root/src/DaisyOS.Shell" -- --real-services
+  log_message "Starting native-Wayland DaisyOS from $source_root."
+  DAISYOS_SHELL_SESSION=1 \
+    dotnet run --project "$source_root/src/DaisyOS.Shell" -- --real-services --shell-session >>"$session_log" 2>&1
 }
 
-start_compositor() {
+install_kwin_bridge() {
+  if [[ ! -x "$source_root/scripts/install-kwin-window-bridge.sh" ]]; then
+    log_message "DaisyOS KWin bridge installer is missing from the checkout."
+    return 1
+  fi
+
+  "$source_root/scripts/install-kwin-window-bridge.sh" >>"$session_log" 2>&1 || {
+    log_message "DaisyOS KWin bridge could not be installed. The session cannot provide a compositor-backed taskbar."
+    return 1
+  }
+}
+
+wait_for_wayland_socket() {
+  local deadline=$((SECONDS + 30))
+  local runtime_dir="${XDG_RUNTIME_DIR:-}"
+  while (( SECONDS < deadline )); do
+    if [[ -n "$runtime_dir" ]]; then
+      local socket
+      for socket in "$runtime_dir"/wayland-*; do
+        if [[ -S "$socket" ]]; then
+          export WAYLAND_DISPLAY="${socket##*/}"
+          return 0
+        fi
+      done
+    fi
+    sleep 0.1
+  done
+
+  return 1
+}
+
+start_compositor_and_shell() {
   resolve_source_root
   publish_session_environment
 
@@ -81,23 +113,39 @@ start_compositor() {
   fi
 
   log_message "Starting the KWin Wayland session for DaisyOS (Development)."
-  export DAISYOS_DEVELOPMENT_RUN_SHELL=1
-  local kwin_command=(
-    kwin_wayland
-    --drm
-    --xwayland
-    --no-lockscreen
-    --exit-with-session "$0"
-  )
+  kwin_wayland --drm --xwayland >>"$session_log" 2>&1 &
+  local kwin_pid=$!
 
-  # A display manager normally owns the user session bus. Create one only for
-  # direct launcher invocation, so portal and authentication services retain
-  # the display manager's normal session scope.
-  if [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
-    exec "${kwin_command[@]}"
+  if ! wait_for_wayland_socket; then
+    log_message "KWin did not create a Wayland socket within 30 seconds."
+    kill "$kwin_pid" 2>/dev/null || true
+    wait "$kwin_pid" 2>/dev/null || true
+    exit 1
   fi
 
-  exec dbus-run-session -- "${kwin_command[@]}"
+  publish_session_environment
+  start_user_services
+  if ! install_kwin_bridge; then
+    kill "$kwin_pid" 2>/dev/null || true
+    wait "$kwin_pid" 2>/dev/null || true
+    exit 1
+  fi
+
+  local attempts=0
+  while (( attempts < 2 )); do
+    if run_shell; then
+      break
+    fi
+    attempts=$((attempts + 1))
+    log_message "DaisyOS stopped unexpectedly (attempt $attempts of 2)."
+    if (( attempts < 2 )); then
+      sleep 1
+    fi
+  done
+
+  log_message "Ending DaisyOS (Development) after shell exit; KWin stayed alive until this controlled session shutdown."
+  kill "$kwin_pid" 2>/dev/null || true
+  wait "$kwin_pid" 2>/dev/null || true
 }
 
 case "${1:-}" in
@@ -114,11 +162,17 @@ The display manager invokes this launcher without arguments.
 EOF
     ;;
   "")
-    if [[ "${DAISYOS_DEVELOPMENT_RUN_SHELL:-}" == "1" ]]; then
-      run_shell
+    # A display manager normally owns the user session bus. Create one only for
+    # direct launcher invocation, so portal and authentication services retain
+    # the display manager's normal session scope.
+    if [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
+      start_compositor_and_shell
     else
-      start_compositor
+      exec dbus-run-session -- "$0" --session-bus-ready
     fi
+    ;;
+  --session-bus-ready)
+    start_compositor_and_shell
     ;;
   *)
     echo "Unknown option: $1" >&2

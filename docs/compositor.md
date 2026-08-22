@@ -9,11 +9,11 @@ starts KWin nested over the validated Xorg server with software composition.
 The original compositor-free Xorg shell remains only as the final recovery
 path and is rejected by normal ISO acceptance checks.
 
-The current Avalonia shell is still presented through XWayland and does **not**
-yet create native Wayland layer surfaces, reserve screen edges, enumerate every
-compositor window, or provide a secure Wayland lock screen. Settings and Files
-are normal compositor-managed windows; shell panels remain owned surfaces until
-the layer-shell bridge is complete.
+The display-manager shell path now uses Avalonia's explicit native Wayland
+backend and a KWin-script bridge for compositor-authoritative application
+windows. It does **not yet** create native Wayland layer surfaces or reserve
+screen edges: that requires the maintained DaisyOS extension of Avalonia's
+Wayland backend. Settings and Files are normal compositor-managed windows.
 
 This distinction is important: the current lock overlay protects the prototype
 UI, but only a compositor/login-manager lock path can secure a real session.
@@ -62,12 +62,12 @@ login manager or VM autologin
       -> normal Linux applications
 ```
 
-The first nested prototype uses:
+The development session currently uses:
 
 ```text
 current developer session
   -> nested kwin_wayland window
-    -> DaisyOS fullscreen shell
+  -> DaisyOS native Wayland shell client and KWin window bridge
 ```
 
 Run it with `scripts/run-kwin-prototype.sh`. The script refuses to run without
@@ -78,9 +78,8 @@ Run `scripts/test-kwin-nested-runtime.sh` for the bounded automated acceptance
 path. It binds the strict report to the exact nested KWin process, proves the
 nested socket accepts a native Wayland client, exercises an XWayland client,
 and checks that the original host display still answers after nested KWin
-exits. The current Avalonia Linux package set still presents the shell through
-XWayland; a native Wayland shell backend and layer-shell roles remain future
-integration work.
+exits. The display-manager session now launches the shell with `UseWayland()`;
+layer-shell roles remain the next required integration step.
 
 ## Surface Ownership
 
@@ -97,17 +96,15 @@ integration work.
 ### Layer-shell boundary
 
 `zwlr_layer_shell_v1` can anchor a client surface to output edges, assign its
-desktop layer, and reserve an exclusive zone. Avalonia currently creates normal
-Wayland/X11 windows in this repository; a small native Wayland bridge or a
-supported Avalonia platform extension is required before DaisyOS can claim those
-roles. Protocol support must be detected at runtime and failure must fall back
-to normal windows with a log entry, never a crash loop.
+desktop layer, and reserve an exclusive zone. Avalonia's stock backend creates
+normal `xdg_toplevel` windows, so DaisyOS must add its maintained layer-shell
+extension before it can claim those roles. The session must reject an unavailable
+layer-shell capability instead of silently presenting a fullscreen application.
 
 ## Window and Application Integration
 
-The existing Dock and Alt+Tab overlay track applications launched by DaisyOS.
-They are not an authoritative list of compositor windows. The KWin integration
-layer must eventually provide stable window identifiers and events for:
+The KWin integration layer now publishes stable identifiers and lifecycle
+snapshots for normal compositor windows. The remaining extension points are:
 
 - created, closed, focused, minimized, maximized, and fullscreen windows
 - application ID, title, icon, output, and workspace
@@ -189,9 +186,9 @@ The production session must provide:
 4. a keyboard-accessible recovery choice before automatic login;
 5. plain UI wording: “The desktop couldn’t start. Try the fallback session.”
 
-The shell crashing must not terminate KWin or other applications. Conversely,
-the nested development prototype uses `--exit-with-session` intentionally so
-closing the shell also closes the temporary nested compositor.
+The shell crashing must not terminate KWin or other applications. The
+display-manager development session uses one bounded shell restart and then
+returns control to the display manager; it does not use `--exit-with-session`.
 
 ## Verification Gates
 

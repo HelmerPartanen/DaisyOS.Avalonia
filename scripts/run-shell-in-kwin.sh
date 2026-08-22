@@ -9,8 +9,8 @@ export XDG_CURRENT_DESKTOP=DaisyOS
 export XDG_SESSION_DESKTOP=DaisyOS
 export XDG_SESSION_TYPE=wayland
 
-if [[ -x "$published_shell" ]]; then
-  exec "$published_shell" --real-services
+if [[ -x "$published_shell" && "${DAISYOS_USE_PUBLISHED:-0}" == "1" ]]; then
+  exec env DAISYOS_SHELL_SESSION=1 "$published_shell" --real-services --shell-session
 fi
 
 if ! command -v dotnet >/dev/null 2>&1; then
@@ -18,4 +18,4 @@ if ! command -v dotnet >/dev/null 2>&1; then
   exit 1
 fi
 
-exec dotnet run --project "$repo_root/src/DaisyOS.Shell" -- --real-services
+exec env DAISYOS_SHELL_SESSION=1 dotnet run --project "$repo_root/src/DaisyOS.Shell" -- --real-services --shell-session

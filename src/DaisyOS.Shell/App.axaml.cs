@@ -20,6 +20,8 @@ using DaisyOS.Shell.Apps.Files;
 using DaisyOS.Shell.Apps.Calendar;
 using DaisyOS.Shell.Services.Windows;
 using DaisyOS.Shell.Services.Notifications;
+using DaisyOS.Shell.Services.Compositor;
+using Avalonia.Threading;
 
 namespace DaisyOS.Shell;
 
@@ -39,6 +41,10 @@ public partial class App : Application
     private FilesWindow? _filesWindow;
     private ShellView? _shellView;
     private readonly NativeAppWindowTracker _nativeWindowTracker = new();
+    private ICompositorWindowService? _compositorWindows;
+
+    private static bool IsNativeShellSession =>
+        string.Equals(Environment.GetEnvironmentVariable("DAISYOS_SHELL_SESSION"), "1", StringComparison.Ordinal);
 
     public ShellSessionState SessionState { get; } = new();
     public ShellFeedbackService Feedback { get; } = new();
@@ -98,6 +104,7 @@ public partial class App : Application
             mainWindow.Opened += (_, _) =>
             {
                 ConfigureShellOverlays(mainWindow.ShellContent);
+                StartCompositorBridge(mainWindow.ShellContent);
             };
 
             try
@@ -251,6 +258,26 @@ public partial class App : Application
         LauncherVisibilityChanged += (_, isVisible) => shell.Taskbar.SetLauncherOpen(isVisible);
     }
 
+    private void StartCompositorBridge(ShellView shell)
+    {
+        if (!IsNativeShellSession || _compositorWindows is not null)
+        {
+            return;
+        }
+
+        var bridge = new KWinWindowBridge();
+        _compositorWindows = bridge;
+        bridge.WindowsChanged += (_, _) => Dispatcher.UIThread.Post(() =>
+        {
+            if (ReferenceEquals(shell, _shellView))
+            {
+                shell.Taskbar.SetCompositorWindows(bridge.Windows);
+                shell.SetExternalFullscreenActive(bridge.Windows.Any(window => window.IsActive && window.IsFullScreen));
+            }
+        });
+        _ = bridge.StartAsync();
+    }
+
     private void ToggleQuickSettings()
     {
         if (_shellView?.SystemBar.IsQuickSettingsVisible == true)
@@ -311,6 +338,13 @@ public partial class App : Application
     private void LaunchTaskbarApp(string appId)
     {
         HideLauncher();
+        if (_shellView?.Taskbar.TryGetCompositorWindowId(appId, out var compositorWindowId) == true
+            && _compositorWindows is not null)
+        {
+            _ = _compositorWindows.ActivateOrMinimizeAsync(compositorWindowId);
+            return;
+        }
+
         if (_nativeWindowTracker.ToggleFromTaskbar(appId))
         {
             return;

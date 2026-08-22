@@ -10,6 +10,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Interactivity;
 using DaisyOS.Shell.Services.Windows;
+using DaisyOS.Shell.Services.Compositor;
 
 namespace DaisyOS.Shell.Views.Components.Taskbar
 {
@@ -37,6 +38,7 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
         private readonly Dictionary<string, NativeAppWindowState> _windowStates = new(StringComparer.Ordinal);
         private readonly Dictionary<string, string> _appNames = new(StringComparer.Ordinal);
         private readonly Dictionary<string, Border> _windowIndicators = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, string> _compositorWindowIds = new(StringComparer.Ordinal);
         private int _testAppCounter = 1;
 
         // Active drag state
@@ -81,6 +83,45 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
                 ApplyWindowState(button, appId, state);
             }
         }
+
+        /// <summary>
+        /// Reconciles compositor-owned application windows with the taskbar.
+        /// DaisyOS's pinned applications retain their existing controls; other
+        /// windows are temporary taskbar entries addressed by compositor id.
+        /// </summary>
+        public void SetCompositorWindows(IEnumerable<CompositorWindowRecord> windows)
+        {
+            var snapshot = windows.ToArray();
+            var wanted = snapshot.Select(window => window.Id).ToHashSet(StringComparer.Ordinal);
+            foreach (var staleTag in _compositorWindowIds
+                         .Where(pair => !wanted.Contains(pair.Value))
+                         .Select(pair => pair.Key)
+                         .ToArray())
+            {
+                RemoveCompositorWindow(staleTag);
+            }
+
+            foreach (var window in snapshot)
+            {
+                var tag = $"kwin:{window.Id}";
+                if (!_compositorWindowIds.ContainsKey(tag))
+                {
+                    AddCompositorWindow(tag, window);
+                }
+
+                SetAppWindowState(tag, ToTaskbarState(window));
+                if (_order.FirstOrDefault(button => string.Equals(button.Tag as string, tag, StringComparison.Ordinal)) is { } button)
+                {
+                    var label = string.IsNullOrWhiteSpace(window.Title) ? window.AppId : window.Title;
+                    _appNames[tag] = label;
+                    button.SetValue(ToolTip.TipProperty, label);
+                    button.SetValue(AutomationProperties.NameProperty, label);
+                }
+            }
+        }
+
+        public bool TryGetCompositorWindowId(string appId, out string windowId) =>
+            _compositorWindowIds.TryGetValue(appId, out windowId!);
 
         private void InitializeIcons()
         {
@@ -301,12 +342,92 @@ namespace DaisyOS.Shell.Views.Components.Taskbar
             UpdateCanvasWidth();
         }
 
+        private void AddCompositorWindow(string tag, CompositorWindowRecord window)
+        {
+            if (_canvas is null) return;
+
+            var iconButton = new Button
+            {
+                Classes = { "ShellButton", "TaskbarApp", "TaskbarAppIcon" },
+                Tag = tag,
+                Content = CreateCompositorIcon(window),
+                [ToolTip.TipProperty] = window.DisplayName
+            };
+            var indicator = new Border
+            {
+                Classes = { "TaskbarWindowIndicator" },
+                Tag = tag,
+                IsHitTestVisible = false
+            };
+            Canvas.SetTop(indicator, 41);
+
+            _canvas.Children.Add(iconButton);
+            _canvas.Children.Add(indicator);
+            _order.Add(iconButton);
+            _windowIndicators[tag] = indicator;
+            _compositorWindowIds[tag] = window.Id;
+            _appNames[tag] = window.DisplayName;
+            WireUpIcon(iconButton);
+            Canvas.SetLeft(iconButton, SlotX(_order.Count - 1));
+            PositionIndicator(iconButton, Canvas.GetLeft(iconButton));
+            UpdateCanvasWidth();
+        }
+
+        private void RemoveCompositorWindow(string tag)
+        {
+            if (_canvas is null
+                || _order.FirstOrDefault(button => string.Equals(button.Tag as string, tag, StringComparison.Ordinal)) is not { } icon)
+            {
+                return;
+            }
+
+            if (_windowIndicators.Remove(tag, out var indicator))
+            {
+                _canvas.Children.Remove(indicator);
+            }
+            _compositorWindowIds.Remove(tag);
+            _windowStates.Remove(tag);
+            _appNames.Remove(tag);
+            RemoveSpecificApp(icon);
+        }
+
+        private static NativeAppWindowState ToTaskbarState(CompositorWindowRecord window) =>
+            window.IsMinimized ? NativeAppWindowState.Minimized :
+            window.IsActive ? NativeAppWindowState.Active :
+            NativeAppWindowState.RunningInactive;
+
+        private Control CreateCompositorIcon(CompositorWindowRecord window)
+        {
+            // A desktop-file id is preserved in the model for themed icon
+            // resolution. Until the icon theme resolver can provide a bitmap,
+            // use one stable generic glyph instead of exposing a favicon or PID.
+            return new Border
+            {
+                Width = 32,
+                Height = 32,
+                Background = this.FindResource("StateSelectedBrush") as IBrush,
+                CornerRadius = new CornerRadius(10),
+                Child = new TextBlock
+                {
+                    Text = "apps",
+                    FontFamily = new FontFamily("avares://DaisyOS.Shell/Assets/fonts#Material Symbols Rounded"),
+                    FontSize = 18,
+                    Foreground = this.FindResource("ContentPrimaryBrush") as IBrush,
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                }
+            };
+        }
+
         private static double SlotX(int index) => index * (ItemWidth + Spacing);
 
         private void Icon_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             if (sender is not Button icon || _canvas is null) return;
             if (!e.GetCurrentPoint(icon).Properties.IsLeftButtonPressed) return;
+            // Compositor windows are transient task entries, not pinned launchers.
+            // They remain clickable but must never be persisted in dock order.
+            if (icon.Tag is string { } tag && _compositorWindowIds.ContainsKey(tag)) return;
 
             _dragItem = icon;
             _pointerDown = true;

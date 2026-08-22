@@ -39,6 +39,6 @@ PATH="$temp_dir/bin:$PATH" \
   DAISYOS_DEVELOPMENT_CONFIG="$temp_dir/config" \
   "$launcher" --run-shell
 
-grep -Fq "run --project $fake_checkout/src/DaisyOS.Shell -- --real-services" "$temp_dir/dotnet-arguments"
+grep -Fq "run --project $fake_checkout/src/DaisyOS.Shell -- --real-services --shell-session" "$temp_dir/dotnet-arguments"
 
 echo "Development-session installer tests passed."
