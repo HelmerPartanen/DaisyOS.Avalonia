@@ -61,9 +61,6 @@
       </StackPanel>
 
       <StackPanel Grid.Column="2" Orientation="Horizontal">
-        <Button Classes="CaptionButton" Click="OnTogglePerformanceClicked" ToolTip.Tip="Toggle Performance Overlay">
-          <TextBlock Text="analytics" Classes="CaptionIcon" />
-        </Button>
         <Button Classes="CaptionButton" Click="OnMinimizeClicked" ToolTip.Tip="Minimize">
           <TextBlock Text="remove" Classes="CaptionIcon" />
         </Button>

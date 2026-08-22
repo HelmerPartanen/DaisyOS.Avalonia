@@ -7,7 +7,7 @@
     Title="Calculator"
     Width="360"
     Height="560"
-    CanResize="True"
+    CanResize="False"
     WindowStartupLocation="CenterScreen"
     WindowDecorations="None"
     ExtendClientAreaToDecorationsHint="True"

@@ -53,8 +53,6 @@ public partial class FilesWindow : Window
         base.OnClosed(e);
     }
 
-    private void OnTogglePerformanceClicked(object? sender, RoutedEventArgs e) => TogglePerformanceOverlay();
-
     private void OnTitleBarPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)

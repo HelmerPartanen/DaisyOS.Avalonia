@@ -37,6 +37,7 @@
       <Color x:Key="ActionSecondaryPressedColor">#FFD4D7DD</Color>
       <Color x:Key="ContentOnSecondaryActionColor">#FF24242A</Color>
       <Color x:Key="FocusRingColor">#FF303036</Color>
+      <Color x:Key="QuickSettingActiveDividerColor">#1A000000</Color>
       <Color x:Key="StatusSuccessColor">#FF187B45</Color>
       <Color x:Key="StatusSuccessContainerColor">#FFE4F4EA</Color>
       <Color x:Key="StatusWarningColor">#FFA85A00</Color>
@@ -82,6 +83,7 @@
       <SolidColorBrush x:Key="ActionSecondaryPressedBrush" Color="{StaticResource ActionSecondaryPressedColor}" />
       <SolidColorBrush x:Key="ContentOnSecondaryActionBrush" Color="{StaticResource ContentOnSecondaryActionColor}" />
       <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource FocusRingColor}" />
+      <SolidColorBrush x:Key="QuickSettingActiveDividerBrush" Color="{StaticResource QuickSettingActiveDividerColor}" />
       <SolidColorBrush x:Key="StatusSuccessBrush" Color="{StaticResource StatusSuccessColor}" />
       <SolidColorBrush x:Key="StatusSuccessContainerBrush" Color="{StaticResource StatusSuccessContainerColor}" />
       <SolidColorBrush x:Key="StatusWarningBrush" Color="{StaticResource StatusWarningColor}" />
@@ -131,6 +133,7 @@
       <Color x:Key="ActionSecondaryPressedColor">#FF414147</Color>
       <Color x:Key="ContentOnSecondaryActionColor">#FFF5F5F7</Color>
       <Color x:Key="FocusRingColor">#FFF5F5F7</Color>
+      <Color x:Key="QuickSettingActiveDividerColor">#33000000</Color>
       <Color x:Key="StatusSuccessColor">#FF58D68D</Color>
       <Color x:Key="StatusSuccessContainerColor">#FF163D28</Color>
       <Color x:Key="StatusWarningColor">#FFFFB95B</Color>
@@ -176,6 +179,7 @@
       <SolidColorBrush x:Key="ActionSecondaryPressedBrush" Color="{StaticResource ActionSecondaryPressedColor}" />
       <SolidColorBrush x:Key="ContentOnSecondaryActionBrush" Color="{StaticResource ContentOnSecondaryActionColor}" />
       <SolidColorBrush x:Key="FocusRingBrush" Color="{StaticResource FocusRingColor}" />
+      <SolidColorBrush x:Key="QuickSettingActiveDividerBrush" Color="{StaticResource QuickSettingActiveDividerColor}" />
       <SolidColorBrush x:Key="StatusSuccessBrush" Color="{StaticResource StatusSuccessColor}" />
       <SolidColorBrush x:Key="StatusSuccessContainerBrush" Color="{StaticResource StatusSuccessContainerColor}" />
       <SolidColorBrush x:Key="StatusWarningBrush" Color="{StaticResource StatusWarningColor}" />
