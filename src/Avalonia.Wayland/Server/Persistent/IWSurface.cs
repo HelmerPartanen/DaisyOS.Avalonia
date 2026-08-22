@@ -1,6 +1,7 @@
 using Avalonia.Input;
 using Avalonia.Input.TextInput;
 using Avalonia.SourceGenerator;
+using Avalonia.Wayland.Server.LayerShell;
 using Avalonia.Wayland.Server.Transient;
 
 namespace Avalonia.Wayland.Server.Persistent;
@@ -68,4 +69,5 @@ internal interface ILayerSurface : IWSurface
 {
     void SetPendingAckSerial(uint serial);
     void SetInputPassthrough(bool inputPassthrough);
+    void SetKeyboardInteractivity(ZwlrLayerSurfaceV1.KeyboardInteractivity interactivity);
 }

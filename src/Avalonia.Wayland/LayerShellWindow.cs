@@ -69,6 +69,21 @@ public static class LayerShellWindow
             layerWindow.SetInputPassthrough(inputPassthrough);
     }
 
+    /// <summary>
+    /// Changes whether a layer-shell surface receives keyboard focus without
+    /// destroying or remapping its role. Transient shell UI uses Exclusive
+    /// while visible so Escape is routed to the open surface, and None while
+    /// hidden so it cannot retain focus from the application below.
+    /// </summary>
+    public static void SetKeyboardInteractivity(
+        Window window,
+        ZwlrLayerSurfaceV1.KeyboardInteractivity interactivity)
+    {
+        ArgumentNullException.ThrowIfNull(window);
+        if (window.PlatformImpl is LayerShellWindowImpl layerWindow)
+            layerWindow.SetKeyboardInteractivity(interactivity);
+    }
+
     private static void WriteDiagnostics(string message)
     {
         if (string.Equals(Environment.GetEnvironmentVariable("DAISYOS_WAYLAND_DIAGNOSTICS"), "1", StringComparison.Ordinal))

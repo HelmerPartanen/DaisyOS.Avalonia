@@ -15,6 +15,7 @@ internal sealed class LayerShellWindowImpl : WindowImpl
 {
     private readonly LayerShellOptions _options;
     private bool _inputPassthrough;
+    private ZwlrLayerSurfaceV1.KeyboardInteractivity _keyboardInteractivity;
     private WaylandSurfaceCreateResult<WLayerSurfaceProxy>? _layerHandle;
     private WLayerSurfaceProxy? _layerSurfaceProxy;
 
@@ -24,6 +25,7 @@ internal sealed class LayerShellWindowImpl : WindowImpl
         ArgumentNullException.ThrowIfNull(options);
         _options = options;
         _inputPassthrough = options.InputPassthrough;
+        _keyboardInteractivity = options.KeyboardInteractivity;
         CurrentSink = new LayerSink(this, secondShow: false);
     }
 
@@ -51,6 +53,12 @@ internal sealed class LayerShellWindowImpl : WindowImpl
         _layerSurfaceProxy?.SetInputPassthrough(inputPassthrough);
     }
 
+    internal void SetKeyboardInteractivity(ZwlrLayerSurfaceV1.KeyboardInteractivity interactivity)
+    {
+        _keyboardInteractivity = interactivity;
+        _layerSurfaceProxy?.SetKeyboardInteractivity(interactivity);
+    }
+
     private void ApplyConfigure(XdgConfigureBatch batch, bool secondShow)
     {
         if (batch.Size is not { Width: > 0, Height: > 0 })
@@ -75,7 +83,11 @@ internal sealed class LayerShellWindowImpl : WindowImpl
         {
             _secondShow = secondShow;
             var handle = parent.Client.CreateLayerShellHandle(
-                parent._options with { InputPassthrough = parent._inputPassthrough },
+                parent._options with
+                {
+                    InputPassthrough = parent._inputPassthrough,
+                    KeyboardInteractivity = parent._keyboardInteractivity
+                },
                 new WLayerSurfaceEventSinkProxy(this, WaylandMarshallers.UIThread));
             _surfaceProxy = handle.Proxy;
             parent._layerHandle = handle;

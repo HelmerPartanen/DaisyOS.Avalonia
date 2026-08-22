@@ -19,6 +19,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
     private uint? _pendingAckSerial;
     private bool _configured;
     private bool _inputPassthrough;
+    private ZwlrLayerSurfaceV1.KeyboardInteractivity _keyboardInteractivity;
     private readonly TaskCompletionSource<XdgConfigureBatch> _initialConfigure = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     public WLayerSurface(WaylandWorker worker, LayerShellOptions options, WLayerSurfaceEventSinkProxy eventSink)
@@ -28,6 +29,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         _options = options;
         _eventSink = eventSink;
         _inputPassthrough = options.InputPassthrough;
+        _keyboardInteractivity = options.KeyboardInteractivity;
         RegisterWithWorker();
     }
 
@@ -66,7 +68,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         _layerSurface.SetSize(options.Width, options.Height);
         _layerSurface.SetAnchor(options.Anchor);
         _layerSurface.SetExclusiveZone(options.ExclusiveZone);
-        _layerSurface.SetKeyboardInteractivity(options.KeyboardInteractivity);
+        _layerSurface.SetKeyboardInteractivity(_keyboardInteractivity);
         ApplyInputRegion();
         WlSurface!.Commit();
     }
@@ -90,6 +92,16 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
             return;
 
         ApplyInputRegion();
+        WlSurface.Commit();
+    }
+
+    public void SetKeyboardInteractivity(ZwlrLayerSurfaceV1.KeyboardInteractivity interactivity)
+    {
+        _keyboardInteractivity = interactivity;
+        if (_layerSurface is null || WlSurface is null)
+            return;
+
+        _layerSurface.SetKeyboardInteractivity(interactivity);
         WlSurface.Commit();
     }
 
