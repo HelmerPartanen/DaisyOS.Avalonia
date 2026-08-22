@@ -37,7 +37,8 @@
       <Color x:Key="ActionSecondaryPressedColor">#FFD4D7DD</Color>
       <Color x:Key="ContentOnSecondaryActionColor">#FF24242A</Color>
       <Color x:Key="FocusRingColor">#FF303036</Color>
-      <Color x:Key="QuickSettingActiveDividerColor">#1A000000</Color>
+      <!-- Pre-composited 10% black over ActionPrimaryColor: avoids platform alpha flattening. -->
+      <Color x:Key="QuickSettingActiveDividerColor">#FF2B2B31</Color>
       <Color x:Key="StatusSuccessColor">#FF187B45</Color>
       <Color x:Key="StatusSuccessContainerColor">#FFE4F4EA</Color>
       <Color x:Key="StatusWarningColor">#FFA85A00</Color>
@@ -133,7 +134,8 @@
       <Color x:Key="ActionSecondaryPressedColor">#FF414147</Color>
       <Color x:Key="ContentOnSecondaryActionColor">#FFF5F5F7</Color>
       <Color x:Key="FocusRingColor">#FFF5F5F7</Color>
-      <Color x:Key="QuickSettingActiveDividerColor">#33000000</Color>
+      <!-- Pre-composited #33000000 over the dark theme's #F5F5F7 active surface. -->
+      <Color x:Key="QuickSettingActiveDividerColor">#FFC4C4C6</Color>
       <Color x:Key="StatusSuccessColor">#FF58D68D</Color>
       <Color x:Key="StatusSuccessContainerColor">#FF163D28</Color>
       <Color x:Key="StatusWarningColor">#FFFFB95B</Color>

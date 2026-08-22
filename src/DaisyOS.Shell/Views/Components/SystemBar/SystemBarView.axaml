@@ -157,7 +157,7 @@
           ClipToBounds="True">
     <Border Background="{DynamicResource ShellFrameInnerHighlightBrush}" Padding="1"
             CornerRadius="{DynamicResource RoundedXLInset}">
-      <Border Background="{DynamicResource SurfaceBaseBrush}" Padding="16"
+      <Border Background="{DynamicResource SurfaceBaseBrush}" Padding="16,16,16,0"
               CornerRadius="{DynamicResource RoundedXLDoubleInset}" ClipToBounds="True">
         <Grid>
       <StackPanel x:Name="QuickSettingsMainPage" Spacing="12">
