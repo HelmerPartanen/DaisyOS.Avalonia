@@ -67,4 +67,5 @@ internal interface IWSurface
 internal interface ILayerSurface : IWSurface
 {
     void SetPendingAckSerial(uint serial);
+    void SetInputPassthrough(bool inputPassthrough);
 }

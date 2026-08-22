@@ -56,6 +56,19 @@ public static class LayerShellWindow
         return false;
     }
 
+    /// <summary>
+    /// Enables or disables pointer hit testing for a layer-shell surface
+    /// without destroying its Wayland role. This is the safe visibility
+    /// primitive for transient shell UI: hiding and recreating a layer role
+    /// on each click makes compositors reconfigure it and causes flicker.
+    /// </summary>
+    public static void SetInputPassthrough(Window window, bool inputPassthrough)
+    {
+        ArgumentNullException.ThrowIfNull(window);
+        if (window.PlatformImpl is LayerShellWindowImpl layerWindow)
+            layerWindow.SetInputPassthrough(inputPassthrough);
+    }
+
     private static void WriteDiagnostics(string message)
     {
         if (string.Equals(Environment.GetEnvironmentVariable("DAISYOS_WAYLAND_DIAGNOSTICS"), "1", StringComparison.Ordinal))

@@ -14,6 +14,7 @@ namespace Avalonia.Wayland;
 internal sealed class LayerShellWindowImpl : WindowImpl
 {
     private readonly LayerShellOptions _options;
+    private bool _inputPassthrough;
     private WaylandSurfaceCreateResult<WLayerSurfaceProxy>? _layerHandle;
     private WLayerSurfaceProxy? _layerSurfaceProxy;
 
@@ -22,6 +23,7 @@ internal sealed class LayerShellWindowImpl : WindowImpl
     {
         ArgumentNullException.ThrowIfNull(options);
         _options = options;
+        _inputPassthrough = options.InputPassthrough;
         CurrentSink = new LayerSink(this, secondShow: false);
     }
 
@@ -41,6 +43,12 @@ internal sealed class LayerShellWindowImpl : WindowImpl
             CurrentSink = new LayerSink(this, secondShow: true);
 
         Client.AnyThreadWakeupRenderLoop();
+    }
+
+    internal void SetInputPassthrough(bool inputPassthrough)
+    {
+        _inputPassthrough = inputPassthrough;
+        _layerSurfaceProxy?.SetInputPassthrough(inputPassthrough);
     }
 
     private void ApplyConfigure(XdgConfigureBatch batch, bool secondShow)
@@ -67,7 +75,7 @@ internal sealed class LayerShellWindowImpl : WindowImpl
         {
             _secondShow = secondShow;
             var handle = parent.Client.CreateLayerShellHandle(
-                parent._options,
+                parent._options with { InputPassthrough = parent._inputPassthrough },
                 new WLayerSurfaceEventSinkProxy(this, WaylandMarshallers.UIThread));
             _surfaceProxy = handle.Proxy;
             parent._layerHandle = handle;

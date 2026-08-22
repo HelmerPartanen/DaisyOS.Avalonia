@@ -18,6 +18,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
     private ZwlrLayerSurfaceV1? _layerSurface;
     private uint? _pendingAckSerial;
     private bool _configured;
+    private bool _inputPassthrough;
     private readonly TaskCompletionSource<XdgConfigureBatch> _initialConfigure = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     public WLayerSurface(WaylandWorker worker, LayerShellOptions options, WLayerSurfaceEventSinkProxy eventSink)
@@ -26,6 +27,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         ArgumentNullException.ThrowIfNull(options);
         _options = options;
         _eventSink = eventSink;
+        _inputPassthrough = options.InputPassthrough;
         RegisterWithWorker();
     }
 
@@ -65,11 +67,7 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         _layerSurface.SetAnchor(options.Anchor);
         _layerSurface.SetExclusiveZone(options.ExclusiveZone);
         _layerSurface.SetKeyboardInteractivity(options.KeyboardInteractivity);
-        // A passive overlay (for example notification toasts) must never
-        // become an invisible full-screen click target. A null input region
-        // makes Wayland continue hit-testing the surface below it.
-        if (options.InputPassthrough)
-            WlSurface!.SetInputRegion(null!);
+        ApplyInputRegion();
         WlSurface!.Commit();
     }
 
@@ -83,6 +81,37 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         // while this surface is still NotReady; wake again after the UI has
         // accepted the serial so the initial layer buffer is actually drawn.
         Worker.WakeupRenderLoop();
+    }
+
+    public void SetInputPassthrough(bool inputPassthrough)
+    {
+        _inputPassthrough = inputPassthrough;
+        if (WlSurface is null)
+            return;
+
+        ApplyInputRegion();
+        WlSurface.Commit();
+    }
+
+    private void ApplyInputRegion()
+    {
+        if (WlSurface is null)
+            return;
+
+        if (!_inputPassthrough)
+        {
+            // A null region restores the protocol default: the full surface
+            // accepts input.
+            WlSurface.SetInputRegion(null!);
+            return;
+        }
+
+        // Wayland's null input region means *infinite*, not empty. Supply a
+        // real empty wl_region so the compositor hit-tests the layer below
+        // while this transient surface is visually hidden.
+        var emptyRegion = Globals!.WlCompositor.CreateRegion(new EmptyRegionListener(), Connection!.Queue);
+        WlSurface.SetInputRegion(emptyRegion);
+        emptyRegion.Destroy();
     }
 
     public override PlatformRenderTargetState State =>
@@ -123,6 +152,10 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
         }
 
         protected override void Closed(ZwlrLayerSurfaceV1 sender) => parent._eventSink.OnClose();
+    }
+
+    private sealed class EmptyRegionListener : WlRegion.Listener
+    {
     }
 }
 
