@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Avalonia.Platform;
 using Avalonia.Wayland.Screens;
+using Avalonia.Wayland.Server.LayerShell;
 using Avalonia.Wayland.Server.Interop;
 using Avalonia.Wayland.Server.Transient.Rendering;
 using NWayland;
@@ -49,6 +50,11 @@ class WaylandGlobals
     /// every toplevel (no SSD negotiation will be attempted).
     /// </summary>
     public ZxdgDecorationManagerV1? XdgDecorationManager { get; }
+    /// <summary>
+    /// Optional standard layer-shell global. It is intentionally separate from
+    /// xdg-shell: clients must choose one role before a wl_surface is mapped.
+    /// </summary>
+    public ZwlrLayerShellV1? LayerShell { get; }
 
     public bool HasFractionalScaling => FractionalScaleManager != null && Viewporter != null;
 
@@ -158,6 +164,7 @@ class WaylandGlobals
         XdgDecorationManager = platformOptions.ForceDrawnDecorationsInternal
             ? null
             : Bind<ZxdgDecorationManagerV1>(1, 1, null);
+        LayerShell = Bind<ZwlrLayerShellV1>(1, 5, null);
         
         // Seats may have been announced before the data-device manager / text-input
         // manager were bound — InputDispatcher backfills now and constructs the
