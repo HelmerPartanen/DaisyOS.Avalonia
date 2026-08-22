@@ -90,7 +90,6 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
 
     public override void OnBeforeNewBufferAttached(IRenderTarget.RenderTargetSceneInfo sceneInfo)
     {
-        LayerShellDiagnostics.Write($"'{_options.Namespace}' attaching {sceneInfo.Size.Width}x{sceneInfo.Size.Height} buffer");
         if (_pendingAckSerial is { } serial)
         {
             _layerSurface!.AckConfigure(serial);
