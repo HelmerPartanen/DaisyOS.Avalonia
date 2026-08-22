@@ -17,7 +17,10 @@ class WaylandTopLevelFactory : IWindowingPlatform
         _client = client;
     }
 
-    public IWindowImpl CreateWindow() => new WindowImpl(_client);
+    public IWindowImpl CreateWindow() =>
+        LayerShellWindow.TryTakePendingOptions(out var options)
+            ? new LayerShellWindowImpl(_client, options)
+            : new WindowImpl(_client);
 
     public ITopLevelImpl CreateEmbeddableTopLevel() => throw new System.NotSupportedException();
 

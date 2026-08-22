@@ -38,9 +38,20 @@ internal partial class WindowImpl : WindowBaseImpl, IWindowImpl
     private string? _title;
     private FallbackStorageProvider? _storageProvider;
 
-    public WindowImpl(WaylandWorkerClient client) : base(client)
+    public WindowImpl(WaylandWorkerClient client) : this(client, createInitialSink: true)
     {
-        CurrentSink = new Sink(this, false);
+    }
+
+    /// <summary>
+    /// Allows a non-xdg Wayland role to reuse the standard Avalonia window
+    /// implementation contract without first assigning an xdg_toplevel role.
+    /// A wl_surface can only have one role, so layer-shell windows must defer
+    /// sink creation until their layer role has been selected.
+    /// </summary>
+    protected WindowImpl(WaylandWorkerClient client, bool createInitialSink) : base(client)
+    {
+        if (createInitialSink)
+            CurrentSink = new Sink(this, false);
     }
 
     private void ApplyConfigureBatch(XdgConfigureBatch batch)
