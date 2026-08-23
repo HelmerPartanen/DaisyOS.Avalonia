@@ -108,7 +108,9 @@ public sealed class ZwlrLayerSurfaceV1 : WlProxy, IWlProxyTypeDescriptorProvider
             .AddMethod(WlMessageDescription.Create("set_exclusive_zone").Add(WlMessageArgumentDescription.Int32).Build())
             .AddMethod(WlMessageDescription.Create("set_margin").Add(WlMessageArgumentDescription.Int32).Add(WlMessageArgumentDescription.Int32).Add(WlMessageArgumentDescription.Int32).Add(WlMessageArgumentDescription.Int32).Build())
             .AddMethod(WlMessageDescription.Create("set_keyboard_interactivity").Add(WlMessageArgumentDescription.UInt32).Build())
-            .AddMethod(WlMessageDescription.Create("get_popup").Add(WlMessageArgumentDescription.Object(null)).Build())
+            // Layer-shell deliberately accepts any xdg_popup implementation here.
+            // The protocol descriptor has no concrete proxy type for that argument.
+            .AddMethod(WlMessageDescription.Create("get_popup").Add(WlMessageArgumentDescription.Object(null!)).Build())
             .AddMethod(WlMessageDescription.Create("ack_configure").Add(WlMessageArgumentDescription.UInt32).Build())
             .AddMethod(WlMessageDescription.Create("destroy").IsDestructor().Build())
             .AddMethod(WlMessageDescription.Create("set_layer").SinceVersion(4).Add(WlMessageArgumentDescription.UInt32).Build())
