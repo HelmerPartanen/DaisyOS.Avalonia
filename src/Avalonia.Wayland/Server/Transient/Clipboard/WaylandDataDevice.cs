@@ -20,6 +20,7 @@ partial class WaylandDataDevice : IDisposable
     private readonly WlDisplay _display;
     private readonly WaylandWorker _worker;
     private readonly Func<RawInputModifiers> _getKeyboardModifiers;
+    private WaylandDragIcon? _activeDragIcon;
 
     /// <summary>
     /// The most recently announced data offer (not yet assigned to selection or DnD).
@@ -248,7 +249,7 @@ partial class WaylandDataDevice : IDisposable
     /// trigger event's serial. Called from the Wayland thread.
     /// </summary>
     internal bool StartDrag(WaylandDataSource source, object? platformCookie,
-        WlDataDeviceManager.DndActionEnum allowedActions)
+        WlDataDeviceManager.DndActionEnum allowedActions, WaylandGlobals globals, int itemCount)
     {
         if (platformCookie is not WaylandInputEventCookie cookie
             || !cookie.TryConsume(_display, out _, out var serial))
@@ -261,8 +262,24 @@ partial class WaylandDataDevice : IDisposable
         if (originSurface == null)
             return false;
 
-        _device.StartDrag(source.WlSource, originSurface, null!, serial);
-        return true;
+        try
+        {
+            _activeDragIcon?.Dispose();
+            _activeDragIcon = new WaylandDragIcon(globals, itemCount);
+            _device.StartDrag(source.WlSource, originSurface, _activeDragIcon.WlSurface!, serial);
+            return true;
+        }
+        catch
+        {
+            EndDrag();
+            return false;
+        }
+    }
+
+    internal void EndDrag()
+    {
+        _activeDragIcon?.Dispose();
+        _activeDragIcon = null;
     }
 
     internal static DragDropEffects ActionsToEffects(WlDataDeviceManager.DndActionEnum actions)
@@ -304,6 +321,7 @@ partial class WaylandDataDevice : IDisposable
 
     public void Dispose()
     {
+        EndDrag();
         _selectionCookie?.Invalidate();
         _selectionCookie = null;
         SelectionOffer?.Dispose();

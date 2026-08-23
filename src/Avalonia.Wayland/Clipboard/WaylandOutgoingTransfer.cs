@@ -156,6 +156,7 @@ class WaylandOutgoingTransfer
             source.OnCancelled = () =>
             {
                 s_inProcessDrags.Remove(operationKey);
+                device.EndDrag();
                 source.Dispose();
                 Dispatcher.UIThread.Post(() =>
                 {
@@ -167,6 +168,7 @@ class WaylandOutgoingTransfer
             source.OnDndFinished = () =>
             {
                 s_inProcessDrags.Remove(operationKey);
+                device.EndDrag();
                 source.Dispose();
                 var result = negotiatedEffects;
                 Dispatcher.UIThread.Post(() => tcs.TrySetResult(result));
@@ -178,9 +180,10 @@ class WaylandOutgoingTransfer
                 // wait for DndFinished or Cancelled to resolve the TCS.
             };
 
-            if (!device.StartDrag(source, inputCookie, allowedActions))
+            if (!device.StartDrag(source, inputCookie, allowedActions, globals, _transfer.Items.Count))
             {
                 s_inProcessDrags.Remove(operationKey);
+                device.EndDrag();
                 source.Dispose();
                 tcs.TrySetResult(DragDropEffects.None);
             }
