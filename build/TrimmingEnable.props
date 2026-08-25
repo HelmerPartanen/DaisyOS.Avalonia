@@ -9,7 +9,7 @@
     <ILLinkTreatWarningsAsErrors>$(TreatWarningsAsErrors)</ILLinkTreatWarningsAsErrors>
   </PropertyGroup>
 
-  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0')) AND '$(EnableRuntimeMarshalling)' != 'true'">
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0')) AND '$(EnableRuntimeMarshalling)' != 'true' AND '$(DisableRuntimeMarshalling)' != 'true'">
     <AssemblyAttribute Include="System.Runtime.CompilerServices.DisableRuntimeMarshallingAttribute" />
   </ItemGroup>
 
