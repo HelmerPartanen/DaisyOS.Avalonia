@@ -909,6 +909,7 @@ namespace Avalonia.Skia
         /// <param name="gradientBrush">Gradient brush.</param>
         private static void ConfigureGradientBrush(ref PaintWrapper paintWrapper, Rect targetRect, IGradientBrush gradientBrush)
         {
+            paintWrapper.Paint.IsDither = true;
             var tileMode = gradientBrush.SpreadMethod.ToSKShaderTileMode();
             var stopColors = gradientBrush.GradientStops.Select(s => s.Color.ToSKColor()).ToArray();
             var stopOffsets = gradientBrush.GradientStops.Select(s => (float)s.Offset).ToArray();
