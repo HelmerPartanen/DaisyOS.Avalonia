@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Avalonia.Controls;
 using Avalonia.Wayland.Server.LayerShell;
@@ -97,6 +98,30 @@ public static class LayerShellWindow
             throw new ArgumentOutOfRangeException(nameof(exclusiveZone));
         if (window.PlatformImpl is LayerShellWindowImpl layerWindow)
             layerWindow.SetExclusiveZone(exclusiveZone);
+    }
+
+    /// <summary>
+    /// Publishes surface-local blur regions through ext_background_effect_v1.
+    /// An empty collection removes compositor blur from the surface.
+    /// </summary>
+    public static void SetBlurRegions(Window window, IReadOnlyList<WaylandBlurRect> regions)
+    {
+        ArgumentNullException.ThrowIfNull(window);
+        ArgumentNullException.ThrowIfNull(regions);
+        if (window.PlatformImpl is LayerShellWindowImpl layerWindow)
+        {
+            var data = new int[regions.Count * 4];
+            for (var index = 0; index < regions.Count; index++)
+            {
+                var region = regions[index];
+                var offset = index * 4;
+                data[offset] = region.X;
+                data[offset + 1] = region.Y;
+                data[offset + 2] = region.Width;
+                data[offset + 3] = region.Height;
+            }
+            layerWindow.SetBlurRegions(data);
+        }
     }
 
     private static void WriteDiagnostics(string message)

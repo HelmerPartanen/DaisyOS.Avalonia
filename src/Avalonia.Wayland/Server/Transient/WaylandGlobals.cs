@@ -8,6 +8,7 @@ using Avalonia.Wayland.Server.Transient.Rendering;
 using NWayland;
 using NWayland.Interop;
 using NWayland.Protocols.FractionalScaleV1;
+using NWayland.Protocols.ExtBackgroundEffectV1;
 using NWayland.Protocols.LinuxDmabufV1;
 using NWayland.Protocols.TextInputUnstableV3;
 using NWayland.Protocols.Viewporter;
@@ -55,6 +56,7 @@ class WaylandGlobals
     /// xdg-shell: clients must choose one role before a wl_surface is mapped.
     /// </summary>
     public ZwlrLayerShellV1? LayerShell { get; }
+    public ExtBackgroundEffectManagerV1? BackgroundEffectManager { get; }
 
     public bool HasFractionalScaling => FractionalScaleManager != null && Viewporter != null;
 
@@ -165,6 +167,7 @@ class WaylandGlobals
             ? null
             : Bind<ZxdgDecorationManagerV1>(1, 1, null);
         LayerShell = Bind<ZwlrLayerShellV1>(1, 5, null);
+        BackgroundEffectManager = Bind<ExtBackgroundEffectManagerV1>(1, 1, null);
         
         // Seats may have been announced before the data-device manager / text-input
         // manager were bound — InputDispatcher backfills now and constructs the

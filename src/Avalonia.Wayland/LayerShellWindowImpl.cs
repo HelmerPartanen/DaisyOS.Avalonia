@@ -18,6 +18,7 @@ internal sealed class LayerShellWindowImpl : WindowImpl
     private ZwlrLayerSurfaceV1.KeyboardInteractivity _keyboardInteractivity;
     private WaylandSurfaceCreateResult<WLayerSurfaceProxy>? _layerHandle;
     private WLayerSurfaceProxy? _layerSurfaceProxy;
+    private int[] _blurRegions = [];
 
     public LayerShellWindowImpl(WaylandWorkerClient client, LayerShellOptions options)
         : base(client, createInitialSink: false)
@@ -67,6 +68,12 @@ internal sealed class LayerShellWindowImpl : WindowImpl
         _layerSurfaceProxy?.SetExclusiveZone(exclusiveZone);
     }
 
+    internal void SetBlurRegions(int[] regions)
+    {
+        _blurRegions = regions;
+        _layerSurfaceProxy?.SetBlurRegions(regions);
+    }
+
     private void ApplyConfigure(XdgConfigureBatch batch, bool secondShow)
     {
         if (batch.Size is not { Width: > 0, Height: > 0 })
@@ -101,6 +108,7 @@ internal sealed class LayerShellWindowImpl : WindowImpl
             parent._layerHandle = handle;
             parent._layerSurfaceProxy = _surfaceProxy;
             _surfaceProxy.SetCursor(parent.CurrentCursor?.Cursor);
+            _surfaceProxy.SetBlurRegions(parent._blurRegions);
 
             // Unlike an xdg toplevel, a layer surface must not synchronously
             // wait for its first configure while Avalonia is constructing the

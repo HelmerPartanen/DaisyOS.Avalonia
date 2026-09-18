@@ -10,6 +10,7 @@ using Avalonia.Wayland.Server.Interop;
 using Avalonia.Wayland.Server.Transient;
 using Avalonia.Wayland.Server.Transient.Rendering;
 using NWayland.Protocols.FractionalScaleV1;
+using NWayland.Protocols.ExtBackgroundEffectV1;
 using NWayland.Protocols.Viewporter;
 using NWayland.Protocols.Wayland;
 using NWayland.Protocols.XdgDecorationUnstableV1;
@@ -33,6 +34,7 @@ class WSurface : IPersistentWaylandObject, IWSurface, IWaylandFramebufferSurface
     private const double ScaleEpsilon = 1e-6;
     private readonly List<IDisposable> _activeRenderTargets = new();
     private bool _registeredWithWorker;
+    private ExtBackgroundEffectSurfaceV1? _backgroundEffect;
 
     public bool HasFractionalScaling => FractionalScale != null && Viewport != null;
     public WlDisplay? CurrentDisplay => Connection?.Display;
@@ -112,6 +114,34 @@ class WSurface : IPersistentWaylandObject, IWSurface, IWaylandFramebufferSurface
         CurrentCursor = (WaylandCursor?)cursor;
         Globals?.InputDispatcher?.NotifyCursorChanged(this);
     }
+
+    public void SetBlurRegions(int[] regions)
+    {
+        if (WlSurface is null || Globals?.BackgroundEffectManager is null || Connection is null)
+            return;
+
+        _backgroundEffect ??= Globals.BackgroundEffectManager.GetBackgroundEffect(
+            WlSurface, new BackgroundEffectListener(), Connection.Queue);
+        if (regions.Length == 0)
+        {
+            _backgroundEffect.SetBlurRegion(null!);
+            WlSurface.Commit();
+            return;
+        }
+
+        var region = Globals.WlCompositor.CreateRegion(new BlurRegionListener(), Connection.Queue);
+        for (var offset = 0; offset + 3 < regions.Length; offset += 4)
+        {
+            if (regions[offset + 2] > 0 && regions[offset + 3] > 0)
+                region.Add(regions[offset], regions[offset + 1], regions[offset + 2], regions[offset + 3]);
+        }
+        _backgroundEffect.SetBlurRegion(region);
+        region.Destroy();
+        WlSurface.Commit();
+    }
+
+    private sealed class BackgroundEffectListener : ExtBackgroundEffectSurfaceV1.Listener;
+    private sealed class BlurRegionListener : WlRegion.Listener;
 
     public virtual void RegisterTextInputSink(WaylandTextInputV3EventsProxy sink)
     {
@@ -273,9 +303,9 @@ class WSurface : IPersistentWaylandObject, IWSurface, IWaylandFramebufferSurface
     {
         protected override void Done(WlCallback eventSender, uint callbackData)
         {
-            p.Worker.WakeupRenderLoop();
             eventSender.Dispose();
             p._frameCallback = null;
+            p.Worker.WakeupRenderLoop();
         }
     }
 

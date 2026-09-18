@@ -101,16 +101,21 @@ class WaylandClipboardImpl : IOwnedClipboardImpl
             {
                 if (value is Bitmap bitmap)
                 {
-                    // Clone the platform bitmap ref so it outlives the UI-thread retrieval, then
-                    // encode the PNG straight into the pipe from a pool thread. This avoids both
-                    // buffering the whole image as a byte[] and stalling the UI thread on pipe
-                    // backpressure during the encode.
+                    // Encoders write synchronously, but Wayland pipes are asynchronous/nonblocking.
+                    // Encode off the UI thread, then send with async I/O to handle backpressure.
                     var bitmapRef = bitmap.PlatformImpl.Clone();
-                    await Task.Run(() =>
+                    using var encoded = await Task.Run(() =>
                     {
                         using (bitmapRef)
-                            bitmapRef.Item.Save(stream, PngBitmapEncoderOptions.Default);
+                        {
+                            var buffer = new MemoryStream();
+                            try { bitmapRef.Item.Save(buffer, PngBitmapEncoderOptions.Default); }
+                            catch { buffer.Dispose(); throw; }
+                            buffer.Position = 0;
+                            return buffer;
+                        }
                     }).ConfigureAwait(false);
+                    await encoded.CopyToAsync(stream).ConfigureAwait(false);
                     return;
                 }
             }
