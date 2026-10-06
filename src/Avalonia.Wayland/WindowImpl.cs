@@ -51,6 +51,7 @@ internal partial class WindowImpl : WindowBaseImpl, IWindowImpl
     /// </summary>
     protected WindowImpl(WaylandWorkerClient client, bool createInitialSink) : base(client)
     {
+        _csdSticky = ClientSideDecorationsWindow.ConsumeRequest();
         if (createInitialSink)
             CurrentSink = new Sink(this, false);
     }
@@ -97,7 +98,8 @@ internal partial class WindowImpl : WindowBaseImpl, IWindowImpl
             if (newClientSize != ClientSize)
             {
                 ClientSize = newClientSize;
-                Resized?.Invoke(newClientSize, WindowResizeReason.Layout);
+                Resized?.Invoke(newClientSize, (batch.States & XdgToplevelStates.Resizing) != 0
+                    ? WindowResizeReason.User : WindowResizeReason.Layout);
             }
         }
         else if (newWindowState == WindowState.Normal && oldWindowState != WindowState.Normal

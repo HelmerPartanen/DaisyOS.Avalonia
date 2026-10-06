@@ -249,7 +249,7 @@ partial class WaylandDataDevice : IDisposable
     /// trigger event's serial. Called from the Wayland thread.
     /// </summary>
     internal bool StartDrag(WaylandDataSource source, object? platformCookie,
-        WlDataDeviceManager.DndActionEnum allowedActions, WaylandGlobals globals, int itemCount)
+        WlDataDeviceManager.DndActionEnum allowedActions, WaylandGlobals globals, int itemCount, Avalonia.Media.Imaging.Bitmap? preview = null)
     {
         if (platformCookie is not WaylandInputEventCookie cookie
             || !cookie.TryConsume(_display, out _, out var serial))
@@ -265,7 +265,7 @@ partial class WaylandDataDevice : IDisposable
         try
         {
             _activeDragIcon?.Dispose();
-            _activeDragIcon = new WaylandDragIcon(globals, itemCount);
+            _activeDragIcon = new WaylandDragIcon(globals, itemCount, preview);
             _device.StartDrag(source.WlSource, originSurface, _activeDragIcon.WlSurface!, serial);
             return true;
         }

@@ -636,9 +636,17 @@ class WXdgTopLevel : WXdgShellSurface, IWXdgTopLevel
     // TODO: Wait for V2 version of the protocol to gain more adoption and implement it on our side
     private bool _csdSticky;
 
-    public WXdgTopLevel(WaylandWorker worker, WXdgTopLevelEventSinkProxy eventSink) : base(worker, eventSink)
+    public WXdgTopLevel(
+        WaylandWorker worker,
+        WXdgTopLevelEventSinkProxy eventSink,
+        bool clientSideDecorations) : base(worker, eventSink)
     {
         _topLevelEventSink = eventSink;
+        // This must be known before OnConnected creates the xdg-decoration
+        // object. Creating it in server-side mode and destroying it a moment
+        // later lets KWin expose one decorated frame before a frameless/CSD
+        // application's first buffer is committed.
+        _csdSticky = clientSideDecorations;
     }
 
     public override void OnConnected(WaylandConnection connection, WaylandGlobals globals)
@@ -975,6 +983,14 @@ class WXdgPopup : WXdgShellSurface, IWXdgPopup
         {
             _pendingBatch = new();
             _xdgPopup = XdgSurface.GetPopup(parentXdgSurface, positioner, new PopupListener(this));
+            // Popup content is rendered into its own wl_surface. Parent blur
+            // regions cannot affect it. Daisy popup templates reserve 16px
+            // around the visible card for their shadow; blurring the complete
+            // buffer turns that transparent padding into a large rectangular
+            // halo. Restrict KWin to the actual rounded material card.
+            var popupWidth = Math.Max(1, (int)Math.Ceiling(pos.Size.Width));
+            var popupHeight = Math.Max(1, (int)Math.Ceiling(pos.Size.Height));
+            SetBlurRegions(CreatePopupMaterialBlurRegions(popupWidth, popupHeight));
         }
         finally
         {
@@ -982,6 +998,31 @@ class WXdgPopup : WXdgShellSurface, IWXdgPopup
             positioner.Dispose();
         }
         WlSurface!.Commit();
+    }
+
+    private static int[] CreatePopupMaterialBlurRegions(int popupWidth, int popupHeight)
+    {
+        const int inset = 16;
+        const int cornerRadius = 14;
+
+        var width = popupWidth - inset * 2;
+        var height = popupHeight - inset * 2;
+        if (width <= 0 || height <= 0)
+            return [0, 0, popupWidth, popupHeight];
+
+        var radius = Math.Min(cornerRadius, Math.Min(width, height) / 2);
+        var regions = new List<int>((radius * 2 + 1) * 4);
+        for (var row = 0; row < radius; row++)
+        {
+            var vertical = radius - row - 0.5;
+            var rowInset = (int)Math.Ceiling(radius - Math.Sqrt(radius * radius - vertical * vertical));
+            regions.AddRange([inset + rowInset, inset + row, width - rowInset * 2, 1]);
+            regions.AddRange([inset + rowInset, inset + height - row - 1, width - rowInset * 2, 1]);
+        }
+
+        if (height > radius * 2)
+            regions.AddRange([inset, inset + radius, width, height - radius * 2]);
+        return regions.ToArray();
     }
 
     /// <summary>

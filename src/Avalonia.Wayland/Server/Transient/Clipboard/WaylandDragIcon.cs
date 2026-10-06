@@ -22,12 +22,24 @@ sealed class WaylandDragIcon : IWaylandFramebufferSurface, IDisposable
     private const int Height = 44;
     private readonly List<IDisposable> _activeRenderTargets = [];
     private bool _disposed;
+    private bool _positioned;
+    private readonly bool _hasPreview;
 
-    public WaylandDragIcon(WaylandGlobals globals, int itemCount)
+    public WaylandDragIcon(WaylandGlobals globals, int itemCount, Avalonia.Media.Imaging.Bitmap? preview = null)
     {
+        _hasPreview = preview is not null;
         Globals = globals;
         WlSurface = globals.WlCompositor.CreateSurface(null);
-        Render(itemCount);
+        if (preview is not null)
+        {
+            var framebuffer = new WaylandFramebuffer(this);
+            using var target = framebuffer.CreateFramebufferRenderTarget();
+            using var locked = target.Lock(new IRenderTarget.RenderTargetSceneInfo(preview.PixelSize,
+                preview.Dpi.X / 96, CompositionTransparencyLevel.Transparent), out _);
+            preview.CopyPixels(locked);
+        }
+        else
+            Render(itemCount);
     }
 
     public WaylandGlobals? Globals { get; }
@@ -42,6 +54,12 @@ sealed class WaylandDragIcon : IWaylandFramebufferSurface, IDisposable
     public void UnregisterRenderTarget(IDisposable renderTarget) => _activeRenderTargets.Remove(renderTarget);
     public void OnBeforeNewBufferAttached(IRenderTarget.RenderTargetSceneInfo sceneInfo)
     {
+        WlSurface!.SetBufferScale(Math.Max(1, (int)Math.Ceiling(sceneInfo.Scaling)));
+        if (_hasPreview && !_positioned && WlSurface.Version >= 5)
+        {
+            WlSurface.Offset(0, -60);
+            _positioned = true;
+        }
     }
 
     private void Render(int itemCount)

@@ -231,7 +231,8 @@ namespace Avalonia.Controls
                 e.Handled = true;
                 
                 bool shouldBecomeChecked = Canvas.GetLeft(_knobsPanel!) >= (_switchKnob!.Bounds.Width / 2);
-                _knobsPanel!.ClearValue(Canvas.LeftProperty);
+                // Animate from the last dragged position rather than resetting to NaN.
+                UpdateKnobTransitions();
 
                 PseudoClasses.Set(":dragging", false);
   
@@ -243,7 +244,6 @@ namespace Avalonia.Controls
                 {
                     SetCurrentValue(IsCheckedProperty, shouldBecomeChecked);
                 }
-                UpdateKnobTransitions();
             }
 
             _isDragging = false;

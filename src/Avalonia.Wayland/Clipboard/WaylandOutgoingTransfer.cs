@@ -110,8 +110,9 @@ class WaylandOutgoingTransfer
     /// Returns a task that resolves to the resulting <see cref="DragDropEffects"/> when
     /// the DnD operation completes (finished, cancelled, or failed to start).
     /// </summary>
-    public Task<DragDropEffects> SetAsDrag(WaylandInputEventCookie inputCookie, DragDropEffects allowedEffects)
+    public async Task<DragDropEffects> SetAsDrag(WaylandInputEventCookie inputCookie, DragDropEffects allowedEffects)
     {
+        var preview = await _transfer.TryGetValueAsync(DataFormat.CreateInProcessFormat<Avalonia.Media.Imaging.Bitmap>("daisy-file-drag-preview"));
         var tcs = new TaskCompletionSource<DragDropEffects>();
         DragDropEffects negotiatedEffects = DragDropEffects.None;
 
@@ -180,7 +181,7 @@ class WaylandOutgoingTransfer
                 // wait for DndFinished or Cancelled to resolve the TCS.
             };
 
-            if (!device.StartDrag(source, inputCookie, allowedActions, globals, _transfer.Items.Count))
+            if (!device.StartDrag(source, inputCookie, allowedActions, globals, _transfer.Items.Count, preview))
             {
                 s_inProcessDrags.Remove(operationKey);
                 device.EndDrag();
@@ -189,7 +190,7 @@ class WaylandOutgoingTransfer
             }
         });
 
-        return tcs.Task;
+        return await tcs.Task;
     }
 
     /// <summary>

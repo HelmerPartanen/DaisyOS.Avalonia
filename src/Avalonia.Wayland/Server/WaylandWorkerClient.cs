@@ -86,9 +86,11 @@ class WaylandWorkerClient
     /// accessors needed to drive it. The underlying <see cref="WXdgTopLevel"/>
     /// is worker-thread state and is intentionally not exposed.
     /// </summary>
-    public WaylandSurfaceCreateResult<WXdgTopLevelProxy> CreateTopLevelHandle(WXdgTopLevelEventSinkProxy sink)
+    public WaylandSurfaceCreateResult<WXdgTopLevelProxy> CreateTopLevelHandle(
+        WXdgTopLevelEventSinkProxy sink,
+        bool clientSideDecorations)
     {
-        var topLevel = new WXdgTopLevel(_worker, sink);
+        var topLevel = new WXdgTopLevel(_worker, sink, clientSideDecorations);
         var proxy = new WXdgTopLevelProxy(topLevel, Marshaller);
         return new WaylandSurfaceCreateResult<WXdgTopLevelProxy>(
             Proxy: proxy,

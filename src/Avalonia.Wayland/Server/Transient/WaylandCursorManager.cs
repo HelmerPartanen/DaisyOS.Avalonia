@@ -32,14 +32,14 @@ partial class WaylandCursorManager : IDisposable
         { StandardCursorType.Hand, ["pointer", "hand2", "pointing_hand"] },
         { StandardCursorType.AppStarting, ["progress", "left_ptr_watch"] },
         { StandardCursorType.Help, ["help", "question_arrow"] },
-        { StandardCursorType.TopSide, ["top_side", "n-resize"] },
-        { StandardCursorType.BottomSide, ["bottom_side", "s-resize"] },
-        { StandardCursorType.LeftSide, ["left_side", "w-resize"] },
-        { StandardCursorType.RightSide, ["right_side", "e-resize"] },
-        { StandardCursorType.TopLeftCorner, ["top_left_corner", "nw-resize"] },
-        { StandardCursorType.TopRightCorner, ["top_right_corner", "ne-resize"] },
-        { StandardCursorType.BottomLeftCorner, ["bottom_left_corner", "sw-resize"] },
-        { StandardCursorType.BottomRightCorner, ["bottom_right_corner", "se-resize"] },
+        { StandardCursorType.TopSide, ["n-resize", "top_side"] },
+        { StandardCursorType.BottomSide, ["s-resize", "bottom_side"] },
+        { StandardCursorType.LeftSide, ["w-resize", "left_side"] },
+        { StandardCursorType.RightSide, ["e-resize", "right_side"] },
+        { StandardCursorType.TopLeftCorner, ["nw-resize", "top_left_corner"] },
+        { StandardCursorType.TopRightCorner, ["ne-resize", "top_right_corner"] },
+        { StandardCursorType.BottomLeftCorner, ["sw-resize", "bottom_left_corner"] },
+        { StandardCursorType.BottomRightCorner, ["se-resize", "bottom_right_corner"] },
         { StandardCursorType.DragMove, ["grabbing", "dnd-move"] },
         { StandardCursorType.DragCopy, ["copy", "dnd-copy"] },
         { StandardCursorType.DragLink, ["alias", "dnd-link"] },
@@ -49,7 +49,10 @@ partial class WaylandCursorManager : IDisposable
     {
         _display = display;
         _compositor = compositor;
-        _theme = UnsafeNativeMethods.wl_cursor_theme_load(null, 24, shm.Handle);
+        var theme = Environment.GetEnvironmentVariable("XCURSOR_THEME");
+        var size = int.TryParse(Environment.GetEnvironmentVariable("XCURSOR_SIZE"), out var configuredSize)
+            && configuredSize > 0 ? configuredSize : 24;
+        _theme = UnsafeNativeMethods.wl_cursor_theme_load(theme, size, shm.Handle);
         if (_theme == IntPtr.Zero)
             throw new AvaloniaWaylandException("Failed to load default cursor theme");
 

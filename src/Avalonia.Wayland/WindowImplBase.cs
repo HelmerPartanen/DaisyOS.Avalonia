@@ -239,15 +239,8 @@ internal abstract partial class WindowBaseImpl : IWindowBaseImpl
             if (HandleDragDropPostDispatch(args))
                 return;
 
-            // Key symbols also contain terminal/control sequences (Escape is
-            // U+001B, for example). They are key events, never text input.
-            // Sending them through RawTextInputEventArgs makes an unhandled
-            // Escape appear as a random glyph in a focused TextBox.
-            if (!args.Handled && args is RawKeyEventArgs keyArgs &&
-                keyArgs.Type == RawKeyEventType.KeyDown &&
-                keyArgs.KeySymbol is { } text &&
-                text.All(character => !char.IsControl(character)))
-                Parent.Input?.Invoke(new RawTextInputEventArgs(Keyboard, args.Timestamp, InputRoot, text));
+            if (args is RawKeyEventArgs keyArgs)
+                WaylandKeyboardInput.DispatchText(keyArgs, Parent.Input);
         }
 
         /// <summary>

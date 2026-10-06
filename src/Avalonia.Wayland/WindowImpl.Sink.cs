@@ -2,6 +2,7 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Raw;
+using Avalonia.Threading;
 using Avalonia.Wayland.Server;
 using Avalonia.Wayland.Server.Persistent;
 using NWayland.Protocols.XdgShell;
@@ -14,12 +15,16 @@ partial class WindowImpl
     {
         private new WindowImpl Parent => (WindowImpl)base.Parent;
         private XdgConfigureBatch? _initialBatch;
+        private XdgConfigureBatch? _pendingConfigure;
+        private bool _configureQueued;
         private WaylandSurfaceCreateResult<WXdgTopLevelProxy>? _handle;
         private WXdgTopLevelProxy? _surfaceProxy;
 
         public Sink(WindowImpl parent, bool secondShow) : base(parent)
         {
-            _handle = Parent.Client.CreateTopLevelHandle(new WXdgTopLevelEventSinkProxy(this, WaylandMarshallers.UIThread));
+            _handle = Parent.Client.CreateTopLevelHandle(
+                new WXdgTopLevelEventSinkProxy(this, WaylandMarshallers.UIThread),
+                Parent._csdSticky);
             _surfaceProxy = _handle.Proxy;
             Parent._handle = _handle;
             Parent._surfaceProxy = _surfaceProxy;
@@ -37,7 +42,10 @@ partial class WindowImpl
             // Ack the initial configure
             _surfaceProxy.SetPendingAckSerial(initialBatch.Serial);
 
-            if (initialBatch.InitialDecorationMode is { } im)
+            // The window may request client-side/no decorations while the
+            // compositor's initial configure is in flight. Honor that request
+            // just as OnDecorationModeChanged does for subsequent configures.
+            if (!Parent._csdSticky && initialBatch.InitialDecorationMode is { } im)
                 Parent.ApplyDecorationMode(im);
 
             // Re-send stored shadow extents to the new surface
@@ -96,9 +104,29 @@ partial class WindowImpl
                 return;
             }
 
-            Parent.ApplyConfigureBatch(batch);
+            // A fast drag can queue several sizes before the UI can lay out and
+            // render. Keep the latest size instead of laying out obsolete frames.
+            // Flush state transitions so activation/maximize/fullscreen events
+            // are still delivered in order.
+            if (_pendingConfigure is { } previous && previous.States != batch.States)
+                ApplyPendingConfigure();
+            _pendingConfigure = batch;
+            if (_configureQueued) return;
+            _configureQueued = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                _configureQueued = false;
+                ApplyPendingConfigure();
+            });
+        }
 
-            // Post the ack serial back to the wayland thread for next commit
+        private void ApplyPendingConfigure()
+        {
+            var batch = _pendingConfigure;
+            _pendingConfigure = null;
+            if (IsDisposed || batch == null) return;
+            Parent.ApplyConfigureBatch(batch);
+            // Ack exactly the configure whose dimensions enter this commit.
             _surfaceProxy?.SetPendingAckSerial(batch.Serial);
         }
 
