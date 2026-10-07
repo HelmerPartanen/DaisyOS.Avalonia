@@ -33,6 +33,8 @@ abstract class WaylandCursor : IWaylandCursor
 /// </summary>
 sealed class WaylandStandardCursor(StandardCursorType cursorType) : WaylandCursor
 {
+    internal StandardCursorType CursorType => cursorType;
+
     public override WaylandCursorImage? Resolve(WaylandGlobals globals)
         => globals.CursorManager.GetCursor(cursorType) is { } c
             ? new WaylandCursorImage(c.Surface, c.HotspotX, c.HotspotY)

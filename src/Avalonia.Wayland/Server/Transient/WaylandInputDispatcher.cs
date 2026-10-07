@@ -7,6 +7,7 @@ using Avalonia.Wayland.Server.Transient.Clipboard;
 using Avalonia.Wayland.Server.Interop;
 using Avalonia.Wayland.Server.Persistent;
 using NWayland;
+using NWayland.Protocols.CursorShapeV1;
 using NWayland.Protocols.Wayland;
 
 namespace Avalonia.Wayland.Server.Transient;
@@ -269,6 +270,7 @@ partial class WaylandInputDispatcher : IDisposable
         private readonly WaylandInputDispatcher _dispatcher;
         private readonly Seat _seat;
         private readonly WlPointer _pointer;
+        private WpCursorShapeDeviceV1? _shapeDevice;
 
         // Persistent pointer state (survives across frames)
         private WSurfaceEventSinkProxy? _focusedSink;
@@ -307,6 +309,7 @@ partial class WaylandInputDispatcher : IDisposable
             _dispatcher = dispatcher;
             _seat = seat;
             _pointer = seat.WlSeat.GetPointer(new Listener(this));
+            _shapeDevice = dispatcher._globals.CursorShapeManager?.GetPointer(_pointer, null);
         }
 
         // Shared, stateless fallback used when a surface hasn't requested a specific cursor.
@@ -316,7 +319,10 @@ partial class WaylandInputDispatcher : IDisposable
         {
             if (_focusedSurface == null)
                 return;
-            var image = (_focusedSurface.CurrentCursor ?? s_defaultCursor).Resolve(_dispatcher._globals);
+            var cursor = _focusedSurface.CurrentCursor ?? s_defaultCursor;
+            if (cursor is WaylandStandardCursor standard && TrySetShape(standard.CursorType))
+                return;
+            var image = cursor.Resolve(_dispatcher._globals);
             if (image is { } c)
                 _pointer.SetCursor(_lastEnterSerial, c.Surface, c.HotspotX, c.HotspotY);
             else
@@ -341,11 +347,47 @@ partial class WaylandInputDispatcher : IDisposable
         /// </remarks>
         internal void SetDndCursor(StandardCursorType cursorType)
         {
+            if (TrySetShape(cursorType)) return;
             var cursorInfo = _dispatcher._globals.CursorManager.GetCursor(cursorType);
             if (cursorInfo is { } c)
                 _pointer.SetCursor(_lastEnterSerial, c.Surface, c.HotspotX, c.HotspotY);
             else
                 _pointer.SetCursor(_lastEnterSerial, null!, 0, 0);
+        }
+
+        private bool TrySetShape(StandardCursorType type)
+        {
+            _shapeDevice ??= _dispatcher._globals.CursorShapeManager?.GetPointer(_pointer, null);
+            if (_shapeDevice is null || type == StandardCursorType.None) return false;
+            var shape = type switch
+            {
+                StandardCursorType.Arrow => WpCursorShapeDeviceV1.ShapeEnum.Default,
+                StandardCursorType.Ibeam => WpCursorShapeDeviceV1.ShapeEnum.Text,
+                StandardCursorType.Wait => WpCursorShapeDeviceV1.ShapeEnum.Wait,
+                StandardCursorType.Cross => WpCursorShapeDeviceV1.ShapeEnum.Crosshair,
+                StandardCursorType.Hand => WpCursorShapeDeviceV1.ShapeEnum.Pointer,
+                StandardCursorType.AppStarting => WpCursorShapeDeviceV1.ShapeEnum.Progress,
+                StandardCursorType.Help => WpCursorShapeDeviceV1.ShapeEnum.Help,
+                StandardCursorType.No => WpCursorShapeDeviceV1.ShapeEnum.NotAllowed,
+                StandardCursorType.SizeWestEast => WpCursorShapeDeviceV1.ShapeEnum.EwResize,
+                StandardCursorType.SizeNorthSouth => WpCursorShapeDeviceV1.ShapeEnum.NsResize,
+                StandardCursorType.SizeAll => WpCursorShapeDeviceV1.ShapeEnum.Move,
+                StandardCursorType.TopSide => WpCursorShapeDeviceV1.ShapeEnum.NResize,
+                StandardCursorType.BottomSide => WpCursorShapeDeviceV1.ShapeEnum.SResize,
+                StandardCursorType.LeftSide => WpCursorShapeDeviceV1.ShapeEnum.WResize,
+                StandardCursorType.RightSide => WpCursorShapeDeviceV1.ShapeEnum.EResize,
+                StandardCursorType.TopLeftCorner => WpCursorShapeDeviceV1.ShapeEnum.NwResize,
+                StandardCursorType.TopRightCorner => WpCursorShapeDeviceV1.ShapeEnum.NeResize,
+                StandardCursorType.BottomLeftCorner => WpCursorShapeDeviceV1.ShapeEnum.SwResize,
+                StandardCursorType.BottomRightCorner => WpCursorShapeDeviceV1.ShapeEnum.SeResize,
+                StandardCursorType.DragMove => WpCursorShapeDeviceV1.ShapeEnum.Grabbing,
+                StandardCursorType.DragCopy => WpCursorShapeDeviceV1.ShapeEnum.Copy,
+                StandardCursorType.DragLink => WpCursorShapeDeviceV1.ShapeEnum.Alias,
+                _ => (WpCursorShapeDeviceV1.ShapeEnum)0
+            };
+            if ((uint)shape == 0) return false;
+            _shapeDevice.SetShape(_lastEnterSerial, shape);
+            return true;
         }
 
         private void ResetFrameState()
@@ -362,6 +404,7 @@ partial class WaylandInputDispatcher : IDisposable
 
         public void Dispose()
         {
+            _shapeDevice?.Destroy();
             _pointer.Release();
         }
 

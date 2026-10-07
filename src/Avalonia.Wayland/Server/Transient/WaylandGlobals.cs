@@ -6,6 +6,7 @@ using Avalonia.Wayland.Server.LayerShell;
 using Avalonia.Wayland.Server.Interop;
 using Avalonia.Wayland.Server.Transient.Rendering;
 using NWayland;
+using NWayland.Protocols.CursorShapeV1;
 using NWayland.Interop;
 using NWayland.Protocols.FractionalScaleV1;
 using NWayland.Protocols.ExtBackgroundEffectV1;
@@ -34,6 +35,7 @@ class WaylandGlobals
     public ZwpLinuxDmabufV1? LinuxDmabuf { get; }
     public WpFractionalScaleManagerV1? FractionalScaleManager { get; }
     public WpViewporter? Viewporter { get; }
+    public WpCursorShapeManagerV1? CursorShapeManager { get; }
     public ZwpTextInputManagerV3? TextInputManagerV3 { get; }
     public ZxdgExporterV2? XdgExporter { get; }
     /// <summary>
@@ -146,6 +148,7 @@ class WaylandGlobals
         WlShm = BindRequired<WlShm>(1, 1, new ShmListener(this));
         WlCompositor = BindRequired<WlCompositor>(4, 6, null);
         XdgWmBase = BindRequired<XdgWmBase>(3, 4, new XdgWmBaseListener());
+        CursorShapeManager = Bind<WpCursorShapeManagerV1>(1, 1, null);
         CursorManager = new WaylandCursorManager(connection.Display, WlShm, WlCompositor);
         DataDeviceManager = Bind<WlDataDeviceManager>(3, 3, null);
         LinuxDmabuf = Bind<ZwpLinuxDmabufV1>(4, 4, null);
@@ -202,6 +205,7 @@ class WaylandGlobals
     public void Dispose()
     {
         InputDispatcher.Dispose();
+        CursorShapeManager?.Destroy();
         Worker.PlatformGraphics.Reset();
     }
 }
