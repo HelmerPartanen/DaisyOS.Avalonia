@@ -88,6 +88,8 @@ internal interface IWXdgTopLevel : IWXdgShellSurface
     GeneratedClassName = "WXdgPopupProxy")]
 internal interface IWXdgPopup : IWXdgShellSurface
 {
+    void SetMaterialBlurEnabled(bool enabled);
+
     /// <summary>
     /// Updates the cached positioner parameters used to (re-)create the
     /// xdg_popup on connect. Called from the UI thread before the popup is

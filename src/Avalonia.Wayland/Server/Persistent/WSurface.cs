@@ -899,6 +899,7 @@ class WXdgPopup : WXdgShellSurface, IWXdgPopup
     private XdgPopup? _xdgPopup;
     private XdgPopupConfigureBatch _pendingBatch = new();
     private XdgPopupPositionerParams? _positioner;
+    private bool _materialBlurEnabled = true;
     // 0 is reserved (means "no token"); start at 1 and bump on every reposition.
     private uint _nextRepositionToken = 1;
 
@@ -909,6 +910,12 @@ class WXdgPopup : WXdgShellSurface, IWXdgPopup
         _parent = parent;
     }
     
+    public void SetMaterialBlurEnabled(bool enabled)
+    {
+        _materialBlurEnabled = enabled;
+        if (!enabled && _xdgPopup != null) SetBlurRegions([]);
+    }
+
     public void UpdatePositioner(XdgPopupPositionerParams positioner)
     {
         var hadPrevious = _positioner.HasValue;
@@ -990,7 +997,8 @@ class WXdgPopup : WXdgShellSurface, IWXdgPopup
             // halo. Restrict KWin to the actual rounded material card.
             var popupWidth = Math.Max(1, (int)Math.Ceiling(pos.Size.Width));
             var popupHeight = Math.Max(1, (int)Math.Ceiling(pos.Size.Height));
-            SetBlurRegions(CreatePopupMaterialBlurRegions(popupWidth, popupHeight));
+            if (_materialBlurEnabled)
+                SetBlurRegions(CreatePopupMaterialBlurRegions(popupWidth, popupHeight));
         }
         finally
         {

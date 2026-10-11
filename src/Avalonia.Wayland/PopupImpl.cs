@@ -28,6 +28,8 @@ namespace Avalonia.Wayland;
 /// </summary>
 internal partial class PopupImpl : WindowBaseImpl, IPopupImpl
 {
+    internal static bool UsesMaterialBlur(Control? content) => content is not ToolTip;
+
     private readonly WindowBaseImpl _parent;
     private readonly WaylandWorkerClient _workerClient;
     private WaylandSurfaceCreateResult<WXdgPopupProxy>? _handle;

@@ -1,5 +1,6 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Wayland.Server;
 using Avalonia.Wayland.Server.Persistent;
 
@@ -33,6 +34,10 @@ partial class PopupImpl
             _surfaceProxy = _handle.Proxy;
             Parent._handle = _handle;
             Parent._surfaceProxy = _surfaceProxy;
+
+            // Opaque tooltip cards have no menu gutter. Their transparent
+            // rounded corners must not receive the menu's compositor blur.
+            _surfaceProxy.SetMaterialBlurEnabled(UsesMaterialBlur((Parent.InputRoot?.FocusRoot as PopupRoot)?.Content as Control));
 
             // Replay the cached positioner (if Show was called after
             // UpdatePositioner — common Avalonia ordering) so the worker
