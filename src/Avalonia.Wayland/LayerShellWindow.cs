@@ -124,6 +124,19 @@ public static class LayerShellWindow
         }
     }
 
+    /// <summary>Attaches a renderer-owned native child to a mapped layer window.
+    /// The factory runs on the Wayland worker; the returned resource is also
+    /// disposed before the parent disconnects. Disposal must be idempotent.</summary>
+    public static System.Threading.Tasks.Task<IDisposable> AttachNativeChildAsync(
+        Window window, Func<nint, nint, IDisposable> factory)
+    {
+        ArgumentNullException.ThrowIfNull(window);
+        ArgumentNullException.ThrowIfNull(factory);
+        return window.PlatformImpl is LayerShellWindowImpl impl
+            ? impl.AttachNativeChild(factory)
+            : System.Threading.Tasks.Task.FromException<IDisposable>(new NotSupportedException("A native layer host is required."));
+    }
+
     private static void WriteDiagnostics(string message)
     {
         if (string.Equals(Environment.GetEnvironmentVariable("DAISYOS_WAYLAND_DIAGNOSTICS"), "1", StringComparison.Ordinal))

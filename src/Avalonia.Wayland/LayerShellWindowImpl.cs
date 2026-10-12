@@ -48,6 +48,10 @@ internal sealed class LayerShellWindowImpl : WindowImpl
         Client.AnyThreadWakeupRenderLoop();
     }
 
+    internal System.Threading.Tasks.Task<IDisposable> AttachNativeChild(Func<nint, nint, IDisposable> factory) =>
+        _layerHandle?.AttachNativeChild?.Invoke(factory)
+        ?? System.Threading.Tasks.Task.FromException<IDisposable>(new InvalidOperationException("Layer surface is not mapped."));
+
     internal void SetInputPassthrough(bool inputPassthrough)
     {
         _inputPassthrough = inputPassthrough;

@@ -109,7 +109,8 @@ class WaylandWorkerClient
         return new WaylandSurfaceCreateResult<WLayerSurfaceProxy>(
             Proxy: proxy,
             GetRenderSurfaces: () => surface.RenderSurfaces,
-            BasicInitCompleted: surface.BasicInitCompleted);
+            BasicInitCompleted: surface.BasicInitCompleted,
+            AttachNativeChild: factory => InvokeOobAsync(() => surface.AttachNativeChild(factory)));
     }
 
     /// <summary>

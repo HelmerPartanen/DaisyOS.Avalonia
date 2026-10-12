@@ -27,5 +27,6 @@ namespace Avalonia.Wayland;
 internal sealed partial class WaylandSurfaceCreateResult<T>(
     T Proxy,
     Func<IPlatformRenderSurface[]> GetRenderSurfaces,
-    Task<XdgConfigureBatch> BasicInitCompleted)
+    Task<XdgConfigureBatch> BasicInitCompleted,
+    Func<Func<nint, nint, IDisposable>, Task<IDisposable>>? AttachNativeChild = null)
     where T : WSurfaceProxy;

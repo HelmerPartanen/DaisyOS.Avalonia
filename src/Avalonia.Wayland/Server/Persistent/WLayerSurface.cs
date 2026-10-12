@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Platform;
 using Avalonia.Platform.Surfaces;
@@ -14,6 +15,27 @@ namespace Avalonia.Wayland.Server.Persistent;
 internal sealed class WLayerSurface : WSurface, ILayerSurface
 {
     private readonly LayerShellOptions _options;
+    private readonly List<IDisposable> _nativeChildren = new();
+
+    // Executed on the Wayland worker. Children must stop their render threads
+    // before the borrowed display/parent pointers become invalid.
+    public IDisposable AttachNativeChild(Func<nint, nint, IDisposable> factory)
+    {
+        if (CurrentDisplay is null || WlSurface is null)
+            throw new InvalidOperationException("The wallpaper host is not connected.");
+        _nativeChildren.RemoveAll(child => child is NativeChildLease { IsDisposed: true });
+        var lease = new NativeChildLease(factory(CurrentDisplay.Handle, WlSurface.Handle));
+        _nativeChildren.Add(lease);
+        return lease;
+    }
+
+    private sealed class NativeChildLease(IDisposable child) : IDisposable
+    {
+        private IDisposable? _child = child;
+        public bool IsDisposed => _child is null;
+        public void Dispose() => System.Threading.Interlocked.Exchange(ref _child, null)?.Dispose();
+    }
+
     private readonly WLayerSurfaceEventSinkProxy _eventSink;
     private ZwlrLayerSurfaceV1? _layerSurface;
     private uint? _pendingAckSerial;
@@ -156,6 +178,8 @@ internal sealed class WLayerSurface : WSurface, ILayerSurface
 
     public override void OnDisconnected()
     {
+        foreach (var child in _nativeChildren) child.Dispose();
+        _nativeChildren.Clear();
         _layerSurface?.Destroy();
         _layerSurface = null;
         _pendingAckSerial = null;
