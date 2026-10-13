@@ -51,7 +51,7 @@ namespace Avalonia.Skia
         public ImmutableBitmap(ImmutableBitmap src, PixelSize destinationSize, BitmapInterpolationMode interpolationMode)
         {
             var isUpscaling = destinationSize.Width > src.PixelSize.Width || destinationSize.Height > src.PixelSize.Height;
-            SKImageInfo info = new SKImageInfo(destinationSize.Width, destinationSize.Height, SKColorType.Bgra8888);
+            SKImageInfo info = new SKImageInfo(destinationSize.Width, destinationSize.Height, SKColorType.Bgra8888, SKAlphaType.Premul, src._image.ColorSpace);
             _bitmap = new SKBitmap(info);
             src._image.ScalePixels(_bitmap.PeekPixels(), interpolationMode.ToSKSamplingOptions(isUpscaling));
             _bitmap.SetImmutable();
@@ -75,7 +75,7 @@ namespace Avalonia.Skia
                 var supportedScale = codec.GetScaledDimensions(horizontal ? ((float)decodeSize / info.Width) : ((float)decodeSize / info.Height));
 
                 // decode the bitmap at the nearest size
-                var nearest = new SKImageInfo(supportedScale.Width, supportedScale.Height);
+                var nearest = info.WithSize(supportedScale.Width, supportedScale.Height);
                 _bitmap = SKBitmap.Decode(codec, nearest);
 
                 if (_bitmap == null)
@@ -89,11 +89,11 @@ namespace Avalonia.Skia
 
                 if (horizontal)
                 {
-                    desired = new SKImageInfo(decodeSize, (int)(realScale * decodeSize));
+                    desired = info.WithSize(decodeSize, (int)(realScale * decodeSize));
                 }
                 else
                 {
-                    desired = new SKImageInfo((int)(realScale * decodeSize), decodeSize);
+                    desired = info.WithSize((int)(realScale * decodeSize), decodeSize);
                 }
 
                 if (_bitmap.Width != desired.Width || _bitmap.Height != desired.Height)
@@ -131,7 +131,7 @@ namespace Avalonia.Skia
         /// <param name="data">Data pixels.</param>
         public ImmutableBitmap(PixelSize size, Vector dpi, int stride, PixelFormat format, AlphaFormat alphaFormat, IntPtr data)
         {
-            var info = new SKImageInfo(size.Width, size.Height, format.ToSkColorType(), alphaFormat.ToSkAlphaType());
+            var info = new SKImageInfo(size.Width, size.Height, format.ToSkColorType(), alphaFormat.ToSkAlphaType(), SKColorSpace.CreateSrgb());
 
             _bitmap = new SKBitmap();
             if (!_bitmap.TryAllocPixels(info))

@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using SkiaSharp;
+using Avalonia.Media.Imaging;
 using System.Runtime.InteropServices;
 using Avalonia.Platform;
 using Xunit;
@@ -7,6 +10,37 @@ namespace Avalonia.Skia.UnitTests.Media
 {
     public class ImmutableBitmapTests
     {
+        [Fact]
+        public void Resizing_And_Scaled_Decoding_Preserve_Image_Color_Profile()
+        {
+            using var source = new SKBitmap(new SKImageInfo(8, 8, SKColorType.Rgba8888, SKAlphaType.Premul));
+            source.Erase(new SKColor(128, 128, 128));
+            using var image = SKImage.FromBitmap(source);
+            using var png = image.Encode(SKEncodedImageFormat.Png, 100);
+            // Add PNG gAMA=1.0 after IHDR: the pixels are linear, not sRGB.
+            var bytes = png.ToArray();
+            byte[] gamma = { 0, 0, 0, 4, 103, 65, 77, 65, 0, 1, 134, 160, 49, 232, 150, 95 };
+            using var tagged = new MemoryStream();
+            tagged.Write(bytes, 0, 33);
+            tagged.Write(gamma);
+            tagged.Write(bytes, 33, bytes.Length - 33);
+            var encodedSource = tagged.ToArray();
+            using var original = new ImmutableBitmap(new MemoryStream(encodedSource));
+            using var resized = new ImmutableBitmap(original, new PixelSize(4, 4), BitmapInterpolationMode.HighQuality);
+            using var decoded = new ImmutableBitmap(new MemoryStream(encodedSource), 4, true, BitmapInterpolationMode.HighQuality);
+            using var target = new RenderTargetBitmapImpl(new PixelSize(4, 4), new Vector(96, 96));
+            foreach (var bitmap in new[] { original, resized, decoded })
+            {
+                using (var context = target.CreateDrawingContext())
+                    context.DrawBitmap(bitmap, 1, new Rect(0, 0, bitmap.PixelSize.Width, bitmap.PixelSize.Height), new Rect(0, 0, 4, 4));
+                using var encoded = new MemoryStream();
+                target.Save(encoded, PngBitmapEncoderOptions.Default);
+                using var result = SKBitmap.Decode(encoded.ToArray());
+                // Linear 0.5 must become about 0.735 in an sRGB GUI surface.
+                Assert.InRange(result.GetPixel(2, 2).Red, (byte)186, (byte)190);
+            }
+        }
+
         [Theory]
         [InlineData(1, 1, false)]
         [InlineData(3, 5, false)]

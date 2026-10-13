@@ -53,7 +53,7 @@ namespace Avalonia.Skia
                 var supportedScale = codec.GetScaledDimensions(horizontal ? ((float)decodeSize / info.Width) : ((float)decodeSize / info.Height));
 
                 // decode the bitmap at the nearest size
-                var nearest = new SKImageInfo(supportedScale.Width, supportedScale.Height);
+                var nearest = info.WithSize(supportedScale.Width, supportedScale.Height);
                 var bmp = SKBitmap.Decode(codec, nearest);
 
                 // now scale that to the size that we want
@@ -64,11 +64,11 @@ namespace Avalonia.Skia
 
                 if (horizontal)
                 {
-                    desired = new SKImageInfo(decodeSize, (int)(realScale * decodeSize));
+                    desired = info.WithSize(decodeSize, (int)(realScale * decodeSize));
                 }
                 else
                 {
-                    desired = new SKImageInfo((int)(realScale * decodeSize), decodeSize);
+                    desired = info.WithSize((int)(realScale * decodeSize), decodeSize);
                 }
 
                 if (bmp.Width != desired.Width || bmp.Height != desired.Height)
@@ -103,7 +103,7 @@ namespace Avalonia.Skia
 
             _bitmap = new SKBitmap();
 
-            var nfo = new SKImageInfo(size.Width, size.Height, colorType, alphaType);
+            var nfo = new SKImageInfo(size.Width, size.Height, colorType, alphaType, SKColorSpace.CreateSrgb());
             var blob = new UnmanagedBlob(nfo.BytesSize);
 
             _bitmap.InstallPixels(nfo, blob.Address, nfo.RowBytes, s_releaseDelegate, blob);

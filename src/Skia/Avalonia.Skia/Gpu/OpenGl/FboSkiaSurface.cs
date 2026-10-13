@@ -92,7 +92,7 @@ namespace Avalonia.Skia
             using var target = new GRBackendRenderTarget(pixelSize.Width, pixelSize.Height, 0, 8,
                 new GRGlFramebufferInfo((uint)_fbo, SKColorType.Rgba8888.ToGlSizedFormat()));
             using var properties = new SKSurfaceProperties(SKPixelGeometry.RgbHorizontal);
-            _surface = SKSurface.Create(_grContext, target, surfaceOrigin, SKColorType.Rgba8888, properties);
+            _surface = SKSurface.Create(_grContext, target, surfaceOrigin, SKColorType.Rgba8888, SKColorSpace.CreateSrgb(), properties);
             CanBlit = gl.IsBlitFramebufferAvailable;
         }
         

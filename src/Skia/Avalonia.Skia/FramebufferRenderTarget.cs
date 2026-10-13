@@ -61,7 +61,7 @@ namespace Avalonia.Skia
             
             var framebufferImageInfo = new SKImageInfo(framebuffer.Size.Width, framebuffer.Size.Height,
                 framebuffer.Format.ToSkColorType(),
-                framebuffer.AlphaFormat.ToSkAlphaType());
+                framebuffer.AlphaFormat.ToSkAlphaType(), SKColorSpace.CreateSrgb());
 
             CreateSurface(framebufferImageInfo, framebuffer);
             _hadConversionShim |= _conversionShim != null;
