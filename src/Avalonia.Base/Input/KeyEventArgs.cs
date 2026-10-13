@@ -31,6 +31,8 @@ public class KeyEventArgs : RoutedEventArgs, IKeyModifiersEventArgs
     /// </remarks>
     /// <seealso cref="PhysicalKey"/>
     /// <seealso cref="KeySymbol"/>
+    public object? PlatformInputEventCookie { get; init; }
+
     public Key Key { get; init; }
 
     public KeyModifiers KeyModifiers { get; init; }

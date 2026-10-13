@@ -23,6 +23,7 @@ namespace Avalonia.Wayland.Server.Transient;
 
 class WaylandGlobals
 {
+    public NWayland.Protocols.XdgActivationV1.XdgActivationV1? Activation { get; }
     public WlRegistry Registry { get; }
     private Dictionary<string, (uint name, uint version)> _knownGlobals = new();
     public WaylandOutputsTracker Outputs { get; }
@@ -147,6 +148,7 @@ class WaylandGlobals
         connection.Queue.Roundtrip();
         WlShm = BindRequired<WlShm>(1, 1, new ShmListener(this));
         WlCompositor = BindRequired<WlCompositor>(4, 6, null);
+        Activation = Bind<NWayland.Protocols.XdgActivationV1.XdgActivationV1>(1, 1, null);
         XdgWmBase = BindRequired<XdgWmBase>(3, 4, new XdgWmBaseListener());
         CursorShapeManager = Bind<WpCursorShapeManagerV1>(1, 1, null);
         CursorManager = new WaylandCursorManager(connection.Display, WlShm, WlCompositor);
@@ -205,6 +207,7 @@ class WaylandGlobals
     public void Dispose()
     {
         InputDispatcher.Dispose();
+        Activation?.Destroy();
         CursorShapeManager?.Destroy();
         Worker.PlatformGraphics.Reset();
     }

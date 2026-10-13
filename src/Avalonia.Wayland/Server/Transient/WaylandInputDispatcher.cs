@@ -154,6 +154,7 @@ partial class WaylandInputDispatcher : IDisposable
         private KeyboardHandler? _keyboardHandler;
 
         public WlSeat WlSeat => _wlSeat;
+        internal WaylandGlobals Globals => _dispatcher._globals;
         public WaylandDataDevice? DataDevice { get; private set; }
 
         /// <summary>
@@ -467,7 +468,7 @@ partial class WaylandInputDispatcher : IDisposable
 
                 var mods = handler._modifiers | handler._seat.KeyboardModifiers;
                 var pos = handler._pointerPosition;
-                var cookie = pressed ? new WaylandInputEventCookie(handler._seat.WlSeat, serial, handler._dispatcher._globals.Connection.Display, handler._dispatcher._globals.Worker, handler._dispatcher._globals) : null;
+                var cookie = pressed ? new WaylandInputEventCookie(handler._seat.WlSeat, serial, handler._dispatcher._globals.Connection.Display, handler._dispatcher._globals.Worker, handler._dispatcher._globals, handler._focusedWlSurface) : null;
                 handler._frameActions.Add(() =>
                 {
                     handler._focusedSink?.OnPointerButton(time, serial, type.Value, mods, pos, cookie);
@@ -607,7 +608,7 @@ partial class WaylandInputDispatcher : IDisposable
 
                 var shellSurface = WaylandInputDispatcher.FindSurfaceForWlSurface(surface);
                 var pos = new Point((double)x, (double)y);
-                var cookie = new WaylandInputEventCookie(handler._seat.WlSeat, serial, handler._dispatcher._globals.Connection.Display, handler._dispatcher._globals.Worker, handler._dispatcher._globals);
+                var cookie = new WaylandInputEventCookie(handler._seat.WlSeat, serial, handler._dispatcher._globals.Connection.Display, handler._dispatcher._globals.Worker, handler._dispatcher._globals, surface);
                 handler._frameActions.Add(() =>
                 {
                     if (shellSurface != null)

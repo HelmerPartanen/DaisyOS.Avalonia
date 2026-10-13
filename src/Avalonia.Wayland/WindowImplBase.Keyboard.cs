@@ -20,12 +20,12 @@ partial class WindowBaseImpl
         private int _keyRepeatRate;
 
         void IWSurfaceEventSink.OnKeyDown(ulong timestamp, Key key, RawInputModifiers modifiers,
-            PhysicalKey physicalKey, string? keySymbol)
+            PhysicalKey physicalKey, string? keySymbol, object? platformCookie)
         {
             if (InputRoot is null)
                 return;
             ScheduleInput(new RawKeyEventArgs(Keyboard, timestamp, InputRoot,
-                RawKeyEventType.KeyDown, key, modifiers, physicalKey, keySymbol));
+                RawKeyEventType.KeyDown, key, modifiers, physicalKey, keySymbol) { PlatformInputEventCookie = platformCookie });
         }
 
         void IWSurfaceEventSink.OnKeyUp(ulong timestamp, Key key, RawInputModifiers modifiers, PhysicalKey physicalKey,

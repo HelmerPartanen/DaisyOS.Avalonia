@@ -164,7 +164,9 @@ partial class WaylandInputDispatcher
                 }
 
                 if (state == WlKeyboard.KeyStateEnum.Pressed)
-                    sink.OnKeyDown(time, avKey, mods, physicalKey, keySymbol);
+                    sink.OnKeyDown(time, avKey, mods, physicalKey, keySymbol,
+                        new WaylandInputEventCookie(handler._seat.WlSeat, serial, handler._seat.Globals.Connection.Display,
+                            handler._seat.Globals.Worker, handler._seat.Globals, handler._focusedSurface?.WlSurface));
                 else
                     sink.OnKeyUp(time, avKey, mods, physicalKey, keySymbol);
             }

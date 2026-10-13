@@ -30,7 +30,7 @@ internal interface IWSurfaceEventSink
     void OnTouchUp(ulong timestamp, int touchId, Point position);
     void OnTouchCancel(int touchId, Point position);
 
-    void OnKeyDown(ulong timestamp, Key key, RawInputModifiers modifiers, PhysicalKey physicalKey, string? keySymbol);
+    void OnKeyDown(ulong timestamp, Key key, RawInputModifiers modifiers, PhysicalKey physicalKey, string? keySymbol, object? platformCookie);
     void OnKeyUp(ulong timestamp, Key key, RawInputModifiers modifiers, PhysicalKey physicalKey, string? keySymbol);
     void OnKeyboardLeave();
     void OnKeyRepeatInfo(int rate, int delay);

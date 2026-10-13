@@ -31,6 +31,8 @@ namespace Avalonia.Input.Raw
             KeyDeviceType = keyDeviceType;
         }
 
+        public object? PlatformInputEventCookie { get; init; }
+
         public Key Key { get; set; }
 
         public RawInputModifiers Modifiers { get; set; }

@@ -250,6 +250,7 @@ namespace Avalonia.Input
                         var ev = new KeyEventArgs
                         {
                             RoutedEvent = routedEvent,
+                            PlatformInputEventCookie = keyInput.PlatformInputEventCookie,
                             Key = keyInput.Key,
                             KeyModifiers = keyInput.Modifiers.ToKeyModifiers(),
                             PhysicalKey = keyInput.PhysicalKey,
